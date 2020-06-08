@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj": {}
+    "C:\\Users\\Micha\\Source\\Repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj": {
+    "C:\\Users\\Micha\\Source\\Repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj",
+        "projectUniqueName": "C:\\Users\\Micha\\Source\\Repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj",
         "projectName": "Coordinates",
-        "projectPath": "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj",
+        "projectPath": "C:\\Users\\Micha\\Source\\Repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj",
         "packagesPath": "C:\\Users\\Micha\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\obj\\",
+        "outputPath": "C:\\Users\\Micha\\Source\\Repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
