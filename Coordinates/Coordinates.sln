@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30128.74
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Coordinates", "Coordinates\Coordinates.csproj", "{DE7F6BD6-A3B7-4214-954B-43EDE4612C0A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Coordinates", "Coordinates\Coordinates.csproj", "{DE7F6BD6-A3B7-4214-954B-43EDE4612C0A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestProgramm", "TestProgramm\TestProgramm.csproj", "{D373EA06-BBE5-41F1-8262-DDD53E010566}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{DE7F6BD6-A3B7-4214-954B-43EDE4612C0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE7F6BD6-A3B7-4214-954B-43EDE4612C0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE7F6BD6-A3B7-4214-954B-43EDE4612C0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D373EA06-BBE5-41F1-8262-DDD53E010566}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D373EA06-BBE5-41F1-8262-DDD53E010566}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D373EA06-BBE5-41F1-8262-DDD53E010566}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D373EA06-BBE5-41F1-8262-DDD53E010566}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

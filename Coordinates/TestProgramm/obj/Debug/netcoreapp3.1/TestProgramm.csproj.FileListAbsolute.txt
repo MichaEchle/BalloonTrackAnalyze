@@ -1,0 +1,16 @@
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\TestProgramm.exe
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\TestProgramm.deps.json
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\TestProgramm.runtimeconfig.json
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\TestProgramm.runtimeconfig.dev.json
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\TestProgramm.dll
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\TestProgramm.pdb
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\Coordinates.dll
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\Coordinates.pdb
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Debug\netcoreapp3.1\TestProgramm.csprojAssemblyReference.cache
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Debug\netcoreapp3.1\TestProgramm.AssemblyInfoInputs.cache
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Debug\netcoreapp3.1\TestProgramm.AssemblyInfo.cs
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Debug\netcoreapp3.1\TestProgramm.csproj.CoreCompileInputs.cache
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Debug\netcoreapp3.1\TestProgramm.csproj.CopyComplete
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Debug\netcoreapp3.1\TestProgramm.dll
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Debug\netcoreapp3.1\TestProgramm.pdb
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Debug\netcoreapp3.1\TestProgramm.genruntimeconfig.cache

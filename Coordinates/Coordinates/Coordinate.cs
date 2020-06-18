@@ -2,13 +2,6 @@
 
 namespace Coordinates
 {
-    public enum CoordinateTypes
-    {
-        Unknown,
-        TrackPoint,
-        Marker,
-        Goal
-    }
     public class Coordinate
     {
 
@@ -25,34 +18,36 @@ namespace Coordinates
         public double Longitude { get; private set; }
 
         /// <summary>
-        /// The alitude in meters
+        /// The GPS altitude in meters
         /// </summary>
-        public double Altitude { get; private set; }
+        public double AltitudeGPS { get; private set; }
+
+        /// <summary>
+        /// The barometric altitude in meters
+        /// </summary>
+        public double AltitudeBarometric { get; private set; }
 
         /// <summary>
         /// The time stamp when this coordiante was create in GPS time
         /// </summary>
         public DateTime TimeStamp { get; set; }
 
-        /// <summary>
-        /// The type of the coordinate
-        /// </summary>
-        public CoordinateTypes CoordinateType { get; private set; }
 
         /// <summary>
         /// Create a new coordinate using decimal degree, meters and gps time
         /// </summary>
         /// <param name="latitude">the latitude in decimal degree</param>
         /// <param name="longitude">the longitude in decimal degree</param>
-        /// <param name="altitude">the altidude in meters</param>
+        /// <param name="altitudeGPS">the gps altitude in meters</param>
+        /// <param name="altitudeBarometric">the barometric altitude in meters</param>
         /// <param name="timeStamp">the time stamp of the coordinate in GPS time</param>
-        public Coordinate(double latitude, double longitude, double altitude, DateTime timeStamp, CoordinateTypes coordinateType)
+        public Coordinate(double latitude, double longitude, double altitudeGPS, double altitudeBarometric, DateTime timeStamp)
         {
             Latitude = latitude;
             Longitude = longitude;
-            Altitude = altitude;
+            AltitudeGPS = altitudeGPS;
+            AltitudeBarometric = altitudeBarometric;
             TimeStamp = timeStamp;
-            CoordinateType = coordinateType;
         }
 
     }

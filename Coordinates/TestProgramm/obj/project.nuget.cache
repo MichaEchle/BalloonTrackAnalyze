@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "6zv3nPz0Gn8r7wsiE9QfGwKKVPHVYPCDJz9jv5eI8QDbWIJPhC+Fmc7OS3V1UISx/j03HMUW/hZdXqjm3k4gIA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\TestProgramm\\TestProgramm.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Micha\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.1.2\\microsoft.aspnetcore.app.ref.3.1.2.nupkg.sha512"
+  ],
+  "logs": []
+}

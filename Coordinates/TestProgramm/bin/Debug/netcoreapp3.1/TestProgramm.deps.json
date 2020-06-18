@@ -1,0 +1,36 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v3.1",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v3.1": {
+      "TestProgramm/1.0.0": {
+        "dependencies": {
+          "Coordinates": "1.0.0"
+        },
+        "runtime": {
+          "TestProgramm.dll": {}
+        }
+      },
+      "Coordinates/1.0.0": {
+        "runtime": {
+          "Coordinates.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "TestProgramm/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Coordinates/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

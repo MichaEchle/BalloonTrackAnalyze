@@ -9,12 +9,12 @@ namespace Coordinates
         /// <summary>
         /// The first name of the pilot
         /// </summary>
-        public string FirstName { get; private set; }
+        public string FirstName { get; set; }
 
         /// <summary>
         /// The last name of the pilot
         /// </summary>
-        public string LastName { get; private set; }
+        public string LastName { get; set; }
 
         /// <summary>
         /// A number of the pilot
@@ -37,6 +37,12 @@ namespace Coordinates
         {
             FirstName = firstName;
             LastName = lastName;
+            PilotNumber = pilotNumber;
+            PilotIdentifiers = pilotIdentifiers;
+        }
+
+        public Pilot(int pilotNumber, List<string> pilotIdentifiers)
+        {
             PilotNumber = pilotNumber;
             PilotIdentifiers = pilotIdentifiers;
         }
