@@ -43,5 +43,56 @@ namespace Coordinates
         {
             return meters / FEET_TO_METER_RATIO;
         }
+
+        public static double CalculateDistance2D(Coordinate coordinate1, Coordinate coordinate2)
+        {
+            if (coordinate1 is null)
+            {
+                throw new ArgumentNullException(nameof(coordinate1));
+            }
+
+            if (coordinate2 is null)
+            {
+                throw new ArgumentNullException(nameof(coordinate2));
+            }
+
+            double earthRadius = 6371.0e3;
+            double phi1 = coordinate1.Latitude * Math.PI / 180.0;
+            double phi2 = coordinate2.Latitude * Math.PI / 180.0;
+            double lambda1 = coordinate1.Longitude * Math.PI / 180.0;
+            double lambda2 = coordinate2.Longitude * Math.PI / 180.0;
+            double deltaPhi = phi2 - phi1;
+            double deltaLambda = lambda2 - lambda1;
+
+            double a = Math.Pow(Math.Sin(deltaPhi / 2.0), 2) + Math.Cos(phi1) * Math.Cos(phi2) * Math.Pow(Math.Sin(deltaLambda / 2.0), 2);
+            double distance2D = 2.0 * earthRadius* Math.Asin(Math.Sqrt(a));
+            return distance2D;
+        }
+
+        public static double CalculateDistance3D(Coordinate coordinate1, Coordinate coordinate2, bool useGPSAltitude)
+        {
+            if (coordinate1 is null)
+            {
+                throw new ArgumentNullException(nameof(coordinate1));
+            }
+
+            if (coordinate2 is null)
+            {
+                throw new ArgumentNullException(nameof(coordinate2));
+            }
+            double distance2D = CalculateDistance2D(coordinate1, coordinate2);
+            double deltaAltitude;
+            if (useGPSAltitude)
+            {
+                deltaAltitude = coordinate1.AltitudeGPS - coordinate2.AltitudeGPS;
+            }
+            else
+            {
+                deltaAltitude = coordinate1.AltitudeBarometric - coordinate2.AltitudeBarometric;
+            }
+
+            double distance3D = Math.Sqrt(Math.Pow(distance2D, 2) + Math.Pow(deltaAltitude, 2));
+            return distance3D;
+        }
     }
 }

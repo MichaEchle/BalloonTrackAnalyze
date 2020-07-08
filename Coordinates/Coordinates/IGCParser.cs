@@ -6,11 +6,19 @@ using System.Diagnostics;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.CompilerServices;
 using System.Net.Http.Headers;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Coordinates
 {
     public static class IGCParser
     {
+        /// <summary>
+        /// Parses a .igc file and pass back a track object
+        /// </summary>
+        /// <param name="fileNameAndPath">the file path and name of the .igc file</param>
+        /// <param name="track">output parameter. the parsed track from the file</param>
+        /// <returns>true:success; false:error</returns>
         public static bool ParseFile(string fileNameAndPath, out Track track)
         {
             //TODO make method async?
@@ -37,123 +45,273 @@ namespace Coordinates
             DateTime date = new DateTime();
             int goalNortingDigits = -1;
             int goalEastingDigits = -1;
-            bool declaredAltitudeIsInFeet=true;
+            bool declaredAltitudeIsInFeet = true;
+            List<string> lines = new List<string>();
             using (StreamReader reader = new StreamReader(fileNameAndPath))
             {
                 while (!reader.EndOfStream)
                 {
                     string line = reader.ReadLine();
-                    if (string.IsNullOrEmpty(line))
-                        continue;
-                    char lineIdenticator = line[0];
-                    switch (lineIdenticator)
+                    lines.Add(line);
+                }
+            }
+            string[] identifierLine = lines.Where(x => x.StartsWith("AXXX")).ToArray();
+            if (identifierLine.Length == 0)
+            {
+                Debug.WriteLine("Line with Pilot Identifer 'AXXX' is missing");
+                return false;
+            }
+            if (identifierLine.Length > 1)
+            {
+                Debug.WriteLine("More the one line with Pilot Identifer is found. First occurence will be used.");
+            }
+            pilotIdentifier = identifierLine[0].Replace("AXXX", "").Replace("BalloonLive", "");
+
+            string[] headerLines = lines.Where(x => x.StartsWith('H')).ToArray();
+            foreach (string headerLine in headerLines)
+            {
+                if (headerLine.StartsWith("HFDTE"))
+                {
+                    string line = headerLine.Replace("HFDTE", "");
+                    int day;
+                    if (!int.TryParse(line[0..2], out day))
                     {
-                        case 'A':
-                            pilotIdentifier = line.Replace("AXXX", "").Replace("BalloonLive", "");
-                            break;
-                        case 'H':
-                            if (line.StartsWith("HFDTE"))
-                            {
-                                line = line.Replace("HFDTE", "");
-                                int day;
-                                if (!int.TryParse(line[0..2], out day))
-                                {
-                                    Debug.WriteLine(functionErrorMessage + $"Failed to parse day portion of date '{line[0..2]}' in '{line}'");
-                                    return false;
-                                }
-                                int month;
-                                if (!int.TryParse(line[2..4], out month))
-                                {
-                                    Debug.WriteLine(functionErrorMessage + $"Failed to parse month portion of date '{line[2..4]}' in '{line}'");
-                                    return false;
-                                }
-                                int year;
-                                if (!int.TryParse(line[4..6], out year))
-                                {
-                                    Debug.WriteLine(functionErrorMessage + $"Failed to parse year portion of date '{line[4..6]}' in '{line}'");
-                                    return false;
-                                }
-                                year += 2000;
-                                date = new DateTime(year, month, day);
-                            }
-                            if (line.StartsWith("HFPID"))
-                            {
-                                string pilotNumberText = line.Replace("HFPID", "");
-                                if (!int.TryParse(pilotNumberText, out pilotNumber))
-                                {
-                                    Debug.WriteLine(functionErrorMessage + $"Failed to parse the pilot number '{pilotNumberText}' in '{line}'");
-                                    return false;
-                                }
-                            }
-                            break;
-                        case 'L':
-                            if (line.StartsWith("LXXX declaration digits"))
-                            {
-                                if (!int.TryParse(line[^3..^2], out goalNortingDigits))
-                                {
-                                    Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration norting digits '{line[^3..^2]}' in '{line}'");
-                                    return false;
-                                }
-                                if (!int.TryParse(line[^1..^0], out goalEastingDigits))
-                                {
-                                    Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration easting digits '{line[^1..^0]}' in '{line}'");
-                                    return false;
-                                }
-                            }
-                            if (line.StartsWith("LXXX alt unit"))
-                            {
-                                if (line.Contains("feet"))
-                                {
-                                    declaredAltitudeIsInFeet = true;
-                                }
-                                else
-                                {
-                                    declaredAltitudeIsInFeet = false;
-                                }
-                            }
-                            
-                            break;
-                        case 'B':
-                            Coordinate coordinate;
-                            if (!ParseTrackPoint(line, date, out coordinate))
-                            {
-                                Debug.WriteLine(functionErrorMessage + "Failed to parse trackpoint");
-                                return false;
-                            }
-                            track.TrackPoints.Add(coordinate);
-                            break;
-                        case 'E':
-                            if (line.Contains("XL1"))
-                            {
-                                DeclaredGoal declaredGoal;
-                                if (!ParseGoalDeclaration(line, date,declaredAltitudeIsInFeet, goalNortingDigits, goalEastingDigits, out declaredGoal))
-                                {
-                                    Debug.WriteLine(functionErrorMessage + "Failed to parse goal declaration");
-                                    return false;
-                                }
-                                track.DeclaredGoals.Add(declaredGoal);
-                            }
-                            if (line.Contains("XX0"))
-                            {
-                                MarkerDrop markerDrop;
-                                if (!ParseMarkerDrop(line, date, out markerDrop))
-                                {
-                                    Debug.WriteLine(functionErrorMessage + "Failed to parse marker drop");
-                                    return false;
-                                }
-                                track.MarkerDrops.Add(markerDrop);
-                            }
-                            break;
-                        default:
-                            break;
+                        Debug.WriteLine(functionErrorMessage + $"Failed to parse day portion of date '{line[0..2]}' in '{line}'");
+                        return false;
+                    }
+                    int month;
+                    if (!int.TryParse(line[2..4], out month))
+                    {
+                        Debug.WriteLine(functionErrorMessage + $"Failed to parse month portion of date '{line[2..4]}' in '{line}'");
+                        return false;
+                    }
+                    int year;
+                    if (!int.TryParse(line[4..6], out year))
+                    {
+                        Debug.WriteLine(functionErrorMessage + $"Failed to parse year portion of date '{line[4..6]}' in '{line}'");
+                        return false;
+                    }
+                    year += 2000;
+                    date = new DateTime(year, month, day);
+                }
+                if (headerLine.StartsWith("HFPID"))
+                {
+                    string pilotNumberText = headerLine.Replace("HFPID", "");
+                    if (!int.TryParse(pilotNumberText, out pilotNumber))
+                    {
+                        Debug.WriteLine(functionErrorMessage + $"Failed to parse the pilot number '{pilotNumberText}' in '{headerLine}'");
+                        return false;
                     }
                 }
             }
+
+            string[] configLines = lines.Where(x => x.StartsWith("LXXX")).ToArray();
+            foreach (string configLine in configLines)
+            {
+                if (configLine.StartsWith("LXXX declaration digits"))
+                {
+                    if (!int.TryParse(configLine[^3..^2], out goalNortingDigits))
+                    {
+                        Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration norting digits '{configLine[^3..^2]}' in '{configLine}'");
+                        return false;
+                    }
+                    if (!int.TryParse(configLine[^1..^0], out goalEastingDigits))
+                    {
+                        Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration easting digits '{configLine[^1..^0]}' in '{configLine}'");
+                        return false;
+                    }
+                }
+                if (configLine.StartsWith("LXXX alt unit"))
+                {
+                    if (configLine.Contains("feet"))
+                    {
+                        declaredAltitudeIsInFeet = true;
+                    }
+                    else
+                    {
+                        declaredAltitudeIsInFeet = false;
+                    }
+                }
+            }
+
+            string[] trackPointLines = lines.Where(x => x.StartsWith('B')).ToArray();
+            foreach (string trackPointLine in trackPointLines)
+            {
+                Coordinate coordinate;
+                if (!ParseTrackPoint(trackPointLine, date, out coordinate))
+                {
+                    Debug.WriteLine(functionErrorMessage + "Failed to parse trackpoint");
+                    return false;
+                }
+                track.TrackPoints.Add(coordinate);
+            }
+
+            string[] markerDropLines = lines.Where(x => x.StartsWith('E') && x.Contains("XX0")).ToArray();
+            foreach (string markerDropLine in markerDropLines)
+            {
+                MarkerDrop markerDrop;
+                if (!ParseMarkerDrop(markerDropLine, date, out markerDrop))
+                {
+                    Debug.WriteLine(functionErrorMessage + "Failed to parse marker drop");
+                    return false;
+                }
+                track.MarkerDrops.Add(markerDrop);
+            }
+
+            Coordinate referenceCoordinate = null;
+            if (track.MarkerDrops.Count > 0)
+            {
+                MarkerDrop markerDrop = track.MarkerDrops.Find(x => x.MarkerNumber == 1);
+                if (markerDrop != null)
+                    referenceCoordinate = markerDrop.MarkerLocation;
+                else
+                {
+                    referenceCoordinate = track.MarkerDrops[0].MarkerLocation;
+                    Debug.WriteLine($"No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference");
+                }
+            }
+            else
+            {
+                Debug.WriteLine("No marker drops found. Position at declaration will be used as reference instead");
+            }
+            string[] goalDeclarationLines = lines.Where(x => x.StartsWith('E') && x.Contains("XL1")).ToArray();
+            foreach (string goalDeclarationLine in goalDeclarationLines)
+            {
+
+                DeclaredGoal declaredGoal;
+                if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, goalNortingDigits, goalEastingDigits,referenceCoordinate, out declaredGoal))
+                {
+                    Debug.WriteLine(functionErrorMessage + "Failed to parse goal declaration");
+                    return false;
+                }
+                track.DeclaredGoals.Add(declaredGoal);
+            }
+            //using (StreamReader reader = new StreamReader(fileNameAndPath))
+            //{
+            //    while (!reader.EndOfStream)
+            //    {
+            //        string line = reader.ReadLine();
+            //        if (string.IsNullOrEmpty(line))
+            //            continue;
+            //        char lineIdenticator = line[0];
+            //        switch (lineIdenticator)
+            //        {
+            //            case 'A':
+            //                pilotIdentifier = line.Replace("AXXX", "").Replace("BalloonLive", "");
+            //                break;
+            //            case 'H':
+            //                if (line.StartsWith("HFDTE"))
+            //                {
+            //                    line = line.Replace("HFDTE", "");
+            //                    int day;
+            //                    if (!int.TryParse(line[0..2], out day))
+            //                    {
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse day portion of date '{line[0..2]}' in '{line}'");
+            //                        return false;
+            //                    }
+            //                    int month;
+            //                    if (!int.TryParse(line[2..4], out month))
+            //                    {
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse month portion of date '{line[2..4]}' in '{line}'");
+            //                        return false;
+            //                    }
+            //                    int year;
+            //                    if (!int.TryParse(line[4..6], out year))
+            //                    {
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse year portion of date '{line[4..6]}' in '{line}'");
+            //                        return false;
+            //                    }
+            //                    year += 2000;
+            //                    date = new DateTime(year, month, day);
+            //                }
+            //                if (line.StartsWith("HFPID"))
+            //                {
+            //                    string pilotNumberText = line.Replace("HFPID", "");
+            //                    if (!int.TryParse(pilotNumberText, out pilotNumber))
+            //                    {
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse the pilot number '{pilotNumberText}' in '{line}'");
+            //                        return false;
+            //                    }
+            //                }
+            //                break;
+            //            case 'L':
+            //                if (line.StartsWith("LXXX declaration digits"))
+            //                {
+            //                    if (!int.TryParse(line[^3..^2], out goalNortingDigits))
+            //                    {
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration norting digits '{line[^3..^2]}' in '{line}'");
+            //                        return false;
+            //                    }
+            //                    if (!int.TryParse(line[^1..^0], out goalEastingDigits))
+            //                    {
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration easting digits '{line[^1..^0]}' in '{line}'");
+            //                        return false;
+            //                    }
+            //                }
+            //                if (line.StartsWith("LXXX alt unit"))
+            //                {
+            //                    if (line.Contains("feet"))
+            //                    {
+            //                        declaredAltitudeIsInFeet = true;
+            //                    }
+            //                    else
+            //                    {
+            //                        declaredAltitudeIsInFeet = false;
+            //                    }
+            //                }
+
+            //                break;
+            //            case 'B':
+            //                Coordinate coordinate;
+            //                if (!ParseTrackPoint(line, date, out coordinate))
+            //                {
+            //                    Debug.WriteLine(functionErrorMessage + "Failed to parse trackpoint");
+            //                    return false;
+            //                }
+            //                track.TrackPoints.Add(coordinate);
+            //                break;
+            //            case 'E':
+            //                if (line.Contains("XL1"))
+            //                {
+            //                    DeclaredGoal declaredGoal;
+            //                    if (!ParseGoalDeclaration(line, date,declaredAltitudeIsInFeet, goalNortingDigits, goalEastingDigits, out declaredGoal))
+            //                    {
+            //                        Debug.WriteLine(functionErrorMessage + "Failed to parse goal declaration");
+            //                        return false;
+            //                    }
+            //                    track.DeclaredGoals.Add(declaredGoal);
+            //                }
+            //                if (line.Contains("XX0"))
+            //                {
+            //                    MarkerDrop markerDrop;
+            //                    if (!ParseMarkerDrop(line, date, out markerDrop))
+            //                    {
+            //                        Debug.WriteLine(functionErrorMessage + "Failed to parse marker drop");
+            //                        return false;
+            //                    }
+            //                    track.MarkerDrops.Add(markerDrop);
+            //                }
+            //                break;
+            //            default:
+            //                break;
+            //        }
+            //    }
+            //}
             Pilot pilot = new Pilot(pilotNumber, new List<string> { pilotIdentifier });
             track.Pilot = pilot;
             return true;
         }
 
+        /// <summary>
+        /// Parses a line containing a track point (BttttttnnnnnnnNeeeeeeeeEAbbbbbgggggaaassddd0000)
+        /// <para>where t:timestamp n:northing e:easting b:barometric altitude g:gps altitude</para>
+        /// <para>a:accuracy s:number of satellites d: engine noise level and rpm 0:carrier return and line feed</para>
+        /// <para> e.g. B1058394839658N00858176EA0000000537000225940000</para>
+        /// </summary>
+        /// <param name="line">the line in the file</param>
+        /// <param name="date">the date from the header</param>
+        /// <param name="coordinate">output parameter. a trackpoint as coordiante object</param>
+        /// <returns>true:success; false:error</returns>
         private static bool ParseTrackPoint(string line, DateTime date, out Coordinate coordinate)
         {
             string functionErrorMessage = $"Failed to parse track point:";
@@ -197,7 +355,22 @@ namespace Coordinates
             return true;
         }
 
-        private static bool ParseGoalDeclaration(string line, DateTime date,bool declaredAltitudeIsInFeet, int northingDigits, int eastingDigits, out DeclaredGoal declaredGoal)
+        /// <summary>
+        /// Parses a line with a goal declaration (EttttttXL1ddññññ*/ëëëë*,hhhh#,nnnnnnnNeeeeeeeeEbbbbbgggggaaassddd0000)
+        /// <para>where t:timestamp d:number of declared goal ñ:goal norting in utm ë:goal easting in utm (*:the exact format in specified in the header at 'LXXX declaration digits') h:declared height (#: the unit is specified in the header)
+        /// <para>n:northing e:easting b:barometric altitude g:gps altitude</para>
+        /// <para>a:accuracy s:number of satellites d: engine noise level and rpm 0:carrier return and line feed</para>
+        /// <para>e.g E105850XL101123456/987654,1500,4839658N00858176EA0000000537000224940000</para>
+        /// </summary>
+        /// <param name="line">the line in the file</param>
+        /// <param name="date">the date form the header</param>
+        /// <param name="declaredAltitudeIsInFeet">true: declared height is in feet; fasle: declared height is in meter</param>
+        /// <param name="northingDigits">expected number of digits for goal northing</param>
+        /// <param name="eastingDigits">expected number of digits for goal easting</param>
+        /// <param name="referenceCoordinate">a reference coordinate to fill up the missing info from utm goal declaration. If the reference is null, the position of declaration will be used instead</param>
+        /// <param name="declaredGoal">output parameter. the declared goal</param>
+        /// <returns>true:success; false:error</returns>
+        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, int northingDigits, int eastingDigits, Coordinate referenceCoordinate, out DeclaredGoal declaredGoal)
         {
             string functionErrorMessage = $"Failed to parse goal declaration:";
             declaredGoal = null;
@@ -230,7 +403,6 @@ namespace Coordinates
                 Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration northing portion '{line[northingStartCharacter..(northingStartCharacter + northingDigits)]}' in '{line}'");
                 return false;
             }
-            //TODO work with altitude unit
             string[] parts = line.Split(',');
             int declaredAltitude;
             double declaredAltitudeInMeter;
@@ -270,7 +442,11 @@ namespace Coordinates
                 return false;
             }
 
-            CoordinateSharp.Coordinate coordinateSharp = new CoordinateSharp.Coordinate(declarationLatitude, declarationLongitude);
+            CoordinateSharp.Coordinate coordinateSharp;
+            if (referenceCoordinate == null)
+                coordinateSharp = new CoordinateSharp.Coordinate(declarationLatitude, declarationLongitude);
+            else
+                coordinateSharp = new CoordinateSharp.Coordinate(referenceCoordinate.Latitude, referenceCoordinate.Longitude);
 
             string utmGridZone = coordinateSharp.UTM.LatZone + coordinateSharp.UTM.LongZone;
             if (northingDigits < 6)
@@ -301,6 +477,16 @@ namespace Coordinates
             return true;
         }
 
+        /// <summary>
+        /// Parses a line with a marker drop (EttttttXX0ddnnnnnnnNeeeeeeeeEbbbbbgggggaaassddd0000)
+        /// <para>where t:time stamp d:marker number n:northing e:easting b:barometric altitude g:gps altitude</para>
+        /// <para>a:accuracy s:number of satellites d: engine noise level and rpm 0:carrier return and line feed</para>
+        /// <para>e.g E110615XX0024839666N00858106EA0000000539000227870000</para>
+        /// </summary>
+        /// <param name="line">the line in the file</param>
+        /// <param name="date">the data form the header</param>
+        /// <param name="markerDrop">output parameter. the marker drop as object</param>
+        /// <returns>true:success; false: error</returns>
         private static bool ParseMarkerDrop(string line, DateTime date, out MarkerDrop markerDrop)
         {
             string functionErrorMessage = $"Failed to parse marker drop:";
@@ -350,6 +536,12 @@ namespace Coordinates
             return true;
         }
 
+        /// <summary>
+        /// Parses and converts the latitude into decimal degree
+        /// </summary>
+        /// <param name="latitudeText">the northing porting (nnnnnnnN)</param>
+        /// <param name="latitude">output parameter. the latitude in decimal degree</param>
+        /// <returns>true:success; false:error</returns>
         private static bool ParseLatitude(string latitudeText, out double latitude)
         {
             latitude = double.NaN;
@@ -382,6 +574,12 @@ namespace Coordinates
             return true;
         }
 
+        /// <summary>
+        /// Parses and converts the longitude into decimal degree
+        /// </summary>
+        /// <param name="longitudeText">the easting porting (eeeeeeeeE)</param>
+        /// <param name="longitude">output parameter. the longitude in decimal degree</param>
+        /// <returns>true:success; false:error</returns>
         private static bool ParseLongitude(string longitudeText, out double longitude)
         {
             longitude = double.NaN;
@@ -414,6 +612,13 @@ namespace Coordinates
             return true;
         }
 
+        /// <summary>
+        /// Parses the time stamp and creates a date time object using the date specified
+        /// </summary>
+        /// <param name="line">the time stamp protion</param>
+        /// <param name="date">the date from the header</param>
+        /// <param name="timeStamp">output paramter. the time stamp (including the date)</param>
+        /// <returns>true:success: false:error</returns>
         private static bool ParseTimeStamp(string line, DateTime date, out DateTime timeStamp)
         {
             string functionErrorMessage = "Failed to parse time:";
