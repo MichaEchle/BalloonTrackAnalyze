@@ -8,7 +8,7 @@ namespace Competition
 {
     public class Donut : ITask
     {
-        public const int NOT_APPLICABLE = -9999;
+        public const double NOT_APPLICABLE = double.NaN;//-9999 will be entered in the GUI
 
         public int TaskNumber
         {
@@ -25,22 +25,22 @@ namespace Competition
             get; set;
         }
 
-        public int InnerRadius
+        public double InnerRadius
         {
             get; set;
         }
 
-        public int OuterRadius
+        public double OuterRadius
         {
             get; set;
         }
 
-        public int LowerBoundary
+        public double LowerBoundary
         {
             get; set;
         }
 
-        public int UpperBoundary
+        public double UpperBoundary
         {
             get; set;
         }

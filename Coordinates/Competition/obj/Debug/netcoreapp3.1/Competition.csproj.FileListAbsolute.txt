@@ -1,0 +1,12 @@
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\bin\Debug\netcoreapp3.1\Competition.deps.json
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\bin\Debug\netcoreapp3.1\Competition.dll
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\bin\Debug\netcoreapp3.1\Competition.pdb
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\bin\Debug\netcoreapp3.1\Coordinates.dll
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\bin\Debug\netcoreapp3.1\Coordinates.pdb
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\obj\Debug\netcoreapp3.1\Competition.csprojAssemblyReference.cache
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\obj\Debug\netcoreapp3.1\Competition.AssemblyInfoInputs.cache
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\obj\Debug\netcoreapp3.1\Competition.AssemblyInfo.cs
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\obj\Debug\netcoreapp3.1\Competition.csproj.CoreCompileInputs.cache
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\obj\Debug\netcoreapp3.1\Competition.csproj.CopyComplete
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\obj\Debug\netcoreapp3.1\Competition.dll
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\obj\Debug\netcoreapp3.1\Competition.pdb

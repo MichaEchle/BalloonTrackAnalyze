@@ -7,7 +7,7 @@ namespace TestProgramm
         static void Main(string[] args)
         {
             Track trackOriginal;
-            if (!IGCParser.ParseFile(@"C:\Users\Micha\Source\repos\BalloonTrackAnalyze\TestTrack\E94BC98E-001-20611105838 - Original.igc", out trackOriginal))
+            if (!BallonLiveParser.ParseFile(@"C:\Users\Micha\Source\repos\BalloonTrackAnalyze\TestTrack\E94BC98E-001-20611105838 - Original.igc", out trackOriginal))
             {
                 Console.WriteLine("Error parsing track");
             }

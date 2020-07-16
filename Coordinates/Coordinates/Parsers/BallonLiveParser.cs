@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 
 namespace Coordinates
 {
-    public static class IGCParser
+    public static class BallonLiveParser
     {
         /// <summary>
         /// Parses a .igc file and pass back a track object

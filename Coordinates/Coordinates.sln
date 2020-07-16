@@ -7,7 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Coordinates", "Coordinates\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestProgramm", "TestProgramm\TestProgramm.csproj", "{D373EA06-BBE5-41F1-8262-DDD53E010566}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Competition", "Competition\Competition.csproj", "{52CD5609-DF77-4B6F-8C0D-B60D0767B927}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Competition", "Competition\Competition.csproj", "{52CD5609-DF77-4B6F-8C0D-B60D0767B927}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{89727CE0-9B98-4ED5-87CA-5B51310984B0}"
+	ProjectSection(SolutionItems) = preProject
+		ToDoList.txt = ToDoList.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

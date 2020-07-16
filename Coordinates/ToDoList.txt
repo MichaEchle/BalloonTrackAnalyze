@@ -1,0 +1,23 @@
+Donut
+	Use the validations to find the goal for scoring
+Implement tasks
+	pie
+	land run
+	elbow
+Create UI
+	logging concept
+	controls for tasks
+	controls for validation rules
+serialization
+	enable import/export of task setups (JSON)
+	create goals and marker file (csv)
+	create results file (csv)
+	import pilot names
+Parser
+	create FAI logger parser
+Align folder structure
+	discuss proposal with Mike
+Bonus
+	create unit tests
+
+Add more validations if needed
