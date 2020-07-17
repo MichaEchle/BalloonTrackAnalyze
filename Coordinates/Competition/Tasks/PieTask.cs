@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
-namespace Competition.Tasks
+namespace Competition
 {
     public class PieTask : CompetitionTask
     {
@@ -65,14 +65,14 @@ namespace Competition.Tasks
                     return false;
                 }
                 List<Coordinate> coordinates = track.TrackPoints;
-                if (LowerBoundary != NOT_APPLICABLE)
+                if (!LowerBoundary.Equals(NOT_APPLICABLE))
                 {
                     if (useGPSAltitude)
                         coordinates = coordinates.Where(x => x.AltitudeGPS >= LowerBoundary).ToList();//take all point above lower boundary
                     else
                         coordinates = coordinates.Where(x => x.AltitudeBarometric >= LowerBoundary).ToList();//take all point above lower boundary
                 }
-                if (UpperBoundary != NOT_APPLICABLE)
+                if (!UpperBoundary.Equals(NOT_APPLICABLE))
                 {
                     if (useGPSAltitude)
                         coordinates = coordinates.Where(x => x.AltitudeGPS <= UpperBoundary).ToList();//take all points below upper boundary
@@ -82,9 +82,9 @@ namespace Competition.Tasks
 
                 for (int index = 0; index < coordinates.Count; index++)
                 {
-                    double distanceToGoal = CoordinateHelpers.CalculateDistance2D(track.TrackPoints[index], targetGoal.GoalDeclared);//calculate distance to goal
+                    double distanceToGoal = CoordinateHelpers.CalculateDistance2D(coordinates[index], targetGoal.GoalDeclared);//calculate distance to goal
                     if (distanceToGoal <= Radius)//save all trackpoints within the radius
-                        trackPointsInDonut.Add((index, track.TrackPoints[index]));
+                        trackPointsInDonut.Add((index, coordinates[index]));
 
                 }
                 List<List<Coordinate>> chunksInDonut = new List<List<Coordinate>>();

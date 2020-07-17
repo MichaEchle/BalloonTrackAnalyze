@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Competition\Competition.csproj" />
     <ProjectReference Include="..\Coordinates\Coordinates.csproj" />
   </ItemGroup>
 

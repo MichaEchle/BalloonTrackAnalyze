@@ -176,6 +176,19 @@
           "ref/netstandard1.3/_._": {}
         }
       },
+      "Competition/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "dependencies": {
+          "Coordinates": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/Competition.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Competition.dll": {}
+        }
+      },
       "Coordinates/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v3.1",
@@ -1048,6 +1061,11 @@
         "system.threading.tasks.nuspec"
       ]
     },
+    "Competition/1.0.0": {
+      "type": "project",
+      "path": "../Competition/Competition.csproj",
+      "msbuildProject": "../Competition/Competition.csproj"
+    },
     "Coordinates/1.0.0": {
       "type": "project",
       "path": "../Coordinates/Coordinates.csproj",
@@ -1056,6 +1074,7 @@
   },
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
+      "Competition >= 1.0.0",
       "Coordinates >= 1.0.0"
     ]
   },
@@ -1089,6 +1108,9 @@
       "frameworks": {
         "netcoreapp3.1": {
           "projectReferences": {
+            "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\Competition\\Competition.csproj": {
+              "projectPath": "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\Competition\\Competition.csproj"
+            },
             "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj": {
               "projectPath": "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj"
             }

@@ -62,7 +62,7 @@ namespace Coordinates.Parsers
             {
                 Debug.WriteLine("More the one line with Pilot Identifer is found. First occurence will be used.");
             }
-            pilotIdentifier = identifierLine[0].Replace("AXXX", "").Replace("BalloonLive", "");
+            pilotIdentifier = identifierLine[0].Replace("AXXX", "").Replace("Balloon Competition Logger", "");
 
             string[] headerLines = lines.Where(x => x.StartsWith('H')).ToArray();
             foreach (string headerLine in headerLines)
@@ -107,17 +107,32 @@ namespace Coordinates.Parsers
             {
                 if (configLine.StartsWith("LXXX declaration digits"))
                 {
-                    //TODO parse the different config value (should be value -1 but wait for conformation from Mike)
-                    if (!int.TryParse(configLine[^3..^2], out goalNortingDigits))
+                    int digits;
+                    if (!int.TryParse(configLine[^1..^0], out digits))
                     {
-                        Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration norting digits '{configLine[^3..^2]}' in '{configLine}'");
+                        Debug.WriteLine(functionErrorMessage + $"Failed to parse number of declaration digits '{configLine[^1..^0]}' in '{configLine}'");
                         return false;
                     }
-                    if (!int.TryParse(configLine[^1..^0], out goalEastingDigits))
+                    //TODO clarify with Mike
+                    //digits--;//subtract seperator
+                    goalNortingDigits = digits / 2;
+                    goalEastingDigits = digits / 2;
+                    if (digits % 2 == 1)//if digits are odd, expect that northing will declarared with one digits more
                     {
-                        Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration easting digits '{configLine[^1..^0]}' in '{configLine}'");
-                        return false;
+                        goalNortingDigits++;
                     }
+
+                    ////TODO parse the different config value (should be value -1 but wait for conformation from Mike)
+                    //if (!int.TryParse(configLine[^3..^2], out goalNortingDigits))
+                    //{
+                    //    Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration norting digits '{configLine[^3..^2]}' in '{configLine}'");
+                    //    return false;
+                    //}
+                    //if (!int.TryParse(configLine[^1..^0], out goalEastingDigits))
+                    //{
+                    //    Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration easting digits '{configLine[^1..^0]}' in '{configLine}'");
+                    //    return false;
+                    //}
                 }
                 if (configLine.StartsWith("LXXX alt unit"))
                 {
@@ -176,7 +191,7 @@ namespace Coordinates.Parsers
             foreach (string goalDeclarationLine in goalDeclarationLines)
             {
                 int index = lines.FindIndex(x => x == goalDeclarationLine);
-                Coordinate positionAtDeclaration=null;
+                Coordinate positionAtDeclaration = null;
                 if (index != -1)
                 {
                     do
@@ -201,7 +216,7 @@ namespace Coordinates.Parsers
                     return false;
                 }
                 DeclaredGoal declaredGoal;
-                if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, goalNortingDigits, goalEastingDigits, referenceCoordinate,positionAtDeclaration, out declaredGoal))
+                if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, goalNortingDigits, goalEastingDigits, referenceCoordinate, positionAtDeclaration, out declaredGoal))
                 {
                     Debug.WriteLine(functionErrorMessage + "Failed to parse goal declaration");
                     return false;
@@ -392,7 +407,7 @@ namespace Coordinates.Parsers
         /// <param name="referenceCoordinate">a reference coordinate to fill up the missing info from utm goal declaration. If the reference is null, the position of declaration will be used instead</param>
         /// <param name="declaredGoal">output parameter. the declared goal</param>
         /// <returns>true:success; false:error</returns>
-        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, int northingDigits, int eastingDigits, Coordinate referenceCoordinate,Coordinate positionAtDeclaration, out DeclaredGoal declaredGoal)
+        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, int northingDigits, int eastingDigits, Coordinate referenceCoordinate, Coordinate positionAtDeclaration, out DeclaredGoal declaredGoal)
         {
             string functionErrorMessage = $"Failed to parse goal declaration:";
             declaredGoal = null;
@@ -428,6 +443,9 @@ namespace Coordinates.Parsers
             string[] parts = line.Split(',');
             int declaredAltitude;
             double declaredAltitudeInMeter;
+            //TODO clarify with Mike
+            parts[1] = parts[1].Replace("ft", "").Replace("m", "");
+
             if (!int.TryParse(parts[1], out declaredAltitude))
             {
                 Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration altitude portion '{parts[1]}' in '{line}'");

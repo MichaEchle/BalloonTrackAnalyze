@@ -9,7 +9,7 @@ using System.Net.Http.Headers;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Coordinates
+namespace Coordinates.Parsers
 {
     public static class BallonLiveParser
     {

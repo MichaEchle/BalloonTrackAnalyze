@@ -64,14 +64,14 @@ namespace Competition
                 return false;
             }
             List<Coordinate> coordinates = track.TrackPoints;
-            if (LowerBoundary != NOT_APPLICABLE)
+            if (!LowerBoundary.Equals(NOT_APPLICABLE))
             {
                 if (useGPSAltitude)
                     coordinates = coordinates.Where(x => x.AltitudeGPS >= LowerBoundary).ToList();//take all point above lower boundary
                 else
                     coordinates = coordinates.Where(x => x.AltitudeBarometric >= LowerBoundary).ToList();//take all point above lower boundary
             }
-            if (UpperBoundary != NOT_APPLICABLE)
+            if (!UpperBoundary.Equals(NOT_APPLICABLE))
             {
                 if (useGPSAltitude)
                     coordinates = coordinates.Where(x => x.AltitudeGPS <= UpperBoundary).ToList();//take all points below upper boundary
@@ -81,9 +81,9 @@ namespace Competition
 
             for (int index = 0; index < coordinates.Count; index++)
             {
-                double distanceToGoal = CoordinateHelpers.CalculateDistance2D(track.TrackPoints[index], targetGoal.GoalDeclared);//calculate distance to goal
+                double distanceToGoal = CoordinateHelpers.CalculateDistance2D(coordinates[index], targetGoal.GoalDeclared);//calculate distance to goal
                 if (distanceToGoal <= OuterRadius && distanceToGoal >= InnerRadius)//save all trackpoints between outer and inner radius
-                    trackPointsInDonut.Add((index, track.TrackPoints[index]));
+                    trackPointsInDonut.Add((index, coordinates[index]));
 
             }
             List<List<Coordinate>> chunksInDonut = new List<List<Coordinate>>();
@@ -91,7 +91,7 @@ namespace Competition
             chunksInDonut.Add(new List<Coordinate>());
             for (int index = 0; index < trackPointsInDonut.Count - 1; index++)
             {
-                if (trackPointsInDonut[index + 1].Item1 - trackPointsInDonut[index].Item1 == 0)//trackpoints are successive
+                if (trackPointsInDonut[index + 1].Item1 - trackPointsInDonut[index].Item1 == 1)//trackpoints are successive
                 {
                     if (chunksInDonut[addIndex].Count == 0)
                     {

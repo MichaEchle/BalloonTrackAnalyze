@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Text;
 
-namespace Competition.Validation
+namespace Competition
 {
     public class HeightToGoalRule : IDeclarationValidationRules
     {
