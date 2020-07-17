@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Competition.Validation
 {
-    public class DistanceToGoalRule : IValidationRules
+    public class DistanceToGoalRule : IDeclarationValidationRules
     {
         public double MinimumDistance
         {

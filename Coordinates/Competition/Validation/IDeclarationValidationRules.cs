@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Competition
 {
-    interface IValidationRules
+    public interface IDeclarationValidationRules
     {
         public bool CheckConformance(DeclaredGoal declaredGoal);
     }

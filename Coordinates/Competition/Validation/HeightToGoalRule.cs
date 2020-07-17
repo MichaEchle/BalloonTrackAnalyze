@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Competition.Validation
 {
-    public class HeightToGoalRule : IValidationRules
+    public class HeightToGoalRule : IDeclarationValidationRules
     {
         public double MinimumHeightDifference
         {
@@ -18,7 +18,7 @@ namespace Competition.Validation
             get; set;
         }
 
-        public bool UseGPSAltiude
+        public bool UseGPSAltitude
         {
             get; set;
         }
@@ -32,7 +32,7 @@ namespace Competition.Validation
         {
             bool isConform = true;
             double heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal;
-            if (UseGPSAltiude)
+            if (UseGPSAltitude)
                 heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal = declaredGoal.PositionAtDeclaration.AltitudeGPS - declaredGoal.GoalDeclared.AltitudeGPS;
             else
                 heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal = declaredGoal.PositionAtDeclaration.AltitudeBarometric - declaredGoal.GoalDeclared.AltitudeBarometric;

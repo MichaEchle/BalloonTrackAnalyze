@@ -1,19 +1,15 @@
 ﻿using Coordinates;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
 namespace Competition
 {
-    public class Donut : ITask
+    public class DonutTask : CompetitionTask
     {
         public const double NOT_APPLICABLE = double.NaN;//-9999 will be entered in the GUI
-
-        public int TaskNumber
-        {
-            get; set;
-        }
 
         public int GoalNumber
         {
@@ -50,11 +46,23 @@ namespace Competition
             get; set;
         }
 
-        public double CalculateResults(Track track, bool useGPSAltitude)
+        public List<IDeclarationValidationRules> DeclarationValidationRules
         {
+            get;set;
+        }
+
+
+        public override bool CalculateResults(Track track, bool useGPSAltitude, out double result)
+        {
+            result = 0.0;
             List<(int, Coordinate)> trackPointsInDonut = new List<(int trackPointNumber, Coordinate coordinate)>();
-            //TODO select correct goal
-            DeclaredGoal targetGoal = track.DeclaredGoals.Find(x => x.GoalNumber == GoalNumber);
+            
+            DeclaredGoal targetGoal = GetValidGoal(track,GoalNumber,DeclarationValidationRules);
+            if(targetGoal==null)
+            {
+                Debug.WriteLine("No valid goal found");
+                return false;
+            }
             List<Coordinate> coordinates = track.TrackPoints;
             if (LowerBoundary != NOT_APPLICABLE)
             {
@@ -102,7 +110,7 @@ namespace Competition
                 }
             }
 
-            double result = 0.0;
+            
             if (!IsReentranceAllowed)//evaluate first chunk only
             {
                 if (chunksInDonut[0].Count >= 2)
@@ -128,7 +136,7 @@ namespace Competition
                     }
                 }
             }
-            return result;
+            return true;
         }
     }
 }
