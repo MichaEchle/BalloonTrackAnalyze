@@ -4,7 +4,10 @@ C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Deb
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\TestProgramm.runtimeconfig.dev.json
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\TestProgramm.dll
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\TestProgramm.pdb
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\CoordinateSharp.dll
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\Competition.dll
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\Coordinates.dll
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\Competition.pdb
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\Coordinates.pdb
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Debug\netcoreapp3.1\TestProgramm.csprojAssemblyReference.cache
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Debug\netcoreapp3.1\TestProgramm.AssemblyInfoInputs.cache
@@ -14,6 +17,3 @@ C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Deb
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Debug\netcoreapp3.1\TestProgramm.dll
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Debug\netcoreapp3.1\TestProgramm.pdb
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Debug\netcoreapp3.1\TestProgramm.genruntimeconfig.cache
-C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\CoordinateSharp.dll
-C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\Competition.dll
-C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\Competition.pdb
