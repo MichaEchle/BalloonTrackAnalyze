@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Competition
 {
-    public class DistanceToGoalRule : IDeclarationValidationRules
+    public class MarkerToGoalDistanceRule : IMarkerValidationRules
     {
         public double MinimumDistance
         {
@@ -17,22 +17,25 @@ namespace Competition
             get; set;
         }
 
-        public DistanceToGoalRule()
+        public DeclaredGoal Goal
         {
-
+            get;set;
         }
 
-        public bool CheckConformance(DeclaredGoal declaredGoal)
+        public bool CheckConformance(MarkerDrop marker)
         {
             bool isConform = true;
-            double distanceBetweenPositionOfDeclarationAndDeclaredGoal = CoordinateHelpers.CalculateDistance2D(declaredGoal.PositionAtDeclaration, declaredGoal.GoalDeclared);
-
+            double distanceToGoal = CoordinateHelpers.Calculate2DDistance(marker.MarkerLocation, Goal.GoalDeclared);
             if (!double.IsNaN(MinimumDistance))
-                if (distanceBetweenPositionOfDeclarationAndDeclaredGoal < MinimumDistance)
+            {
+                if (distanceToGoal < MinimumDistance)
                     isConform = false;
+            }
             if (!double.IsNaN(MaximumDistance))
-                if (distanceBetweenPositionOfDeclarationAndDeclaredGoal > MaximumDistance)
+            {
+                if (distanceToGoal > MaximumDistance)
                     isConform = false;
+            }
             return isConform;
         }
     }

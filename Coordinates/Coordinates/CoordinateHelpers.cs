@@ -44,7 +44,7 @@ namespace Coordinates
             return meters / FEET_TO_METER_RATIO;
         }
 
-        public static double CalculateDistance2D(Coordinate coordinate1, Coordinate coordinate2)
+        public static double Calculate2DDistance(Coordinate coordinate1, Coordinate coordinate2)
         {
             if (coordinate1 is null)
             {
@@ -65,11 +65,11 @@ namespace Coordinates
             double deltaLambda = lambda2 - lambda1;
 
             double a = Math.Pow(Math.Sin(deltaPhi / 2.0), 2) + Math.Cos(phi1) * Math.Cos(phi2) * Math.Pow(Math.Sin(deltaLambda / 2.0), 2);
-            double distance2D = 2.0 * earthRadius* Math.Asin(Math.Sqrt(a));
+            double distance2D = 2.0 * earthRadius * Math.Asin(Math.Sqrt(a));
             return distance2D;
         }
 
-        public static double CalculateDistance3D(Coordinate coordinate1, Coordinate coordinate2, bool useGPSAltitude)
+        public static double Calculate3DDistance(Coordinate coordinate1, Coordinate coordinate2, bool useGPSAltitude)
         {
             if (coordinate1 is null)
             {
@@ -80,7 +80,7 @@ namespace Coordinates
             {
                 throw new ArgumentNullException(nameof(coordinate2));
             }
-            double distance2D = CalculateDistance2D(coordinate1, coordinate2);
+            double distance2D = Calculate2DDistance(coordinate1, coordinate2);
             double deltaAltitude;
             if (useGPSAltitude)
             {
@@ -93,6 +93,53 @@ namespace Coordinates
 
             double distance3D = Math.Sqrt(Math.Pow(distance2D, 2) + Math.Pow(deltaAltitude, 2));
             return distance3D;
+        }
+
+        public static double Calculate2DDistanceBetweenPoints(List<Coordinate> coordinates)
+        {
+            double result = 0.0;
+            for (int index = 0; index < coordinates.Count - 1; index++)
+            {
+                result += Calculate2DDistance(coordinates[index], coordinates[index + 1]);
+            }
+            return result;
+        }
+
+        public static double Calculate3DDistanceBetweenPoints(List<Coordinate> coordinates, bool useGPSAltitude)
+        {
+            double result = 0.0;
+            for (int index = 0; index < coordinates.Count - 1; index++)
+            {
+                result += Calculate3DDistance(coordinates[index], coordinates[index + 1], useGPSAltitude);
+            }
+            return result;
+        }
+
+        public static double CalculateInteriorAngle(Coordinate coordinateA, Coordinate coordinateB, Coordinate coordinateC)
+        {
+            double result = 0.0;
+            double a = Calculate2DDistance(coordinateB, coordinateC);
+            double b = Calculate2DDistance(coordinateA, coordinateC);
+            double c = Calculate2DDistance(coordinateA, coordinateB);
+
+            double beta = Math.Acos((Math.Pow(a, 2) + Math.Pow(c, 2) - Math.Pow(b, 2)) / (2 * a * c));
+            result = beta / Math.PI * 180.0;
+            return result;
+        }
+
+        public static double CalculateArea(Coordinate coordinateA, Coordinate coordinateB, Coordinate coordinateC)
+        {
+            double result = 0.0;
+            double a = Calculate2DDistance(coordinateB, coordinateC);
+            double b = Calculate2DDistance(coordinateA, coordinateC);
+            double c = Calculate2DDistance(coordinateA, coordinateB);
+
+            double halfOfCircumference = (a + b + c) / 2.0;
+
+            double area = Math.Sqrt(halfOfCircumference * (halfOfCircumference - a) * (halfOfCircumference - b) * (halfOfCircumference - c));
+            result = area;
+
+            return result;
         }
     }
 }

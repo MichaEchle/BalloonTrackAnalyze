@@ -1,9 +1,9 @@
-Donut
-	Use the validations to find the goal for scoring
-Implement tasks
-	pie
-	land run
-	elbow
+Donut (done)
+	Use the validations to find the goal for scoring (done)
+Implement tasks (done)
+	pie (done)
+	land run (done)
+	elbow (done)
 Create UI
 	logging concept
 	controls for tasks
@@ -14,7 +14,7 @@ serialization
 	create results file (csv)
 	import pilot names
 Parser
-	create FAI logger parser
+	create FAI logger parser (changes with each firmware version/ ongoing adjustments may needed)
 Align folder structure
 	discuss proposal with Mike
 Bonus

@@ -81,7 +81,7 @@ namespace Competition
 
             for (int index = 0; index < coordinates.Count; index++)
             {
-                double distanceToGoal = CoordinateHelpers.CalculateDistance2D(coordinates[index], targetGoal.GoalDeclared);//calculate distance to goal
+                double distanceToGoal = CoordinateHelpers.Calculate2DDistance(coordinates[index], targetGoal.GoalDeclared);//calculate distance to goal
                 if (distanceToGoal <= OuterRadius && distanceToGoal >= InnerRadius)//save all trackpoints between outer and inner radius
                     trackPointsInDonut.Add((index, coordinates[index]));
 
@@ -115,11 +115,12 @@ namespace Competition
             {
                 if (chunksInDonut[0].Count >= 2)
                 {
-                    for (int index = 0; index < chunksInDonut[0].Count - 1; index++)
-                    {
-                        double tempResult = CoordinateHelpers.CalculateDistance2D(chunksInDonut[0][index], chunksInDonut[0][index + 1]);
-                        result += tempResult;
-                    }
+                    //for (int index = 0; index < chunksInDonut[0].Count - 1; index++)
+                    //{
+                    //    double tempResult = CoordinateHelpers.Calculate2DDistance(chunksInDonut[0][index], chunksInDonut[0][index + 1]);
+                    //    result += tempResult;
+                    //}
+                    result += CoordinateHelpers.Calculate2DDistanceBetweenPoints(chunksInDonut[0]);
                 }
             }
             else//evaluate all chunks
@@ -128,11 +129,12 @@ namespace Competition
                 {
                     if (chunksInDonut[chuckIndex].Count >= 2)
                     {
-                        for (int index = 0; index < chunksInDonut[chuckIndex].Count - 1; index++)
-                        {
-                            double tempResult = CoordinateHelpers.CalculateDistance2D(chunksInDonut[chuckIndex][index], chunksInDonut[chuckIndex][index + 1]);
-                            result += tempResult;
-                        }
+                        //for (int index = 0; index < chunksInDonut[chuckIndex].Count - 1; index++)
+                        //{
+                        //    double tempResult = CoordinateHelpers.Calculate2DDistance(chunksInDonut[chuckIndex][index], chunksInDonut[chuckIndex][index + 1]);
+                        //    result += tempResult;
+                        //}
+                        result += CoordinateHelpers.Calculate2DDistanceBetweenPoints(chunksInDonut[chuckIndex]);
                     }
                 }
             }

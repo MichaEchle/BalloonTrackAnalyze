@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Competition
 {
-    public class HeightToGoalRule : IDeclarationValidationRules
+    public class DeclarationToGoalHeightRule : IDeclarationValidationRules
     {
         public double MinimumHeightDifference
         {
@@ -23,7 +23,7 @@ namespace Competition
             get; set;
         }
 
-        public HeightToGoalRule()
+        public DeclarationToGoalHeightRule()
         {
 
         }

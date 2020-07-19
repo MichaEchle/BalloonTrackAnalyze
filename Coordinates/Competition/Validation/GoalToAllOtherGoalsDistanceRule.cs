@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Competition
 {
-    public class DistanceToAllOtherGoalsRule : IDeclarationValidationRules
+    public class GoalToAllOtherGoalsDistanceRule : IDeclarationValidationRules
     {
         public double MinimumDistance
         {
@@ -22,7 +22,7 @@ namespace Competition
             get; set;
         }
 
-        public DistanceToAllOtherGoalsRule()
+        public GoalToAllOtherGoalsDistanceRule()
         {
 
         }
@@ -34,7 +34,7 @@ namespace Competition
             {
                 if (declaredGoal.Equals(otherGoal))
                     continue;
-                double distanceBetweenPositionOfDeclarationAndDeclaredGoal = CoordinateHelpers.CalculateDistance2D( declaredGoal.GoalDeclared,otherGoal.GoalDeclared);
+                double distanceBetweenPositionOfDeclarationAndDeclaredGoal = CoordinateHelpers.Calculate2DDistance( declaredGoal.GoalDeclared,otherGoal.GoalDeclared);
 
                 if (!double.IsNaN(MinimumDistance))
                     if (distanceBetweenPositionOfDeclarationAndDeclaredGoal < MinimumDistance)

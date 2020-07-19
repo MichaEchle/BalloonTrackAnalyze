@@ -38,5 +38,16 @@ namespace Competition
             else
                 return validDeclarations.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[0];        
         }
+
+        public bool IsMarkerValid(MarkerDrop markerDrop, List<IMarkerValidationRules> markerValidationRules)
+        {
+            bool isValid = true;
+            foreach (IMarkerValidationRules markerValidationRule in markerValidationRules)
+            {
+                isValid&=markerValidationRule.CheckConformance(markerDrop);
+            }
+            return isValid;
+        }
+
     }
 }
