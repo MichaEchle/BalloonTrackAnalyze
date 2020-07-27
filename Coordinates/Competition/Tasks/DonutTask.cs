@@ -1,4 +1,5 @@
-﻿using Coordinates;
+﻿using Competition.Validation;
+using Coordinates;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,71 +8,120 @@ using System.Text;
 
 namespace Competition
 {
-    public class DonutTask : CompetitionTask
+    public class DonutTask : ICompetitionTask
     {
-        public const double NOT_APPLICABLE = double.NaN;//-9999 will be entered in the GUI
+        #region Properties
+        /// <summary>
+        /// The task number
+        /// <para>mandotory</para>
+        /// </summary>
+        public int TaskNumber
+        {
+            get;
+            set;
+        } = -1;
 
+        /// <summary>
+        /// The target goal number
+        /// <para>mandotory</para>
+        /// </summary>
         public int GoalNumber
         {
             get; set;
-        }
+        } = -1;
 
-        public int NumberOfDeclartions
+        /// <summary>
+        /// Number of allowed declarations
+        /// <para>currently not used</para>
+        /// </summary>
+        public int NumberOfDeclarations
         {
             get; set;
-        }
+        } = 1;
 
+        /// <summary>
+        /// The radius of the inner circle in meter
+        /// <para>mandotory</para>
+        /// </summary>
         public double InnerRadius
         {
             get; set;
-        }
+        } = double.NaN;
 
+        /// <summary>
+        /// The radius of the outer circle in meter
+        /// <para>mandotory</para>
+        /// </summary>
         public double OuterRadius
         {
             get; set;
-        }
+        } = double.NaN;
 
+        /// <summary>
+        /// Lower boundary of the donut in meter
+        /// <para>optional; use double.NaN to omit</para>
+        /// </summary>
         public double LowerBoundary
         {
             get; set;
-        }
+        } = double.NaN;
 
+        /// <summary>
+        /// Upper boundary of the donut in meter
+        /// <para>optional; use double.NaN to omit</para>
+        /// </summary>
         public double UpperBoundary
         {
             get; set;
-        }
+        } = double.NaN;
 
+        /// <summary>
+        /// Specify whether or not reentrance in the donut is allowed
+        /// <para>mandotory</para>
+        /// </summary>
         public bool IsReentranceAllowed
         {
             get; set;
-        }
+        } = true;
 
+        /// <summary>
+        /// List of rules for declaration validation
+        /// <para>optional; leave list empty to omit</para>
+        /// </summary>
         public List<IDeclarationValidationRules> DeclarationValidationRules
         {
-            get;set;
-        }
+            get; set;
+        } = new List<IDeclarationValidationRules>();
+        #endregion
 
-
-        public override bool CalculateResults(Track track, bool useGPSAltitude, out double result)
+        #region API
+        /// <summary>
+        /// Calculate the 2D distance traveled in the donut in meter
+        /// </summary>
+        /// <param name="track">the track to be used</param>
+        /// <param name="useGPSAltitude">true: use GPS altitude;false: use barometric altitude</param>
+        /// <param name="result">the 2D distance in the donut in meter</param>
+        /// <returns>true:success;false:error</returns>
+        public bool CalculateResults(Track track, bool useGPSAltitude, out double result)
         {
             result = 0.0;
             List<(int, Coordinate)> trackPointsInDonut = new List<(int trackPointNumber, Coordinate coordinate)>();
             
-            DeclaredGoal targetGoal = GetValidGoal(track,GoalNumber,DeclarationValidationRules);
+            DeclaredGoal targetGoal = ValidationHelper.GetValidGoal(track,GoalNumber,DeclarationValidationRules);
             if(targetGoal==null)
             {
                 Debug.WriteLine("No valid goal found");
                 return false;
             }
             List<Coordinate> coordinates = track.TrackPoints;
-            if (!LowerBoundary.Equals(NOT_APPLICABLE))
+            if (!double.IsNaN(LowerBoundary))
             {
                 if (useGPSAltitude)
                     coordinates = coordinates.Where(x => x.AltitudeGPS >= LowerBoundary).ToList();//take all point above lower boundary
                 else
                     coordinates = coordinates.Where(x => x.AltitudeBarometric >= LowerBoundary).ToList();//take all point above lower boundary
             }
-            if (!UpperBoundary.Equals(NOT_APPLICABLE))
+            if (!double.IsNaN(UpperBoundary))
             {
                 if (useGPSAltitude)
                     coordinates = coordinates.Where(x => x.AltitudeGPS <= UpperBoundary).ToList();//take all points below upper boundary
@@ -140,5 +190,36 @@ namespace Competition
             }
             return true;
         }
+
+        /// <summary>
+        /// Set all properties for a donut
+        /// </summary>
+        /// <param name="taskNumber">The task number (mandotory)</param>
+        /// <param name="goalNumber">The target goal number (mandotory)</param>
+        /// <param name="numberOfDeclarations">Number of allowed declarations (not used yet)</param>
+        /// <param name="innerRadius">The radius of the inner circle in meter (mandotory)</param>
+        /// <param name="outerRadius">The radius of the outer circle in meter (mandotory)</param>
+        /// <param name="lowerBoundary">Lower boundary of the donut in meter (optional; use double.NaN to omit)</param>
+        /// <param name="upperBoundary">Upper boundary of the donut in meter (optional; use double.NaN to omit)</param>
+        /// <param name="isReentranceAllowed">Specify whether or not reentrance in the donut is allowed (mandotory)</param>
+        /// <param name="declarationValidationRules">List of rules for declaration validation (optional; leave list empty to omit)</param>
+        public void SetupDonut(int taskNumber, int goalNumber, int numberOfDeclarations, double innerRadius, double outerRadius, double lowerBoundary, double upperBoundary, bool isReentranceAllowed, List<IDeclarationValidationRules> declarationValidationRules)
+        {
+            TaskNumber = taskNumber;
+            GoalNumber = goalNumber;
+            NumberOfDeclarations = numberOfDeclarations;
+            InnerRadius = innerRadius;
+            OuterRadius = outerRadius;
+            LowerBoundary = lowerBoundary;
+            UpperBoundary = upperBoundary;
+            IsReentranceAllowed = isReentranceAllowed;
+            DeclarationValidationRules = declarationValidationRules;
+        }
+
+        public override string ToString()
+        {
+            return $"Donut (Task #{TaskNumber})";
+        }
+        #endregion
     }
 }

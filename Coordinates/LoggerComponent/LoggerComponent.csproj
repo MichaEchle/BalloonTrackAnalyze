@@ -1,0 +1,43 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <UseWindowsForms>true</UseWindowsForms>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Resources.Extensions" Version="4.7.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Icons\Copy_16x.png" />
+    <Resource Include="Icons\OpenFile_16x.png" />
+    <Resource Include="Icons\StatusCriticalError_exp_16x.png" />
+    <Resource Include="Icons\StatusInformation_exp_16x.png" />
+    <Resource Include="Icons\StatusWarning_exp_16x.png" />
+    <Resource Include="Icons\WrapPanel_16x.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="LogFileViewer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="LogListView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

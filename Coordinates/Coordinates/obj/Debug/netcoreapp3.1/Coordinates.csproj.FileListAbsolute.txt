@@ -1,6 +1,7 @@
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Coordinates\bin\Debug\netcoreapp3.1\Coordinates.deps.json
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Coordinates\bin\Debug\netcoreapp3.1\Coordinates.dll
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Coordinates\bin\Debug\netcoreapp3.1\Coordinates.pdb
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Coordinates\obj\Debug\netcoreapp3.1\Coordinates.csprojAssemblyReference.cache
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Coordinates\obj\Debug\netcoreapp3.1\Coordinates.AssemblyInfoInputs.cache
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Coordinates\obj\Debug\netcoreapp3.1\Coordinates.AssemblyInfo.cs
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Coordinates\obj\Debug\netcoreapp3.1\Coordinates.csproj.CoreCompileInputs.cache

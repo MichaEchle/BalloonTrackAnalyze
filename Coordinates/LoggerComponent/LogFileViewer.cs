@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace BalloonTrackAnalyze
+namespace LoggerComponent
 {
     public partial class LogFileViewer : Form
     {

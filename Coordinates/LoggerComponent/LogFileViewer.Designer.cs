@@ -1,4 +1,4 @@
-﻿namespace BalloonTrackAnalyze
+﻿namespace LoggerComponent
 {
     public partial class LogFileViewer
     {

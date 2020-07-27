@@ -5,7 +5,8 @@ Implement tasks (done)
 	land run (done)
 	elbow (done)
 Create UI
-	logging concept
+	logging concept (done)
+	implement logging
 	controls for tasks
 	controls for validation rules
 serialization
@@ -14,7 +15,7 @@ serialization
 	create results file (csv)
 	import pilot names
 Parser
-	create FAI logger parser (changes with each firmware version/ ongoing adjustments may needed)
+	create FAI logger parser (done) [changes with each firmware version/ ongoing adjustments may needed]
 Align folder structure
 	discuss proposal with Mike
 Bonus

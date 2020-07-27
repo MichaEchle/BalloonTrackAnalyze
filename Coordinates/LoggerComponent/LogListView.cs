@@ -10,7 +10,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Reflection;
 
-namespace BalloonTrackAnalyze
+namespace LoggerComponent
 {
     public partial class LogListView : UserControl
     {

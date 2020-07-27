@@ -7,47 +7,23 @@ using System.Text;
 
 namespace Competition
 {
-    public abstract class CompetitionTask
+    public interface ICompetitionTask
     {
+        /// <summary>
+        /// The task number
+        /// </summary>
         public int TaskNumber { get; set; }
 
+        /// <summary>
+        /// Calculate result of the task with the given track
+        /// </summary>
+        /// <param name="track">the track to be used</param>
+        /// <param name="useGPSAltitude">true: use GPS altitude;false: use barometric altitude</param>
+        /// <param name="result">the result of the task</param>
+        /// <returns>true:success;false:error</returns>
         public abstract bool CalculateResults(Track track,bool useGPSAltitude, out double result);
 
-        public DeclaredGoal GetValidGoal(Track track,int goalNumber,List<IDeclarationValidationRules> declarationValidationRules)
-        {
-            List<DeclaredGoal> declarations= track.DeclaredGoals.Where(x => x.GoalNumber == goalNumber).ToList();
-            List<DeclaredGoal> validDeclarations = new List<DeclaredGoal>();
-            foreach (DeclaredGoal declaredGoal in declarations)
-            {
-                bool isValid = true;
-                foreach (IDeclarationValidationRules declarationValidationRule in declarationValidationRules)
-                {
-                    if (!declarationValidationRule.CheckConformance(declaredGoal))
-                    {
-                        isValid = false;
-                        break;
-                    }    
-                }
-                if (isValid)
-                    validDeclarations.Add(declaredGoal);
-            }
-            if (validDeclarations.Count == 0)
-                return null;
-            else if (validDeclarations.Count == 1)
-                return validDeclarations[0];
-            else
-                return validDeclarations.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[0];        
-        }
 
-        public bool IsMarkerValid(MarkerDrop markerDrop, List<IMarkerValidationRules> markerValidationRules)
-        {
-            bool isValid = true;
-            foreach (IMarkerValidationRules markerValidationRule in markerValidationRules)
-            {
-                isValid&=markerValidationRule.CheckConformance(markerDrop);
-            }
-            return isValid;
-        }
 
     }
 }
