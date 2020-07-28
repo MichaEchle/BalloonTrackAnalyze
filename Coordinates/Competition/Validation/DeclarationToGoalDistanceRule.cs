@@ -7,21 +7,38 @@ namespace Competition
 {
     public class DeclarationToGoalDistanceRule : IDeclarationValidationRules
     {
+        #region Properties
+
+        /// <summary>
+        /// Minimum distance between declaration position and declared goal in meter
+        /// <para>optional; use double.NaN to omit</para>
+        /// </summary>
         public double MinimumDistance
         {
             get; set;
-        }
+        } = double.NaN;
 
+        /// <summary>
+        /// Maximum distance between declaration position and declared goal in meter
+        /// <para>optional; use double.NaN to omit</para>
+        /// </summary>
         public double MaximumDistance
         {
             get; set;
-        }
+        } = double.NaN;
 
+        #endregion
         public DeclarationToGoalDistanceRule()
         {
 
         }
+        #region API
 
+        /// <summary>
+        /// Check if the declared goal is conform to the distance rules
+        /// </summary>
+        /// <param name="declaredGoal">the declared goal to be checked</param>
+        /// <returns>true: is conform; false: is not confrom</returns>
         public bool CheckConformance(DeclaredGoal declaredGoal)
         {
             bool isConform = true;
@@ -35,5 +52,22 @@ namespace Competition
                     isConform = false;
             return isConform;
         }
+
+        /// <summary>
+        /// Set all properties of the rule
+        /// </summary>
+        /// <param name="minimumDistance">Minimum distance between declaration position and declared goal in meter (optional; use double.NaN to omit)</param>
+        /// <param name="maximumDistance">Maximum distance between declaration position and declared goal in meter (optional; use double.NaN to omit)</param>
+        public void SetupRule(double minimumDistance, double maximumDistance)
+        {
+            MinimumDistance = minimumDistance;
+            MaximumDistance = maximumDistance;
+        }
+
+        public override string ToString()
+        {
+            return "Declaration to Goal Distance Rule";
+        }
+        #endregion
     }
 }

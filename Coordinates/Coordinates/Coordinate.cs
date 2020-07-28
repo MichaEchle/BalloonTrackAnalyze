@@ -30,7 +30,7 @@ namespace Coordinates
         /// <summary>
         /// The time stamp when this coordiante was create in GPS time
         /// </summary>
-        public DateTime TimeStamp { get; set; }
+        public DateTime TimeStamp { get; private set; }
 
 
         /// <summary>

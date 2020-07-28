@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Coordinates\Coordinates.csproj" />
+    <ProjectReference Include="..\LoggerComponent\LoggerComponent.csproj" />
   </ItemGroup>
 
 </Project>

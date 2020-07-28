@@ -179,8 +179,8 @@ namespace LoggerComponent
 
 			catch (Exception e)
 			{
-				Logger.Log(e);
-				Logger.Log(LogSeverityType.Error, "Stop of log file writer failed");
+				//Logger.Log(e);
+				Logger.Log(LogSeverityType.Error, $"Stop of log file writer failed: {e.Message}");
 				return false;
 			}
 

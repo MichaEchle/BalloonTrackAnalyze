@@ -84,44 +84,44 @@ namespace LoggerComponent
 
 		}
 
-		/// <summary>
-		/// Log
-		/// </summary>
-		public static void Log(string text, params object[] list)
-		{
-			// log
-			Log(LogSeverityType.Info, text, list);
-		}
+        /// <summary>
+        /// Log
+        /// </summary>
+        //public static void Log(string text, params object[] list)
+        //{
+        //	// log
+        //	Log(LogSeverityType.Info, text, list);
+        //}
 
-		/// <summary>
-		/// Log
-		/// </summary>
-		public static void Log(object source, string text, params object[] list)
-		{
-			// log
-			Log(source, LogSeverityType.Info, text, list);
-		}
+        /// <summary>
+        /// Log
+        /// </summary>
+        //public static void Log(object source, string text, params object[] list)
+        //{
+        //	// log
+        //	Log(source, LogSeverityType.Info, text, list);
+        //}
 
-		/// <summary>
-		/// Log
-		/// </summary>
-		public static void Log(LogSeverityType severity, string text, params object[] list)
-		{
-			// log
-			Log(LogItem.NoLogSource, severity, text, list);
-		}
+        /// <summary>
+        /// Log
+        /// </summary>
+        public static void Log(LogSeverityType severity, string text)
+        {
+            // log
+            Log(LogItem.NoLogSource, severity, text);
+        }
 
-		/// <summary>
-		/// Log
-		/// </summary>
-		public static void Log(object source, LogSeverityType severity, string text, params object[] list)
+        /// <summary>
+        /// Log
+        /// </summary>
+        public static void Log(object source, LogSeverityType severity, string text)
 		{
 			// create log item
-			char[] finalText;
-			if ((list != null) && (list.Length > 0))
-				finalText = string.Format(text, list).ToCharArray();
-			else
-				finalText = text.ToCharArray();
+			char[] finalText=text.ToCharArray();
+			//if ((list != null) && (list.Length > 0))
+			//	finalText = string.Format(text, list).ToCharArray();
+			//else
+			//	finalText = text.ToCharArray();
 			for (int i = 0; i < finalText.Length; i++)
 			{
 				if (finalText[i] == '\n')
@@ -136,11 +136,11 @@ namespace LoggerComponent
 		/// <summary>
 		/// Log
 		/// </summary>
-		public static void Log(Exception exception)
-		{
-			// log
-			Log(LogItem.NoLogSource, exception);
-		}
+		//public static void Log(Exception exception)
+		//{
+		//	// log
+		//	Log(LogItem.NoLogSource, exception);
+		//}
 
 		/// <summary>
 		/// Log
@@ -178,7 +178,7 @@ namespace LoggerComponent
 			}
 			catch (Exception ex)
 			{
-				Log(LogSeverityType.Error, "Failed to start logfile writer: Logfile path '{0}' is not valid: '{1}'", filePath, ex.Message);
+				Log(LogSeverityType.Error, $"Failed to start logfile writer: Logfile path '{filePath}' is not valid: '{ex.Message}'");
 				return false;
 			}
 
@@ -191,7 +191,7 @@ namespace LoggerComponent
 				}
 				catch (Exception ex)
 				{
-					Log(LogSeverityType.Error, "Failed to create start logfile writer: Failed to create missing directory structure: {0}", ex.Message);
+					Log(LogSeverityType.Error, $"Failed to create start logfile writer: Failed to create missing directory structure: {ex.Message}");
 					return false;
 				}
 			}

@@ -85,14 +85,14 @@ namespace LoggerComponent
         }
         #endregion Constructor(s)
 
-        private void Log(LogSeverityType severity, string text, params object[] list)
+        private void Log(LogSeverityType severity, string text)
         {
-            Logger.Log(this, severity, text, list);
+            Logger.Log(this, severity, text);
         }
 
-        private void Log(object logSource, LogSeverityType severity, string text, params object[] list)
+        private void Log(object logSource, LogSeverityType severity, string text)
         {
-            Logger.Log(logSource, severity, text, list);
+            Logger.Log(logSource, severity, text);
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -126,7 +126,7 @@ namespace LoggerComponent
                     }
                     catch (Exception ex)
                     {
-                        Log(LogSeverityType.Error, "Failed to start logging: Logfile path '{0}' is not valid: '{1}'", logFilePath, ex.Message);
+                        Log(LogSeverityType.Error, $"Failed to start logging: Logfile path '{logFilePath}' is not valid: '{ex.Message}'");
                         return;     // error
                     }
 
@@ -221,7 +221,7 @@ namespace LoggerComponent
             }
             catch (Exception ex)
             {
-                Log(LogSeverityType.Error, "Failed to open explorer to logfile location '{0}': {1}", LogFilePath, ex.Message);
+                Log(LogSeverityType.Error, $"Failed to open explorer to logfile location '{LogFilePath}': { ex.Message}");
             }
         }
 
@@ -255,7 +255,7 @@ namespace LoggerComponent
             }
             catch (Exception ex)
             {
-                Log(LogSeverityType.Error, "Failed to copy selected log line to clipboard: {0}", ex);
+                Log(LogSeverityType.Error, $"Failed to copy selected log line to clipboard: {ex.Message}");
             }
         }
         #endregion Context menu functions
@@ -344,7 +344,7 @@ namespace LoggerComponent
                 }
                 catch (Exception)
                 {
-                    Log(LogSeverityType.Warning, "Failed to log '{0}', because GUI thread already terminated", listViewItem.Text);
+                    Log(LogSeverityType.Warning, $"Failed to log '{listViewItem.Text}', because GUI thread already terminated");
                 }
             }
             else

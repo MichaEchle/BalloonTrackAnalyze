@@ -1,5 +1,6 @@
 ﻿using Competition.Validation;
 using Coordinates;
+using LoggerComponent;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -104,13 +105,15 @@ namespace Competition
         /// <returns>true:success;false:error</returns>
         public bool CalculateResults(Track track, bool useGPSAltitude, out double result)
         {
+            string functionErrorMessage = $"Failed to caluclate result for {this} and Pilot '#{track.Pilot.PilotNumber}': ";
             result = 0.0;
             List<(int, Coordinate)> trackPointsInDonut = new List<(int trackPointNumber, Coordinate coordinate)>();
             
             DeclaredGoal targetGoal = ValidationHelper.GetValidGoal(track,GoalNumber,DeclarationValidationRules);
             if(targetGoal==null)
             {
-                Debug.WriteLine("No valid goal found");
+                //Debug.WriteLine("No valid goal found");
+                Log(LogSeverityType.Error, functionErrorMessage+$"No valid goal found for goal '#{GoalNumber}'");
                 return false;
             }
             List<Coordinate> coordinates = track.TrackPoints;
@@ -219,6 +222,13 @@ namespace Competition
         public override string ToString()
         {
             return $"Donut (Task #{TaskNumber})";
+        }
+        #endregion
+
+        #region Private methods
+        private void Log(LogSeverityType logSeverity, string text)
+        {
+            Logger.Log(this, logSeverity, text);
         }
         #endregion
     }

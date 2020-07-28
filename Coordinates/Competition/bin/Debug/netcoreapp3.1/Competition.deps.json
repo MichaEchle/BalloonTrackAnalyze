@@ -8,7 +8,8 @@
     ".NETCoreApp,Version=v3.1": {
       "Competition/1.0.0": {
         "dependencies": {
-          "Coordinates": "1.0.0"
+          "Coordinates": "1.0.0",
+          "LoggerComponent": "1.0.0"
         },
         "runtime": {
           "Competition.dll": {}
@@ -69,6 +70,14 @@
         }
       },
       "System.Reflection.TypeExtensions/4.7.0": {},
+      "System.Resources.Extensions/4.7.1": {
+        "runtime": {
+          "lib/netstandard2.0/System.Resources.Extensions.dll": {
+            "assemblyVersion": "4.0.1.0",
+            "fileVersion": "4.700.20.21406"
+          }
+        }
+      },
       "System.Resources.ResourceManager/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0",
@@ -119,6 +128,14 @@
         },
         "runtime": {
           "Coordinates.dll": {}
+        }
+      },
+      "LoggerComponent/1.0.0": {
+        "dependencies": {
+          "System.Resources.Extensions": "4.7.1"
+        },
+        "runtime": {
+          "LoggerComponent.dll": {}
         }
       }
     }
@@ -192,6 +209,13 @@
       "path": "system.reflection.typeextensions/4.7.0",
       "hashPath": "system.reflection.typeextensions.4.7.0.nupkg.sha512"
     },
+    "System.Resources.Extensions/4.7.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-cuRdQps4IdpvMzgRrtKpXLckKXvc6XzgmTNQ75wf9snAITrfDK759ucS+US0gt1vmspTjCHKSCXgvp0ysfrjkA==",
+      "path": "system.resources.extensions/4.7.1",
+      "hashPath": "system.resources.extensions.4.7.1.nupkg.sha512"
+    },
     "System.Resources.ResourceManager/4.3.0": {
       "type": "package",
       "serviceable": true,
@@ -235,6 +259,11 @@
       "hashPath": "system.threading.tasks.4.3.0.nupkg.sha512"
     },
     "Coordinates/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "LoggerComponent/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

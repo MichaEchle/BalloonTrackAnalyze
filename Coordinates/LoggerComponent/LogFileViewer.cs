@@ -254,7 +254,7 @@ namespace LoggerComponent
             }
             catch (Exception ex)
             {
-                Logger.Log(LogSeverityType.Error, "Failed to copy selected log line(s) to clipboard: {0}", ex);
+                Logger.Log(LogSeverityType.Error, $"Failed to copy selected log line(s) to clipboard: {ex.ToString()}");
             }
         }
 
@@ -266,7 +266,7 @@ namespace LoggerComponent
             }
             catch (Exception ex)
             {
-                Logger.Log(LogSeverityType.Error, "Failed to open explorer to logfile location '{0}': {1}", LogFilePath, ex.Message);
+                Logger.Log(LogSeverityType.Error, $"Failed to open explorer to logfile location '{LogFilePath}': {ex.Message}");
             }
         }
 

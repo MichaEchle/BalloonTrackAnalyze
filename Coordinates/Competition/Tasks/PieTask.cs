@@ -1,5 +1,6 @@
 ﻿using Competition.Validation;
 using Coordinates;
+using LoggerComponent;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -14,6 +15,8 @@ namespace Competition
 
         public class PieTier
         {
+            #region Properties
+
             /// <summary>
             /// The target goal number
             /// <para>mandotory</para>
@@ -81,6 +84,10 @@ namespace Competition
 
             }
 
+            #endregion
+
+            #region API
+
             /// <summary>
             /// Calculate the 2d distance traveled in the pie tier times the multiplier
             /// </summary>
@@ -90,13 +97,15 @@ namespace Competition
             /// <returns>true:success;false:error</returns>
             public bool CalculateTierResult(Track track, bool useGPSAltitude, out double result)
             {
+                string functionErrorMessage = $"Failed to caluclate result for {this} and Pilot '#{track.Pilot.PilotNumber}': ";
                 result = 0.0;
                 List<(int, Coordinate)> trackPointsInDonut = new List<(int trackPointNumber, Coordinate coordinate)>();
 
                 DeclaredGoal targetGoal = ValidationHelper.GetValidGoal(track, GoalNumber, DeclarationValidationRules);
                 if (targetGoal == null)
                 {
-                    Debug.WriteLine("No valid goal found");
+                    //Debug.WriteLine("No valid goal found");
+                    Log(LogSeverityType.Error, functionErrorMessage + $"No valid goal found for goal '#{GoalNumber}'");
                     return false;
                 }
                 List<Coordinate> coordinates = track.TrackPoints;
@@ -200,6 +209,14 @@ namespace Competition
             {
                 return "PieTier";
             }
+            #endregion
+
+            #region Private methods
+            private void Log(LogSeverityType logSeverity, string text)
+            {
+                Logger.Log(this, logSeverity, text);
+            }
+            #endregion
         }
         #endregion
 
@@ -240,12 +257,16 @@ namespace Competition
         /// <returns>true:success;false:error</returns>
         public bool CalculateResults(Track track, bool useGPSAltitude, out double result)
         {
+            string functionErrorMessage = $"Failed to caluclate result for {this} and Pilot '#{track.Pilot.PilotNumber}': ";
             result = 0.0;
             foreach (PieTier tier in Tiers)
             {
                 double tempResult;
                 if (!tier.CalculateTierResult(track, useGPSAltitude, out tempResult))
+                {
+                    Log(LogSeverityType.Error, functionErrorMessage + "Failed to caluclate tier result");
                     return false;
+                }
                 result += tempResult;
             }
             return true;
@@ -264,6 +285,13 @@ namespace Competition
         public override string ToString()
         {
             return $"Pie (Task #{TaskNumber})";
+        }
+        #endregion
+
+        #region Private methods
+        private void Log(LogSeverityType logSeverity, string text)
+        {
+            Logger.Log(this, logSeverity, text);
         }
         #endregion
     }

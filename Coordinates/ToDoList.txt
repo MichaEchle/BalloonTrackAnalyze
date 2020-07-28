@@ -6,7 +6,7 @@ Implement tasks (done)
 	elbow (done)
 Create UI
 	logging concept (done)
-	implement logging
+	implement logging (done for now)
 	controls for tasks
 	controls for validation rules
 serialization
@@ -18,7 +18,11 @@ Parser
 	create FAI logger parser (done) [changes with each firmware version/ ongoing adjustments may needed]
 Align folder structure
 	discuss proposal with Mike
+Special threatment
+	Allow tasks to be recalculated with different marker numbers
+	Allow tasks to be recalculated with differnet goal numbers
 Bonus
 	create unit tests
+
 
 Add more validations if needed

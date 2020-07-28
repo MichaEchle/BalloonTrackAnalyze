@@ -8,6 +8,13 @@ namespace Competition.Validation
 {
     public static class ValidationHelper
     {
+        /// <summary>
+        /// Applies all specificed declaration rules for goals of the specified goal number and return the latest valid declaration
+        /// </summary>
+        /// <param name="track">the track to be used</param>
+        /// <param name="goalNumber">the target goal number</param>
+        /// <param name="declarationValidationRules">the list of rules to be applied</param>
+        /// <returns>the latest valid declaration if any exists, otherwise null</returns>
         public static DeclaredGoal GetValidGoal(Track track, int goalNumber, List<IDeclarationValidationRules> declarationValidationRules)
         {
             List<DeclaredGoal> declarations = track.DeclaredGoals.Where(x => x.GoalNumber == goalNumber).ToList();
@@ -34,6 +41,12 @@ namespace Competition.Validation
                 return validDeclarations.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[0];
         }
 
+        /// <summary>
+        /// Applies to specified rules to a marker drop and returns if its conform to the rules
+        /// </summary>
+        /// <param name="markerDrop">the marker to be checked</param>
+        /// <param name="markerValidationRules">the rules to be applied</param>
+        /// <returns>true: marker is valid; false: marker is invalid</returns>
         public static bool IsMarkerValid(MarkerDrop markerDrop, List<IMarkerValidationRules> markerValidationRules)
         {
             bool isValid = true;

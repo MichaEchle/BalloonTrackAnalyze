@@ -10,3 +10,5 @@ C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\obj\Debu
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\obj\Debug\netcoreapp3.1\Competition.csproj.CopyComplete
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\obj\Debug\netcoreapp3.1\Competition.dll
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\obj\Debug\netcoreapp3.1\Competition.pdb
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\bin\Debug\netcoreapp3.1\LoggerComponent.dll
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\Competition\bin\Debug\netcoreapp3.1\LoggerComponent.pdb

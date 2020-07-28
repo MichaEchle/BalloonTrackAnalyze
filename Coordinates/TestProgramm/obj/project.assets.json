@@ -102,6 +102,15 @@
           "lib/netcoreapp2.0/_._": {}
         }
       },
+      "System.Resources.Extensions/4.7.1": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/System.Resources.Extensions.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/System.Resources.Extensions.dll": {}
+        }
+      },
       "System.Resources.ResourceManager/4.3.0": {
         "type": "package",
         "dependencies": {
@@ -180,20 +189,25 @@
         "type": "project",
         "framework": ".NETCoreApp,Version=v3.1",
         "dependencies": {
-          "Coordinates": "1.0.0"
+          "Coordinates": "1.0.0",
+          "LoggerComponent": "1.0.0"
         },
         "compile": {
           "bin/placeholder/Competition.dll": {}
         },
         "runtime": {
           "bin/placeholder/Competition.dll": {}
-        }
+        },
+        "frameworkReferences": [
+          "Microsoft.WindowsDesktop.App.WindowsForms"
+        ]
       },
       "Coordinates/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v3.1",
         "dependencies": {
-          "CoordinateSharp": "2.6.2.1"
+          "CoordinateSharp": "2.6.2.1",
+          "LoggerComponent": "1.0.0"
         },
         "compile": {
           "bin/placeholder/Coordinates.dll": {}
@@ -201,6 +215,22 @@
         "runtime": {
           "bin/placeholder/Coordinates.dll": {}
         }
+      },
+      "LoggerComponent/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v3.1",
+        "dependencies": {
+          "System.Resources.Extensions": "4.7.1"
+        },
+        "compile": {
+          "bin/placeholder/LoggerComponent.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/LoggerComponent.dll": {}
+        },
+        "frameworkReferences": [
+          "Microsoft.WindowsDesktop.App.WindowsForms"
+        ]
       }
     }
   },
@@ -680,6 +710,26 @@
         "version.txt"
       ]
     },
+    "System.Resources.Extensions/4.7.1": {
+      "sha512": "cuRdQps4IdpvMzgRrtKpXLckKXvc6XzgmTNQ75wf9snAITrfDK759ucS+US0gt1vmspTjCHKSCXgvp0ysfrjkA==",
+      "type": "package",
+      "path": "system.resources.extensions/4.7.1",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "LICENSE.TXT",
+        "THIRD-PARTY-NOTICES.TXT",
+        "lib/net461/System.Resources.Extensions.dll",
+        "lib/net461/System.Resources.Extensions.xml",
+        "lib/netstandard2.0/System.Resources.Extensions.dll",
+        "lib/netstandard2.0/System.Resources.Extensions.xml",
+        "system.resources.extensions.4.7.1.nupkg.sha512",
+        "system.resources.extensions.nuspec",
+        "useSharedDesignerContext.txt",
+        "version.txt"
+      ]
+    },
     "System.Resources.ResourceManager/4.3.0": {
       "sha512": "/zrcPkkWdZmI4F92gL/TPumP98AVDu/Wxr3CSJGQQ+XN6wbRZcyfSKVoPo17ilb3iOr0cCRqJInGwNMolqhS8A==",
       "type": "package",
@@ -1070,6 +1120,11 @@
       "type": "project",
       "path": "../Coordinates/Coordinates.csproj",
       "msbuildProject": "../Coordinates/Coordinates.csproj"
+    },
+    "LoggerComponent/1.0.0": {
+      "type": "project",
+      "path": "../LoggerComponent/LoggerComponent.csproj",
+      "msbuildProject": "../LoggerComponent/LoggerComponent.csproj"
     }
   },
   "projectFileDependencyGroups": {
@@ -1138,6 +1193,9 @@
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"
+          },
+          "Microsoft.WindowsDesktop.App.WindowsForms": {
+            "privateAssets": "none"
           }
         },
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.302\\RuntimeIdentifierGraph.json"

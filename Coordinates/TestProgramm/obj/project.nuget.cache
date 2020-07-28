@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "CA7hNoGjeAVcD/Q4r/QbLNgJAgyeO5EWunM8FKqG8zCU6aD9g5oY7nRDJX9TPdkfuY3hpQdcxoLJAk2NGFX1qg==",
+  "dgSpecHash": "5M5ynGmMTcZESji5Ia73lvxPK/o1+KIbSLqiPFXR02d8Rcdo0ISU7RFjwk67EN/xoMlkv5XivpwXdVQu9w9d/A==",
   "success": true,
   "projectFilePath": "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\TestProgramm\\TestProgramm.csproj",
   "expectedPackageFiles": [
@@ -13,6 +13,7 @@
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\system.reflection\\4.3.0\\system.reflection.4.3.0.nupkg.sha512",
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\system.reflection.primitives\\4.3.0\\system.reflection.primitives.4.3.0.nupkg.sha512",
     "C:\\Users\\Micha\\.nuget\\packages\\system.reflection.typeextensions\\4.7.0\\system.reflection.typeextensions.4.7.0.nupkg.sha512",
+    "C:\\Users\\Micha\\.nuget\\packages\\system.resources.extensions\\4.7.1\\system.resources.extensions.4.7.1.nupkg.sha512",
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\system.resources.resourcemanager\\4.3.0\\system.resources.resourcemanager.4.3.0.nupkg.sha512",
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\system.runtime\\4.3.0\\system.runtime.4.3.0.nupkg.sha512",
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\system.runtime.serialization.formatters\\4.3.0\\system.runtime.serialization.formatters.4.3.0.nupkg.sha512",

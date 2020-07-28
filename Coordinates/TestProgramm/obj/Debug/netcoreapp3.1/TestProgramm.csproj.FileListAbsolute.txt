@@ -17,3 +17,6 @@ C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Deb
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Debug\netcoreapp3.1\TestProgramm.dll
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Debug\netcoreapp3.1\TestProgramm.pdb
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\obj\Debug\netcoreapp3.1\TestProgramm.genruntimeconfig.cache
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\System.Resources.Extensions.dll
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\LoggerComponent.dll
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\TestProgramm\bin\Debug\netcoreapp3.1\LoggerComponent.pdb
