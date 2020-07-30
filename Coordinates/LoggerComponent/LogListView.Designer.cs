@@ -29,11 +29,10 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogListView));
             this.LogListViewer = new System.Windows.Forms.ListView();
-            this.ColumnHeaderTimeStamp = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColumnHeaderText = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.ColumnHeaderSource = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.ColumnHeaderTimeStamp = new System.Windows.Forms.ColumnHeader();
+            this.ColumnHeaderText = new System.Windows.Forms.ColumnHeader();
+            this.ColumnHeaderSource = new System.Windows.Forms.ColumnHeader();
             this.LogListViewContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.OpenLogfileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.OpenLogfileLocationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -43,7 +42,7 @@
             this.LogListViewContextMenuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
-            // LogListView
+            // LogListViewer
             // 
             this.LogListViewer.AllowColumnReorder = true;
             this.LogListViewer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
@@ -56,10 +55,11 @@
             this.LogListViewer.FullRowSelect = true;
             this.LogListViewer.HideSelection = false;
             this.LogListViewer.Location = new System.Drawing.Point(0, 0);
+            this.LogListViewer.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.LogListViewer.MultiSelect = false;
-            this.LogListViewer.Name = "LogListView";
+            this.LogListViewer.Name = "LogListViewer";
             this.LogListViewer.ShowItemToolTips = true;
-            this.LogListViewer.Size = new System.Drawing.Size(919, 431);
+            this.LogListViewer.Size = new System.Drawing.Size(1072, 497);
             this.LogListViewer.TabIndex = 5;
             this.LogListViewer.UseCompatibleStateImageBehavior = false;
             this.LogListViewer.View = System.Windows.Forms.View.Details;
@@ -89,34 +89,31 @@
             this.toolStripSeparator3,
             this.CopyLogLineToolStripMenuItem});
             this.LogListViewContextMenuStrip.Name = "logItemStrip";
-            this.LogListViewContextMenuStrip.Size = new System.Drawing.Size(205, 98);
+            this.LogListViewContextMenuStrip.Size = new System.Drawing.Size(193, 98);
             this.LogListViewContextMenuStrip.Text = "Log File";
             this.LogListViewContextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.LogListViewContextMenuStrip_Opening);
             // 
             // OpenLogfileToolStripMenuItem
             // 
-            this.OpenLogfileToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.OpenLogfileToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("OpenLogfileToolStripMenuItem.Image")));
+            this.OpenLogfileToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.OpenLogfileToolStripMenuItem.Name = "OpenLogfileToolStripMenuItem";
-            this.OpenLogfileToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+            this.OpenLogfileToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.OpenLogfileToolStripMenuItem.Text = "Open Logfile";
             this.OpenLogfileToolStripMenuItem.ToolTipText = "Open logfile (and highlight current selected log line)";
             this.OpenLogfileToolStripMenuItem.Click += new System.EventHandler(this.OpenLogfileToolStripMenuItem_Click);
             // 
             // OpenLogfileLocationToolStripMenuItem
             // 
-            this.OpenLogfileLocationToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("OpenLogfileLocationToolStripMenuItem.Image")));
             this.OpenLogfileLocationToolStripMenuItem.Name = "OpenLogfileLocationToolStripMenuItem";
-            this.OpenLogfileLocationToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+            this.OpenLogfileLocationToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.OpenLogfileLocationToolStripMenuItem.Text = "Open Logfile Location";
             this.OpenLogfileLocationToolStripMenuItem.ToolTipText = "Open explorer at logfile\'s location";
             this.OpenLogfileLocationToolStripMenuItem.Click += new System.EventHandler(this.OpenLogfileLocationToolStripMenuItem_Click);
             // 
             // ClearLogsToolStripMenuItem
             // 
-            this.ClearLogsToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("ClearLogsToolStripMenuItem.Image")));
             this.ClearLogsToolStripMenuItem.Name = "ClearLogsToolStripMenuItem";
-            this.ClearLogsToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+            this.ClearLogsToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.ClearLogsToolStripMenuItem.Text = "Clear Logs";
             this.ClearLogsToolStripMenuItem.ToolTipText = "Clear log list view";
             this.ClearLogsToolStripMenuItem.Click += new System.EventHandler(this.ClearLogsToolStripMenuItem_Click);
@@ -124,25 +121,25 @@
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(201, 6);
+            this.toolStripSeparator3.Size = new System.Drawing.Size(189, 6);
             // 
             // CopyLogLineToolStripMenuItem
             // 
-            this.CopyLogLineToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("CopyLogLineToolStripMenuItem.Image")));
             this.CopyLogLineToolStripMenuItem.Name = "CopyLogLineToolStripMenuItem";
             this.CopyLogLineToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.C)));
-            this.CopyLogLineToolStripMenuItem.Size = new System.Drawing.Size(204, 22);
+            this.CopyLogLineToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.CopyLogLineToolStripMenuItem.Text = "Copy Log Line";
             this.CopyLogLineToolStripMenuItem.ToolTipText = "Copy current selected log line to clipboard";
             this.CopyLogLineToolStripMenuItem.Click += new System.EventHandler(this.CopyLogLineToolStripMenuItem_Click);
             // 
-            // BFLogListView
+            // LogListView
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.LogListViewer);
-            this.Name = "BFLogListView";
-            this.Size = new System.Drawing.Size(919, 431);
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.Name = "LogListView";
+            this.Size = new System.Drawing.Size(1072, 497);
             this.Load += new System.EventHandler(this.BFLogListView_Load);
             this.LogListViewContextMenuStrip.ResumeLayout(false);
             this.ResumeLayout(false);

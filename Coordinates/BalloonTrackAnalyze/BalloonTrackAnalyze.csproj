@@ -6,4 +6,13 @@
     <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>bin\Debug\netcoreapp3.1\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Competition\Competition.csproj" />
+    <ProjectReference Include="..\LoggerComponent\LoggerComponent.csproj" />
+  </ItemGroup>
+
 </Project>

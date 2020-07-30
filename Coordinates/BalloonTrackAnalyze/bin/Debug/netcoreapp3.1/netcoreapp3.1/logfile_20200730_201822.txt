@@ -1,0 +1,6 @@
+7/30/2020 8:18:18 PM: Info: Start Logging... (logged from 'Form1')
+7/30/2020 8:18:18 PM: Info: Logger1
+7/30/2020 8:18:18 PM: Warning: Logger2
+7/30/2020 8:18:18 PM: Error: Logger3
+7/30/2020 8:18:18 PM: Info: Logger4
+7/30/2020 8:18:22 PM: Info: Stop Logging... (logged from 'LoggerComponent.LogListView')
