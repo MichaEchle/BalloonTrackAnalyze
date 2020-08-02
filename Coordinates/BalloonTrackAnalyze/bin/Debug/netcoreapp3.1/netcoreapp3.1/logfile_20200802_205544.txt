@@ -1,0 +1,1 @@
+8/2/2020 8:55:44 PM: Info: Stop Logging... (logged from 'LoggerComponent.LogListView')

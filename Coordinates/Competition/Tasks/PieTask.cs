@@ -195,13 +195,14 @@ namespace Competition
             /// <param name="upperBoundary">Upper boundary of the donut in meter (optional; use double.NaN to omit)</param>
             /// <param name="isReentranceAllowed">Specify whether or not reentrance in the donut is allowed (mandotory)</param>
             /// <param name="declarationValidationRules">List of rules for declaration validation (optional; leave list empty to omit)</param>
-            public void SetupPieTier(int goalNumber, double radius, double lowerBoundary, double upperBoundary, bool isReentranceAllowed, List<IDeclarationValidationRules> declarationValidationRules)
+            public void SetupPieTier(int goalNumber, double radius, bool isReentranceAllowed, double multiplier, double lowerBoundary, double upperBoundary, List<IDeclarationValidationRules> declarationValidationRules)
             {
                 GoalNumber = goalNumber;
                 Radius = radius;
+                IsReentranceAllowed = isReentranceAllowed;
+                Multiplier = multiplier;
                 LowerBoundary = lowerBoundary;
                 UpperBoundary = upperBoundary;
-                IsReentranceAllowed = isReentranceAllowed;
                 DeclarationValidationRules = declarationValidationRules;
             }
 

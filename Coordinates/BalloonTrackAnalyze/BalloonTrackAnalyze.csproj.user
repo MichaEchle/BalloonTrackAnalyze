@@ -8,5 +8,20 @@
     <Compile Update="TaskControls\DonutControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="TaskControls\ElbowControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="TaskControls\LandRunControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="TaskControls\PieTierControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ValidationControls\DeclarationToGoalDistanceRuleControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ValidationControls\DeclarationToGoalHeigthRuleControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
   </ItemGroup>
 </Project>

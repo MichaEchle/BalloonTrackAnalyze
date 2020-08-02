@@ -4,7 +4,6 @@ C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\LoggerComponent\bin\
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\LoggerComponent\bin\Debug\netcoreapp3.1\netcoreapp3.1\LoggerComponent.deps.json
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\LoggerComponent\bin\Debug\netcoreapp3.1\netcoreapp3.1\LoggerComponent.dll
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\LoggerComponent\bin\Debug\netcoreapp3.1\netcoreapp3.1\LoggerComponent.pdb
-C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\LoggerComponent\obj\Debug\netcoreapp3.1\LoggerComponent.csprojAssemblyReference.cache
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\LoggerComponent\obj\Debug\netcoreapp3.1\LoggerComponent.g.resources
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\LoggerComponent\obj\Debug\netcoreapp3.1\LoggerComponent.LogFileViewer.resources
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\LoggerComponent\obj\Debug\netcoreapp3.1\LoggerComponent.LogListView.resources

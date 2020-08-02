@@ -9,6 +9,7 @@ using Competition;
 using LoggerComponent;
 using System.Reflection;
 using Coordinates;
+using BalloonTrackAnalyze.ValidationControls;
 
 namespace BalloonTrackAnalyze.TaskControls
 {
@@ -100,7 +101,7 @@ namespace BalloonTrackAnalyze.TaskControls
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Outer Radius '{tbOuterRadius.Text}' as double");
                 isDataValid = false;
             }
-            if (rbInnerRadiusFeet.Checked)
+            if (rbOuterRadiusFeet.Checked)
                 outerRadius = CoordinateHelpers.ConvertToMeter(outerRadius);
 
             if (innerRadius >= outerRadius)
@@ -145,7 +146,14 @@ namespace BalloonTrackAnalyze.TaskControls
             if (isDataValid)
             {
                 Donut = new DonutTask();
-                Donut.SetupDonut(taskNumber, goalNumber, 1, innerRadius, outerRadius, lowerBoundary, upperBoundary, isReentranceAllowed, null);
+                List<IDeclarationValidationRules> declarationValidationRules = new List<IDeclarationValidationRules>();
+                foreach (object item in lbRules.Items)
+                {
+                    if (item is IDeclarationValidationRules)
+                        declarationValidationRules.Add(item as IDeclarationValidationRules);
+                }
+
+                Donut.SetupDonut(taskNumber, goalNumber, 1, innerRadius, outerRadius, lowerBoundary, upperBoundary, isReentranceAllowed, declarationValidationRules);
                 OnDataValid();
             }
         }
@@ -163,6 +171,92 @@ namespace BalloonTrackAnalyze.TaskControls
         private void Log(LogSeverityType logSeverity, string text)
         {
             Logger.Log(this, logSeverity, text);
+        }
+
+        private void cbRuleList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (cbRuleList.SelectedItem.ToString())
+            {
+                case "Declaration to Goal Distance":
+                    {
+                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new DeclarationToGoalDistanceRuleControl();
+                        SuspendLayout();
+                        Controls.Remove(Controls["ruleControl"]);
+                        declarationToGoalDistanceRuleControl.Location = new Point(0, 368);
+                        declarationToGoalDistanceRuleControl.Name = "ruleControl";
+                        declarationToGoalDistanceRuleControl.DataValid += DeclarationToGoalDistanceRuleControl_DataValid;
+                        Controls.Add(declarationToGoalDistanceRuleControl);
+                        ResumeLayout();
+                    }
+                    break;
+                case "Declaration to Goal Height":
+                    {
+                        DeclarationToGoalHeigthRuleControl declarationToGoalHeigthRuleControl = new DeclarationToGoalHeigthRuleControl();
+                        SuspendLayout();
+                        Controls.Remove(Controls["ruleControl"]);
+                        declarationToGoalHeigthRuleControl.Location = new Point(0, 368);
+                        declarationToGoalHeigthRuleControl.Name = "ruleControl";
+                        declarationToGoalHeigthRuleControl.DataValid += DeclarationToGoalHeigthRuleControl_DataValid;
+                        Controls.Add(declarationToGoalHeigthRuleControl);
+                        ResumeLayout();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void DeclarationToGoalDistanceRuleControl_DataValid()
+        {
+            DeclarationToGoalDistanceRule declarationToGoalDistanceRule = (Controls["ruleControl"] as DeclarationToGoalDistanceRuleControl).DeclarationToGoalDistanceRule;
+            lbRules.Items.Add(declarationToGoalDistanceRule);
+            Logger.Log(this, LogSeverityType.Info, $"{declarationToGoalDistanceRule} created");
+        }
+
+        private void lbRules_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (lbRules.SelectedItem)
+            {
+                case DeclarationToGoalDistanceRule declarationToGoalDistanceRule:
+                    {
+                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new DeclarationToGoalDistanceRuleControl(declarationToGoalDistanceRule);
+                        SuspendLayout();
+                        Controls.Remove(Controls["ruleControl"]);
+                        declarationToGoalDistanceRuleControl.Location = new Point(0, 368);
+                        declarationToGoalDistanceRuleControl.Name = "ruleControl";
+                        declarationToGoalDistanceRuleControl.DataValid += DeclarationToGoalDistanceRuleControl_DataValid;
+                        Controls.Add(declarationToGoalDistanceRuleControl);
+                        ResumeLayout();
+                    }
+                    break;
+                case DeclarationToGoalHeightRule declarationToGoalHeightRule:
+                    {
+                        DeclarationToGoalHeigthRuleControl declarationToGoalHeigthRuleControl = new DeclarationToGoalHeigthRuleControl(declarationToGoalHeightRule);
+                        SuspendLayout();
+                        Controls.Remove(Controls["ruleControl"]);
+                        declarationToGoalHeigthRuleControl.Location = new Point(0, 368);
+                        declarationToGoalHeigthRuleControl.Name = "ruleControl";
+                        declarationToGoalHeigthRuleControl.DataValid += DeclarationToGoalHeigthRuleControl_DataValid;
+                        Controls.Add(declarationToGoalHeigthRuleControl);
+                        ResumeLayout();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void DeclarationToGoalHeigthRuleControl_DataValid()
+        {
+            DeclarationToGoalHeightRule declarationToGoalHeightRule = (Controls["ruleControl"] as DeclarationToGoalHeigthRuleControl).DeclarationToGoalHeightRule;
+            lbRules.Items.Add(declarationToGoalHeightRule);
+            Logger.Log(this, LogSeverityType.Info, $"{declarationToGoalHeightRule} created");
+        }
+
+        private void btRemoveRule_Click(object sender, EventArgs e)
+        {
+            if (lbRules.SelectedItem != null)
+                lbRules.Items.Remove(lbRules.SelectedItem);
         }
     }
 }

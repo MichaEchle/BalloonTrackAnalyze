@@ -58,6 +58,9 @@
             this.cbIsReetranceAllowed = new System.Windows.Forms.CheckBox();
             this.btCreate = new System.Windows.Forms.Button();
             this.label10 = new System.Windows.Forms.Label();
+            this.lbRules = new System.Windows.Forms.ListBox();
+            this.btRemoveRule = new System.Windows.Forms.Button();
+            this.cbRuleList = new System.Windows.Forms.ComboBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -117,7 +120,7 @@
             this.tbOuterRadius.Location = new System.Drawing.Point(124, 123);
             this.tbOuterRadius.Name = "tbOuterRadius";
             this.tbOuterRadius.Size = new System.Drawing.Size(84, 23);
-            this.tbOuterRadius.TabIndex = 6;
+            this.tbOuterRadius.TabIndex = 5;
             // 
             // label4
             // 
@@ -154,7 +157,7 @@
             this.panel1.Location = new System.Drawing.Point(214, 94);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(94, 23);
-            this.panel1.TabIndex = 3;
+            this.panel1.TabIndex = 4;
             // 
             // rbInnerRadiusFeet
             // 
@@ -162,7 +165,7 @@
             this.rbInnerRadiusFeet.Location = new System.Drawing.Point(52, 1);
             this.rbInnerRadiusFeet.Name = "rbInnerRadiusFeet";
             this.rbInnerRadiusFeet.Size = new System.Drawing.Size(33, 19);
-            this.rbInnerRadiusFeet.TabIndex = 5;
+            this.rbInnerRadiusFeet.TabIndex = 2;
             this.rbInnerRadiusFeet.TabStop = true;
             this.rbInnerRadiusFeet.Text = "ft";
             this.rbInnerRadiusFeet.UseVisualStyleBackColor = true;
@@ -174,7 +177,7 @@
             this.rbInnerRadiusMeter.Location = new System.Drawing.Point(10, 1);
             this.rbInnerRadiusMeter.Name = "rbInnerRadiusMeter";
             this.rbInnerRadiusMeter.Size = new System.Drawing.Size(36, 19);
-            this.rbInnerRadiusMeter.TabIndex = 4;
+            this.rbInnerRadiusMeter.TabIndex = 1;
             this.rbInnerRadiusMeter.TabStop = true;
             this.rbInnerRadiusMeter.Text = "m";
             this.rbInnerRadiusMeter.UseVisualStyleBackColor = true;
@@ -185,7 +188,8 @@
             this.rbOuterRadiusFeet.Location = new System.Drawing.Point(52, 1);
             this.rbOuterRadiusFeet.Name = "rbOuterRadiusFeet";
             this.rbOuterRadiusFeet.Size = new System.Drawing.Size(33, 19);
-            this.rbOuterRadiusFeet.TabIndex = 8;
+            this.rbOuterRadiusFeet.TabIndex = 2;
+            this.rbOuterRadiusFeet.TabStop = true;
             this.rbOuterRadiusFeet.Text = "ft";
             this.rbOuterRadiusFeet.UseVisualStyleBackColor = true;
             // 
@@ -196,7 +200,7 @@
             this.rbOuterRadiusMeter.Location = new System.Drawing.Point(10, 1);
             this.rbOuterRadiusMeter.Name = "rbOuterRadiusMeter";
             this.rbOuterRadiusMeter.Size = new System.Drawing.Size(36, 19);
-            this.rbOuterRadiusMeter.TabIndex = 7;
+            this.rbOuterRadiusMeter.TabIndex = 1;
             this.rbOuterRadiusMeter.TabStop = true;
             this.rbOuterRadiusMeter.Text = "m";
             this.rbOuterRadiusMeter.UseVisualStyleBackColor = true;
@@ -209,7 +213,7 @@
             this.panel2.Location = new System.Drawing.Point(214, 123);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(94, 23);
-            this.panel2.TabIndex = 3;
+            this.panel2.TabIndex = 6;
             // 
             // label7
             // 
@@ -244,7 +248,7 @@
             this.rbLowerBoundaryFeet.Location = new System.Drawing.Point(52, 1);
             this.rbLowerBoundaryFeet.Name = "rbLowerBoundaryFeet";
             this.rbLowerBoundaryFeet.Size = new System.Drawing.Size(33, 19);
-            this.rbLowerBoundaryFeet.TabIndex = 12;
+            this.rbLowerBoundaryFeet.TabIndex = 2;
             this.rbLowerBoundaryFeet.TabStop = true;
             this.rbLowerBoundaryFeet.Text = "ft";
             this.rbLowerBoundaryFeet.UseVisualStyleBackColor = true;
@@ -256,7 +260,7 @@
             this.rbLowerBoundaryMeter.Location = new System.Drawing.Point(10, 1);
             this.rbLowerBoundaryMeter.Name = "rbLowerBoundaryMeter";
             this.rbLowerBoundaryMeter.Size = new System.Drawing.Size(36, 19);
-            this.rbLowerBoundaryMeter.TabIndex = 11;
+            this.rbLowerBoundaryMeter.TabIndex = 1;
             this.rbLowerBoundaryMeter.TabStop = true;
             this.rbLowerBoundaryMeter.Text = "m";
             this.rbLowerBoundaryMeter.UseVisualStyleBackColor = true;
@@ -266,7 +270,7 @@
             this.tbLowerBoundary.Location = new System.Drawing.Point(124, 176);
             this.tbLowerBoundary.Name = "tbLowerBoundary";
             this.tbLowerBoundary.Size = new System.Drawing.Size(84, 23);
-            this.tbLowerBoundary.TabIndex = 10;
+            this.tbLowerBoundary.TabIndex = 8;
             // 
             // panel3
             // 
@@ -276,7 +280,7 @@
             this.panel3.Location = new System.Drawing.Point(214, 176);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(94, 23);
-            this.panel3.TabIndex = 3;
+            this.panel3.TabIndex = 9;
             // 
             // rbUpperBoundaryFeet
             // 
@@ -285,7 +289,7 @@
             this.rbUpperBoundaryFeet.Location = new System.Drawing.Point(52, 1);
             this.rbUpperBoundaryFeet.Name = "rbUpperBoundaryFeet";
             this.rbUpperBoundaryFeet.Size = new System.Drawing.Size(33, 19);
-            this.rbUpperBoundaryFeet.TabIndex = 15;
+            this.rbUpperBoundaryFeet.TabIndex = 2;
             this.rbUpperBoundaryFeet.TabStop = true;
             this.rbUpperBoundaryFeet.Text = "ft";
             this.rbUpperBoundaryFeet.UseVisualStyleBackColor = false;
@@ -297,7 +301,7 @@
             this.rbUpperBoundaryMeter.Location = new System.Drawing.Point(10, 1);
             this.rbUpperBoundaryMeter.Name = "rbUpperBoundaryMeter";
             this.rbUpperBoundaryMeter.Size = new System.Drawing.Size(36, 19);
-            this.rbUpperBoundaryMeter.TabIndex = 14;
+            this.rbUpperBoundaryMeter.TabIndex = 1;
             this.rbUpperBoundaryMeter.TabStop = true;
             this.rbUpperBoundaryMeter.Text = "m";
             this.rbUpperBoundaryMeter.UseVisualStyleBackColor = true;
@@ -307,7 +311,7 @@
             this.tbUpperBoundary.Location = new System.Drawing.Point(124, 205);
             this.tbUpperBoundary.Name = "tbUpperBoundary";
             this.tbUpperBoundary.Size = new System.Drawing.Size(84, 23);
-            this.tbUpperBoundary.TabIndex = 13;
+            this.tbUpperBoundary.TabIndex = 10;
             // 
             // panel4
             // 
@@ -317,7 +321,7 @@
             this.panel4.Location = new System.Drawing.Point(214, 205);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(94, 23);
-            this.panel4.TabIndex = 3;
+            this.panel4.TabIndex = 11;
             // 
             // cbIsReetranceAllowed
             // 
@@ -327,16 +331,16 @@
             this.cbIsReetranceAllowed.Location = new System.Drawing.Point(124, 151);
             this.cbIsReetranceAllowed.Name = "cbIsReetranceAllowed";
             this.cbIsReetranceAllowed.Size = new System.Drawing.Size(69, 19);
-            this.cbIsReetranceAllowed.TabIndex = 9;
+            this.cbIsReetranceAllowed.TabIndex = 7;
             this.cbIsReetranceAllowed.Text = "Allowed";
             this.cbIsReetranceAllowed.UseVisualStyleBackColor = true;
             // 
             // btCreate
             // 
-            this.btCreate.Location = new System.Drawing.Point(10, 397);
+            this.btCreate.Location = new System.Drawing.Point(10, 524);
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(298, 33);
-            this.btCreate.TabIndex = 16;
+            this.btCreate.TabIndex = 12;
             this.btCreate.Text = "Create";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);
@@ -351,11 +355,49 @@
             this.label10.TabIndex = 6;
             this.label10.Text = "Donut Task Setup";
             // 
+            // lbRules
+            // 
+            this.lbRules.FormattingEnabled = true;
+            this.lbRules.ItemHeight = 15;
+            this.lbRules.Location = new System.Drawing.Point(10, 268);
+            this.lbRules.Name = "lbRules";
+            this.lbRules.Size = new System.Drawing.Size(298, 64);
+            this.lbRules.TabIndex = 14;
+            this.lbRules.SelectedIndexChanged += new System.EventHandler(this.lbRules_SelectedIndexChanged);
+            // 
+            // btRemoveRule
+            // 
+            this.btRemoveRule.Location = new System.Drawing.Point(212, 338);
+            this.btRemoveRule.Name = "btRemoveRule";
+            this.btRemoveRule.Size = new System.Drawing.Size(96, 24);
+            this.btRemoveRule.TabIndex = 15;
+            this.btRemoveRule.Text = "Remove Rule";
+            this.btRemoveRule.UseVisualStyleBackColor = true;
+            this.btRemoveRule.Click += new System.EventHandler(this.btRemoveRule_Click);
+            // 
+            // cbRuleList
+            // 
+            this.cbRuleList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbRuleList.FormattingEnabled = true;
+            this.cbRuleList.Items.AddRange(new object[] {
+            "",
+            "Declaration to Goal Distance",
+            "Declaration to Goal Height",
+            "Goal to other Goals Distance"});
+            this.cbRuleList.Location = new System.Drawing.Point(10, 338);
+            this.cbRuleList.Name = "cbRuleList";
+            this.cbRuleList.Size = new System.Drawing.Size(183, 23);
+            this.cbRuleList.TabIndex = 16;
+            this.cbRuleList.SelectedIndexChanged += new System.EventHandler(this.cbRuleList_SelectedIndexChanged);
+            // 
             // DonutControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
+            this.Controls.Add(this.cbRuleList);
+            this.Controls.Add(this.btRemoveRule);
+            this.Controls.Add(this.lbRules);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.btCreate);
             this.Controls.Add(this.cbIsReetranceAllowed);
@@ -379,7 +421,7 @@
             this.Controls.Add(this.tbTaskNumber);
             this.Controls.Add(this.label1);
             this.Name = "DonutControl";
-            this.Size = new System.Drawing.Size(320, 463);
+            this.Size = new System.Drawing.Size(336, 570);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
@@ -425,6 +467,8 @@
         private System.Windows.Forms.CheckBox cbIsReetranceAllowed;
         private System.Windows.Forms.Button btCreate;
         private System.Windows.Forms.Label label10;
-       
+        private System.Windows.Forms.ListBox lbRules;
+        private System.Windows.Forms.Button btRemoveRule;
+        private System.Windows.Forms.ComboBox cbRuleList;
     }
 }

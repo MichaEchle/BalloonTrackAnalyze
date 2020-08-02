@@ -1,0 +1,5 @@
+8/2/2020 10:45:10 PM: Error: Failed to create/modify declaration to goal distance rule: Min. Distance '5[m]' must be smaller than Max. Distance '3[m]' (logged from 'Declaration to Goal Distance Rule Setup Control')
+8/2/2020 10:45:16 PM: Info: Declaration to Goal Distance Rule created (logged from 'Donut Setup Control')
+8/2/2020 10:45:27 PM: Info: Declaration to Goal Height Rules created (logged from 'Donut Setup Control')
+8/2/2020 10:46:27 PM: Info: Stop Logging... (logged from 'LoggerComponent.LogListView')
+8/2/2020 10:46:27 PM: Error: Stop of log file writer failed: Thread abort is not supported on this platform.

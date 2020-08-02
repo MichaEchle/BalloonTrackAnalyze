@@ -29,3 +29,8 @@ C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\obj\Debug\netcoreapp3.1\BalloonTrackAnalyze.dll
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\obj\Debug\netcoreapp3.1\BalloonTrackAnalyze.pdb
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\obj\Debug\netcoreapp3.1\BalloonTrackAnalyze.genruntimeconfig.cache
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\obj\Debug\netcoreapp3.1\BalloonTrackAnalyze.TaskControls.ElbowControl.resources
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\obj\Debug\netcoreapp3.1\BalloonTrackAnalyze.TaskControls.LandRunControl.resources
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\obj\Debug\netcoreapp3.1\BalloonTrackAnalyze.TaskControls.PieTierControl.resources
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\obj\Debug\netcoreapp3.1\BalloonTrackAnalyze.ValidationControls.DeclarationToGoalDistanceRuleControl.resources
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\obj\Debug\netcoreapp3.1\BalloonTrackAnalyze.ValidationControls.DeclarationToGoalHeigthRuleControl.resources
