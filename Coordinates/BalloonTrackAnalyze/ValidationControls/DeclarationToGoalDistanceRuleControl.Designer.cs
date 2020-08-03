@@ -88,9 +88,9 @@
             // 
             // btCreate
             // 
-            this.btCreate.Location = new System.Drawing.Point(124, 97);
+            this.btCreate.Location = new System.Drawing.Point(10, 97);
             this.btCreate.Name = "btCreate";
-            this.btCreate.Size = new System.Drawing.Size(77, 23);
+            this.btCreate.Size = new System.Drawing.Size(298, 28);
             this.btCreate.TabIndex = 5;
             this.btCreate.Text = "Create";
             this.btCreate.UseVisualStyleBackColor = true;
@@ -166,6 +166,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btCreate);
@@ -175,7 +176,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "DeclarationToGoalDistanceRuleControl";
-            this.Size = new System.Drawing.Size(338, 135);
+            this.Size = new System.Drawing.Size(360, 160);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);

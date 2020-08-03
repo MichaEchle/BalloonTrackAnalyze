@@ -17,7 +17,7 @@ namespace Coordinates
         public Coordinate GoalDeclared { get; private set; }
 
         /// <summary>
-        /// The position at which the goal has beeb declared
+        /// The position at which the goal has been declared
         /// </summary>
         public Coordinate PositionAtDeclaration { get; private set; }
 
@@ -26,7 +26,7 @@ namespace Coordinates
         /// </summary>
         /// <param name="goalNumber">The number of the goal</param>
         /// <param name="goalDeclared">The target or goal which has been declared</param>
-        /// <param name="positionAtDeclaration">The position at which the goal has beeb declared</param>
+        /// <param name="positionAtDeclaration">The position at which the goal has been declared</param>
         public DeclaredGoal(int goalNumber,Coordinate goalDeclared, Coordinate positionAtDeclaration)
         {
             GoalNumber = goalNumber;

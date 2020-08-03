@@ -23,5 +23,17 @@
     <Compile Update="ValidationControls\DeclarationToGoalHeigthRuleControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Update="ValidationControls\GoalToOtherGoalsDistanceRuleControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ValidationControls\MarkerTimingRuleControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ValidationControls\MarkerToGoalDistanceRuleControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="ValidationControls\MarkerToOtherMarkerDistanceRuleControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
   </ItemGroup>
 </Project>

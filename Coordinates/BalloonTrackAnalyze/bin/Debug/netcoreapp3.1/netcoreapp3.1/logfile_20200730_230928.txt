@@ -1,2 +1,0 @@
-7/30/2020 11:08:13 PM: Info: Donut (Task #1) created (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-7/30/2020 11:09:28 PM: Info: Stop Logging... (logged from 'LoggerComponent.LogListView')

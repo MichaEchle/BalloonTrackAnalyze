@@ -38,7 +38,7 @@ namespace Competition
         /// Check if the declared goal is conform to the distance rules
         /// </summary>
         /// <param name="declaredGoal">the declared goal to be checked</param>
-        /// <returns>true: is conform; false: is not confrom</returns>
+        /// <returns>true: is conform; false: is not conform</returns>
         public bool CheckConformance(DeclaredGoal declaredGoal)
         {
             bool isConform = true;

@@ -34,3 +34,7 @@ C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\obj\Debug\netcoreapp3.1\BalloonTrackAnalyze.TaskControls.PieTierControl.resources
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\obj\Debug\netcoreapp3.1\BalloonTrackAnalyze.ValidationControls.DeclarationToGoalDistanceRuleControl.resources
 C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\obj\Debug\netcoreapp3.1\BalloonTrackAnalyze.ValidationControls.DeclarationToGoalHeigthRuleControl.resources
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\obj\Debug\netcoreapp3.1\BalloonTrackAnalyze.ValidationControls.GoalToOtherGoalsDistanceRuleControl.resources
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\obj\Debug\netcoreapp3.1\BalloonTrackAnalyze.ValidationControls.MarkerTimingRuleControl.resources
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\obj\Debug\netcoreapp3.1\BalloonTrackAnalyze.ValidationControls.MarkerToGoalDistanceRuleControl.resources
+C:\Users\Micha\Source\repos\BalloonTrackAnalyze\Coordinates\BalloonTrackAnalyze\obj\Debug\netcoreapp3.1\BalloonTrackAnalyze.ValidationControls.MarkerToOtherMarkerDistanceRuleControl.resources

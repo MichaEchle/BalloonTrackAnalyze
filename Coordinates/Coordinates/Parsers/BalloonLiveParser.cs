@@ -12,7 +12,7 @@ using LoggerComponent;
 
 namespace Coordinates.Parsers
 {
-    public static class BallonLiveParser
+    public static class BalloonLiveParser
     {
         #region API
 
@@ -32,8 +32,8 @@ namespace Coordinates.Parsers
             FileInfo fileInfo = new FileInfo(fileNameAndPath);
             if (!fileInfo.Exists)
             {
-                //Debug.WriteLine(functionErrorMessage + $"The file '{fileNameAndPath}' does not exsits");
-                Log(LogSeverityType.Error, functionErrorMessage + $"The file '{fileNameAndPath}' does not exsits");
+                //Debug.WriteLine(functionErrorMessage + $"The file '{fileNameAndPath}' does not exists");
+                Log(LogSeverityType.Error, functionErrorMessage + $"The file '{fileNameAndPath}' does not exists");
                 return false;
             }
 
@@ -63,14 +63,14 @@ namespace Coordinates.Parsers
             string[] identifierLine = lines.Where(x => x.StartsWith("AXXX")).ToArray();
             if (identifierLine.Length == 0)
             {
-                //Debug.WriteLine("Line with Pilot Identifer 'AXXX' is missing");
-                Log(LogSeverityType.Error, "Line with Pilot Identifer 'AXXX' is missing");
+                //Debug.WriteLine("Line with Pilot Identifier 'AXXX' is missing");
+                Log(LogSeverityType.Error, "Line with Pilot Identifier 'AXXX' is missing");
                 return false;
             }
             if (identifierLine.Length > 1)
             {
-                //Debug.WriteLine("More the one line with Pilot Identifer is found. First occurence will be used.");
-                Log(LogSeverityType.Warning, "More the one line with Pilot Identifer is found. First occurence will be used.");
+                //Debug.WriteLine("More the one line with Pilot Identifier is found. First occurrence will be used.");
+                Log(LogSeverityType.Warning, "More the one line with Pilot Identifier is found. First occurrence will be used.");
             }
             pilotIdentifier = identifierLine[0].Replace("AXXX", "").Replace("BalloonLive", "");
 
@@ -123,8 +123,8 @@ namespace Coordinates.Parsers
                 {
                     if (!int.TryParse(configLine[^3..^2], out goalNortingDigits))
                     {
-                        //Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration norting digits '{configLine[^3..^2]}' in '{configLine}'");
-                        Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration norting digits '{configLine[^3..^2]}' in '{configLine}'");
+                        //Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration northing digits '{configLine[^3..^2]}' in '{configLine}'");
+                        Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration northing digits '{configLine[^3..^2]}' in '{configLine}'");
                         return false;
                     }
                     if (!int.TryParse(configLine[^1..^0], out goalEastingDigits))
@@ -257,7 +257,7 @@ namespace Coordinates.Parsers
             //                {
             //                    if (!int.TryParse(line[^3..^2], out goalNortingDigits))
             //                    {
-            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration norting digits '{line[^3..^2]}' in '{line}'");
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration northing digits '{line[^3..^2]}' in '{line}'");
             //                        return false;
             //                    }
             //                    if (!int.TryParse(line[^1..^0], out goalEastingDigits))
@@ -332,7 +332,7 @@ namespace Coordinates.Parsers
         /// </summary>
         /// <param name="line">the line in the file</param>
         /// <param name="date">the date from the header</param>
-        /// <param name="coordinate">output parameter. a trackpoint as coordiante object</param>
+        /// <param name="coordinate">output parameter. a trackpoint as coordinate object</param>
         /// <returns>true:success; false:error</returns>
         private static bool ParseTrackPoint(string line, DateTime date, out Coordinate coordinate)
         {
@@ -384,14 +384,14 @@ namespace Coordinates.Parsers
 
         /// <summary>
         /// Parses a line with a goal declaration (EttttttXL1ddññññ*/ëëëë*,hhhh#,nnnnnnnNeeeeeeeeEbbbbbgggggaaassddd0000)
-        /// <para>where t:timestamp d:number of declared goal ñ:goal norting in utm ë:goal easting in utm (*:the exact format in specified in the header at 'LXXX declaration digits') h:declared height (#: the unit is specified in the header)
+        /// <para>where t:timestamp d:number of declared goal ñ:goal northing in utm ë:goal easting in utm (*:the exact format in specified in the header at 'LXXX declaration digits') h:declared height (#: the unit is specified in the header)
         /// <para>n:northing e:easting b:barometric altitude g:gps altitude</para>
         /// <para>a:accuracy s:number of satellites d: engine noise level and rpm 0:carrier return and line feed</para>
         /// <para>e.g E105850XL101123456/987654,1500,4839658N00858176EA0000000537000224940000</para>
         /// </summary>
         /// <param name="line">the line in the file</param>
         /// <param name="date">the date form the header</param>
-        /// <param name="declaredAltitudeIsInFeet">true: declared height is in feet; fasle: declared height is in meter</param>
+        /// <param name="declaredAltitudeIsInFeet">true: declared height is in feet; false: declared height is in meter</param>
         /// <param name="northingDigits">expected number of digits for goal northing</param>
         /// <param name="eastingDigits">expected number of digits for goal easting</param>
         /// <param name="referenceCoordinate">a reference coordinate to fill up the missing info from utm goal declaration. If the reference is null, the position of declaration will be used instead</param>
@@ -613,7 +613,7 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, $"Failed to parse latitude text '{latitudeText}'");
                 return false;
             }
-            decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decial angles
+            decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal angles
 
             latitude = factor * (fullAngle + decimalAngle);
             return true;
@@ -654,7 +654,7 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, $"Failed to parse longitude text '{longitudeText}'");
                 return false;
             }
-            decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decial angles
+            decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal angles
 
             longitude = factor * (fullAngle + decimalAngle);
             return true;
@@ -663,9 +663,9 @@ namespace Coordinates.Parsers
         /// <summary>
         /// Parses the time stamp and creates a date time object using the date specified
         /// </summary>
-        /// <param name="line">the time stamp protion</param>
+        /// <param name="line">the time stamp portion</param>
         /// <param name="date">the date from the header</param>
-        /// <param name="timeStamp">output paramter. the time stamp (including the date)</param>
+        /// <param name="timeStamp">output parameter. the time stamp (including the date)</param>
         /// <returns>true:success: false:error</returns>
         private static bool ParseTimeStamp(string line, DateTime date, out DateTime timeStamp)
         {
@@ -699,7 +699,7 @@ namespace Coordinates.Parsers
 
         private static void Log(LogSeverityType logSeverity, string text)
         {
-            Logger.Log((object)"Ballon Live Parser", logSeverity, text);
+            Logger.Log((object)"Balloon Live Parser", logSeverity, text);
         }
 
         #endregion

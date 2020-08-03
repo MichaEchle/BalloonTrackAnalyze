@@ -14,7 +14,7 @@ namespace Competition
         #region Properties
         /// <summary>
         /// The task number
-        /// <para>mandotory</para>
+        /// <para>mandatory</para>
         /// </summary>
         public int TaskNumber
         {
@@ -24,7 +24,7 @@ namespace Competition
 
         /// <summary>
         /// The target goal number
-        /// <para>mandotory</para>
+        /// <para>mandatory</para>
         /// </summary>
         public int GoalNumber
         {
@@ -42,7 +42,7 @@ namespace Competition
 
         /// <summary>
         /// The radius of the inner circle in meter
-        /// <para>mandotory</para>
+        /// <para>mandatory</para>
         /// </summary>
         public double InnerRadius
         {
@@ -51,7 +51,7 @@ namespace Competition
 
         /// <summary>
         /// The radius of the outer circle in meter
-        /// <para>mandotory</para>
+        /// <para>mandatory</para>
         /// </summary>
         public double OuterRadius
         {
@@ -77,8 +77,8 @@ namespace Competition
         } = double.NaN;
 
         /// <summary>
-        /// Specify whether or not reentrance in the donut is allowed
-        /// <para>mandotory</para>
+        /// Specify whether or not re-entrance in the donut is allowed
+        /// <para>mandatory</para>
         /// </summary>
         public bool IsReentranceAllowed
         {
@@ -105,7 +105,7 @@ namespace Competition
         /// <returns>true:success;false:error</returns>
         public bool CalculateResults(Track track, bool useGPSAltitude, out double result)
         {
-            string functionErrorMessage = $"Failed to caluclate result for {this} and Pilot '#{track.Pilot.PilotNumber}': ";
+            string functionErrorMessage = $"Failed to calculate result for {this} and Pilot '#{track.Pilot.PilotNumber}': ";
             result = 0.0;
             List<(int, Coordinate)> trackPointsInDonut = new List<(int trackPointNumber, Coordinate coordinate)>();
             
@@ -197,14 +197,14 @@ namespace Competition
         /// <summary>
         /// Set all properties for a donut
         /// </summary>
-        /// <param name="taskNumber">The task number (mandotory)</param>
-        /// <param name="goalNumber">The target goal number (mandotory)</param>
+        /// <param name="taskNumber">The task number (mandatory)</param>
+        /// <param name="goalNumber">The target goal number (mandatory)</param>
         /// <param name="numberOfDeclarations">Number of allowed declarations (not used yet)</param>
-        /// <param name="innerRadius">The radius of the inner circle in meter (mandotory)</param>
-        /// <param name="outerRadius">The radius of the outer circle in meter (mandotory)</param>
+        /// <param name="innerRadius">The radius of the inner circle in meter (mandatory)</param>
+        /// <param name="outerRadius">The radius of the outer circle in meter (mandatory)</param>
         /// <param name="lowerBoundary">Lower boundary of the donut in meter (optional; use double.NaN to omit)</param>
         /// <param name="upperBoundary">Upper boundary of the donut in meter (optional; use double.NaN to omit)</param>
-        /// <param name="isReentranceAllowed">Specify whether or not reentrance in the donut is allowed (mandotory)</param>
+        /// <param name="isReentranceAllowed">Specify whether or not re-entrance in the donut is allowed (mandatory)</param>
         /// <param name="declarationValidationRules">List of rules for declaration validation (optional; leave list empty to omit)</param>
         public void SetupDonut(int taskNumber, int goalNumber, int numberOfDeclarations, double innerRadius, double outerRadius, double lowerBoundary, double upperBoundary, bool isReentranceAllowed, List<IDeclarationValidationRules> declarationValidationRules)
         {

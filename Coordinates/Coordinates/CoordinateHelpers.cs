@@ -17,7 +17,7 @@ namespace Coordinates
         /// <param name="degrees">the integer degrees</param>
         /// <param name="degreeMinutes">the integer degree minutes</param>
         /// <param name="degreeSeconds">the integer degree seconds</param>
-        /// <param name="isNorthingOrEasting">true: is norting or easting; false: is southing or westing </param>
+        /// <param name="isNorthingOrEasting">true: is northing or easting; false: is southing or westing </param>
         /// <returns>the part of a coordinate in decimal degree</returns>
         public static double ConvertToDecimalDegree(int degrees, int degreeMinutes, int degreeSeconds, bool isNorthingOrEasting)
         {
@@ -25,9 +25,9 @@ namespace Coordinates
         }
 
         /// <summary>
-        /// Convert feets into meters
+        /// Convert feet into meters
         /// </summary>
-        /// <param name="feets">the feets to be converted</param>
+        /// <param name="feets">the feet to be converted</param>
         /// <returns>the amount of feet in meters</returns>
         public static double ConvertToMeter(double feets)
         {
@@ -35,7 +35,7 @@ namespace Coordinates
         }
 
         /// <summary>
-        /// Converts meters into feets
+        /// Converts meters into feet
         /// </summary>
         /// <param name="meters">the meters to be converted</param>
         /// <returns>the amount of meter in feet</returns>

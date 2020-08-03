@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Forms;
 
 namespace Competition
 {
@@ -29,12 +30,19 @@ namespace Competition
 
         /// <summary>
         /// List of goals to be checked against (will not check against itself)
-        /// <para>mandotory</para>
+        /// <para>needs preprocessing of the tracks</para>
+        /// <see cref="GoalNumbers"/>
         /// </summary>
         public List<DeclaredGoal> DeclaredGoals
         {
             get; set;
         } = new List<DeclaredGoal>();
+
+        /// <summary>
+        /// List of the goals numbers to be considered and fed into after preprocessing (the last valid goal with that number will be used)
+        /// <para>optional; use empty list to consider the last valid goal of each goal number </para>
+        /// </summary>
+        public List<int> GoalNumbers { get; set; } = new List<int>();
         #endregion
 
         public GoalToOtherGoalsDistanceRule()
@@ -48,7 +56,7 @@ namespace Competition
         /// <para>will not check against itself</para>
         /// </summary>
         /// <param name="declaredGoal">the declared goal to be checked</param>
-        /// <returns>true: is conform; false: is not confrom</returns>
+        /// <returns>true: is conform; false: is not conform</returns>
         public bool CheckConformance(DeclaredGoal declaredGoal)
         {
             bool isConform = true;
@@ -56,7 +64,7 @@ namespace Competition
             {
                 if (declaredGoal.Equals(otherGoal))
                     continue;
-                double distanceBetweenPositionOfDeclarationAndDeclaredGoal = CoordinateHelpers.Calculate2DDistance( declaredGoal.GoalDeclared,otherGoal.GoalDeclared);
+                double distanceBetweenPositionOfDeclarationAndDeclaredGoal = CoordinateHelpers.Calculate2DDistance(declaredGoal.GoalDeclared, otherGoal.GoalDeclared);
 
                 if (!double.IsNaN(MinimumDistance))
                     if (distanceBetweenPositionOfDeclarationAndDeclaredGoal < MinimumDistance)
@@ -69,7 +77,7 @@ namespace Competition
                     {
                         isConform = false;
                         break;
-                    }    
+                    }
             }
             return isConform;
         }
@@ -79,12 +87,12 @@ namespace Competition
         /// </summary>
         /// <param name="minimumDistance">Minimum distance between declaration position and declared goal in meter (optional; use double.NaN to omit)</param>
         /// <param name="maximumDistance">Maximum distance between declaration position and declared goal in meter (optional; use double.NaN to omit)</param>
-        /// <param name="declaredGoals">List of goals to be checked against [will not check against itself] (mandotory)</param>
-        public void SetupRule(double minimumDistance, double maximumDistance, List<DeclaredGoal> declaredGoals)
+        /// <param name="declaredGoals">List of the goals numbers to be considered (the last valid goal with that number will be used) [will not check against itself] (optional; use empty list to consider the last valid goal of each goal number). The actuals declaration objects will be fed in after track-preprocessing</param>
+        public void SetupRule(double minimumDistance, double maximumDistance, List<int> goalNumbers)
         {
             MinimumDistance = minimumDistance;
             MaximumDistance = maximumDistance;
-            DeclaredGoals = declaredGoals;
+            GoalNumbers = goalNumbers;
         }
 
         public override string ToString()

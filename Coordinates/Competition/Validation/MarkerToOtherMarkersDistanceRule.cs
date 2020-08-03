@@ -29,12 +29,20 @@ namespace Competition
 
         /// <summary>
         /// List of markers to be checked against (will not check against itself)
-        /// <para>mandotory</para>
+        /// <para>needs preprocessing of the tracks</para>
+        /// <see cref="MarkerNumbers"/>
         /// </summary>
         public List<MarkerDrop> MarkerDrops
         {
-            get;set;
-        }
+            get; set;
+        } = new List<MarkerDrop>();
+
+        /// <summary>
+        /// List of the marker numbers to be considered and fed into after preprocessing
+        /// <para>optional; use empty list to consider all markers</para>
+        /// </summary>
+        public List<int> MarkerNumbers { get; set; } = new List<int>();
+        
 
         #endregion
 
@@ -44,7 +52,7 @@ namespace Competition
         /// <para>will not check against itself</para>
         /// </summary>
         /// <param name="marker">the marker to be checked</param>
-        /// <returns>true: is conform; false: is not confrom</returns>
+        /// <returns>true: is conform; false: is not conform</returns>
         public bool CheckConformance(MarkerDrop marker)
         {
             bool isConform = true;
@@ -68,16 +76,16 @@ namespace Competition
         }
 
         /// <summary>
-        /// Set all propteries of the rule
+        /// Set all properties of the rule
         /// </summary>
         /// <param name="minimumDistance">Minimum distance to other markers in meter (optional; use double.NaN to omit)</param>
         /// <param name="maximumDistance">Maximum distance to other markers in meter (optional; use double.NaN to omit)</param>
-        /// <param name="markerDrops">List of markers to be checked against [will not check against itself] (mandotory)</param>
-        public void SetupRule(double minimumDistance, double maximumDistance, List<MarkerDrop> markerDrops)
+        /// <param name="markerNumbers">List of marker numbers to be checked against [will not check against itself] (optional; use empty list to consider all markers). The actuals marker objects will be fed in after track-preprocessing</param>
+        public void SetupRule(double minimumDistance, double maximumDistance, List<int> markerNumbers)
         {
             MinimumDistance = minimumDistance;
             MaximumDistance = maximumDistance;
-            MarkerDrops = markerDrops;
+            MarkerNumbers = markerNumbers;
         }
         #endregion
     }

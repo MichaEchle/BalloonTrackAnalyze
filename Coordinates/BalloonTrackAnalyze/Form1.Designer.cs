@@ -35,10 +35,10 @@
             // logListView1
             // 
             this.logListView1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.logListView1.Location = new System.Drawing.Point(0, 473);
+            this.logListView1.Location = new System.Drawing.Point(0, 664);
             this.logListView1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.logListView1.Name = "logListView1";
-            this.logListView1.Size = new System.Drawing.Size(800, 145);
+            this.logListView1.Size = new System.Drawing.Size(1160, 145);
             this.logListView1.TabIndex = 0;
             // 
             // comboBox1
@@ -61,7 +61,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(800, 618);
+            this.ClientSize = new System.Drawing.Size(1160, 809);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.logListView1);
             this.Name = "Form1";

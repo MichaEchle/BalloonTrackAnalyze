@@ -19,7 +19,7 @@ namespace Competition
 
             /// <summary>
             /// The target goal number
-            /// <para>mandotory</para>
+            /// <para>mandatory</para>
             /// </summary>
             public int GoalNumber
             {
@@ -27,8 +27,8 @@ namespace Competition
             } = -1;
 
             /// <summary>
-            /// Specify whether or not reentrance in the donut is allowed
-            /// <para>mandotory</para>
+            /// Specify whether or not re-entrance in the donut is allowed
+            /// <para>mandatory</para>
             /// </summary>
             public bool IsReentranceAllowed
             {
@@ -37,7 +37,7 @@ namespace Competition
 
             /// <summary>
             /// The radius of the pie tier in meter
-            /// <para>mandotory</para>
+            /// <para>mandatory</para>
             /// </summary>
             public double Radius
             {
@@ -63,7 +63,7 @@ namespace Competition
             } = double.NaN;
 
             /// <summary>
-            /// Multipler for the 2D distance travelled within the pie tier
+            /// Multiplier for the 2D distance traveled within the pie tier
             /// </summary>
             public double Multiplier
             {
@@ -97,7 +97,7 @@ namespace Competition
             /// <returns>true:success;false:error</returns>
             public bool CalculateTierResult(Track track, bool useGPSAltitude, out double result)
             {
-                string functionErrorMessage = $"Failed to caluclate result for {this} and Pilot '#{track.Pilot.PilotNumber}': ";
+                string functionErrorMessage = $"Failed to calculate result for {this} and Pilot '#{track.Pilot.PilotNumber}': ";
                 result = 0.0;
                 List<(int, Coordinate)> trackPointsInDonut = new List<(int trackPointNumber, Coordinate coordinate)>();
 
@@ -189,11 +189,11 @@ namespace Competition
             /// <summary>
             /// Set all properties for a pie tier
             /// </summary>
-            /// <param name="goalNumber">The target goal number (mandotory)</param>
-            /// <param name="radius">The radius of the pie tier in meter (mandotory)</param>
+            /// <param name="goalNumber">The target goal number (mandatory)</param>
+            /// <param name="radius">The radius of the pie tier in meter (mandatory)</param>
             /// <param name="lowerBoundary">Lower boundary of the donut in meter (optional; use double.NaN to omit)</param>
             /// <param name="upperBoundary">Upper boundary of the donut in meter (optional; use double.NaN to omit)</param>
-            /// <param name="isReentranceAllowed">Specify whether or not reentrance in the donut is allowed (mandotory)</param>
+            /// <param name="isReentranceAllowed">Specify whether or not re-entrance in the donut is allowed (mandatory)</param>
             /// <param name="declarationValidationRules">List of rules for declaration validation (optional; leave list empty to omit)</param>
             public void SetupPieTier(int goalNumber, double radius, bool isReentranceAllowed, double multiplier, double lowerBoundary, double upperBoundary, List<IDeclarationValidationRules> declarationValidationRules)
             {
@@ -225,7 +225,7 @@ namespace Competition
 
         /// <summary>
         /// The task number
-        /// <para>mandotory</para>
+        /// <para>mandatory</para>
         /// </summary>
         public int TaskNumber
         {
@@ -234,7 +234,7 @@ namespace Competition
 
         /// <summary>
         /// The list of pie tiers
-        /// <para>mandotory</para>
+        /// <para>mandatory</para>
         /// </summary>
         public List<PieTier> Tiers
         {
@@ -258,14 +258,14 @@ namespace Competition
         /// <returns>true:success;false:error</returns>
         public bool CalculateResults(Track track, bool useGPSAltitude, out double result)
         {
-            string functionErrorMessage = $"Failed to caluclate result for {this} and Pilot '#{track.Pilot.PilotNumber}': ";
+            string functionErrorMessage = $"Failed to calculate result for {this} and Pilot '#{track.Pilot.PilotNumber}': ";
             result = 0.0;
             foreach (PieTier tier in Tiers)
             {
                 double tempResult;
                 if (!tier.CalculateTierResult(track, useGPSAltitude, out tempResult))
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + "Failed to caluclate tier result");
+                    Log(LogSeverityType.Error, functionErrorMessage + "Failed to calculate tier result");
                     return false;
                 }
                 result += tempResult;
@@ -275,8 +275,8 @@ namespace Competition
         /// <summary>
         /// Set all properties for a donut
         /// </summary>
-        /// <param name="taskNumber">The task number (mandotory)</param>
-        /// <param name="tiers">The list of pie tiers (mandotory)</param>
+        /// <param name="taskNumber">The task number (mandatory)</param>
+        /// <param name="tiers">The list of pie tiers (mandatory)</param>
         public void SetupPie(int taskNumber, List<PieTier> tiers)
         {
             TaskNumber = taskNumber;

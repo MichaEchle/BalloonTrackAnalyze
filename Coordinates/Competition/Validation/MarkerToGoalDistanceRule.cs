@@ -29,12 +29,20 @@ namespace Competition
 
         /// <summary>
         /// The declared goal to check against
-        /// <para>mandotory</para>
+        /// <para>needs preprocessing of track</para>
+        /// <see cref="GoalNumber"/>
         /// </summary>
         public DeclaredGoal Goal
         {
             get; set;
         } = null;
+
+        /// <summary>
+        /// The number of the goal to be checked against (the last valid goal with that number will be fed in after track preprocessing)
+        /// <para>mandatory</para>
+        /// </summary>
+        public int GoalNumber { get; set; }
+
         #endregion
 
         #region API
@@ -43,7 +51,7 @@ namespace Competition
         /// Check if the marker is conform to the distance rules to the declared goal
         /// </summary>
         /// <param name="marker">the marker to be checked</param>
-        /// <returns>true: is conform; false: is not confrom</returns>
+        /// <returns>true: is conform; false: is not conform</returns>
         public bool CheckConformance(MarkerDrop marker)
         {
             bool isConform = true;
@@ -66,12 +74,12 @@ namespace Competition
         /// </summary>
         /// <param name="minimumDistance">Minimum distance between marker position and declared goal in meter (optional; use double.NaN to omit)</param>
         /// <param name="maximumDistance">Maximum distance between marker position and declared goal in meter (optional; use double.NaN to omit)</param>
-        /// <param name="declaredGoal">The declared goal to check against (mandotory)</param>
-        public void SetupRule(double minimumDistance, double maximumDistance, DeclaredGoal declaredGoal)
+        /// <param name="declaredGoal">The number of the goal to be checked against (the last valid goal with that number will be used) (mandatory). the actual declared goal object will be fed in after track preprocessing</param>
+        public void SetupRule(double minimumDistance, double maximumDistance, int goalNumber)
         {
             MinimumDistance = minimumDistance;
             MaximumDistance = maximumDistance;
-            Goal = declaredGoal;
+            GoalNumber = goalNumber;
         }
 
         public override string ToString()

@@ -201,17 +201,22 @@ namespace BalloonTrackAnalyze.TaskControls
                         ResumeLayout();
                     }
                     break;
-                default:
+                case "Goal to other Goals Distance":
+                    {
+                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new GoalToOtherGoalsDistanceRuleControl();
+                        SuspendLayout();
+                        Controls.Remove(Controls["ruleControl"]);
+                        goalToOtherGoalsDistanceRuleControl.Location = new Point(0, 368);
+                        goalToOtherGoalsDistanceRuleControl.Name = "ruleControl";
+                        goalToOtherGoalsDistanceRuleControl.DataValid += GoalToOtherGoalsDistanceRuleControl_DataValid;
+                        Controls.Add(goalToOtherGoalsDistanceRuleControl);
+                        ResumeLayout();
+                    }
                     break;
             }
         }
 
-        private void DeclarationToGoalDistanceRuleControl_DataValid()
-        {
-            DeclarationToGoalDistanceRule declarationToGoalDistanceRule = (Controls["ruleControl"] as DeclarationToGoalDistanceRuleControl).DeclarationToGoalDistanceRule;
-            lbRules.Items.Add(declarationToGoalDistanceRule);
-            Logger.Log(this, LogSeverityType.Info, $"{declarationToGoalDistanceRule} created");
-        }
+
 
         private void lbRules_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -241,16 +246,44 @@ namespace BalloonTrackAnalyze.TaskControls
                         ResumeLayout();
                     }
                     break;
+                case GoalToOtherGoalsDistanceRule goalToOtherGoalsDistance:
+                    {
+                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new GoalToOtherGoalsDistanceRuleControl(goalToOtherGoalsDistance);
+                        SuspendLayout();
+                        Controls.Remove(Controls["ruleControl"]);
+                        goalToOtherGoalsDistanceRuleControl.Location = new Point(0, 368);
+                        goalToOtherGoalsDistanceRuleControl.Name = "ruleControl";
+                        goalToOtherGoalsDistanceRuleControl.DataValid += GoalToOtherGoalsDistanceRuleControl_DataValid;
+                        Controls.Add(goalToOtherGoalsDistanceRuleControl);
+                        ResumeLayout();
+                    }
+                    break;
                 default:
                     break;
             }
         }
 
+        private void GoalToOtherGoalsDistanceRuleControl_DataValid()
+        {
+            GoalToOtherGoalsDistanceRule goalToOtherGoalsDistanceRule = (Controls["ruleControl"] as GoalToOtherGoalsDistanceRuleControl).GoalToOtherGoalsDistanceRule;
+            if (!lbRules.Items.Contains(goalToOtherGoalsDistanceRule))
+                lbRules.Items.Add(goalToOtherGoalsDistanceRule);
+            Logger.Log(this, LogSeverityType.Info, $"{goalToOtherGoalsDistanceRule} created/modified");
+        }
+
         private void DeclarationToGoalHeigthRuleControl_DataValid()
         {
             DeclarationToGoalHeightRule declarationToGoalHeightRule = (Controls["ruleControl"] as DeclarationToGoalHeigthRuleControl).DeclarationToGoalHeightRule;
-            lbRules.Items.Add(declarationToGoalHeightRule);
-            Logger.Log(this, LogSeverityType.Info, $"{declarationToGoalHeightRule} created");
+            if (!lbRules.Items.Contains(declarationToGoalHeightRule))
+                lbRules.Items.Add(declarationToGoalHeightRule);
+            Logger.Log(this, LogSeverityType.Info, $"{declarationToGoalHeightRule} created/modified");
+        }
+        private void DeclarationToGoalDistanceRuleControl_DataValid()
+        {
+            DeclarationToGoalDistanceRule declarationToGoalDistanceRule = (Controls["ruleControl"] as DeclarationToGoalDistanceRuleControl).DeclarationToGoalDistanceRule;
+            if (!lbRules.Items.Contains(declarationToGoalDistanceRule))
+                lbRules.Items.Add(declarationToGoalDistanceRule);
+            Logger.Log(this, LogSeverityType.Info, $"{declarationToGoalDistanceRule} created/modified");
         }
 
         private void btRemoveRule_Click(object sender, EventArgs e)

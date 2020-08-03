@@ -421,7 +421,7 @@
             this.Controls.Add(this.tbTaskNumber);
             this.Controls.Add(this.label1);
             this.Name = "DonutControl";
-            this.Size = new System.Drawing.Size(336, 570);
+            this.Size = new System.Drawing.Size(360, 570);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);

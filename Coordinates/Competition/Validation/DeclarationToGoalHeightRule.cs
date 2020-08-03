@@ -30,7 +30,7 @@ namespace Competition
 
         /// <summary>
         /// true: use GPS altitude;false: use barometric altitude
-        /// <para>mandotory</para>
+        /// <para>mandatory</para>
         /// </summary>
         public bool UseGPSAltitude
         {
@@ -49,7 +49,7 @@ namespace Competition
         /// Check if the declared goal is conform to the height difference rules
         /// </summary>
         /// <param name="declaredGoal">the declared goal to be checked</param>
-        /// <returns>true: is conform; false: is not confrom</returns>
+        /// <returns>true: is conform; false: is not conform</returns>
         public bool CheckConformance(DeclaredGoal declaredGoal)
         {
             bool isConform = true;
@@ -68,7 +68,7 @@ namespace Competition
         }
 
         /// <summary>
-        /// Set all porperties of the rule
+        /// Set all properties of the rule
         /// </summary>
         /// <param name="minimumHeightDifference">Minimum difference in height between declaration position and declared goal in meter (optional; use double.NaN to omit)</param>
         /// <param name="maximumHeightDifference">Maximum difference in height between declaration position and declared goal in meter (optional; use double.NaN to omit)</param>

@@ -14,7 +14,7 @@ namespace Competition
 
         /// <summary>
         /// The task number
-        /// <para>mandotory</para>
+        /// <para>mandatory</para>
         /// </summary>
         public int TaskNumber
         {
@@ -24,7 +24,7 @@ namespace Competition
 
         /// <summary>
         /// The marker number of the first marker
-        /// <para>mandotory</para>
+        /// <para>mandatory</para>
         /// </summary>
         public int FirstMarkerNumber
         {
@@ -33,7 +33,7 @@ namespace Competition
 
         /// <summary>
         /// The marker number of the second marker
-        /// <para>mandotory</para>
+        /// <para>mandatory</para>
         /// </summary>
         public int SecondMarkerNumber
         {
@@ -42,7 +42,7 @@ namespace Competition
 
         /// <summary>
         /// The marker number of the third marker
-        /// <para>mandotory</para>
+        /// <para>mandatory</para>
         /// </summary>
         public int ThirdMarkerNumber
         {
@@ -70,7 +70,7 @@ namespace Competition
         /// <returns>true:success;false:error</returns>
         public bool CalculateResults(Track track, bool useGPSAltitude, out double result)
         {
-            string functionErrorMessage = $"Failed to caluclate result for {this} and Pilot '#{track.Pilot.PilotNumber}': ";
+            string functionErrorMessage = $"Failed to calculate result for {this} and Pilot '#{track.Pilot.PilotNumber}': ";
             result = 0.0;
             MarkerDrop firstMarker = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == FirstMarkerNumber);
             if (firstMarker == null)
@@ -118,10 +118,10 @@ namespace Competition
         /// <summary>
         /// Set all properties for a elbow
         /// </summary>
-        /// <param name="taskNumber">The task number (mandotory)</param>
-        /// <param name="firstMarkerNumber">The marker number of the first marker (mandotory)</param>
-        /// <param name="secondMarkerNumber">The marker number of the second marker (mandotory)</param>
-        /// <param name="thirdMarkerNumber">The marker number of the third marker (mandotory)</param>
+        /// <param name="taskNumber">The task number (mandatory)</param>
+        /// <param name="firstMarkerNumber">The marker number of the first marker (mandatory)</param>
+        /// <param name="secondMarkerNumber">The marker number of the second marker (mandatory)</param>
+        /// <param name="thirdMarkerNumber">The marker number of the third marker (mandatory)</param>
         /// <param name="markerValidationRules">List of rules for marker validation (optional; leave list empty to omit)</param>
         public void SetupElbow(int taskNumber, int firstMarkerNumber, int secondMarkerNumber, int thirdMarkerNumber, List<IMarkerValidationRules> markerValidationRules)
         {

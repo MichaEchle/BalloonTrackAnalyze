@@ -11,7 +11,7 @@ namespace Competition
 
         /// <summary>
         /// The first minute at which markering is valid
-        /// <para>mandotory</para>
+        /// <para>mandatory</para>
         /// </summary>
         public int OpenAtMinute
         {
@@ -20,7 +20,7 @@ namespace Competition
 
         /// <summary>
         /// The first minute at which markering is no longer valid
-        /// <para>mandotory</para>
+        /// <para>mandatory</para>
         /// </summary>
         public int CloseAtMinute
         {
@@ -33,16 +33,27 @@ namespace Competition
         /// Check if the marker is conform to the timing rules
         /// </summary>
         /// <param name="marker">the marker to be checked</param>
-        /// <returns>true: is conform; false: is not confrom</returns>
+        /// <returns>true: is conform; false: is not conform</returns>
         public bool CheckConformance(MarkerDrop marker)
         {
             bool isConform = true;
-            if (marker.MarkerLocation.TimeStamp.Minute < OpenAtMinute)
-                isConform = false;
-            if (marker.MarkerLocation.TimeStamp.Minute > CloseAtMinute)
-                isConform = false;
-            if (marker.MarkerLocation.TimeStamp.Minute == CloseAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
-                isConform = false;
+            if (OpenAtMinute < CloseAtMinute)
+            {
+                if (marker.MarkerLocation.TimeStamp.Minute < OpenAtMinute)
+                    isConform = false;
+                if (marker.MarkerLocation.TimeStamp.Minute > CloseAtMinute)
+                    isConform = false;
+                if (marker.MarkerLocation.TimeStamp.Minute == CloseAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
+                    isConform = false;
+            }
+            else if (OpenAtMinute > CloseAtMinute)
+            {
+                if ((marker.MarkerLocation.TimeStamp.Minute < OpenAtMinute) && (marker.MarkerLocation.TimeStamp.Minute > CloseAtMinute))
+                    isConform = false;
+                if (marker.MarkerLocation.TimeStamp.Minute == CloseAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
+                    isConform = false;
+            }
+
 
             return isConform;
         }
@@ -51,8 +62,8 @@ namespace Competition
         /// <summary>
         /// Setup all properties of the rule
         /// </summary>
-        /// <param name="openAtMinute">The first minute at which markering is valid (mandotory)</param>
-        /// <param name="closeAtMinute">The first minute at which markering is no longer valid (mandotory)</param>
+        /// <param name="openAtMinute">The first minute at which markering is valid (mandatory)</param>
+        /// <param name="closeAtMinute">The first minute at which markering is no longer valid (mandatory)</param>
         public void SetupRule(int openAtMinute, int closeAtMinute)
         {
             OpenAtMinute = openAtMinute;

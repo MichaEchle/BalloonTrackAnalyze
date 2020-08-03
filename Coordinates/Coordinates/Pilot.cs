@@ -32,7 +32,7 @@ namespace Coordinates
         /// <param name="firstName">the first name of the pilot</param>
         /// <param name="lastName">the last name of the pilot</param>
         /// <param name="pilotNumber">the number of the pilot</param>
-        /// <param name="pilotIdentifiers">a list of identfiers associated with that pilot as issued in the track file</param>
+        /// <param name="pilotIdentifiers">a list of identifiers associated with that pilot as issued in the track file</param>
         public Pilot(string firstName, string lastName, int pilotNumber, List<string> pilotIdentifiers)
         {
             FirstName = firstName;

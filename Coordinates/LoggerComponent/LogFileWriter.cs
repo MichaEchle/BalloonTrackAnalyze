@@ -87,7 +87,7 @@ namespace LoggerComponent
 
 			try
 			{
-				// infite loop, can only be broken e.g. by an abort thread exception
+				// infinite loop, can only be broken e.g. by an abort thread exception
 				while (true)
 				{
 					while (m_logItems.Count > 0)

@@ -9,7 +9,7 @@ namespace Competition.Validation
     public static class ValidationHelper
     {
         /// <summary>
-        /// Applies all specificed declaration rules for goals of the specified goal number and return the latest valid declaration
+        /// Applies all specified declaration rules for goals of the specified goal number and return the latest valid declaration
         /// </summary>
         /// <param name="track">the track to be used</param>
         /// <param name="goalNumber">the target goal number</param>

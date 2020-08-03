@@ -6,7 +6,7 @@ namespace Coordinates
     {
 
         /// <summary>
-        /// The latitude or northing in decimal degress
+        /// The latitude or northing in decimal degrees
         /// <para>use negative values for southing</para>
         /// </summary>
         public double Latitude { get; private set; }
@@ -28,7 +28,7 @@ namespace Coordinates
         public double AltitudeBarometric { get; private set; }
 
         /// <summary>
-        /// The time stamp when this coordiante was create in GPS time
+        /// The time stamp when this coordinate was create in GPS time
         /// </summary>
         public DateTime TimeStamp { get; private set; }
 

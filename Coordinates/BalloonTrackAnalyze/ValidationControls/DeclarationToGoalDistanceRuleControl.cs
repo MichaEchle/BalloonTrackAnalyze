@@ -91,7 +91,7 @@ namespace BalloonTrackAnalyze.ValidationControls
 
             if (isDataValid)
             {
-                DeclarationToGoalDistanceRule = new DeclarationToGoalDistanceRule();
+                DeclarationToGoalDistanceRule ??= new DeclarationToGoalDistanceRule();
                 DeclarationToGoalDistanceRule.SetupRule(minimumDistance, maximumDistance);
                 
                 OnDataValid();

@@ -201,9 +201,9 @@
             // 
             // btCreate
             // 
-            this.btCreate.Location = new System.Drawing.Point(124, 123);
+            this.btCreate.Location = new System.Drawing.Point(10, 123);
             this.btCreate.Name = "btCreate";
-            this.btCreate.Size = new System.Drawing.Size(75, 23);
+            this.btCreate.Size = new System.Drawing.Size(298, 28);
             this.btCreate.TabIndex = 5;
             this.btCreate.Text = "Create";
             this.btCreate.UseVisualStyleBackColor = true;
@@ -213,6 +213,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
             this.Controls.Add(this.btCreate);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel2);
@@ -224,7 +225,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "DeclarationToGoalHeigthRuleControl";
-            this.Size = new System.Drawing.Size(338, 165);
+            this.Size = new System.Drawing.Size(360, 160);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
