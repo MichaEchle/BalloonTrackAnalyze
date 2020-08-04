@@ -88,21 +88,21 @@
             this.tbMinimumDistance.Location = new System.Drawing.Point(124, 36);
             this.tbMinimumDistance.Name = "tbMinimumDistance";
             this.tbMinimumDistance.Size = new System.Drawing.Size(84, 23);
-            this.tbMinimumDistance.TabIndex = 4;
+            this.tbMinimumDistance.TabIndex = 1;
             // 
             // tbMaximumDistance
             // 
             this.tbMaximumDistance.Location = new System.Drawing.Point(124, 65);
             this.tbMaximumDistance.Name = "tbMaximumDistance";
             this.tbMaximumDistance.Size = new System.Drawing.Size(84, 23);
-            this.tbMaximumDistance.TabIndex = 4;
+            this.tbMaximumDistance.TabIndex = 3;
             // 
             // tbMarkerNumbers
             // 
             this.tbMarkerNumbers.Location = new System.Drawing.Point(124, 94);
             this.tbMarkerNumbers.Name = "tbMarkerNumbers";
             this.tbMarkerNumbers.Size = new System.Drawing.Size(84, 23);
-            this.tbMarkerNumbers.TabIndex = 4;
+            this.tbMarkerNumbers.TabIndex = 5;
             // 
             // rbMinimumDistanceFeet
             // 
@@ -168,14 +168,14 @@
             this.panel2.Location = new System.Drawing.Point(214, 65);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(94, 23);
-            this.panel2.TabIndex = 2;
+            this.panel2.TabIndex = 4;
             // 
             // btCreate
             // 
             this.btCreate.Location = new System.Drawing.Point(10, 123);
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(298, 28);
-            this.btCreate.TabIndex = 5;
+            this.btCreate.TabIndex = 6;
             this.btCreate.Text = "Create Rule";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);

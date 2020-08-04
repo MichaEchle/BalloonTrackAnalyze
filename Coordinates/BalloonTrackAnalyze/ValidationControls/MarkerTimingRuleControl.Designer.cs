@@ -76,14 +76,14 @@
             this.tbCloseAtMinute.Location = new System.Drawing.Point(124, 66);
             this.tbCloseAtMinute.Name = "tbCloseAtMinute";
             this.tbCloseAtMinute.Size = new System.Drawing.Size(84, 23);
-            this.tbCloseAtMinute.TabIndex = 1;
+            this.tbCloseAtMinute.TabIndex = 2;
             // 
             // btCreate
             // 
             this.btCreate.Location = new System.Drawing.Point(10, 95);
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(298, 28);
-            this.btCreate.TabIndex = 2;
+            this.btCreate.TabIndex = 3;
             this.btCreate.Text = "Create Rule";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);

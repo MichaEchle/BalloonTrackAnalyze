@@ -135,14 +135,14 @@
             this.tbRadius.Location = new System.Drawing.Point(124, 65);
             this.tbRadius.Name = "tbRadius";
             this.tbRadius.Size = new System.Drawing.Size(84, 23);
-            this.tbRadius.TabIndex = 1;
+            this.tbRadius.TabIndex = 2;
             // 
             // tbMultiplier
             // 
             this.tbMultiplier.Location = new System.Drawing.Point(124, 119);
             this.tbMultiplier.Name = "tbMultiplier";
             this.tbMultiplier.Size = new System.Drawing.Size(84, 23);
-            this.tbMultiplier.TabIndex = 1;
+            this.tbMultiplier.TabIndex = 5;
             // 
             // cbIsReetranceAllowed
             // 
@@ -152,7 +152,7 @@
             this.cbIsReetranceAllowed.Location = new System.Drawing.Point(124, 94);
             this.cbIsReetranceAllowed.Name = "cbIsReetranceAllowed";
             this.cbIsReetranceAllowed.Size = new System.Drawing.Size(69, 19);
-            this.cbIsReetranceAllowed.TabIndex = 2;
+            this.cbIsReetranceAllowed.TabIndex = 4;
             this.cbIsReetranceAllowed.Text = "Allowed";
             this.cbIsReetranceAllowed.UseVisualStyleBackColor = true;
             // 
@@ -161,14 +161,14 @@
             this.tbLowerBoundary.Location = new System.Drawing.Point(124, 148);
             this.tbLowerBoundary.Name = "tbLowerBoundary";
             this.tbLowerBoundary.Size = new System.Drawing.Size(84, 23);
-            this.tbLowerBoundary.TabIndex = 1;
+            this.tbLowerBoundary.TabIndex = 6;
             // 
             // tbUpperBoundary
             // 
             this.tbUpperBoundary.Location = new System.Drawing.Point(124, 177);
             this.tbUpperBoundary.Name = "tbUpperBoundary";
             this.tbUpperBoundary.Size = new System.Drawing.Size(84, 23);
-            this.tbUpperBoundary.TabIndex = 1;
+            this.tbUpperBoundary.TabIndex = 8;
             // 
             // rbRadiusFeet
             // 
@@ -176,7 +176,7 @@
             this.rbRadiusFeet.Location = new System.Drawing.Point(52, 1);
             this.rbRadiusFeet.Name = "rbRadiusFeet";
             this.rbRadiusFeet.Size = new System.Drawing.Size(33, 19);
-            this.rbRadiusFeet.TabIndex = 5;
+            this.rbRadiusFeet.TabIndex = 2;
             this.rbRadiusFeet.TabStop = true;
             this.rbRadiusFeet.Text = "ft";
             this.rbRadiusFeet.UseVisualStyleBackColor = true;
@@ -188,7 +188,7 @@
             this.rbRadiusMeter.Location = new System.Drawing.Point(10, 1);
             this.rbRadiusMeter.Name = "rbRadiusMeter";
             this.rbRadiusMeter.Size = new System.Drawing.Size(36, 19);
-            this.rbRadiusMeter.TabIndex = 4;
+            this.rbRadiusMeter.TabIndex = 1;
             this.rbRadiusMeter.TabStop = true;
             this.rbRadiusMeter.Text = "m";
             this.rbRadiusMeter.UseVisualStyleBackColor = true;
@@ -209,7 +209,7 @@
             this.rbLowerBoundaryFeet.Location = new System.Drawing.Point(52, 1);
             this.rbLowerBoundaryFeet.Name = "rbLowerBoundaryFeet";
             this.rbLowerBoundaryFeet.Size = new System.Drawing.Size(33, 19);
-            this.rbLowerBoundaryFeet.TabIndex = 5;
+            this.rbLowerBoundaryFeet.TabIndex = 2;
             this.rbLowerBoundaryFeet.TabStop = true;
             this.rbLowerBoundaryFeet.Text = "ft";
             this.rbLowerBoundaryFeet.UseVisualStyleBackColor = true;
@@ -221,7 +221,7 @@
             this.rbLowerBoundaryMeter.Location = new System.Drawing.Point(10, 1);
             this.rbLowerBoundaryMeter.Name = "rbLowerBoundaryMeter";
             this.rbLowerBoundaryMeter.Size = new System.Drawing.Size(36, 19);
-            this.rbLowerBoundaryMeter.TabIndex = 4;
+            this.rbLowerBoundaryMeter.TabIndex = 1;
             this.rbLowerBoundaryMeter.TabStop = true;
             this.rbLowerBoundaryMeter.Text = "m";
             this.rbLowerBoundaryMeter.UseVisualStyleBackColor = true;
@@ -234,7 +234,7 @@
             this.panel2.Location = new System.Drawing.Point(214, 148);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(94, 23);
-            this.panel2.TabIndex = 3;
+            this.panel2.TabIndex = 7;
             // 
             // rbUpperBoundaryFeet
             // 
@@ -242,7 +242,7 @@
             this.rbUpperBoundaryFeet.Location = new System.Drawing.Point(52, 1);
             this.rbUpperBoundaryFeet.Name = "rbUpperBoundaryFeet";
             this.rbUpperBoundaryFeet.Size = new System.Drawing.Size(33, 19);
-            this.rbUpperBoundaryFeet.TabIndex = 5;
+            this.rbUpperBoundaryFeet.TabIndex = 2;
             this.rbUpperBoundaryFeet.TabStop = true;
             this.rbUpperBoundaryFeet.Text = "ft";
             this.rbUpperBoundaryFeet.UseVisualStyleBackColor = true;
@@ -254,7 +254,7 @@
             this.rbUpperBoundaryMeter.Location = new System.Drawing.Point(10, 1);
             this.rbUpperBoundaryMeter.Name = "rbUpperBoundaryMeter";
             this.rbUpperBoundaryMeter.Size = new System.Drawing.Size(36, 19);
-            this.rbUpperBoundaryMeter.TabIndex = 4;
+            this.rbUpperBoundaryMeter.TabIndex = 1;
             this.rbUpperBoundaryMeter.TabStop = true;
             this.rbUpperBoundaryMeter.Text = "m";
             this.rbUpperBoundaryMeter.UseVisualStyleBackColor = true;
@@ -267,14 +267,14 @@
             this.panel3.Location = new System.Drawing.Point(214, 177);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(94, 23);
-            this.panel3.TabIndex = 3;
+            this.panel3.TabIndex = 9;
             // 
             // btCreate
             // 
             this.btCreate.Location = new System.Drawing.Point(10, 206);
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(298, 33);
-            this.btCreate.TabIndex = 4;
+            this.btCreate.TabIndex = 12;
             this.btCreate.Text = "Create Tier";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);
@@ -294,7 +294,7 @@
             this.btRemoveRule.Location = new System.Drawing.Point(527, 139);
             this.btRemoveRule.Name = "btRemoveRule";
             this.btRemoveRule.Size = new System.Drawing.Size(96, 24);
-            this.btRemoveRule.TabIndex = 15;
+            this.btRemoveRule.TabIndex = 11;
             this.btRemoveRule.Text = "Remove Rule";
             this.btRemoveRule.UseVisualStyleBackColor = true;
             this.btRemoveRule.Click += new System.EventHandler(this.btRemoveRule_Click);
@@ -311,7 +311,7 @@
             this.cbRuleList.Location = new System.Drawing.Point(325, 139);
             this.cbRuleList.Name = "cbRuleList";
             this.cbRuleList.Size = new System.Drawing.Size(196, 23);
-            this.cbRuleList.TabIndex = 16;
+            this.cbRuleList.TabIndex = 10;
             this.cbRuleList.SelectedIndexChanged += new System.EventHandler(this.cbRuleList_SelectedIndexChanged);
             // 
             // PieTierControl

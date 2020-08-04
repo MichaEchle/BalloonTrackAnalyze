@@ -24,9 +24,15 @@ namespace BalloonTrackAnalyze
         {
             logListView1.StartLogging(@".\logfile.txt", 5);
             if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.CompetitionFolder))
+            {
                 tbCompetitionFolder.Text = Properties.Settings.Default.CompetitionFolder;
+                Log(LogSeverityType.Info, $"Loaded Competition Folder '{tbCompetitionFolder.Text}' from settings");
+            }
             if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.PilotNameMappingFile))
+            {
                 tbPilotMappingFile.Text = Properties.Settings.Default.PilotNameMappingFile;
+                Log(LogSeverityType.Info, $"Loaded Pilot Name Mapping File '{tbPilotMappingFile.Text}' from settings");
+            }
         }
 
         private void cbTaskList_SelectedIndexChanged(object sender, EventArgs e)
@@ -82,6 +88,11 @@ namespace BalloonTrackAnalyze
                     }
                     break;
             }
+        }
+
+        private void Log(LogSeverityType logSeverityType, string text)
+        {
+            Logger.Log(this, logSeverityType, text);
         }
 
         private void LandrunControl_DataValid()

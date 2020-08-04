@@ -79,7 +79,7 @@
             this.tbMinimumDistance.Location = new System.Drawing.Point(124, 36);
             this.tbMinimumDistance.Name = "tbMinimumDistance";
             this.tbMinimumDistance.Size = new System.Drawing.Size(84, 23);
-            this.tbMinimumDistance.TabIndex = 3;
+            this.tbMinimumDistance.TabIndex = 1;
             // 
             // tbMaximumDistance
             // 
@@ -152,14 +152,14 @@
             this.panel2.Location = new System.Drawing.Point(214, 65);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(94, 23);
-            this.panel2.TabIndex = 2;
+            this.panel2.TabIndex = 4;
             // 
             // btCreate
             // 
             this.btCreate.Location = new System.Drawing.Point(10, 123);
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(298, 28);
-            this.btCreate.TabIndex = 4;
+            this.btCreate.TabIndex = 6;
             this.btCreate.Text = "Create Rule";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);
@@ -169,7 +169,7 @@
             this.tbGoalNumbers.Location = new System.Drawing.Point(124, 94);
             this.tbGoalNumbers.Name = "tbGoalNumbers";
             this.tbGoalNumbers.Size = new System.Drawing.Size(84, 23);
-            this.tbGoalNumbers.TabIndex = 3;
+            this.tbGoalNumbers.TabIndex = 5;
             // 
             // label4
             // 

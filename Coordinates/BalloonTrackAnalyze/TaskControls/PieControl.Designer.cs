@@ -71,7 +71,7 @@
             this.btCreate.Location = new System.Drawing.Point(8, 535);
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(295, 33);
-            this.btCreate.TabIndex = 3;
+            this.btCreate.TabIndex = 4;
             this.btCreate.Text = "Create Task";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);
@@ -81,7 +81,7 @@
             this.tbTaskNumber.Location = new System.Drawing.Point(124, 36);
             this.tbTaskNumber.Name = "tbTaskNumber";
             this.tbTaskNumber.Size = new System.Drawing.Size(84, 23);
-            this.tbTaskNumber.TabIndex = 5;
+            this.tbTaskNumber.TabIndex = 1;
             // 
             // lbPieTiers
             // 
@@ -99,7 +99,7 @@
             this.pieTierControl1.Location = new System.Drawing.Point(0, 65);
             this.pieTierControl1.Name = "pieTierControl1";
             this.pieTierControl1.Size = new System.Drawing.Size(705, 335);
-            this.pieTierControl1.TabIndex = 7;
+            this.pieTierControl1.TabIndex = 2;
             // 
             // PieControl
             // 

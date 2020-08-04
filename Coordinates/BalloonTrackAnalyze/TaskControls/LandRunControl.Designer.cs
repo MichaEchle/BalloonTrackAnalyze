@@ -48,7 +48,7 @@
             this.btCreate.Location = new System.Drawing.Point(10, 152);
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(298, 33);
-            this.btCreate.TabIndex = 2;
+            this.btCreate.TabIndex = 7;
             this.btCreate.Text = "Create Task";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);
@@ -58,21 +58,21 @@
             this.tbThirdMarkerNumber.Location = new System.Drawing.Point(124, 123);
             this.tbThirdMarkerNumber.Name = "tbThirdMarkerNumber";
             this.tbThirdMarkerNumber.Size = new System.Drawing.Size(84, 23);
-            this.tbThirdMarkerNumber.TabIndex = 1;
+            this.tbThirdMarkerNumber.TabIndex = 4;
             // 
             // tbSecondMarkerNumber
             // 
             this.tbSecondMarkerNumber.Location = new System.Drawing.Point(124, 94);
             this.tbSecondMarkerNumber.Name = "tbSecondMarkerNumber";
             this.tbSecondMarkerNumber.Size = new System.Drawing.Size(84, 23);
-            this.tbSecondMarkerNumber.TabIndex = 1;
+            this.tbSecondMarkerNumber.TabIndex = 3;
             // 
             // tbFirstMarkerNumber
             // 
             this.tbFirstMarkerNumber.Location = new System.Drawing.Point(124, 65);
             this.tbFirstMarkerNumber.Name = "tbFirstMarkerNumber";
             this.tbFirstMarkerNumber.Size = new System.Drawing.Size(84, 23);
-            this.tbFirstMarkerNumber.TabIndex = 1;
+            this.tbFirstMarkerNumber.TabIndex = 2;
             // 
             // tbTaskNumber
             // 

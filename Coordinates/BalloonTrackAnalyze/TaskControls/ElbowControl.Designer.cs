@@ -65,7 +65,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(10, 70);
+            this.label3.Location = new System.Drawing.Point(10, 68);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(84, 15);
             this.label3.TabIndex = 0;
@@ -74,7 +74,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(10, 101);
+            this.label4.Location = new System.Drawing.Point(10, 97);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(89, 15);
             this.label4.TabIndex = 0;
@@ -83,7 +83,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(10, 130);
+            this.label5.Location = new System.Drawing.Point(10, 126);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(86, 15);
             this.label5.TabIndex = 0;
@@ -98,31 +98,31 @@
             // 
             // tbFirstMarkerNumber
             // 
-            this.tbFirstMarkerNumber.Location = new System.Drawing.Point(124, 67);
+            this.tbFirstMarkerNumber.Location = new System.Drawing.Point(124, 65);
             this.tbFirstMarkerNumber.Name = "tbFirstMarkerNumber";
             this.tbFirstMarkerNumber.Size = new System.Drawing.Size(84, 23);
-            this.tbFirstMarkerNumber.TabIndex = 1;
+            this.tbFirstMarkerNumber.TabIndex = 2;
             // 
             // tbSecondMarkerNumber
             // 
-            this.tbSecondMarkerNumber.Location = new System.Drawing.Point(124, 98);
+            this.tbSecondMarkerNumber.Location = new System.Drawing.Point(124, 94);
             this.tbSecondMarkerNumber.Name = "tbSecondMarkerNumber";
             this.tbSecondMarkerNumber.Size = new System.Drawing.Size(84, 23);
-            this.tbSecondMarkerNumber.TabIndex = 1;
+            this.tbSecondMarkerNumber.TabIndex = 3;
             // 
             // tbThirdMarkerNumber
             // 
-            this.tbThirdMarkerNumber.Location = new System.Drawing.Point(124, 127);
+            this.tbThirdMarkerNumber.Location = new System.Drawing.Point(124, 123);
             this.tbThirdMarkerNumber.Name = "tbThirdMarkerNumber";
             this.tbThirdMarkerNumber.Size = new System.Drawing.Size(84, 23);
-            this.tbThirdMarkerNumber.TabIndex = 1;
+            this.tbThirdMarkerNumber.TabIndex = 4;
             // 
             // btCreate
             // 
-            this.btCreate.Location = new System.Drawing.Point(10, 156);
+            this.btCreate.Location = new System.Drawing.Point(10, 152);
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(298, 33);
-            this.btCreate.TabIndex = 2;
+            this.btCreate.TabIndex = 6;
             this.btCreate.Text = "Create Task";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);
@@ -149,7 +149,7 @@
             this.cbRuleList.Location = new System.Drawing.Point(325, 139);
             this.cbRuleList.Name = "cbRuleList";
             this.cbRuleList.Size = new System.Drawing.Size(200, 23);
-            this.cbRuleList.TabIndex = 5;
+            this.cbRuleList.TabIndex = 4;
             this.cbRuleList.SelectedIndexChanged += new System.EventHandler(this.cbRuleList_SelectedIndexChanged);
             // 
             // btRemoveRule
@@ -157,7 +157,7 @@
             this.btRemoveRule.Location = new System.Drawing.Point(531, 138);
             this.btRemoveRule.Name = "btRemoveRule";
             this.btRemoveRule.Size = new System.Drawing.Size(92, 23);
-            this.btRemoveRule.TabIndex = 6;
+            this.btRemoveRule.TabIndex = 5;
             this.btRemoveRule.Text = "Remove Rule";
             this.btRemoveRule.UseVisualStyleBackColor = true;
             this.btRemoveRule.Click += new System.EventHandler(this.btRemoveRule_Click);
