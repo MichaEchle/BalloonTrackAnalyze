@@ -34,17 +34,23 @@ namespace BalloonTrackAnalyze.ValidationControls
         {
             if (DeclarationToGoalDistanceRule != null)
             {
-                tbMinimumDistance.Text = DeclarationToGoalDistanceRule.MinimumDistance.ToString();
-                rbMinimumDistanceMeter.Checked = true;
-                tbMaximumDistance.Text = DeclarationToGoalDistanceRule.MaximumDistance.ToString();
-                rbMaximumDistanceMeter.Checked = true;
+                if (!double.IsNaN(DeclarationToGoalDistanceRule.MinimumDistance))
+                {
+                    tbMinimumDistance.Text = Math.Round(DeclarationToGoalDistanceRule.MinimumDistance, 3, MidpointRounding.AwayFromZero).ToString();
+                    rbMinimumDistanceMeter.Checked = true;
+                }
+                if (!double.IsNaN(DeclarationToGoalDistanceRule.MaximumDistance))
+                {
+                    tbMaximumDistance.Text = Math.Round(DeclarationToGoalDistanceRule.MaximumDistance, 3, MidpointRounding.AwayFromZero).ToString();
+                    rbMaximumDistanceMeter.Checked = true;
+                }
             }
         }
         private void btCreate_Click(object sender, EventArgs e)
         {
             bool isDataValid = true;
             string functionErrorMessage = "Failed to create/modify declaration to goal distance rule: ";
-            double minimumDistance=double.NaN;
+            double minimumDistance = double.NaN;
             if (!string.IsNullOrWhiteSpace(tbMinimumDistance.Text))
             {
                 if (!double.TryParse(tbMinimumDistance.Text, out minimumDistance))
@@ -93,7 +99,8 @@ namespace BalloonTrackAnalyze.ValidationControls
             {
                 DeclarationToGoalDistanceRule ??= new DeclarationToGoalDistanceRule();
                 DeclarationToGoalDistanceRule.SetupRule(minimumDistance, maximumDistance);
-                
+                tbMaximumDistance.Text = "";
+                tbMinimumDistance.Text = "";
                 OnDataValid();
             }
         }

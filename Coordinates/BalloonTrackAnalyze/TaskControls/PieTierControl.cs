@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using Competition;
 using LoggerComponent;
 using Coordinates;
+using BalloonTrackAnalyze.ValidationControls;
 
 namespace BalloonTrackAnalyze.TaskControls
 {
@@ -19,20 +20,18 @@ namespace BalloonTrackAnalyze.TaskControls
 
         public event DataValidDelegate DataValid;
 
+        private Point RuleControlLocation = new Point(314, 168);
+
+        private bool IsExisting { get; set; } = false;
+
         public PieTierControl()
         {
             InitializeComponent();
         }
 
-        public PieTierControl(PieTask.PieTier tier)
+        public void Prefill(PieTask.PieTier tier)
         {
             Tier = tier;
-            InitializeComponent();
-            Prefill();
-        }
-
-        private void Prefill()
-        {
             if (Tier != null)
             {
                 tbGoalNumber.Text = Tier.GoalNumber.ToString();
@@ -54,6 +53,11 @@ namespace BalloonTrackAnalyze.TaskControls
                     rbUpperBoundaryMeter.Checked = true;
                     rbUpperBoundaryFeet.Checked = false;
                 }
+                foreach (IDeclarationValidationRules rule in Tier.DeclarationValidationRules)
+                {
+                    lbRules.Items.Add(rule);
+                }
+                IsExisting = true;
             }
         }
 
@@ -123,8 +127,23 @@ namespace BalloonTrackAnalyze.TaskControls
             //TODO add goal validations;
             if (isDataValid)
             {
-                Tier = new PieTask.PieTier();
-                Tier.SetupPieTier( goalNumber, radius,isReentranceAllowed,multiplier, lowerBoundary, upperBoundary, null);
+                if (!IsExisting)
+                    Tier = new PieTask.PieTier();
+                List<IDeclarationValidationRules> declarationValidationRules = new List<IDeclarationValidationRules>();
+                foreach (object item in lbRules.Items)
+                {
+                    if (item is IDeclarationValidationRules)
+                        if (!Tier.DeclarationValidationRules.Contains(item as IDeclarationValidationRules))
+                            declarationValidationRules.Add(item as IDeclarationValidationRules);
+                }
+                Tier.SetupPieTier(goalNumber, radius, isReentranceAllowed, multiplier, lowerBoundary, upperBoundary, declarationValidationRules);
+                IsExisting = false;
+                tbGoalNumber.Text = "";
+                tbRadius.Text = "";
+                tbMultiplier.Text = "";
+                tbLowerBoundary.Text = "";
+                tbUpperBoundary.Text = "";
+                lbRules.Items.Clear();
                 OnDataValid();
             }
         }
@@ -142,6 +161,123 @@ namespace BalloonTrackAnalyze.TaskControls
         private void Log(LogSeverityType logSeverity, string text)
         {
             Logger.Log(this, logSeverity, text);
+        }
+
+        private void cbRuleList_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (cbRuleList.SelectedItem.ToString())
+            {
+                case "Declaration to Goal Distance":
+                    {
+                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new DeclarationToGoalDistanceRuleControl();
+                        SuspendLayout();
+                        Controls.Remove(Controls["ruleControl"]);
+                        declarationToGoalDistanceRuleControl.Location = RuleControlLocation;
+                        declarationToGoalDistanceRuleControl.Name = "ruleControl";
+                        declarationToGoalDistanceRuleControl.DataValid += DeclarationToGoalDistanceRuleControl_DataValid;
+                        Controls.Add(declarationToGoalDistanceRuleControl);
+                        ResumeLayout();
+                    }
+                    break;
+                case "Declaration to Goal Height":
+                    {
+                        DeclarationToGoalHeigthRuleControl declarationToGoalHeigthRuleControl = new DeclarationToGoalHeigthRuleControl();
+                        SuspendLayout();
+                        Controls.Remove(Controls["ruleControl"]);
+                        declarationToGoalHeigthRuleControl.Location = RuleControlLocation;
+                        declarationToGoalHeigthRuleControl.Name = "ruleControl";
+                        declarationToGoalHeigthRuleControl.DataValid += DeclarationToGoalHeigthRuleControl_DataValid;
+                        Controls.Add(declarationToGoalHeigthRuleControl);
+                        ResumeLayout();
+                    }
+                    break;
+                case "Goal to other Goals Distance":
+                    {
+                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new GoalToOtherGoalsDistanceRuleControl();
+                        SuspendLayout();
+                        Controls.Remove(Controls["ruleControl"]);
+                        goalToOtherGoalsDistanceRuleControl.Location = RuleControlLocation;
+                        goalToOtherGoalsDistanceRuleControl.Name = "ruleControl";
+                        goalToOtherGoalsDistanceRuleControl.DataValid += GoalToOtherGoalsDistanceRuleControl_DataValid;
+                        Controls.Add(goalToOtherGoalsDistanceRuleControl);
+                        ResumeLayout();
+                    }
+                    break;
+            }
+        }
+
+        private void lbRules_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            switch (lbRules.SelectedItem)
+            {
+                case DeclarationToGoalDistanceRule declarationToGoalDistanceRule:
+                    {
+                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new DeclarationToGoalDistanceRuleControl(declarationToGoalDistanceRule);
+                        SuspendLayout();
+                        Controls.Remove(Controls["ruleControl"]);
+                        declarationToGoalDistanceRuleControl.Location = RuleControlLocation;
+                        declarationToGoalDistanceRuleControl.Name = "ruleControl";
+                        declarationToGoalDistanceRuleControl.DataValid += DeclarationToGoalDistanceRuleControl_DataValid;
+                        Controls.Add(declarationToGoalDistanceRuleControl);
+                        ResumeLayout();
+                    }
+                    break;
+                case DeclarationToGoalHeightRule declarationToGoalHeightRule:
+                    {
+                        DeclarationToGoalHeigthRuleControl declarationToGoalHeigthRuleControl = new DeclarationToGoalHeigthRuleControl(declarationToGoalHeightRule);
+                        SuspendLayout();
+                        Controls.Remove(Controls["ruleControl"]);
+                        declarationToGoalHeigthRuleControl.Location = RuleControlLocation;
+                        declarationToGoalHeigthRuleControl.Name = "ruleControl";
+                        declarationToGoalHeigthRuleControl.DataValid += DeclarationToGoalHeigthRuleControl_DataValid;
+                        Controls.Add(declarationToGoalHeigthRuleControl);
+                        ResumeLayout();
+                    }
+                    break;
+                case GoalToOtherGoalsDistanceRule goalToOtherGoalsDistance:
+                    {
+                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new GoalToOtherGoalsDistanceRuleControl(goalToOtherGoalsDistance);
+                        SuspendLayout();
+                        Controls.Remove(Controls["ruleControl"]);
+                        goalToOtherGoalsDistanceRuleControl.Location = RuleControlLocation;
+                        goalToOtherGoalsDistanceRuleControl.Name = "ruleControl";
+                        goalToOtherGoalsDistanceRuleControl.DataValid += GoalToOtherGoalsDistanceRuleControl_DataValid;
+                        Controls.Add(goalToOtherGoalsDistanceRuleControl);
+                        ResumeLayout();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void GoalToOtherGoalsDistanceRuleControl_DataValid()
+        {
+            GoalToOtherGoalsDistanceRule goalToOtherGoalsDistanceRule = (Controls["ruleControl"] as GoalToOtherGoalsDistanceRuleControl).GoalToOtherGoalsDistanceRule;
+            if (!lbRules.Items.Contains(goalToOtherGoalsDistanceRule))
+                lbRules.Items.Add(goalToOtherGoalsDistanceRule);
+            Logger.Log(this, LogSeverityType.Info, $"{goalToOtherGoalsDistanceRule} created/modified");
+        }
+
+        private void DeclarationToGoalHeigthRuleControl_DataValid()
+        {
+            DeclarationToGoalHeightRule declarationToGoalHeightRule = (Controls["ruleControl"] as DeclarationToGoalHeigthRuleControl).DeclarationToGoalHeightRule;
+            if (!lbRules.Items.Contains(declarationToGoalHeightRule))
+                lbRules.Items.Add(declarationToGoalHeightRule);
+            Logger.Log(this, LogSeverityType.Info, $"{declarationToGoalHeightRule} created/modified");
+        }
+        private void DeclarationToGoalDistanceRuleControl_DataValid()
+        {
+            DeclarationToGoalDistanceRule declarationToGoalDistanceRule = (Controls["ruleControl"] as DeclarationToGoalDistanceRuleControl).DeclarationToGoalDistanceRule;
+            if (!lbRules.Items.Contains(declarationToGoalDistanceRule))
+                lbRules.Items.Add(declarationToGoalDistanceRule);
+            Logger.Log(this, LogSeverityType.Info, $"{declarationToGoalDistanceRule} created/modified");
+        }
+
+        private void btRemoveRule_Click(object sender, EventArgs e)
+        {
+            if (lbRules.SelectedItem != null)
+                lbRules.Items.Remove(lbRules.SelectedItem);
         }
     }
 }

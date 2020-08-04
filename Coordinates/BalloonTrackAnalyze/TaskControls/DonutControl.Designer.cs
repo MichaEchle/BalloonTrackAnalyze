@@ -337,11 +337,11 @@
             // 
             // btCreate
             // 
-            this.btCreate.Location = new System.Drawing.Point(10, 524);
+            this.btCreate.Location = new System.Drawing.Point(10, 265);
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(298, 33);
             this.btCreate.TabIndex = 12;
-            this.btCreate.Text = "Create";
+            this.btCreate.Text = " Create Task";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);
             // 
@@ -359,15 +359,15 @@
             // 
             this.lbRules.FormattingEnabled = true;
             this.lbRules.ItemHeight = 15;
-            this.lbRules.Location = new System.Drawing.Point(10, 268);
+            this.lbRules.Location = new System.Drawing.Point(325, 39);
             this.lbRules.Name = "lbRules";
-            this.lbRules.Size = new System.Drawing.Size(298, 64);
+            this.lbRules.Size = new System.Drawing.Size(298, 94);
             this.lbRules.TabIndex = 14;
             this.lbRules.SelectedIndexChanged += new System.EventHandler(this.lbRules_SelectedIndexChanged);
             // 
             // btRemoveRule
             // 
-            this.btRemoveRule.Location = new System.Drawing.Point(212, 338);
+            this.btRemoveRule.Location = new System.Drawing.Point(527, 139);
             this.btRemoveRule.Name = "btRemoveRule";
             this.btRemoveRule.Size = new System.Drawing.Size(96, 24);
             this.btRemoveRule.TabIndex = 15;
@@ -384,7 +384,7 @@
             "Declaration to Goal Distance",
             "Declaration to Goal Height",
             "Goal to other Goals Distance"});
-            this.cbRuleList.Location = new System.Drawing.Point(10, 338);
+            this.cbRuleList.Location = new System.Drawing.Point(325, 139);
             this.cbRuleList.Name = "cbRuleList";
             this.cbRuleList.Size = new System.Drawing.Size(183, 23);
             this.cbRuleList.TabIndex = 16;
@@ -421,7 +421,7 @@
             this.Controls.Add(this.tbTaskNumber);
             this.Controls.Add(this.label1);
             this.Name = "DonutControl";
-            this.Size = new System.Drawing.Size(360, 570);
+            this.Size = new System.Drawing.Size(708, 582);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);

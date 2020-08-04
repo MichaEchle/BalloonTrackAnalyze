@@ -21,6 +21,8 @@ namespace BalloonTrackAnalyze.TaskControls
 
         public event DataValidDelegate DataValid;
 
+        private Point RuleControlLocation = new Point(314, 168);
+
         public DonutControl()
         {
             InitializeComponent();
@@ -32,6 +34,7 @@ namespace BalloonTrackAnalyze.TaskControls
             InitializeComponent();
             Prefill();
         }
+
 
         private void Prefill()
         {
@@ -56,7 +59,11 @@ namespace BalloonTrackAnalyze.TaskControls
                 {
                     tbUpperBoundary.Text = Math.Round(Donut.UpperBoundary, 3, MidpointRounding.AwayFromZero).ToString();
                     rbUpperBoundaryMeter.Checked = true;
-                    rbUpperBoundaryFeet.Checked = false;
+                    //rbUpperBoundaryFeet.Checked = false;
+                }
+                foreach (IDeclarationValidationRules rule in Donut.DeclarationValidationRules)
+                {
+                    lbRules.Items.Add(rule);
                 }
             }
         }
@@ -145,15 +152,24 @@ namespace BalloonTrackAnalyze.TaskControls
             //TODO add goal validations;
             if (isDataValid)
             {
-                Donut = new DonutTask();
+                Donut ??= new DonutTask();
                 List<IDeclarationValidationRules> declarationValidationRules = new List<IDeclarationValidationRules>();
                 foreach (object item in lbRules.Items)
                 {
                     if (item is IDeclarationValidationRules)
-                        declarationValidationRules.Add(item as IDeclarationValidationRules);
+                        if (!Donut.DeclarationValidationRules.Contains(item as IDeclarationValidationRules))
+                            declarationValidationRules.Add(item as IDeclarationValidationRules);
                 }
 
                 Donut.SetupDonut(taskNumber, goalNumber, 1, innerRadius, outerRadius, lowerBoundary, upperBoundary, isReentranceAllowed, declarationValidationRules);
+                
+                tbTaskNumber.Text = "";
+                tbGoalNumber.Text = "";
+                tbInnerRadius.Text = "";
+                tbOuterRadius.Text = "";
+                tbLowerBoundary.Text = "";
+                tbUpperBoundary.Text = "";
+                lbRules.Items.Clear();
                 OnDataValid();
             }
         }
@@ -182,7 +198,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new DeclarationToGoalDistanceRuleControl();
                         SuspendLayout();
                         Controls.Remove(Controls["ruleControl"]);
-                        declarationToGoalDistanceRuleControl.Location = new Point(0, 368);
+                        declarationToGoalDistanceRuleControl.Location = RuleControlLocation;
                         declarationToGoalDistanceRuleControl.Name = "ruleControl";
                         declarationToGoalDistanceRuleControl.DataValid += DeclarationToGoalDistanceRuleControl_DataValid;
                         Controls.Add(declarationToGoalDistanceRuleControl);
@@ -194,7 +210,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         DeclarationToGoalHeigthRuleControl declarationToGoalHeigthRuleControl = new DeclarationToGoalHeigthRuleControl();
                         SuspendLayout();
                         Controls.Remove(Controls["ruleControl"]);
-                        declarationToGoalHeigthRuleControl.Location = new Point(0, 368);
+                        declarationToGoalHeigthRuleControl.Location = RuleControlLocation;
                         declarationToGoalHeigthRuleControl.Name = "ruleControl";
                         declarationToGoalHeigthRuleControl.DataValid += DeclarationToGoalHeigthRuleControl_DataValid;
                         Controls.Add(declarationToGoalHeigthRuleControl);
@@ -206,7 +222,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new GoalToOtherGoalsDistanceRuleControl();
                         SuspendLayout();
                         Controls.Remove(Controls["ruleControl"]);
-                        goalToOtherGoalsDistanceRuleControl.Location = new Point(0, 368);
+                        goalToOtherGoalsDistanceRuleControl.Location = RuleControlLocation;
                         goalToOtherGoalsDistanceRuleControl.Name = "ruleControl";
                         goalToOtherGoalsDistanceRuleControl.DataValid += GoalToOtherGoalsDistanceRuleControl_DataValid;
                         Controls.Add(goalToOtherGoalsDistanceRuleControl);
@@ -215,8 +231,6 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
             }
         }
-
-
 
         private void lbRules_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -227,7 +241,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new DeclarationToGoalDistanceRuleControl(declarationToGoalDistanceRule);
                         SuspendLayout();
                         Controls.Remove(Controls["ruleControl"]);
-                        declarationToGoalDistanceRuleControl.Location = new Point(0, 368);
+                        declarationToGoalDistanceRuleControl.Location = RuleControlLocation;
                         declarationToGoalDistanceRuleControl.Name = "ruleControl";
                         declarationToGoalDistanceRuleControl.DataValid += DeclarationToGoalDistanceRuleControl_DataValid;
                         Controls.Add(declarationToGoalDistanceRuleControl);
@@ -239,7 +253,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         DeclarationToGoalHeigthRuleControl declarationToGoalHeigthRuleControl = new DeclarationToGoalHeigthRuleControl(declarationToGoalHeightRule);
                         SuspendLayout();
                         Controls.Remove(Controls["ruleControl"]);
-                        declarationToGoalHeigthRuleControl.Location = new Point(0, 368);
+                        declarationToGoalHeigthRuleControl.Location = RuleControlLocation;
                         declarationToGoalHeigthRuleControl.Name = "ruleControl";
                         declarationToGoalHeigthRuleControl.DataValid += DeclarationToGoalHeigthRuleControl_DataValid;
                         Controls.Add(declarationToGoalHeigthRuleControl);
@@ -251,7 +265,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new GoalToOtherGoalsDistanceRuleControl(goalToOtherGoalsDistance);
                         SuspendLayout();
                         Controls.Remove(Controls["ruleControl"]);
-                        goalToOtherGoalsDistanceRuleControl.Location = new Point(0, 368);
+                        goalToOtherGoalsDistanceRuleControl.Location = RuleControlLocation;
                         goalToOtherGoalsDistanceRuleControl.Name = "ruleControl";
                         goalToOtherGoalsDistanceRuleControl.DataValid += GoalToOtherGoalsDistanceRuleControl_DataValid;
                         Controls.Add(goalToOtherGoalsDistanceRuleControl);

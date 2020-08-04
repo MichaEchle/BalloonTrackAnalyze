@@ -1,6 +1,6 @@
 ﻿namespace BalloonTrackAnalyze.ValidationControls
 {
-    partial class MarkerToOtherMarkerDistanceRuleControl
+    partial class MarkerToOtherMarkersDistanceRuleControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -176,11 +176,11 @@
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(298, 28);
             this.btCreate.TabIndex = 5;
-            this.btCreate.Text = "Create";
+            this.btCreate.Text = "Create Rule";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);
             // 
-            // MarkerToOtherMarkerDistanceRuleControl
+            // MarkerToOtherMarkersDistanceRuleControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -195,7 +195,7 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Name = "MarkerToOtherMarkerDistanceRuleControl";
+            this.Name = "MarkerToOtherMarkersDistanceRuleControl";
             this.Size = new System.Drawing.Size(360, 160);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

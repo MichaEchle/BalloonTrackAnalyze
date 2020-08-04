@@ -18,7 +18,7 @@ namespace BalloonTrackAnalyze.ValidationControls
 
         public event DataValidDelegate DataValid;
 
-        public GoalToOtherGoalsDistanceRule GoalToOtherGoalsDistanceRule  { get; private set; }
+        public GoalToOtherGoalsDistanceRule GoalToOtherGoalsDistanceRule { get; private set; }
         public GoalToOtherGoalsDistanceRuleControl()
         {
             InitializeComponent();
@@ -35,10 +35,16 @@ namespace BalloonTrackAnalyze.ValidationControls
         {
             if (GoalToOtherGoalsDistanceRule != null)
             {
-                tbMinimumDistance.Text = GoalToOtherGoalsDistanceRule.MinimumDistance.ToString();
-                rbMinimumDistanceMeter.Checked = true;
-                tbMaximumDistance.Text = GoalToOtherGoalsDistanceRule.MaximumDistance.ToString();
-                rbMaximumDistanceMeter.Checked = true;
+                if (!double.IsNaN(GoalToOtherGoalsDistanceRule.MinimumDistance))
+                {
+                    tbMinimumDistance.Text = Math.Round(GoalToOtherGoalsDistanceRule.MinimumDistance, 3, MidpointRounding.AwayFromZero).ToString();
+                    rbMinimumDistanceMeter.Checked = true;
+                }
+                if (!double.IsNaN(GoalToOtherGoalsDistanceRule.MaximumDistance))
+                {
+                    tbMaximumDistance.Text = Math.Round(GoalToOtherGoalsDistanceRule.MaximumDistance, 3, MidpointRounding.AwayFromZero).ToString();
+                    rbMaximumDistanceMeter.Checked = true;
+                }
                 tbGoalNumbers.Text = string.Join(',', GoalToOtherGoalsDistanceRule.GoalNumbers);
             }
         }
@@ -93,17 +99,19 @@ namespace BalloonTrackAnalyze.ValidationControls
             }
 
             List<int> goalNumbers = new List<int>();
-            if (tbGoalNumbers.Text.ToLowerInvariant() != "all")
-            {
-                goalNumbers = Array.ConvertAll(tbGoalNumbers.Text.Split(','), int.Parse).ToList();
-            }
+            if (!string.IsNullOrWhiteSpace(tbGoalNumbers.Text))
+                if (tbGoalNumbers.Text.ToLowerInvariant() != "all")
+                    goalNumbers = Array.ConvertAll(tbGoalNumbers.Text.Split(','), int.Parse).ToList();
+
 
 
             if (isDataValid)
             {
                 GoalToOtherGoalsDistanceRule ??= new GoalToOtherGoalsDistanceRule();
-                GoalToOtherGoalsDistanceRule.SetupRule(minimumDistance, maximumDistance,goalNumbers);
-
+                GoalToOtherGoalsDistanceRule.SetupRule(minimumDistance, maximumDistance, goalNumbers);
+                tbMinimumDistance.Text = "";
+                tbMaximumDistance.Text = "";
+                tbGoalNumbers.Text = "";
                 OnDataValid();
             }
         }

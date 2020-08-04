@@ -35,10 +35,16 @@ namespace BalloonTrackAnalyze.ValidationControls
         {
             if (DeclarationToGoalHeightRule != null)
             {
-                tbMinimumHeightDifference.Text = DeclarationToGoalHeightRule.MinimumHeightDifference.ToString();
-                rbMinimumHeightDifferenceMeter.Checked = true;
-                tbMaximumHeightDifference.Text = DeclarationToGoalHeightRule.MaximumHeightDifference.ToString();
-                rbMaximumHeightDifferenceMeter.Checked = true;
+                if (!double.IsNaN(DeclarationToGoalHeightRule.MinimumHeightDifference))
+                {
+                    tbMinimumHeightDifference.Text = Math.Round(DeclarationToGoalHeightRule.MinimumHeightDifference,3,MidpointRounding.AwayFromZero).ToString();
+                    rbMinimumHeightDifferenceMeter.Checked = true;
+                }
+                if (!double.IsNaN(DeclarationToGoalHeightRule.MaximumHeightDifference))
+                {
+                    tbMaximumHeightDifference.Text =Math.Round( DeclarationToGoalHeightRule.MaximumHeightDifference,3,MidpointRounding.AwayFromZero).ToString();
+                    rbMaximumHeightDifferenceMeter.Checked = true;
+                }
                 rbGPS.Checked = DeclarationToGoalHeightRule.UseGPSAltitude;
             }
         }
@@ -97,7 +103,8 @@ namespace BalloonTrackAnalyze.ValidationControls
             {
                 DeclarationToGoalHeightRule ??= new DeclarationToGoalHeightRule();
                 DeclarationToGoalHeightRule.SetupRule(minimumHeightDifference,maximumHeightDifference,useGPSAltitude);
-
+                tbMinimumHeightDifference.Text = "";
+                tbMaximumHeightDifference.Text = "";
                 OnDataValid();
             }
         }

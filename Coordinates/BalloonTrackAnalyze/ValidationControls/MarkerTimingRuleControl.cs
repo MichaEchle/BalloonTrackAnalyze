@@ -37,7 +37,7 @@ namespace BalloonTrackAnalyze.ValidationControls
 
         private void btCreate_Click(object sender, EventArgs e)
         {
-            bool isDataValid = false;
+            bool isDataValid = true;
             string functionErrorMessage = "Failed to create/modify marker timing rule: ";
             int openAtMinute;
             if (!int.TryParse(tbOpenAtMinute.Text, out openAtMinute))
@@ -76,6 +76,8 @@ namespace BalloonTrackAnalyze.ValidationControls
             {
                 MarkerTimingRule ??= new MarkerTimingRule();
                 MarkerTimingRule.SetupRule(openAtMinute, closeAtMinute);
+                tbOpenAtMinute.Text = "";
+                tbCloseAtMinute.Text = "";
                 OnDataValid();
             }
         }

@@ -1,6 +1,0 @@
-8/3/2020 10:34:03 PM: Info: Declaration to Goal Distance Rule created/modified (logged from 'Donut Setup Control')
-8/3/2020 10:34:12 PM: Info: Declaration to Goal Distance Rule created/modified (logged from 'Donut Setup Control')
-8/3/2020 10:34:19 PM: Info: Declaration to Goal Distance Rule created/modified (logged from 'Donut Setup Control')
-8/3/2020 10:35:11 PM: Info: Declaration to Goal Distance Rule created/modified (logged from 'Donut Setup Control')
-8/3/2020 10:35:16 PM: Info: Stop Logging... (logged from 'LoggerComponent.LogListView')
-8/3/2020 10:35:16 PM: Error: Stop of log file writer failed: Thread abort is not supported on this platform.

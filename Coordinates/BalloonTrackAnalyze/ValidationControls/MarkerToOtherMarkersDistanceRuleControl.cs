@@ -12,19 +12,19 @@ using System.Linq;
 
 namespace BalloonTrackAnalyze.ValidationControls
 {
-    public partial class MarkerToOtherMarkerDistanceRuleControl : UserControl
+    public partial class MarkerToOtherMarkersDistanceRuleControl : UserControl
     {
         public delegate void DataValidDelegate();
 
         public event DataValidDelegate DataValid;
 
         public MarkerToOtherMarkersDistanceRule MarkerToOtherMarkersDistanceRule { get; private set; }
-        public MarkerToOtherMarkerDistanceRuleControl()
+        public MarkerToOtherMarkersDistanceRuleControl()
         {
             InitializeComponent();
         }
 
-        public MarkerToOtherMarkerDistanceRuleControl(MarkerToOtherMarkersDistanceRule markerToOtherMarkersDistanceRule)
+        public MarkerToOtherMarkersDistanceRuleControl(MarkerToOtherMarkersDistanceRule markerToOtherMarkersDistanceRule)
         {
             MarkerToOtherMarkersDistanceRule = markerToOtherMarkersDistanceRule;
             InitializeComponent();
@@ -35,17 +35,23 @@ namespace BalloonTrackAnalyze.ValidationControls
         {
             if (MarkerToOtherMarkersDistanceRule != null)
             {
-                tbMinimumDistance.Text = MarkerToOtherMarkersDistanceRule.MinimumDistance.ToString();
-                rbMinimumDistanceMeter.Checked = true;
-                tbMaximumDistance.Text = MarkerToOtherMarkersDistanceRule.MaximumDistance.ToString();
-                rbMaximumDistanceMeter.Checked = true;
+                if (!double.IsNaN(MarkerToOtherMarkersDistanceRule.MinimumDistance))
+                {
+                    tbMinimumDistance.Text = Math.Round(MarkerToOtherMarkersDistanceRule.MinimumDistance, 3, MidpointRounding.AwayFromZero).ToString();
+                    rbMinimumDistanceMeter.Checked = true;
+                }
+                if (!double.IsNaN(MarkerToOtherMarkersDistanceRule.MaximumDistance))
+                {
+                    tbMaximumDistance.Text = Math.Round(MarkerToOtherMarkersDistanceRule.MaximumDistance, 3, MidpointRounding.AwayFromZero).ToString();
+                    rbMaximumDistanceMeter.Checked = true;
+                }
                 tbMarkerNumbers.Text = string.Join(',', MarkerToOtherMarkersDistanceRule.MarkerNumbers);
             }
         }
 
         private void btCreate_Click(object sender, EventArgs e)
         {
-            bool isDataValid = false;
+            bool isDataValid = true;
             string functionErrorMessage = "Failed to create/modify marker to other markers distance rule: ";
             double minimumDistance = double.NaN;
             if (!string.IsNullOrWhiteSpace(tbMinimumDistance.Text))
@@ -92,15 +98,18 @@ namespace BalloonTrackAnalyze.ValidationControls
                 }
             }
             List<int> markerNumbers = new List<int>();
-            if (tbMarkerNumbers.Text.ToLowerInvariant() != "all")
-            {
-                markerNumbers = Array.ConvertAll(tbMarkerNumbers.Text.Split(','), int.Parse).ToList();
-            }
+            if (!string.IsNullOrWhiteSpace(tbMarkerNumbers.Text))
+                if (tbMarkerNumbers.Text.ToLowerInvariant() != "all")
+                    markerNumbers = Array.ConvertAll(tbMarkerNumbers.Text.Split(','), int.Parse).ToList();
+
 
             if (isDataValid)
             {
                 MarkerToOtherMarkersDistanceRule ??= new MarkerToOtherMarkersDistanceRule();
                 MarkerToOtherMarkersDistanceRule.SetupRule(minimumDistance, maximumDistance, markerNumbers);
+                tbMinimumDistance.Text = "";
+                tbMaximumDistance.Text = "";
+                tbMarkerNumbers.Text = "";
                 OnDataValid();
             }
         }

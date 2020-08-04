@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.label1 = new System.Windows.Forms.Label();
-            this.tbOpenAtMinute = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.tbOpenAtMinute = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.tbCloseAtMinute = new System.Windows.Forms.TextBox();
             this.btCreate = new System.Windows.Forms.Button();
@@ -46,21 +46,21 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Marker Timing Rule Setup";
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(10, 39);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(92, 15);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Open At Minute";
+            // 
             // tbOpenAtMinute
             // 
-            this.tbOpenAtMinute.AutoSize = true;
-            this.tbOpenAtMinute.Location = new System.Drawing.Point(10, 39);
+            this.tbOpenAtMinute.Location = new System.Drawing.Point(124, 39);
             this.tbOpenAtMinute.Name = "tbOpenAtMinute";
-            this.tbOpenAtMinute.Size = new System.Drawing.Size(92, 15);
-            this.tbOpenAtMinute.TabIndex = 0;
-            this.tbOpenAtMinute.Text = "Open At Minute";
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(124, 39);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(84, 23);
-            this.textBox1.TabIndex = 1;
+            this.tbOpenAtMinute.Size = new System.Drawing.Size(84, 23);
+            this.tbOpenAtMinute.TabIndex = 1;
             // 
             // label3
             // 
@@ -84,7 +84,7 @@
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(298, 28);
             this.btCreate.TabIndex = 2;
-            this.btCreate.Text = "Create";
+            this.btCreate.Text = "Create Rule";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);
             // 
@@ -96,8 +96,8 @@
             this.Controls.Add(this.btCreate);
             this.Controls.Add(this.tbCloseAtMinute);
             this.Controls.Add(this.label3);
-            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.tbOpenAtMinute);
+            this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "MarkerTimingRuleControl";
             this.Size = new System.Drawing.Size(360, 160);
@@ -109,8 +109,8 @@
         #endregion
 
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label tbOpenAtMinute;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox tbOpenAtMinute;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox tbCloseAtMinute;
         private System.Windows.Forms.Button btCreate;

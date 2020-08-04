@@ -87,6 +87,11 @@ namespace Competition
             MaximumDistance = maximumDistance;
             MarkerNumbers = markerNumbers;
         }
+
+        public override string ToString()
+        {
+            return "Marker to other Markers Distance Rule";
+        }
         #endregion
     }
 }

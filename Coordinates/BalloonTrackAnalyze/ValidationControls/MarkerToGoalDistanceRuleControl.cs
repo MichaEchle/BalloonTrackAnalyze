@@ -34,17 +34,23 @@ namespace BalloonTrackAnalyze.ValidationControls
         {
             if (MarkerToGoalDistanceRule != null)
             {
-                tbMinimumDistance.Text = MarkerToGoalDistanceRule.MinimumDistance.ToString();
-                rbMinimumDistanceMeter.Checked = true;
-                tbMaximumDistance.Text = MarkerToGoalDistanceRule.MaximumDistance.ToString();
-                rbMinimumDistanceMeter.Checked = true;
+                if (!double.IsNaN(MarkerToGoalDistanceRule.MinimumDistance))
+                {
+                    tbMinimumDistance.Text = Math.Round(MarkerToGoalDistanceRule.MinimumDistance, 3, MidpointRounding.AwayFromZero).ToString();
+                    rbMinimumDistanceMeter.Checked = true;
+                }
+                if (!double.IsNaN(MarkerToGoalDistanceRule.MaximumDistance))
+                {
+                    tbMaximumDistance.Text = Math.Round(MarkerToGoalDistanceRule.MaximumDistance, 3, MidpointRounding.AwayFromZero).ToString();
+                    rbMinimumDistanceMeter.Checked = true;
+                }
                 tbGoalNumber.Text = MarkerToGoalDistanceRule.GoalNumber.ToString();
             }
         }
 
         private void btCreate_Click(object sender, EventArgs e)
         {
-            bool isDataValid = false;
+            bool isDataValid = true;
             string functionErrorMessage = "Failed to create/modify marker to goal distance rule: ";
             double minimumDistance = double.NaN;
             if (!string.IsNullOrWhiteSpace(tbMinimumDistance.Text))
@@ -105,6 +111,9 @@ namespace BalloonTrackAnalyze.ValidationControls
             {
                 MarkerToGoalDistanceRule ??= new MarkerToGoalDistanceRule();
                 MarkerToGoalDistanceRule.SetupRule(minimumDistance, maximumDistance, goalNumber);
+                tbMinimumDistance.Text = "";
+                tbMaximumDistance.Text = "";
+                tbGoalNumber.Text = "";
                 OnDataValid();
             }
         }

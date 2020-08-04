@@ -92,7 +92,7 @@
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(298, 28);
             this.btCreate.TabIndex = 5;
-            this.btCreate.Text = "Create";
+            this.btCreate.Text = "Create Rule";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);
             // 

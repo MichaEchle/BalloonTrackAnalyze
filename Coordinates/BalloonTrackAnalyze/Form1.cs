@@ -18,31 +18,118 @@ namespace BalloonTrackAnalyze
             InitializeComponent();
         }
 
- 
+
 
         private void Form1_Load(object sender, EventArgs e)
         {
             logListView1.StartLogging(@".\logfile.txt", 5);
+            if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.CompetitionFolder))
+                tbCompetitionFolder.Text = Properties.Settings.Default.CompetitionFolder;
+            if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.PilotNameMappingFile))
+                tbPilotMappingFile.Text = Properties.Settings.Default.PilotNameMappingFile;
         }
 
-        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void cbTaskList_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (comboBox1.SelectedItem.ToString() == "Donut")
+            switch (cbTaskList.SelectedItem.ToString())
             {
-                DonutControl donutControl = new DonutControl();
-                SuspendLayout();
-                donutControl.Location = new Point(12, 90);
-                donutControl.Name = "donut1";
-                donutControl.DataValid += DonutControl_DataValid;
-                Controls.Add(donutControl);
-                ResumeLayout();
+                case "Donut":
+                    {
+                        DonutControl donutControl = new DonutControl();
+                        SuspendLayout();
+                        Controls.Remove(Controls["taskControl"]);
+                        donutControl.Location = new Point(12, 90);
+                        donutControl.Name = "taskControl";
+                        donutControl.DataValid += DonutControl_DataValid;
+                        Controls.Add(donutControl);
+                        ResumeLayout();
+                    }
+                    break;
+                case "Pie":
+                    {
+                        PieControl pieControl = new PieControl();
+                        SuspendLayout();
+                        Controls.Remove(Controls["taskControl"]);
+                        pieControl.Location = new Point(12, 90);
+                        pieControl.Name = "taskControl";
+                        pieControl.DataValid += PieControl_DataValid;
+                        Controls.Add(pieControl);
+                        ResumeLayout();
+                    }
+                    break;
+                case "Elbow":
+                    {
+                        ElbowControl elbowControl = new ElbowControl();
+                        SuspendLayout();
+                        Controls.Remove(Controls["taskControl"]);
+                        elbowControl.Location = new Point(12, 90);
+                        elbowControl.Name = "taskControl";
+                        elbowControl.DataValid += ElbowControl_DataValid;
+                        Controls.Add(elbowControl);
+                        ResumeLayout();
+                    }
+                    break;
+                case "Landrun":
+                    {
+                        LandRunControl landrunControl = new LandRunControl();
+                        SuspendLayout();
+                        Controls.Remove(Controls["taskControl"]);
+                        landrunControl.Location = new Point(12, 90);
+                        landrunControl.Name = "taskControl";
+                        landrunControl.DataValid += LandrunControl_DataValid;
+                        Controls.Add(landrunControl);
+                        ResumeLayout();
+                    }
+                    break;
             }
+        }
+
+        private void LandrunControl_DataValid()
+        {
+            LandRunTask landRun = (Controls["taskControl"] as LandRunControl).LandRun;
+            Logger.Log(this, LogSeverityType.Info, $"{landRun} created/modified");
+        }
+
+        private void ElbowControl_DataValid()
+        {
+            ElbowTask elbow = (Controls["taskControl"] as ElbowControl).Elbow;
+            Logger.Log(this, LogSeverityType.Info, $"{elbow} created/modified");
+        }
+
+        private void PieControl_DataValid()
+        {
+            PieTask pie = (Controls["taskControl"] as PieControl).PieTask;
+            Logger.Log(this, LogSeverityType.Info, $"{pie} created/modified");
         }
 
         private void DonutControl_DataValid()
         {
-            DonutTask donut=(Controls["donut1"] as DonutControl).Donut;
-            Logger.Log(this, LogSeverityType.Info, $"{donut} created");
+            DonutTask donut = (Controls["taskControl"] as DonutControl).Donut;
+            Logger.Log(this, LogSeverityType.Info, $"{donut} created/modified");
+        }
+
+        private void btSelectCompetitionFolder_Click(object sender, EventArgs e)
+        {
+            if (folderBrowserDialog1.ShowDialog() == DialogResult.OK)
+                tbCompetitionFolder.Text = folderBrowserDialog1.SelectedPath;
+        }
+
+        private void btSelectPilotMappingFile_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrWhiteSpace(tbCompetitionFolder.Text))
+                openFileDialog1.InitialDirectory = tbCompetitionFolder.Text;
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+                tbPilotMappingFile.Text = openFileDialog1.FileName;
+
+        }
+
+        private void btSaveCompetitionSettings_Click(object sender, EventArgs e)
+        {
+            if(!string.IsNullOrWhiteSpace(tbCompetitionFolder.Text))
+                Properties.Settings.Default.CompetitionFolder = tbCompetitionFolder.Text;
+            if (!string.IsNullOrWhiteSpace(tbPilotMappingFile.Text))
+                Properties.Settings.Default.PilotNameMappingFile = tbPilotMappingFile.Text;
+            Properties.Settings.Default.Save();
         }
     }
 }

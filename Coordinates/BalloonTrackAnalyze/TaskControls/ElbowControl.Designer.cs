@@ -38,6 +38,9 @@
             this.tbSecondMarkerNumber = new System.Windows.Forms.TextBox();
             this.tbThirdMarkerNumber = new System.Windows.Forms.TextBox();
             this.btCreate = new System.Windows.Forms.Button();
+            this.lbRules = new System.Windows.Forms.ListBox();
+            this.cbRuleList = new System.Windows.Forms.ComboBox();
+            this.btRemoveRule = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -116,18 +119,57 @@
             // 
             // btCreate
             // 
-            this.btCreate.Location = new System.Drawing.Point(76, 400);
+            this.btCreate.Location = new System.Drawing.Point(10, 156);
             this.btCreate.Name = "btCreate";
-            this.btCreate.Size = new System.Drawing.Size(75, 23);
+            this.btCreate.Size = new System.Drawing.Size(298, 33);
             this.btCreate.TabIndex = 2;
-            this.btCreate.Text = "Create";
+            this.btCreate.Text = "Create Task";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);
+            // 
+            // lbRules
+            // 
+            this.lbRules.FormattingEnabled = true;
+            this.lbRules.ItemHeight = 15;
+            this.lbRules.Location = new System.Drawing.Point(325, 39);
+            this.lbRules.Name = "lbRules";
+            this.lbRules.Size = new System.Drawing.Size(298, 94);
+            this.lbRules.TabIndex = 3;
+            this.lbRules.SelectedIndexChanged += new System.EventHandler(this.lbRules_SelectedIndexChanged);
+            // 
+            // cbRuleList
+            // 
+            this.cbRuleList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbRuleList.FormattingEnabled = true;
+            this.cbRuleList.Items.AddRange(new object[] {
+            "",
+            "Marker Timing",
+            "Marker to other Markers Distance",
+            "Marker to Goal Distance"});
+            this.cbRuleList.Location = new System.Drawing.Point(325, 139);
+            this.cbRuleList.Name = "cbRuleList";
+            this.cbRuleList.Size = new System.Drawing.Size(200, 23);
+            this.cbRuleList.TabIndex = 5;
+            this.cbRuleList.SelectedIndexChanged += new System.EventHandler(this.cbRuleList_SelectedIndexChanged);
+            // 
+            // btRemoveRule
+            // 
+            this.btRemoveRule.Location = new System.Drawing.Point(531, 138);
+            this.btRemoveRule.Name = "btRemoveRule";
+            this.btRemoveRule.Size = new System.Drawing.Size(92, 23);
+            this.btRemoveRule.TabIndex = 6;
+            this.btRemoveRule.Text = "Remove Rule";
+            this.btRemoveRule.UseVisualStyleBackColor = true;
+            this.btRemoveRule.Click += new System.EventHandler(this.btRemoveRule_Click);
             // 
             // ElbowControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.White;
+            this.Controls.Add(this.btRemoveRule);
+            this.Controls.Add(this.cbRuleList);
+            this.Controls.Add(this.lbRules);
             this.Controls.Add(this.btCreate);
             this.Controls.Add(this.tbThirdMarkerNumber);
             this.Controls.Add(this.tbSecondMarkerNumber);
@@ -139,7 +181,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Name = "ElbowControl";
-            this.Size = new System.Drawing.Size(446, 506);
+            this.Size = new System.Drawing.Size(708, 582);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -157,5 +199,8 @@
         private System.Windows.Forms.TextBox tbSecondMarkerNumber;
         private System.Windows.Forms.TextBox tbThirdMarkerNumber;
         private System.Windows.Forms.Button btCreate;
+        private System.Windows.Forms.ListBox lbRules;
+        private System.Windows.Forms.ComboBox cbRuleList;
+        private System.Windows.Forms.Button btRemoveRule;
     }
 }
