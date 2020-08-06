@@ -362,7 +362,7 @@ namespace Coordinates.Parsers
             //        }
             //    }
             //}
-            Pilot pilot = new Pilot(pilotNumber, new List<string> { pilotIdentifier });
+            Pilot pilot = new Pilot(pilotNumber,  pilotIdentifier );
             track.Pilot = pilot;
             return true;
         }

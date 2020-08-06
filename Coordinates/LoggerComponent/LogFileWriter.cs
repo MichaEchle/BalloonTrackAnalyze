@@ -14,6 +14,7 @@ namespace LoggerComponent
 		private StreamWriter m_logFile;
 		private List<LogItem> m_logItems = new List<LogItem>();
 		private Thread m_logFileWriterThread;
+		private CancellationTokenSource cancellationToken;
 
 		/// <summary>
 		/// Callback function used to filter specific logs
@@ -44,16 +45,16 @@ namespace LoggerComponent
 		internal bool Start(Func<object, LogItem, bool> logFilterCallBack = null)
 		{
 			LogFilterCallBack = logFilterCallBack;
-
+			cancellationToken = new CancellationTokenSource();
 			// create new sequencer thread
-			m_logFileWriterThread = new Thread(new ThreadStart(Run));
+			m_logFileWriterThread = new Thread(new ParameterizedThreadStart(Run));
 			m_logFileWriterThread.IsBackground = true;      // if all foreground threads have finished, the main process will no longer wait for LogFileWriter's thread to terminate prior to exit itself
 
 			// set name
 			m_logFileWriterThread.Name = "Logfile Writer";
 
 			// run thread
-			m_logFileWriterThread.Start();
+			m_logFileWriterThread.Start(cancellationToken.Token);
 
 			// success
 			return true;
@@ -62,77 +63,81 @@ namespace LoggerComponent
 		/// <summary>
 		/// The one and only run method
 		/// </summary>
-		private void Run()
+		private void Run(object obj)
 		{
-			// set culture to english-US
-			System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
-
-			try
+			CancellationToken token = (CancellationToken)obj;
+			if (!token.IsCancellationRequested)
 			{
-				// create chronological log file stream
-				FileStream logFileStream = new FileStream(m_filePath, m_append ? FileMode.Append : FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
-
-				// create stream writer for log file stream
-				m_logFile = new StreamWriter(logFileStream);
-			}
-
-			catch (Exception e)
-			{
-				MessageBox.Show(string.Format("Could not create file: {0}", e.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-				return; // error
-			}
-
-			// subscribe log call event handler to log call event
-			Logger.LogCall += new Logger.LogEventHandler(OnLogCall);
-
-			try
-			{
-				// infinite loop, can only be broken e.g. by an abort thread exception
-				while (true)
-				{
-					while (m_logItems.Count > 0)
-					{
-						// get current log item
-						LogItem logItem = m_logItems[0];
-
-						// write log entry
-						if (logItem != null)
-						{
-							//m_logFile.WriteLine(logItem.ToString());
-							string logLine = Logger.GetLogLineFromLogItem(logItem);
-							m_logFile.WriteLine(logLine);
-						}
-
-						// remove saved log container
-						m_logItems.RemoveAt(0);
-					}
-
-					// flush log file
-					m_logFile.Flush();
-
-					// give other threads a chance to do something
-					Thread.Sleep(10);
-				}
-			}
-
-			catch
-			{
-				// remove log call event handler from log call event
-				Logger.LogCall -= new Logger.LogEventHandler(OnLogCall);
+				// set culture to english-US
+				System.Threading.Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
 
 				try
 				{
-					// flush log file
-					m_logFile.Flush();
+					// create chronological log file stream
+					FileStream logFileStream = new FileStream(m_filePath, m_append ? FileMode.Append : FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
-					// close chronological log file
-					m_logFile.Close();
+					// create stream writer for log file stream
+					m_logFile = new StreamWriter(logFileStream);
 				}
 
 				catch (Exception e)
 				{
-					MessageBox.Show(string.Format("Could not close file: {0}", e.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					MessageBox.Show(string.Format("Could not create file: {0}", e.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return; // error
+				}
+
+				// subscribe log call event handler to log call event
+				Logger.LogCall += new Logger.LogEventHandler(OnLogCall);
+
+				try
+				{
+					// infinite loop, can only be broken e.g. by an abort thread exception
+					while (true)
+					{
+						while (m_logItems.Count > 0)
+						{
+							// get current log item
+							LogItem logItem = m_logItems[0];
+
+							// write log entry
+							if (logItem != null)
+							{
+								//m_logFile.WriteLine(logItem.ToString());
+								string logLine = Logger.GetLogLineFromLogItem(logItem);
+								m_logFile.WriteLine(logLine);
+							}
+
+							// remove saved log container
+							m_logItems.RemoveAt(0);
+						}
+
+						// flush log file
+						m_logFile.Flush();
+
+						// give other threads a chance to do something
+						Thread.Sleep(10);
+					}
+				}
+
+				catch
+				{
+					// remove log call event handler from log call event
+					Logger.LogCall -= new Logger.LogEventHandler(OnLogCall);
+
+					try
+					{
+						// flush log file
+						m_logFile.Flush();
+
+						// close chronological log file
+						m_logFile.Close();
+					}
+
+					catch (Exception e)
+					{
+						MessageBox.Show(string.Format("Could not close file: {0}", e.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						return; // error
+					}
 				}
 			}
 		}
@@ -172,7 +177,8 @@ namespace LoggerComponent
 					if (m_logFileWriterThread.IsAlive)
 					{
 						// abort thread
-						m_logFileWriterThread.Abort();
+						//m_logFileWriterThread.Abort();
+						cancellationToken.Cancel();
 					}
 				}
 			}

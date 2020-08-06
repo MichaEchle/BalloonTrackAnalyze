@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using LoggerComponent;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,18 +42,45 @@ namespace Competition.Validation
                 return validDeclarations.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[0];
         }
 
+        ///// <summary>
+        ///// Applies the specified rules to a marker drop and returns if its conform to the rules
+        ///// </summary>
+        ///// <param name="markerDrop">the marker to be checked</param>
+        ///// <param name="markerValidationRules">the rules to be applied</param>
+        ///// <returns>true: marker is valid; false: marker is invalid</returns>
+        //public static bool IsMarkerValid(MarkerDrop markerDrop, List<IMarkerValidationRules> markerValidationRules)
+        //{
+        //    bool isValid = true;
+        //    foreach (IMarkerValidationRules markerValidationRule in markerValidationRules)
+        //    {
+        //        isValid &= markerValidationRule.CheckConformance(markerDrop);
+        //    }
+        //    return isValid;
+        //}
+
         /// <summary>
-        /// Applies to specified rules to a marker drop and returns if its conform to the rules
+        /// Applies the specified rules to a marker drop and returns if its conform to the rules
         /// </summary>
-        /// <param name="markerDrop">the marker to be checked</param>
+        /// <param name="track">the track to be used</param>
+        /// <param name="markerNumber">the target marker number</param>
         /// <param name="markerValidationRules">the rules to be applied</param>
-        /// <returns>true: marker is valid; false: marker is invalid</returns>
-        public static bool IsMarkerValid(MarkerDrop markerDrop, List<IMarkerValidationRules> markerValidationRules)
+        /// <returns>true: marker is valid; false: marker is invalid or doesn't exists</returns>
+        public static bool IsMarkerValid(Track track, int markerNumber, List<IMarkerValidationRules> markerValidationRules)
         {
             bool isValid = true;
-            foreach (IMarkerValidationRules markerValidationRule in markerValidationRules)
+            MarkerDrop markerDrop = track.MarkerDrops.First(x => x.MarkerNumber == markerNumber);
+            if (markerDrop == null)
             {
-                isValid &= markerValidationRule.CheckConformance(markerDrop);
+                //Console.WriteLine($"No Marker '{FirstMarkerNumber}' found");
+                Logger.Log(LogSeverityType.Error, $"No Marker '{markerNumber}' found");
+                isValid = false;
+            }
+            else
+            {
+                foreach (IMarkerValidationRules markerValidationRule in markerValidationRules)
+                {
+                    isValid &= markerValidationRule.CheckConformance(markerDrop);
+                }
             }
             return isValid;
         }

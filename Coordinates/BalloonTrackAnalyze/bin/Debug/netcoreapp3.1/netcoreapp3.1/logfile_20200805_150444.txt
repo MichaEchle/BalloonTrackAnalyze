@@ -1,0 +1,8 @@
+8/5/2020 3:02:13 PM: Info: Loaded Competition Folder 'E:\Micha\Documents' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
+8/5/2020 3:02:13 PM: Info: Loaded Pilot Name Mapping File 'E:\Micha\Documents\PilotNameMapping.csv' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
+8/5/2020 3:02:13 PM: Info: Loaded Track Source 'FAI Logger' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
+8/5/2020 3:02:36 PM: Info: Donut (Task #1) created/modified (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
+8/5/2020 3:02:57 PM: Error: Failed to create Land Run (Task #1): A task with the number '1' already exists (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
+8/5/2020 3:03:12 PM: Info: Land Run (Task #2) created/modified (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
+8/5/2020 3:04:31 PM: Info: PieTier created/modified (logged from 'Pie Setup Control')
+8/5/2020 3:04:44 PM: Info: Stop Logging... (logged from 'LoggerComponent.LogListView')

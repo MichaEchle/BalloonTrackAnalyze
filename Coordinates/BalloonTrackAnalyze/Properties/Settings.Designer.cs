@@ -46,5 +46,17 @@ namespace BalloonTrackAnalyze.Properties {
                 this["PilotNameMappingFile"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseBalloonLiveParser {
+            get {
+                return ((bool)(this["UseBalloonLiveParser"]));
+            }
+            set {
+                this["UseBalloonLiveParser"] = value;
+            }
+        }
     }
 }

@@ -1,1 +1,7 @@
-8/4/2020 9:35:35 PM: Info: Stop Logging... (logged from 'LoggerComponent.LogListView')
+8/5/2020 8:55:23 PM: Info: Loaded Competition Folder 'E:\Micha\Documents' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
+8/5/2020 8:55:23 PM: Info: Loaded Pilot Name Mapping File 'E:\Micha\Documents\PilotNameMapping.csv' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
+8/5/2020 8:55:23 PM: Info: Loaded Track Source 'FAI Logger' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
+8/5/2020 8:56:16 PM: Info: Declaration to Goal Distance Rule created/modified (logged from 'Donut Setup Control')
+8/5/2020 8:56:29 PM: Info: Declaration to Goal Height Rules created/modified (logged from 'Donut Setup Control')
+8/5/2020 8:56:31 PM: Info: Donut (Task #1) created/modified (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
+8/5/2020 8:58:10 PM: Info: Stop Logging... (logged from 'LoggerComponent.LogListView')

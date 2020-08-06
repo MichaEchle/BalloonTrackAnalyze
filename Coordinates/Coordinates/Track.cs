@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Coordinates
@@ -33,6 +34,28 @@ namespace Coordinates
         public Track()
         {
 
+        }
+
+        public DeclaredGoal GetLastDeclaredGoal( int goalNumber)
+        {
+            List<DeclaredGoal> declaredGoals = DeclaredGoals.Where(x => x.GoalNumber == goalNumber).ToList();
+            if (declaredGoals.Count == 0)
+                return null;
+            else
+                return declaredGoals.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[0];
+
+        }
+
+        public List<int> GetAllGoalNumbers()
+        {
+            List<int> allGoalNumbers = DeclaredGoals.Select(x => x.GoalNumber).Distinct().ToList();
+            return allGoalNumbers;
+        }
+
+        public List<int> GetAllMarkerNumbers()
+        {
+            List<int> allMarkerNumbers = MarkerDrops.Select(x => x.MarkerNumber).Distinct().ToList();
+            return allMarkerNumbers;
         }
 
     }
