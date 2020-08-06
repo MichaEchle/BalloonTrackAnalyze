@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     ".NETCoreApp,Version=v3.1": {
-      "CoordinateSharp/2.6.2.1": {
+      "CoordinateSharp/2.7.1.1": {
         "type": "package",
         "dependencies": {
           "System.Reflection.TypeExtensions": "4.7.0",
@@ -32,6 +32,15 @@
         },
         "runtime": {
           "lib/netstandard1.0/_._": {}
+        }
+      },
+      "Newtonsoft.Json/12.0.3": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Newtonsoft.Json.dll": {}
         }
       },
       "System.Collections/4.3.0": {
@@ -238,16 +247,16 @@
     }
   },
   "libraries": {
-    "CoordinateSharp/2.6.2.1": {
-      "sha512": "ZRnp3ZqiSlI9vMULnOQuBChRxXg/WuXYmjCteqO7L/6kTCzM2b4eFg6sEhGjIfJuSygQaY9Jv/E6XFricNzVUQ==",
+    "CoordinateSharp/2.7.1.1": {
+      "sha512": "c8itKdcvH8AEQ8I9EOahyfbShbdBphP5GQGxa5MRP2KvcVsM22CMoPS6duOHKzg6llhj9u5v4+go4cK4ue5kQg==",
       "type": "package",
-      "path": "coordinatesharp/2.6.2.1",
+      "path": "coordinatesharp/2.7.1.1",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
         "CoordinateSharpPNG.png",
         "License.txt",
-        "coordinatesharp.2.6.2.1.nupkg.sha512",
+        "coordinatesharp.2.7.1.1.nupkg.sha512",
         "coordinatesharp.nuspec",
         "lib/net40/CoordinateSharp.dll",
         "lib/net40/CoordinateSharp.xml",
@@ -288,6 +297,37 @@
         "microsoft.netcore.targets.1.1.0.nupkg.sha512",
         "microsoft.netcore.targets.nuspec",
         "runtime.json"
+      ]
+    },
+    "Newtonsoft.Json/12.0.3": {
+      "sha512": "6mgjfnRB4jKMlzHSl+VD+oUc1IebOZabkbyWj2RiTgWwYPPuaK1H97G1sHqGwPlS5npiF5Q0OrxN1wni2n5QWg==",
+      "type": "package",
+      "path": "newtonsoft.json/12.0.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "lib/net20/Newtonsoft.Json.dll",
+        "lib/net20/Newtonsoft.Json.xml",
+        "lib/net35/Newtonsoft.Json.dll",
+        "lib/net35/Newtonsoft.Json.xml",
+        "lib/net40/Newtonsoft.Json.dll",
+        "lib/net40/Newtonsoft.Json.xml",
+        "lib/net45/Newtonsoft.Json.dll",
+        "lib/net45/Newtonsoft.Json.xml",
+        "lib/netstandard1.0/Newtonsoft.Json.dll",
+        "lib/netstandard1.0/Newtonsoft.Json.xml",
+        "lib/netstandard1.3/Newtonsoft.Json.dll",
+        "lib/netstandard1.3/Newtonsoft.Json.xml",
+        "lib/netstandard2.0/Newtonsoft.Json.dll",
+        "lib/netstandard2.0/Newtonsoft.Json.xml",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net40+sl5+win8+wp8+wpa81/Newtonsoft.Json.xml",
+        "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.dll",
+        "lib/portable-net45+win8+wp8+wpa81/Newtonsoft.Json.xml",
+        "newtonsoft.json.12.0.3.nupkg.sha512",
+        "newtonsoft.json.nuspec",
+        "packageIcon.png"
       ]
     },
     "System.Collections/4.3.0": {
@@ -1133,7 +1173,9 @@
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
       "Competition >= 1.0.0",
-      "LoggerComponent >= 1.0.0"
+      "CoordinateSharp >= 2.7.1.1",
+      "LoggerComponent >= 1.0.0",
+      "Newtonsoft.Json >= 12.0.3"
     ]
   },
   "packageFolders": {
@@ -1183,6 +1225,16 @@
     },
     "frameworks": {
       "netcoreapp3.1": {
+        "dependencies": {
+          "CoordinateSharp": {
+            "target": "Package",
+            "version": "[2.7.1.1, )"
+          },
+          "Newtonsoft.Json": {
+            "target": "Package",
+            "version": "[12.0.3, )"
+          }
+        },
         "imports": [
           "net461",
           "net462",
@@ -1201,7 +1253,7 @@
             "privateAssets": "none"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.400-preview-015203\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\3.1.400\\RuntimeIdentifierGraph.json"
       }
     }
   }

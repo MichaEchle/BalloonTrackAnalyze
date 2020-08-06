@@ -26,7 +26,7 @@ namespace Coordinates.Parsers
             string functionErrorMessage = $"Failed to parse file '{fileNameAndPath}':";
             track = null;
 
-            FileInfo fileInfo = new FileInfo(fileNameAndPath);
+            FileInfo fileInfo = new FileInfo($@"{fileNameAndPath}");
             if (!fileInfo.Exists)
             {
                 //Debug.WriteLine(functionErrorMessage + $"The file '{fileNameAndPath}' does not exists");
@@ -49,7 +49,7 @@ namespace Coordinates.Parsers
             int goalEastingDigits = -1;
             bool declaredAltitudeIsInFeet = true;
             List<string> lines = new List<string>();
-            using (StreamReader reader = new StreamReader(fileNameAndPath))
+            using (StreamReader reader = new StreamReader($@"{fileNameAndPath}"))
             {
                 while (!reader.EndOfStream)
                 {

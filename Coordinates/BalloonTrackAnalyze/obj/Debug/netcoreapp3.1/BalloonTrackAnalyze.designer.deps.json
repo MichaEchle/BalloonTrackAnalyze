@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v3.1": {
-      "CoordinateSharp/2.6.2.1": {
+      "CoordinateSharp/2.7.1.1": {
         "dependencies": {
           "System.Reflection.TypeExtensions": "4.7.0",
           "System.Runtime.Serialization.Formatters": "4.3.0",
@@ -14,8 +14,8 @@
         },
         "runtime": {
           "lib/netstandard2.1/CoordinateSharp.dll": {
-            "assemblyVersion": "2.6.2.1",
-            "fileVersion": "2.6.2.1"
+            "assemblyVersion": "2.7.1.1",
+            "fileVersion": "2.7.1.1"
           }
         }
       },
@@ -128,12 +128,12 @@
     }
   },
   "libraries": {
-    "CoordinateSharp/2.6.2.1": {
+    "CoordinateSharp/2.7.1.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-ZRnp3ZqiSlI9vMULnOQuBChRxXg/WuXYmjCteqO7L/6kTCzM2b4eFg6sEhGjIfJuSygQaY9Jv/E6XFricNzVUQ==",
-      "path": "coordinatesharp/2.6.2.1",
-      "hashPath": "coordinatesharp.2.6.2.1.nupkg.sha512"
+      "sha512": "sha512-c8itKdcvH8AEQ8I9EOahyfbShbdBphP5GQGxa5MRP2KvcVsM22CMoPS6duOHKzg6llhj9u5v4+go4cK4ue5kQg==",
+      "path": "coordinatesharp/2.7.1.1",
+      "hashPath": "coordinatesharp.2.7.1.1.nupkg.sha512"
     },
     "Microsoft.NETCore.Platforms/1.1.0": {
       "type": "package",

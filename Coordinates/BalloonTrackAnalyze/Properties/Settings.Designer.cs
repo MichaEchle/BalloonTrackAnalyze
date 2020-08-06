@@ -58,5 +58,17 @@ namespace BalloonTrackAnalyze.Properties {
                 this["UseBalloonLiveParser"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool UseGPSAltitude {
+            get {
+                return ((bool)(this["UseGPSAltitude"]));
+            }
+            set {
+                this["UseGPSAltitude"] = value;
+            }
+        }
     }
 }

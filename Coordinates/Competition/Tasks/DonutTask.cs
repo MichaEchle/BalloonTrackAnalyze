@@ -221,7 +221,7 @@ namespace Competition
 
         public override string ToString()
         {
-            return $"Donut (Task #{TaskNumber})";
+            return $"Task#{TaskNumber} (Donut)";
         }
         #endregion
 

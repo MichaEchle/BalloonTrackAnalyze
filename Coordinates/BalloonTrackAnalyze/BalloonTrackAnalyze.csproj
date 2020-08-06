@@ -11,6 +11,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="CoordinateSharp" Version="2.7.1.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Competition\Competition.csproj" />
     <ProjectReference Include="..\LoggerComponent\LoggerComponent.csproj" />
   </ItemGroup>

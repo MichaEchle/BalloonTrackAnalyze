@@ -208,7 +208,7 @@ namespace Competition
 
             public override string ToString()
             {
-                return "PieTier";
+                return "Pietier";
             }
             #endregion
 
@@ -285,7 +285,7 @@ namespace Competition
 
         public override string ToString()
         {
-            return $"Pie (Task #{TaskNumber})";
+            return $"Task#{TaskNumber} (Pie)";
         }
         #endregion
 

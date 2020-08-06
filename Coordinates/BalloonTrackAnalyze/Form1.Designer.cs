@@ -39,6 +39,10 @@
             this.tbFlightNumber = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label5 = new System.Windows.Forms.Label();
+            this.panel2 = new System.Windows.Forms.Panel();
+            this.rbBarometricAltitude = new System.Windows.Forms.RadioButton();
+            this.rbGPSAltitude = new System.Windows.Forms.RadioButton();
             this.panel1 = new System.Windows.Forms.Panel();
             this.rbFAILogger = new System.Windows.Forms.RadioButton();
             this.rbBalloonLive = new System.Windows.Forms.RadioButton();
@@ -55,6 +59,7 @@
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.panel2.SuspendLayout();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -64,7 +69,7 @@
             this.logListView1.Location = new System.Drawing.Point(0, 816);
             this.logListView1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.logListView1.Name = "logListView1";
-            this.logListView1.Size = new System.Drawing.Size(884, 145);
+            this.logListView1.Size = new System.Drawing.Size(1154, 145);
             this.logListView1.TabIndex = 0;
             // 
             // cbTaskList
@@ -92,7 +97,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(884, 816);
+            this.tabControl1.Size = new System.Drawing.Size(1154, 816);
             this.tabControl1.TabIndex = 2;
             // 
             // tabPage1
@@ -107,7 +112,7 @@
             this.tabPage1.Location = new System.Drawing.Point(4, 24);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(876, 788);
+            this.tabPage1.Size = new System.Drawing.Size(1146, 788);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Flight";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -135,13 +140,13 @@
             // 
             // btImportTask
             // 
-            this.btImportTask.Enabled = false;
             this.btImportTask.Location = new System.Drawing.Point(170, 146);
             this.btImportTask.Name = "btImportTask";
             this.btImportTask.Size = new System.Drawing.Size(100, 23);
             this.btImportTask.TabIndex = 5;
             this.btImportTask.Text = "Import Task";
             this.btImportTask.UseVisualStyleBackColor = true;
+            this.btImportTask.Click += new System.EventHandler(this.btImportTask_Click);
             // 
             // lbTaskList
             // 
@@ -171,6 +176,8 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.label5);
+            this.tabPage2.Controls.Add(this.panel2);
             this.tabPage2.Controls.Add(this.panel1);
             this.tabPage2.Controls.Add(this.label4);
             this.tabPage2.Controls.Add(this.btSaveCompetitionSettings);
@@ -183,10 +190,50 @@
             this.tabPage2.Location = new System.Drawing.Point(4, 24);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(876, 788);
+            this.tabPage2.Size = new System.Drawing.Size(1146, 788);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Competition";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(10, 107);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(82, 15);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "Height Source";
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.rbBarometricAltitude);
+            this.panel2.Controls.Add(this.rbGPSAltitude);
+            this.panel2.Location = new System.Drawing.Point(134, 103);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(142, 22);
+            this.panel2.TabIndex = 4;
+            // 
+            // rbBarometricAltitude
+            // 
+            this.rbBarometricAltitude.AutoSize = true;
+            this.rbBarometricAltitude.Location = new System.Drawing.Point(52, 0);
+            this.rbBarometricAltitude.Name = "rbBarometricAltitude";
+            this.rbBarometricAltitude.Size = new System.Drawing.Size(83, 19);
+            this.rbBarometricAltitude.TabIndex = 1;
+            this.rbBarometricAltitude.Text = "Barometric";
+            this.rbBarometricAltitude.UseVisualStyleBackColor = true;
+            // 
+            // rbGPSAltitude
+            // 
+            this.rbGPSAltitude.AutoSize = true;
+            this.rbGPSAltitude.Checked = true;
+            this.rbGPSAltitude.Location = new System.Drawing.Point(0, 0);
+            this.rbGPSAltitude.Name = "rbGPSAltitude";
+            this.rbGPSAltitude.Size = new System.Drawing.Size(46, 19);
+            this.rbGPSAltitude.TabIndex = 0;
+            this.rbGPSAltitude.TabStop = true;
+            this.rbGPSAltitude.Text = "GPS";
+            this.rbGPSAltitude.UseVisualStyleBackColor = true;
             // 
             // panel1
             // 
@@ -230,7 +277,7 @@
             // 
             // btSaveCompetitionSettings
             // 
-            this.btSaveCompetitionSettings.Location = new System.Drawing.Point(10, 103);
+            this.btSaveCompetitionSettings.Location = new System.Drawing.Point(10, 131);
             this.btSaveCompetitionSettings.Name = "btSaveCompetitionSettings";
             this.btSaveCompetitionSettings.Size = new System.Drawing.Size(203, 32);
             this.btSaveCompetitionSettings.TabIndex = 3;
@@ -307,7 +354,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(884, 961);
+            this.ClientSize = new System.Drawing.Size(1154, 961);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.logListView1);
             this.Name = "Form1";
@@ -318,6 +365,8 @@
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            this.panel2.ResumeLayout(false);
+            this.panel2.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
@@ -350,5 +399,9 @@
         private System.Windows.Forms.RadioButton rbBalloonLive;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btCalculateResults;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Panel panel2;
+        private System.Windows.Forms.RadioButton rbBarometricAltitude;
+        private System.Windows.Forms.RadioButton rbGPSAltitude;
     }
 }

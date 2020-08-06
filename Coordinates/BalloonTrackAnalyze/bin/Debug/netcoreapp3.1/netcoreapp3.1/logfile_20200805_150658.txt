@@ -1,4 +1,0 @@
-8/5/2020 3:06:36 PM: Info: Loaded Competition Folder 'E:\Micha\Documents' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/5/2020 3:06:36 PM: Info: Loaded Pilot Name Mapping File 'E:\Micha\Documents\PilotNameMapping.csv' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/5/2020 3:06:36 PM: Info: Loaded Track Source 'FAI Logger' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/5/2020 3:06:58 PM: Info: Stop Logging... (logged from 'LoggerComponent.LogListView')

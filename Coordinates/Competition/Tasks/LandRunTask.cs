@@ -155,7 +155,7 @@ namespace Competition
 
         public override string ToString()
         {
-            return $"Land Run (Task #{TaskNumber})";
+            return $"Task#{TaskNumber} (Land Run)";
         }
         #endregion
 

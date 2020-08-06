@@ -155,7 +155,7 @@ namespace Competition
 
         public override string ToString()
         {
-            return $"Elbow (Task #{TaskNumber})";
+            return $"Task#{TaskNumber} (Elbow)";
 
         }
         #endregion
