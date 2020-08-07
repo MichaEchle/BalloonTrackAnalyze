@@ -16,9 +16,12 @@ namespace BalloonTrackAnalyze
 {
     public partial class Form1 : Form
     {
-        private Point TaskControlLocation { get; set; } = new Point(0, 165);
+        private Point TaskControlLocation { get; set; } = new Point(0, 0);
 
-        private Flight flight { get; set; }
+        private Flight flight
+        {
+            get; set;
+        }
 
         public Form1()
         {
@@ -56,11 +59,11 @@ namespace BalloonTrackAnalyze
                     {
                         DonutControl donutControl = new DonutControl();
                         SuspendLayout();
-                        tabPage1.Controls.Remove(tabPage1.Controls["taskControl"]);
+                        plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         donutControl.Location = TaskControlLocation;
                         donutControl.Name = "taskControl";
                         donutControl.DataValid += DonutControl_DataValid;
-                        tabPage1.Controls.Add(donutControl);
+                        plUserControl.Controls.Add(donutControl);
                         ResumeLayout();
                     }
                     break;
@@ -68,11 +71,11 @@ namespace BalloonTrackAnalyze
                     {
                         PieControl pieControl = new PieControl();
                         SuspendLayout();
-                        tabPage1.Controls.Remove(tabPage1.Controls["taskControl"]);
+                        plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         pieControl.Location = TaskControlLocation;
                         pieControl.Name = "taskControl";
                         pieControl.DataValid += PieControl_DataValid;
-                        tabPage1.Controls.Add(pieControl);
+                        plUserControl.Controls.Add(pieControl);
                         ResumeLayout();
                     }
                     break;
@@ -80,11 +83,11 @@ namespace BalloonTrackAnalyze
                     {
                         ElbowControl elbowControl = new ElbowControl();
                         SuspendLayout();
-                        tabPage1.Controls.Remove(tabPage1.Controls["taskControl"]);
+                        plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         elbowControl.Location = TaskControlLocation;
                         elbowControl.Name = "taskControl";
                         elbowControl.DataValid += ElbowControl_DataValid;
-                        tabPage1.Controls.Add(elbowControl);
+                        plUserControl.Controls.Add(elbowControl);
                         ResumeLayout();
                     }
                     break;
@@ -92,11 +95,11 @@ namespace BalloonTrackAnalyze
                     {
                         LandRunControl landrunControl = new LandRunControl();
                         SuspendLayout();
-                        tabPage1.Controls.Remove(tabPage1.Controls["taskControl"]);
+                        plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         landrunControl.Location = TaskControlLocation;
                         landrunControl.Name = "taskControl";
                         landrunControl.DataValid += LandrunControl_DataValid;
-                        tabPage1.Controls.Add(landrunControl);
+                        plUserControl.Controls.Add(landrunControl);
                         ResumeLayout();
                     }
                     break;
@@ -110,7 +113,7 @@ namespace BalloonTrackAnalyze
 
         private void LandrunControl_DataValid()
         {
-            LandRunTask landRun = (tabPage1.Controls["taskControl"] as LandRunControl).LandRun;
+            LandRunTask landRun = (plUserControl.Controls["taskControl"] as LandRunControl).LandRun;
             if (DoesTaskNumberAlreadyExists(landRun.TaskNumber))
             {
                 Log(LogSeverityType.Error, $"Failed to create {landRun}: A task with the number '{landRun.TaskNumber}' already exists");
@@ -127,7 +130,7 @@ namespace BalloonTrackAnalyze
 
         private void ElbowControl_DataValid()
         {
-            ElbowTask elbow = (tabPage1.Controls["taskControl"] as ElbowControl).Elbow;
+            ElbowTask elbow = (plUserControl.Controls["taskControl"] as ElbowControl).Elbow;
             if (DoesTaskNumberAlreadyExists(elbow.TaskNumber))
             {
                 Log(LogSeverityType.Error, $"Failed to create {elbow}: A task with the number '{elbow.TaskNumber}' already exists");
@@ -144,7 +147,7 @@ namespace BalloonTrackAnalyze
 
         private void PieControl_DataValid()
         {
-            PieTask pie = (tabPage1.Controls["taskControl"] as PieControl).PieTask;
+            PieTask pie = (plUserControl.Controls["taskControl"] as PieControl).PieTask;
             if (DoesTaskNumberAlreadyExists(pie.TaskNumber))
             {
                 Log(LogSeverityType.Error, $"Failed to create {pie}: A task with the number '{pie.TaskNumber}' already exists");
@@ -161,7 +164,7 @@ namespace BalloonTrackAnalyze
 
         private void DonutControl_DataValid()
         {
-            DonutTask donut = (tabPage1.Controls["taskControl"] as DonutControl).Donut;
+            DonutTask donut = (plUserControl.Controls["taskControl"] as DonutControl).Donut;
             if (DoesTaskNumberAlreadyExists(donut.TaskNumber))
             {
                 Log(LogSeverityType.Error, $"Failed to create {donut}: A task with the number '{donut.TaskNumber}' already exists");
@@ -232,11 +235,11 @@ namespace BalloonTrackAnalyze
                     {
                         DonutControl donutControl = new DonutControl(donut);
                         SuspendLayout();
-                        tabPage1.Controls.Remove(tabPage1.Controls["taskControl"]);
+                        plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         donutControl.Location = TaskControlLocation;
                         donutControl.Name = "taskControl";
                         donutControl.DataValid += DonutControl_DataValid;
-                        tabPage1.Controls.Add(donutControl);
+                        plUserControl.Controls.Add(donutControl);
                         ResumeLayout();
                     }
                     break;
@@ -244,11 +247,11 @@ namespace BalloonTrackAnalyze
                     {
                         PieControl pieControl = new PieControl(pie);
                         SuspendLayout();
-                        tabPage1.Controls.Remove(tabPage1.Controls["taskControl"]);
+                        plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         pieControl.Location = TaskControlLocation;
                         pieControl.Name = "taskControl";
                         pieControl.DataValid += PieControl_DataValid;
-                        tabPage1.Controls.Add(pieControl);
+                        plUserControl.Controls.Add(pieControl);
                         ResumeLayout();
                     }
                     break;
@@ -256,11 +259,11 @@ namespace BalloonTrackAnalyze
                     {
                         ElbowControl elbowControl = new ElbowControl(elbow);
                         SuspendLayout();
-                        tabPage1.Controls.Remove(tabPage1.Controls["taskControl"]);
+                        plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         elbowControl.Location = TaskControlLocation;
                         elbowControl.Name = "taskControl";
                         elbowControl.DataValid += ElbowControl_DataValid;
-                        tabPage1.Controls.Add(elbowControl);
+                        plUserControl.Controls.Add(elbowControl);
                         ResumeLayout();
                     }
                     break;
@@ -268,11 +271,11 @@ namespace BalloonTrackAnalyze
                     {
                         LandRunControl landrunControl = new LandRunControl(landRun);
                         SuspendLayout();
-                        tabPage1.Controls.Remove(tabPage1.Controls["taskControl"]);
+                        plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         landrunControl.Location = TaskControlLocation;
                         landrunControl.Name = "taskControl";
                         landrunControl.DataValid += LandrunControl_DataValid;
-                        tabPage1.Controls.Add(landrunControl);
+                        plUserControl.Controls.Add(landrunControl);
                         ResumeLayout();
                     }
                     break;
@@ -300,7 +303,8 @@ namespace BalloonTrackAnalyze
             {
                 if (item is ICompetitionTask)
                 {
-                    flight.Tasks.Add(item as ICompetitionTask);
+                    if (!flight.Tasks.Contains(item as ICompetitionTask))
+                        flight.Tasks.Add(item as ICompetitionTask);
                     try
                     {
 
@@ -308,7 +312,7 @@ namespace BalloonTrackAnalyze
                         //options.WriteIndented = true;
 
                         //string jsonString = JsonSerializer.Serialize(item, options);
-                        string jsonString = JsonConvert.SerializeObject(item,Formatting.Indented,new JsonSerializerSettings() { TypeNameHandling=TypeNameHandling.Auto});
+                        string jsonString = JsonConvert.SerializeObject(item, Formatting.Indented, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
                         File.WriteAllText($@"{Path.Combine(tbCompetitionFolder.Text, "Scoring", $"Flight{flightNumber:D2}", "Tasks", item.ToString() + ".json")}", jsonString);
                     }
                     catch (Exception ex)
@@ -324,6 +328,7 @@ namespace BalloonTrackAnalyze
                     Log(LogSeverityType.Error, functionErrorMessage);
                     return;
                 }
+                Log(LogSeverityType.Info, $"{flight.Tracks.Count} Track files parsed successfully");
             }
             catch (Exception ex)
             {
@@ -337,6 +342,7 @@ namespace BalloonTrackAnalyze
                     Log(LogSeverityType.Error, functionErrorMessage);
                     return;
                 }
+                Log(LogSeverityType.Info, "Successfully mapped pilot names to tracks");
             }
             catch (Exception ex)
             {
@@ -346,14 +352,16 @@ namespace BalloonTrackAnalyze
             try
             {
                 CreateMarkerAndDeclarationFiles(flightNumber);
+                Log(LogSeverityType.Info, "Successfully created file with markers and declarations for each pilot");
             }
             catch (Exception ex)
             {
-                Log(LogSeverityType.Warning,functionErrorMessage+$"Failed to create marker and declaration files: {ex.Message}");
+                Log(LogSeverityType.Warning, functionErrorMessage + $"Failed to create marker and declaration files: {ex.Message}");
             }
             try
             {
                 flight.CalculateResults(rbGPSAltitude.Checked, Path.Combine(tbCompetitionFolder.Text, "Scoring", $"Flight{flightNumber:D2}"));
+                Log(LogSeverityType.Info, "Successfully calculated results of all pilots for each task");
             }
             catch (Exception ex)
             {
@@ -442,11 +450,11 @@ namespace BalloonTrackAnalyze
                         DonutTask donut = JsonConvert.DeserializeObject<DonutTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
                         DonutControl donutControl = new DonutControl(donut);
                         SuspendLayout();
-                        tabPage1.Controls.Remove(tabPage1.Controls["taskControl"]);
+                        plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         donutControl.Location = TaskControlLocation;
                         donutControl.Name = "taskControl";
                         donutControl.DataValid += DonutControl_DataValid;
-                        tabPage1.Controls.Add(donutControl);
+                        plUserControl.Controls.Add(donutControl);
                         ResumeLayout();
                     }
                     else if (openFileDialog.FileName.Contains("(Pie)"))
@@ -456,11 +464,11 @@ namespace BalloonTrackAnalyze
                         PieTask pie = JsonConvert.DeserializeObject<PieTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
                         PieControl pieControl = new PieControl(pie);
                         SuspendLayout();
-                        tabPage1.Controls.Remove(tabPage1.Controls["taskControl"]);
+                        plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         pieControl.Location = TaskControlLocation;
                         pieControl.Name = "taskControl";
                         pieControl.DataValid += PieControl_DataValid;
-                        tabPage1.Controls.Add(pieControl);
+                        plUserControl.Controls.Add(pieControl);
                         ResumeLayout();
                     }
                     else if (openFileDialog.FileName.Contains("(Elbow)"))
@@ -470,11 +478,11 @@ namespace BalloonTrackAnalyze
                         ElbowTask elbow = JsonConvert.DeserializeObject<ElbowTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
                         ElbowControl elbowControl = new ElbowControl(elbow);
                         SuspendLayout();
-                        tabPage1.Controls.Remove(tabPage1.Controls["taskControl"]);
+                        plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         elbowControl.Location = TaskControlLocation;
                         elbowControl.Name = "taskControl";
                         elbowControl.DataValid += ElbowControl_DataValid;
-                        tabPage1.Controls.Add(elbowControl);
+                        plUserControl.Controls.Add(elbowControl);
                         ResumeLayout();
                     }
                     else if (openFileDialog.FileName.Contains("(Land Run)"))
@@ -484,11 +492,11 @@ namespace BalloonTrackAnalyze
                         LandRunTask landRun = JsonConvert.DeserializeObject<LandRunTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
                         LandRunControl landrunControl = new LandRunControl(landRun);
                         SuspendLayout();
-                        tabPage1.Controls.Remove(tabPage1.Controls["taskControl"]);
+                        plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         landrunControl.Location = TaskControlLocation;
                         landrunControl.Name = "taskControl";
                         landrunControl.DataValid += LandrunControl_DataValid;
-                        tabPage1.Controls.Add(landrunControl);
+                        plUserControl.Controls.Add(landrunControl);
                         ResumeLayout();
                     }
                     else
@@ -506,5 +514,23 @@ namespace BalloonTrackAnalyze
             }
         }
 
+        private void tbFlightNumber_Leave(object sender, EventArgs e)
+        {
+            if (MessageBox.Show("Do you want the default folder structure to be created now?", "Default Folder Structure", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            {
+                if (string.IsNullOrWhiteSpace(tbFlightNumber.Text))
+                {
+                    Log(LogSeverityType.Error,  "Please enter a Flight No first");
+                    return;
+                }
+                int flightNumber;
+                if (!int.TryParse(tbFlightNumber.Text, out flightNumber))
+                {
+                    Log(LogSeverityType.Error,  $"Failed to parse Flight No '{tbFlightNumber.Text}' as integer");
+                    return;
+                }
+                CreateFolderStructure(flightNumber);
+            }
+        }
     }
 }

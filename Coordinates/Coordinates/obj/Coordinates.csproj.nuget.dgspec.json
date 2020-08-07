@@ -1,24 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj": {}
+    "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj": {
+    "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj",
+        "projectUniqueName": "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj",
         "projectName": "Coordinates",
-        "projectPath": "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj",
-        "packagesPath": "C:\\Users\\Micha\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\obj\\",
+        "projectPath": "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj",
+        "packagesPath": "C:\\Users\\micechle\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
+          "C:\\Microsoft\\Xamarin\\NuGet\\",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\Micha\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\micechle\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"
@@ -30,8 +32,8 @@
         "frameworks": {
           "netcoreapp3.1": {
             "projectReferences": {
-              "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\LoggerComponent\\LoggerComponent.csproj": {
-                "projectPath": "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\LoggerComponent\\LoggerComponent.csproj"
+              "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\LoggerComponent\\LoggerComponent.csproj": {
+                "projectPath": "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\LoggerComponent\\LoggerComponent.csproj"
               }
             }
           }
@@ -72,21 +74,23 @@
         }
       }
     },
-    "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\LoggerComponent\\LoggerComponent.csproj": {
+    "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\LoggerComponent\\LoggerComponent.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\LoggerComponent\\LoggerComponent.csproj",
+        "projectUniqueName": "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\LoggerComponent\\LoggerComponent.csproj",
         "projectName": "LoggerComponent",
-        "projectPath": "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\LoggerComponent\\LoggerComponent.csproj",
-        "packagesPath": "C:\\Users\\Micha\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Micha\\Source\\repos\\BalloonTrackAnalyze\\Coordinates\\LoggerComponent\\obj\\",
+        "projectPath": "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\LoggerComponent\\LoggerComponent.csproj",
+        "packagesPath": "C:\\Users\\micechle\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\LoggerComponent\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
+          "C:\\Microsoft\\Xamarin\\NuGet\\",
           "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
         ],
         "configFilePaths": [
-          "C:\\Users\\Micha\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "C:\\Users\\micechle\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"

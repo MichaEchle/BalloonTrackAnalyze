@@ -15,27 +15,71 @@ namespace BalloonTrackAnalyze.TaskControls
 {
     public partial class DonutControl : UserControl
     {
-        public DonutTask Donut { get; private set; }
+        #region Properties
 
+        /// <summary>
+        /// The donut task to be created or modified with this control
+        /// </summary>
+        public DonutTask Donut
+        {
+            get; private set;
+        }
+
+        /// <summary>
+        /// Delegate for DataValid event
+        /// </summary>
         public delegate void DataValidDelegate();
 
+        /// <summary>
+        /// Event will be fired when the input for the donut control is valid
+        /// </summary>
         public event DataValidDelegate DataValid;
 
-        private Point RuleControlLocation = new Point(314, 168);
+        /// <summary>
+        /// Location for the user controls of the different rules
+        /// </summary>
+        private Point RuleControlLocation = new Point(0, 0);
+        #endregion
 
+        #region Constructors
+
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public DonutControl()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Constructor which pre-fills controls from existing donut task
+        /// </summary>
+        /// <param name="donut">the existing donut task</param>
         public DonutControl(DonutTask donut)
         {
             Donut = donut;
             InitializeComponent();
             Prefill();
         }
+        #endregion
 
+        #region API
 
+        /// <summary>
+        /// Converts the object suitable for display representation
+        /// </summary>
+        /// <returns>display text of the this object</returns>
+        public override string ToString()
+        {
+            return "Donut Setup Control";
+        }
+
+        #endregion
+
+        #region private methods
+        /// <summary>
+        /// Pre-fill controls from existing task
+        /// </summary>
         private void Prefill()
         {
             if (Donut != null)
@@ -68,6 +112,11 @@ namespace BalloonTrackAnalyze.TaskControls
             }
         }
 
+        /// <summary>
+        /// Validates user input and creates new donut task / modifies the existing donut task
+        /// </summary>
+        /// <param name="sender">sender of the event</param>
+        /// <param name="e">event arguments</param>
         private void btCreate_Click(object sender, EventArgs e)
         {
             bool isDataValid = true;
@@ -162,7 +211,7 @@ namespace BalloonTrackAnalyze.TaskControls
                 }
 
                 Donut.SetupDonut(taskNumber, goalNumber, 1, innerRadius, outerRadius, lowerBoundary, upperBoundary, isReentranceAllowed, declarationValidationRules);
-                
+
                 tbTaskNumber.Text = "";
                 tbGoalNumber.Text = "";
                 tbInnerRadius.Text = "";
@@ -174,21 +223,28 @@ namespace BalloonTrackAnalyze.TaskControls
             }
         }
 
+        /// <summary>
+        /// Called when input for donut task is valid
+        /// </summary>
         protected virtual void OnDataValid()
         {
             DataValid?.Invoke();
         }
-
-        public override string ToString()
-        {
-            return "Donut Setup Control";
-        }
-
+        /// <summary>
+        /// Logs a user messages
+        /// </summary>
+        /// <param name="logSeverity">the severity of the message</param>
+        /// <param name="text">the message text</param>
         private void Log(LogSeverityType logSeverity, string text)
         {
             Logger.Log(this, logSeverity, text);
         }
 
+        /// <summary>
+        /// Displays the corresponding user control for the selected rule
+        /// </summary>
+        /// <param name="sender">sender of the event</param>
+        /// <param name="e">event arguments</param>
         private void cbRuleList_SelectedIndexChanged(object sender, EventArgs e)
         {
             switch (cbRuleList.SelectedItem.ToString())
@@ -197,12 +253,12 @@ namespace BalloonTrackAnalyze.TaskControls
                     {
                         DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new DeclarationToGoalDistanceRuleControl();
                         SuspendLayout();
-                        Controls.Remove(Controls["ruleControl"]);
+                        plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalDistanceRuleControl.Location = RuleControlLocation;
                         declarationToGoalDistanceRuleControl.Name = "ruleControl";
                         declarationToGoalDistanceRuleControl.TabIndex = 13;
                         declarationToGoalDistanceRuleControl.DataValid += DeclarationToGoalDistanceRuleControl_DataValid;
-                        Controls.Add(declarationToGoalDistanceRuleControl);
+                        plRuleControl.Controls.Add(declarationToGoalDistanceRuleControl);
                         ResumeLayout();
                     }
                     break;
@@ -210,12 +266,12 @@ namespace BalloonTrackAnalyze.TaskControls
                     {
                         DeclarationToGoalHeigthRuleControl declarationToGoalHeigthRuleControl = new DeclarationToGoalHeigthRuleControl();
                         SuspendLayout();
-                        Controls.Remove(Controls["ruleControl"]);
+                        plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalHeigthRuleControl.Location = RuleControlLocation;
                         declarationToGoalHeigthRuleControl.Name = "ruleControl";
                         declarationToGoalHeigthRuleControl.TabIndex = 13;
                         declarationToGoalHeigthRuleControl.DataValid += DeclarationToGoalHeigthRuleControl_DataValid;
-                        Controls.Add(declarationToGoalHeigthRuleControl);
+                        plRuleControl.Controls.Add(declarationToGoalHeigthRuleControl);
                         ResumeLayout();
                     }
                     break;
@@ -223,18 +279,23 @@ namespace BalloonTrackAnalyze.TaskControls
                     {
                         GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new GoalToOtherGoalsDistanceRuleControl();
                         SuspendLayout();
-                        Controls.Remove(Controls["ruleControl"]);
+                        plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         goalToOtherGoalsDistanceRuleControl.Location = RuleControlLocation;
                         goalToOtherGoalsDistanceRuleControl.Name = "ruleControl";
                         goalToOtherGoalsDistanceRuleControl.TabIndex = 13;
                         goalToOtherGoalsDistanceRuleControl.DataValid += GoalToOtherGoalsDistanceRuleControl_DataValid;
-                        Controls.Add(goalToOtherGoalsDistanceRuleControl);
+                        plRuleControl.Controls.Add(goalToOtherGoalsDistanceRuleControl);
                         ResumeLayout();
                     }
                     break;
             }
         }
 
+        /// <summary>
+        /// Displays the pre-filled user control of the selected rule
+        /// </summary>
+        /// <param name="sender">sender of the event</param>
+        /// <param name="e">event arguments</param>
         private void lbRules_SelectedIndexChanged(object sender, EventArgs e)
         {
             switch (lbRules.SelectedItem)
@@ -243,12 +304,12 @@ namespace BalloonTrackAnalyze.TaskControls
                     {
                         DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new DeclarationToGoalDistanceRuleControl(declarationToGoalDistanceRule);
                         SuspendLayout();
-                        Controls.Remove(Controls["ruleControl"]);
+                        plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalDistanceRuleControl.Location = RuleControlLocation;
                         declarationToGoalDistanceRuleControl.Name = "ruleControl";
                         declarationToGoalDistanceRuleControl.TabIndex = 13;
                         declarationToGoalDistanceRuleControl.DataValid += DeclarationToGoalDistanceRuleControl_DataValid;
-                        Controls.Add(declarationToGoalDistanceRuleControl);
+                        plRuleControl.Controls.Add(declarationToGoalDistanceRuleControl);
                         ResumeLayout();
                     }
                     break;
@@ -256,12 +317,12 @@ namespace BalloonTrackAnalyze.TaskControls
                     {
                         DeclarationToGoalHeigthRuleControl declarationToGoalHeigthRuleControl = new DeclarationToGoalHeigthRuleControl(declarationToGoalHeightRule);
                         SuspendLayout();
-                        Controls.Remove(Controls["ruleControl"]);
+                        plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalHeigthRuleControl.Location = RuleControlLocation;
                         declarationToGoalHeigthRuleControl.Name = "ruleControl";
                         declarationToGoalHeigthRuleControl.TabIndex = 13;
                         declarationToGoalHeigthRuleControl.DataValid += DeclarationToGoalHeigthRuleControl_DataValid;
-                        Controls.Add(declarationToGoalHeigthRuleControl);
+                        plRuleControl.Controls.Add(declarationToGoalHeigthRuleControl);
                         ResumeLayout();
                     }
                     break;
@@ -269,12 +330,12 @@ namespace BalloonTrackAnalyze.TaskControls
                     {
                         GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new GoalToOtherGoalsDistanceRuleControl(goalToOtherGoalsDistance);
                         SuspendLayout();
-                        Controls.Remove(Controls["ruleControl"]);
+                        plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         goalToOtherGoalsDistanceRuleControl.Location = RuleControlLocation;
                         goalToOtherGoalsDistanceRuleControl.Name = "ruleControl";
                         goalToOtherGoalsDistanceRuleControl.TabIndex = 13;
                         goalToOtherGoalsDistanceRuleControl.DataValid += GoalToOtherGoalsDistanceRuleControl_DataValid;
-                        Controls.Add(goalToOtherGoalsDistanceRuleControl);
+                        plRuleControl.Controls.Add(goalToOtherGoalsDistanceRuleControl);
                         ResumeLayout();
                     }
                     break;
@@ -283,33 +344,49 @@ namespace BalloonTrackAnalyze.TaskControls
             }
         }
 
+        /// <summary>
+        /// Adds a new goal to other goals distance rule to the rule list box, when the rule user controls fires the DataVaild event
+        /// </summary>
         private void GoalToOtherGoalsDistanceRuleControl_DataValid()
         {
-            GoalToOtherGoalsDistanceRule goalToOtherGoalsDistanceRule = (Controls["ruleControl"] as GoalToOtherGoalsDistanceRuleControl).GoalToOtherGoalsDistanceRule;
+            GoalToOtherGoalsDistanceRule goalToOtherGoalsDistanceRule = (plRuleControl.Controls["ruleControl"] as GoalToOtherGoalsDistanceRuleControl).GoalToOtherGoalsDistanceRule;
             if (!lbRules.Items.Contains(goalToOtherGoalsDistanceRule))
                 lbRules.Items.Add(goalToOtherGoalsDistanceRule);
             Logger.Log(this, LogSeverityType.Info, $"{goalToOtherGoalsDistanceRule} created/modified");
         }
 
+        /// <summary>
+        /// Adds a new declaration to goal height rule to the rule list box, when the rule user controls fires the DataVaild event
+        /// </summary>
         private void DeclarationToGoalHeigthRuleControl_DataValid()
         {
-            DeclarationToGoalHeightRule declarationToGoalHeightRule = (Controls["ruleControl"] as DeclarationToGoalHeigthRuleControl).DeclarationToGoalHeightRule;
+            DeclarationToGoalHeightRule declarationToGoalHeightRule = (plRuleControl.Controls["ruleControl"] as DeclarationToGoalHeigthRuleControl).DeclarationToGoalHeightRule;
             if (!lbRules.Items.Contains(declarationToGoalHeightRule))
                 lbRules.Items.Add(declarationToGoalHeightRule);
             Logger.Log(this, LogSeverityType.Info, $"{declarationToGoalHeightRule} created/modified");
         }
+
+        /// <summary>
+        /// Adds a new declaration to goal distance rule to the rule list box, when the rule user controls fires the DataVaild event
+        /// </summary>
         private void DeclarationToGoalDistanceRuleControl_DataValid()
         {
-            DeclarationToGoalDistanceRule declarationToGoalDistanceRule = (Controls["ruleControl"] as DeclarationToGoalDistanceRuleControl).DeclarationToGoalDistanceRule;
+            DeclarationToGoalDistanceRule declarationToGoalDistanceRule = (plRuleControl.Controls["ruleControl"] as DeclarationToGoalDistanceRuleControl).DeclarationToGoalDistanceRule;
             if (!lbRules.Items.Contains(declarationToGoalDistanceRule))
                 lbRules.Items.Add(declarationToGoalDistanceRule);
             Logger.Log(this, LogSeverityType.Info, $"{declarationToGoalDistanceRule} created/modified");
         }
 
+        /// <summary>
+        /// Removes the selected rule form the list box
+        /// </summary>
+        /// <param name="sender">sender of the event</param>
+        /// <param name="e">event arguments</param>
         private void btRemoveRule_Click(object sender, EventArgs e)
         {
             if (lbRules.SelectedItem != null)
                 lbRules.Items.Remove(lbRules.SelectedItem);
         }
+        #endregion
     }
 }

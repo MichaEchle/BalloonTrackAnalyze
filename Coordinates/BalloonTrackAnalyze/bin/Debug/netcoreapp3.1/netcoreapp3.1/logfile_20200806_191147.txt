@@ -1,5 +1,0 @@
-8/6/2020 7:11:36 PM: Info: Loaded Competition Folder 'D:\Competition' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 7:11:36 PM: Info: Loaded Pilot Name Mapping File 'D:\Competition\PilotNameMapping.csv' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 7:11:36 PM: Info: Loaded Track Source 'Balloon Live' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 7:11:36 PM: Info: Loaded Height Source 'GPS' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 7:11:47 PM: Info: Task#2 (Donut) created/modified (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')

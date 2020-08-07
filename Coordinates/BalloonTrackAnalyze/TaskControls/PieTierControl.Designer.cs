@@ -54,6 +54,7 @@
             this.lbRules = new System.Windows.Forms.ListBox();
             this.btRemoveRule = new System.Windows.Forms.Button();
             this.cbRuleList = new System.Windows.Forms.ComboBox();
+            this.plRuleControl = new System.Windows.Forms.Panel();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -62,54 +63,54 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(10, 39);
+            this.label1.Location = new System.Drawing.Point(11, 52);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(53, 15);
+            this.label1.Size = new System.Drawing.Size(67, 20);
             this.label1.TabIndex = 0;
             this.label1.Text = "Goal No.";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 68);
+            this.label2.Location = new System.Drawing.Point(11, 91);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(42, 15);
+            this.label2.Size = new System.Drawing.Size(53, 20);
             this.label2.TabIndex = 0;
             this.label2.Text = "Radius";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(10, 95);
+            this.label3.Location = new System.Drawing.Point(11, 127);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(66, 15);
+            this.label3.Size = new System.Drawing.Size(83, 20);
             this.label3.TabIndex = 0;
             this.label3.Text = "Reentrance";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(10, 122);
+            this.label4.Location = new System.Drawing.Point(11, 163);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(58, 15);
+            this.label4.Size = new System.Drawing.Size(73, 20);
             this.label4.TabIndex = 0;
             this.label4.Text = "Multiplier";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(10, 151);
+            this.label5.Location = new System.Drawing.Point(11, 201);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(93, 15);
+            this.label5.Size = new System.Drawing.Size(116, 20);
             this.label5.TabIndex = 0;
             this.label5.Text = "Lower Boundary";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(10, 180);
+            this.label6.Location = new System.Drawing.Point(11, 240);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(93, 15);
+            this.label6.Size = new System.Drawing.Size(117, 20);
             this.label6.TabIndex = 0;
             this.label6.Text = "Upper Boundary";
             // 
@@ -117,31 +118,34 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label7.Location = new System.Drawing.Point(10, 10);
+            this.label7.Location = new System.Drawing.Point(11, 13);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(115, 21);
+            this.label7.Size = new System.Drawing.Size(144, 28);
             this.label7.TabIndex = 0;
             this.label7.Text = "Pie Tier Setup";
             // 
             // tbGoalNumber
             // 
-            this.tbGoalNumber.Location = new System.Drawing.Point(124, 36);
+            this.tbGoalNumber.Location = new System.Drawing.Point(142, 48);
+            this.tbGoalNumber.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tbGoalNumber.Name = "tbGoalNumber";
-            this.tbGoalNumber.Size = new System.Drawing.Size(84, 23);
+            this.tbGoalNumber.Size = new System.Drawing.Size(95, 27);
             this.tbGoalNumber.TabIndex = 1;
             // 
             // tbRadius
             // 
-            this.tbRadius.Location = new System.Drawing.Point(124, 65);
+            this.tbRadius.Location = new System.Drawing.Point(142, 87);
+            this.tbRadius.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tbRadius.Name = "tbRadius";
-            this.tbRadius.Size = new System.Drawing.Size(84, 23);
+            this.tbRadius.Size = new System.Drawing.Size(95, 27);
             this.tbRadius.TabIndex = 2;
             // 
             // tbMultiplier
             // 
-            this.tbMultiplier.Location = new System.Drawing.Point(124, 119);
+            this.tbMultiplier.Location = new System.Drawing.Point(142, 159);
+            this.tbMultiplier.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tbMultiplier.Name = "tbMultiplier";
-            this.tbMultiplier.Size = new System.Drawing.Size(84, 23);
+            this.tbMultiplier.Size = new System.Drawing.Size(95, 27);
             this.tbMultiplier.TabIndex = 5;
             // 
             // cbIsReetranceAllowed
@@ -149,33 +153,37 @@
             this.cbIsReetranceAllowed.AutoSize = true;
             this.cbIsReetranceAllowed.Checked = true;
             this.cbIsReetranceAllowed.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.cbIsReetranceAllowed.Location = new System.Drawing.Point(124, 94);
+            this.cbIsReetranceAllowed.Location = new System.Drawing.Point(142, 125);
+            this.cbIsReetranceAllowed.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cbIsReetranceAllowed.Name = "cbIsReetranceAllowed";
-            this.cbIsReetranceAllowed.Size = new System.Drawing.Size(69, 19);
+            this.cbIsReetranceAllowed.Size = new System.Drawing.Size(86, 24);
             this.cbIsReetranceAllowed.TabIndex = 4;
             this.cbIsReetranceAllowed.Text = "Allowed";
             this.cbIsReetranceAllowed.UseVisualStyleBackColor = true;
             // 
             // tbLowerBoundary
             // 
-            this.tbLowerBoundary.Location = new System.Drawing.Point(124, 148);
+            this.tbLowerBoundary.Location = new System.Drawing.Point(142, 197);
+            this.tbLowerBoundary.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tbLowerBoundary.Name = "tbLowerBoundary";
-            this.tbLowerBoundary.Size = new System.Drawing.Size(84, 23);
+            this.tbLowerBoundary.Size = new System.Drawing.Size(95, 27);
             this.tbLowerBoundary.TabIndex = 6;
             // 
             // tbUpperBoundary
             // 
-            this.tbUpperBoundary.Location = new System.Drawing.Point(124, 177);
+            this.tbUpperBoundary.Location = new System.Drawing.Point(142, 236);
+            this.tbUpperBoundary.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tbUpperBoundary.Name = "tbUpperBoundary";
-            this.tbUpperBoundary.Size = new System.Drawing.Size(84, 23);
+            this.tbUpperBoundary.Size = new System.Drawing.Size(95, 27);
             this.tbUpperBoundary.TabIndex = 8;
             // 
             // rbRadiusFeet
             // 
             this.rbRadiusFeet.AutoSize = true;
-            this.rbRadiusFeet.Location = new System.Drawing.Point(52, 1);
+            this.rbRadiusFeet.Location = new System.Drawing.Point(59, 1);
+            this.rbRadiusFeet.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.rbRadiusFeet.Name = "rbRadiusFeet";
-            this.rbRadiusFeet.Size = new System.Drawing.Size(33, 19);
+            this.rbRadiusFeet.Size = new System.Drawing.Size(40, 24);
             this.rbRadiusFeet.TabIndex = 2;
             this.rbRadiusFeet.TabStop = true;
             this.rbRadiusFeet.Text = "ft";
@@ -185,9 +193,10 @@
             // 
             this.rbRadiusMeter.AutoSize = true;
             this.rbRadiusMeter.Checked = true;
-            this.rbRadiusMeter.Location = new System.Drawing.Point(10, 1);
+            this.rbRadiusMeter.Location = new System.Drawing.Point(11, 1);
+            this.rbRadiusMeter.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.rbRadiusMeter.Name = "rbRadiusMeter";
-            this.rbRadiusMeter.Size = new System.Drawing.Size(36, 19);
+            this.rbRadiusMeter.Size = new System.Drawing.Size(43, 24);
             this.rbRadiusMeter.TabIndex = 1;
             this.rbRadiusMeter.TabStop = true;
             this.rbRadiusMeter.Text = "m";
@@ -198,17 +207,19 @@
             this.panel1.BackColor = System.Drawing.Color.White;
             this.panel1.Controls.Add(this.rbRadiusFeet);
             this.panel1.Controls.Add(this.rbRadiusMeter);
-            this.panel1.Location = new System.Drawing.Point(214, 65);
+            this.panel1.Location = new System.Drawing.Point(245, 87);
+            this.panel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(94, 23);
+            this.panel1.Size = new System.Drawing.Size(107, 31);
             this.panel1.TabIndex = 3;
             // 
             // rbLowerBoundaryFeet
             // 
             this.rbLowerBoundaryFeet.AutoSize = true;
-            this.rbLowerBoundaryFeet.Location = new System.Drawing.Point(52, 1);
+            this.rbLowerBoundaryFeet.Location = new System.Drawing.Point(59, 1);
+            this.rbLowerBoundaryFeet.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.rbLowerBoundaryFeet.Name = "rbLowerBoundaryFeet";
-            this.rbLowerBoundaryFeet.Size = new System.Drawing.Size(33, 19);
+            this.rbLowerBoundaryFeet.Size = new System.Drawing.Size(40, 24);
             this.rbLowerBoundaryFeet.TabIndex = 2;
             this.rbLowerBoundaryFeet.TabStop = true;
             this.rbLowerBoundaryFeet.Text = "ft";
@@ -218,9 +229,10 @@
             // 
             this.rbLowerBoundaryMeter.AutoSize = true;
             this.rbLowerBoundaryMeter.Checked = true;
-            this.rbLowerBoundaryMeter.Location = new System.Drawing.Point(10, 1);
+            this.rbLowerBoundaryMeter.Location = new System.Drawing.Point(11, 1);
+            this.rbLowerBoundaryMeter.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.rbLowerBoundaryMeter.Name = "rbLowerBoundaryMeter";
-            this.rbLowerBoundaryMeter.Size = new System.Drawing.Size(36, 19);
+            this.rbLowerBoundaryMeter.Size = new System.Drawing.Size(43, 24);
             this.rbLowerBoundaryMeter.TabIndex = 1;
             this.rbLowerBoundaryMeter.TabStop = true;
             this.rbLowerBoundaryMeter.Text = "m";
@@ -231,17 +243,19 @@
             this.panel2.BackColor = System.Drawing.Color.White;
             this.panel2.Controls.Add(this.rbLowerBoundaryFeet);
             this.panel2.Controls.Add(this.rbLowerBoundaryMeter);
-            this.panel2.Location = new System.Drawing.Point(214, 148);
+            this.panel2.Location = new System.Drawing.Point(245, 197);
+            this.panel2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(94, 23);
+            this.panel2.Size = new System.Drawing.Size(107, 31);
             this.panel2.TabIndex = 7;
             // 
             // rbUpperBoundaryFeet
             // 
             this.rbUpperBoundaryFeet.AutoSize = true;
-            this.rbUpperBoundaryFeet.Location = new System.Drawing.Point(52, 1);
+            this.rbUpperBoundaryFeet.Location = new System.Drawing.Point(59, 1);
+            this.rbUpperBoundaryFeet.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.rbUpperBoundaryFeet.Name = "rbUpperBoundaryFeet";
-            this.rbUpperBoundaryFeet.Size = new System.Drawing.Size(33, 19);
+            this.rbUpperBoundaryFeet.Size = new System.Drawing.Size(40, 24);
             this.rbUpperBoundaryFeet.TabIndex = 2;
             this.rbUpperBoundaryFeet.TabStop = true;
             this.rbUpperBoundaryFeet.Text = "ft";
@@ -251,9 +265,10 @@
             // 
             this.rbUpperBoundaryMeter.AutoSize = true;
             this.rbUpperBoundaryMeter.Checked = true;
-            this.rbUpperBoundaryMeter.Location = new System.Drawing.Point(10, 1);
+            this.rbUpperBoundaryMeter.Location = new System.Drawing.Point(11, 1);
+            this.rbUpperBoundaryMeter.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.rbUpperBoundaryMeter.Name = "rbUpperBoundaryMeter";
-            this.rbUpperBoundaryMeter.Size = new System.Drawing.Size(36, 19);
+            this.rbUpperBoundaryMeter.Size = new System.Drawing.Size(43, 24);
             this.rbUpperBoundaryMeter.TabIndex = 1;
             this.rbUpperBoundaryMeter.TabStop = true;
             this.rbUpperBoundaryMeter.Text = "m";
@@ -264,16 +279,18 @@
             this.panel3.BackColor = System.Drawing.Color.White;
             this.panel3.Controls.Add(this.rbUpperBoundaryFeet);
             this.panel3.Controls.Add(this.rbUpperBoundaryMeter);
-            this.panel3.Location = new System.Drawing.Point(214, 177);
+            this.panel3.Location = new System.Drawing.Point(245, 236);
+            this.panel3.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(94, 23);
+            this.panel3.Size = new System.Drawing.Size(107, 31);
             this.panel3.TabIndex = 9;
             // 
             // btCreate
             // 
-            this.btCreate.Location = new System.Drawing.Point(10, 206);
+            this.btCreate.Location = new System.Drawing.Point(11, 275);
+            this.btCreate.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btCreate.Name = "btCreate";
-            this.btCreate.Size = new System.Drawing.Size(298, 33);
+            this.btCreate.Size = new System.Drawing.Size(341, 44);
             this.btCreate.TabIndex = 13;
             this.btCreate.Text = "Create Tier";
             this.btCreate.UseVisualStyleBackColor = true;
@@ -282,18 +299,20 @@
             // lbRules
             // 
             this.lbRules.FormattingEnabled = true;
-            this.lbRules.ItemHeight = 15;
-            this.lbRules.Location = new System.Drawing.Point(325, 39);
+            this.lbRules.ItemHeight = 20;
+            this.lbRules.Location = new System.Drawing.Point(371, 52);
+            this.lbRules.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.lbRules.Name = "lbRules";
-            this.lbRules.Size = new System.Drawing.Size(298, 94);
+            this.lbRules.Size = new System.Drawing.Size(340, 124);
             this.lbRules.TabIndex = 12;
             this.lbRules.SelectedIndexChanged += new System.EventHandler(this.lbRules_SelectedIndexChanged);
             // 
             // btRemoveRule
             // 
-            this.btRemoveRule.Location = new System.Drawing.Point(527, 139);
+            this.btRemoveRule.Location = new System.Drawing.Point(602, 185);
+            this.btRemoveRule.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btRemoveRule.Name = "btRemoveRule";
-            this.btRemoveRule.Size = new System.Drawing.Size(96, 24);
+            this.btRemoveRule.Size = new System.Drawing.Size(110, 32);
             this.btRemoveRule.TabIndex = 14;
             this.btRemoveRule.Text = "Remove Rule";
             this.btRemoveRule.UseVisualStyleBackColor = true;
@@ -308,17 +327,26 @@
             "Declaration to Goal Distance",
             "Declaration to Goal Height",
             "Goal to other Goals Distance"});
-            this.cbRuleList.Location = new System.Drawing.Point(325, 139);
+            this.cbRuleList.Location = new System.Drawing.Point(371, 185);
+            this.cbRuleList.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.cbRuleList.Name = "cbRuleList";
-            this.cbRuleList.Size = new System.Drawing.Size(196, 23);
+            this.cbRuleList.Size = new System.Drawing.Size(223, 28);
             this.cbRuleList.TabIndex = 10;
             this.cbRuleList.SelectedIndexChanged += new System.EventHandler(this.cbRuleList_SelectedIndexChanged);
             // 
+            // plRuleControl
+            // 
+            this.plRuleControl.Location = new System.Drawing.Point(359, 221);
+            this.plRuleControl.Name = "plRuleControl";
+            this.plRuleControl.Size = new System.Drawing.Size(447, 226);
+            this.plRuleControl.TabIndex = 15;
+            // 
             // PieTierControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
+            this.Controls.Add(this.plRuleControl);
             this.Controls.Add(this.cbRuleList);
             this.Controls.Add(this.btRemoveRule);
             this.Controls.Add(this.lbRules);
@@ -339,8 +367,9 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "PieTierControl";
-            this.Size = new System.Drawing.Size(705, 335);
+            this.Size = new System.Drawing.Size(806, 447);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
@@ -380,5 +409,6 @@
         private System.Windows.Forms.ListBox lbRules;
         private System.Windows.Forms.Button btRemoveRule;
         private System.Windows.Forms.ComboBox cbRuleList;
+        private System.Windows.Forms.Panel plRuleControl;
     }
 }

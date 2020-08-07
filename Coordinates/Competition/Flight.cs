@@ -225,7 +225,7 @@ namespace Competition
                                         {
                                             if (validGoals.Select(x => x.GoalNumber).Contains(goalNumber))
                                             {
-                                                goalToOtherGoalsDistanceRule.DeclaredGoals.Add(validGoals.First(x => x.GoalNumber == goalNumber));
+                                                goalToOtherGoalsDistanceRule.DeclaredGoals.Add(validGoals.FirstOrDefault(x => x.GoalNumber == goalNumber));
                                             }
                                             else
                                             {
@@ -243,7 +243,7 @@ namespace Competition
                                             {
                                                 if (validGoals.Select(x => x.GoalNumber).Contains(goalNumber))
                                                 {
-                                                    goalToOtherGoalsDistanceRule.DeclaredGoals.Add(validGoals.First(x => x.GoalNumber == goalNumber));
+                                                    goalToOtherGoalsDistanceRule.DeclaredGoals.Add(validGoals.FirstOrDefault(x => x.GoalNumber == goalNumber));
                                                 }
                                                 else
                                                 {
@@ -273,7 +273,7 @@ namespace Competition
                                             {
                                                 if (validGoals.Select(x => x.GoalNumber).Contains(goalNumber))
                                                 {
-                                                    goalToOtherGoalsDistanceRule.DeclaredGoals.Add(validGoals.First(x => x.GoalNumber == goalNumber));
+                                                    goalToOtherGoalsDistanceRule.DeclaredGoals.Add(validGoals.FirstOrDefault(x => x.GoalNumber == goalNumber));
                                                 }
                                                 else
                                                 {
@@ -291,7 +291,7 @@ namespace Competition
                                                 {
                                                     if (validGoals.Select(x => x.GoalNumber).Contains(goalNumber))
                                                     {
-                                                        goalToOtherGoalsDistanceRule.DeclaredGoals.Add(validGoals.First(x => x.GoalNumber == goalNumber));
+                                                        goalToOtherGoalsDistanceRule.DeclaredGoals.Add(validGoals.FirstOrDefault(x => x.GoalNumber == goalNumber));
                                                     }
                                                     else
                                                     {
@@ -319,7 +319,7 @@ namespace Competition
                                     {
                                         if (validGoals.Select(x => x.GoalNumber).Contains(markerToGoalDistanceRule.GoalNumber))
                                         {
-                                            markerToGoalDistanceRule.Goal = validGoals.First(x => x.GoalNumber == markerToGoalDistanceRule.GoalNumber);
+                                            markerToGoalDistanceRule.Goal = validGoals.FirstOrDefault(x => x.GoalNumber == markerToGoalDistanceRule.GoalNumber);
                                         }
                                         else
                                         {
@@ -343,7 +343,7 @@ namespace Competition
                                                 Log(LogSeverityType.Warning, $"No marker '{markerNumber}' dropped in track of Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}'");
                                             else
                                             {
-                                                markerToOtherMarkersDistanceRule.MarkerDrops.Add(track.MarkerDrops.First(x => x.MarkerNumber == markerNumber));
+                                                markerToOtherMarkersDistanceRule.MarkerDrops.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == markerNumber));
                                             }
                                         }
                                     }
@@ -365,7 +365,7 @@ namespace Competition
                                     {
                                         if (validGoals.Select(x => x.GoalNumber).Contains(markerToGoalDistanceRule.GoalNumber))
                                         {
-                                            markerToGoalDistanceRule.Goal = validGoals.First(x => x.GoalNumber == markerToGoalDistanceRule.GoalNumber);
+                                            markerToGoalDistanceRule.Goal = validGoals.FirstOrDefault(x => x.GoalNumber == markerToGoalDistanceRule.GoalNumber);
                                         }
                                         else
                                         {
@@ -389,7 +389,7 @@ namespace Competition
                                                 Log(LogSeverityType.Warning, $"No marker '{markerNumber}' dropped in track of Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}'");
                                             else
                                             {
-                                                markerToOtherMarkersDistanceRule.MarkerDrops.Add(track.MarkerDrops.First(x => x.MarkerNumber == markerNumber));
+                                                markerToOtherMarkersDistanceRule.MarkerDrops.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == markerNumber));
                                             }
                                         }
                                     }

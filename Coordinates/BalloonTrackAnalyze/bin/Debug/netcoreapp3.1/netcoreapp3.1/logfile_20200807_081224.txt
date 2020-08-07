@@ -1,5 +1,0 @@
-8/7/2020 8:11:39 AM: Info: Loaded Competition Folder 'D:\Competition' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/7/2020 8:11:39 AM: Info: Loaded Pilot Name Mapping File 'D:\Competition\PilotNameMapping.csv' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/7/2020 8:11:39 AM: Info: Loaded Track Source 'Balloon Live' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/7/2020 8:11:39 AM: Info: Loaded Height Source 'GPS' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/7/2020 8:12:24 AM: Info: Stop Logging... (logged from 'LoggerComponent.LogListView')

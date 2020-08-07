@@ -68,7 +68,7 @@ namespace Competition.Validation
         public static bool IsMarkerValid(Track track, int markerNumber, List<IMarkerValidationRules> markerValidationRules)
         {
             bool isValid = true;
-            MarkerDrop markerDrop = track.MarkerDrops.First(x => x.MarkerNumber == markerNumber);
+            MarkerDrop markerDrop = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == markerNumber);
             if (markerDrop == null)
             {
                 //Console.WriteLine($"No Marker '{FirstMarkerNumber}' found");
