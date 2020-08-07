@@ -48,7 +48,7 @@
             this.btCreate.Location = new System.Drawing.Point(10, 152);
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(298, 33);
-            this.btCreate.TabIndex = 7;
+            this.btCreate.TabIndex = 8;
             this.btCreate.Text = "Create Task";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);
@@ -134,7 +134,7 @@
             this.lbRules.Location = new System.Drawing.Point(325, 39);
             this.lbRules.Name = "lbRules";
             this.lbRules.Size = new System.Drawing.Size(298, 94);
-            this.lbRules.TabIndex = 3;
+            this.lbRules.TabIndex = 7;
             this.lbRules.SelectedIndexChanged += new System.EventHandler(this.lbRules_SelectedIndexChanged);
             // 
             // cbRuleList
@@ -157,7 +157,7 @@
             this.btRemoveRule.Location = new System.Drawing.Point(531, 139);
             this.btRemoveRule.Name = "btRemoveRule";
             this.btRemoveRule.Size = new System.Drawing.Size(92, 23);
-            this.btRemoveRule.TabIndex = 6;
+            this.btRemoveRule.TabIndex = 9;
             this.btRemoveRule.Text = "Remove Rule";
             this.btRemoveRule.UseVisualStyleBackColor = true;
             this.btRemoveRule.Click += new System.EventHandler(this.btRemoveRule_Click);

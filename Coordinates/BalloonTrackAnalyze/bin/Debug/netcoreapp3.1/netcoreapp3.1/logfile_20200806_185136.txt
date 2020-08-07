@@ -1,6 +1,0 @@
-8/6/2020 6:50:27 PM: Info: Loaded Competition Folder 'D:\Competition' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 6:50:27 PM: Info: Loaded Pilot Name Mapping File 'D:\Competition\PilotNameMapping.csv' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 6:50:27 PM: Info: Loaded Track Source 'Balloon Live' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 6:50:27 PM: Info: Loaded Height Source 'GPS' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 6:50:39 PM: Error: Failed to import task: Could not create an instance of type Competition.IDeclarationValidationRules. Type is an interface or abstract class and cannot be instantiated. Path 'DeclarationValidationRules[0].MinimumDistance', line 1, position 216. (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 6:51:36 PM: Info: Task#1 (Donut) created/modified (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')

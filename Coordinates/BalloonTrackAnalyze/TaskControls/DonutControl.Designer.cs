@@ -340,7 +340,7 @@
             this.btCreate.Location = new System.Drawing.Point(10, 265);
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(298, 33);
-            this.btCreate.TabIndex = 12;
+            this.btCreate.TabIndex = 15;
             this.btCreate.Text = " Create Task";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);
@@ -370,7 +370,7 @@
             this.btRemoveRule.Location = new System.Drawing.Point(527, 139);
             this.btRemoveRule.Name = "btRemoveRule";
             this.btRemoveRule.Size = new System.Drawing.Size(96, 24);
-            this.btRemoveRule.TabIndex = 15;
+            this.btRemoveRule.TabIndex = 16;
             this.btRemoveRule.Text = "Remove Rule";
             this.btRemoveRule.UseVisualStyleBackColor = true;
             this.btRemoveRule.Click += new System.EventHandler(this.btRemoveRule_Click);
@@ -387,7 +387,7 @@
             this.cbRuleList.Location = new System.Drawing.Point(325, 139);
             this.cbRuleList.Name = "cbRuleList";
             this.cbRuleList.Size = new System.Drawing.Size(183, 23);
-            this.cbRuleList.TabIndex = 16;
+            this.cbRuleList.TabIndex = 12;
             this.cbRuleList.SelectedIndexChanged += new System.EventHandler(this.cbRuleList_SelectedIndexChanged);
             // 
             // DonutControl

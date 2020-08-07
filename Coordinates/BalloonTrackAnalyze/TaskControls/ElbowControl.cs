@@ -143,6 +143,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         Controls.Remove(Controls["ruleControl"]);
                         markerTimingRuleControl.Location = RuleControlLocation;
                         markerTimingRuleControl.Name = "ruleControl";
+                        markerTimingRuleControl.TabIndex = 6;
                         markerTimingRuleControl.DataValid += MarkerTimingRuleControl_DataValid;
                         Controls.Add(markerTimingRuleControl);
                         ResumeLayout();
@@ -155,6 +156,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         Controls.Remove(Controls["ruleControl"]);
                         markerToOtherMarkerDistanceRuleControl.Location = RuleControlLocation;
                         markerToOtherMarkerDistanceRuleControl.Name = "ruleControl";
+                        markerToOtherMarkerDistanceRuleControl.TabIndex = 6;
                         markerToOtherMarkerDistanceRuleControl.DataValid += MarkerToOtherMarkersDistanceRuleControl_DataValid;
                         Controls.Add(markerToOtherMarkerDistanceRuleControl);
                         ResumeLayout();
@@ -167,6 +169,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         Controls.Remove(Controls["ruleControl"]);
                         markerToGoalDistanceRuleControl.Location = RuleControlLocation;
                         markerToGoalDistanceRuleControl.Name = "ruleControl";
+                        markerToGoalDistanceRuleControl.TabIndex = 6;
                         markerToGoalDistanceRuleControl.DataValid += MarkerToGoalDistanceRuleControl_DataValid;
                         Controls.Add(markerToGoalDistanceRuleControl);
                         ResumeLayout();
@@ -186,6 +189,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         Controls.Remove(Controls["ruleControl"]);
                         markerTimingRuleControl.Location = RuleControlLocation;
                         markerTimingRuleControl.Name = "ruleControl";
+                        markerTimingRuleControl.TabIndex = 6;
                         markerTimingRuleControl.DataValid += MarkerTimingRuleControl_DataValid;
                         Controls.Add(markerTimingRuleControl);
                         ResumeLayout();
@@ -198,6 +202,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         Controls.Remove(Controls["ruleControl"]);
                         markerToOtherMarkerDistanceRuleControl.Location = RuleControlLocation;
                         markerToOtherMarkerDistanceRuleControl.Name = "ruleControl";
+                        markerToOtherMarkerDistanceRuleControl.TabIndex = 6;
                         markerToOtherMarkerDistanceRuleControl.DataValid += MarkerToOtherMarkersDistanceRuleControl_DataValid;
                         Controls.Add(markerToOtherMarkerDistanceRuleControl);
                         ResumeLayout();
@@ -210,6 +215,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         Controls.Remove(Controls["ruleControl"]);
                         markerToGoalDistanceRuleControl.Location = RuleControlLocation;
                         markerToGoalDistanceRuleControl.Name = "ruleControl";
+                        markerToGoalDistanceRuleControl.TabIndex = 6;
                         markerToGoalDistanceRuleControl.DataValid += MarkerToGoalDistanceRuleControl_DataValid;
                         Controls.Add(markerToGoalDistanceRuleControl);
                         ResumeLayout();

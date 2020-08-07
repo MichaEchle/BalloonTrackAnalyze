@@ -200,6 +200,7 @@ namespace BalloonTrackAnalyze
             Properties.Settings.Default.UseBalloonLiveParser = rbBalloonLive.Checked;
             Properties.Settings.Default.UseGPSAltitude = rbGPSAltitude.Checked;
             Properties.Settings.Default.Save();
+            Log(LogSeverityType.Info, "Saved competition settings");
         }
 
         private void btDeleteTask_Click(object sender, EventArgs e)
@@ -307,7 +308,7 @@ namespace BalloonTrackAnalyze
                         //options.WriteIndented = true;
 
                         //string jsonString = JsonSerializer.Serialize(item, options);
-                        string jsonString = JsonConvert.SerializeObject(item,Formatting.Indented);
+                        string jsonString = JsonConvert.SerializeObject(item,Formatting.Indented,new JsonSerializerSettings() { TypeNameHandling=TypeNameHandling.Auto});
                         File.WriteAllText($@"{Path.Combine(tbCompetitionFolder.Text, "Scoring", $"Flight{flightNumber:D2}", "Tasks", item.ToString() + ".json")}", jsonString);
                     }
                     catch (Exception ex)
@@ -388,7 +389,7 @@ namespace BalloonTrackAnalyze
             {
                 using (StreamWriter writer = new StreamWriter($@"{Path.Combine(tbCompetitionFolder.Text, "Scoring", $"Flight{flightNumber:D2}", "Pilots", $"Pilot{track.Pilot.PilotNumber:D3}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"_{track.Pilot.FirstName}_{track.Pilot.LastName}" : "")}.csv")}", false))
                 {
-                    string markerHeader = "Marker Number, Time Stamp, Latitude[dez], Longitude[dez], Latitude[deg], Longitude[deg], UTM Zone, Easting, Norting, Altitude GPS[m], Altitude Barometric[m]";
+                    string markerHeader = "Marker Number, Time Stamp, Latitude[dec], Longitude[dec], Latitude[deg], Longitude[deg], UTM Zone, Easting, Norting, Altitude GPS[m], Altitude Barometric[m]";
                     writer.WriteLine(markerHeader);
                     foreach (MarkerDrop marker in track.MarkerDrops)
                     {
@@ -402,7 +403,7 @@ namespace BalloonTrackAnalyze
                     writer.WriteLine();
                     writer.WriteLine();
                     writer.WriteLine();
-                    string declarationHeader = "Declaration Number,Time Stamp,Position Latitude[dez],Position Longitude [dez],Position Latitude[deg],Position Longitude[deg],Position Altitude GPS [m],Position Altitude Barometric [m],Position UTM Zone,Position Easting,Position Norting,Goal Latitude [dez],Goal Longitude [dez],Goal Latitude[deg],Goal Longitude [deg],Goal UTM Zone,Goal Easting,Goal Norting,Goal Altitude GPS [m],Goal Altitude Barometric [m]";
+                    string declarationHeader = "Declaration Number,Time Stamp,Position Latitude[dec],Position Longitude[dec],Position Latitude[deg],Position Longitude[deg],Position Altitude GPS[m],Position Altitude Barometric[m],Position UTM Zone,Position Easting,Position Norting,Goal Latitude[dec],Goal Longitude[dec],Goal Latitude[deg],Goal Longitude[deg],Goal UTM Zone,Goal Easting,Goal Norting,Goal Altitude GPS m],Goal Altitude Barometric[m]";
                     writer.WriteLine(declarationHeader);
                     foreach (DeclaredGoal declaredGoal in track.DeclaredGoals)
                     {
@@ -438,7 +439,7 @@ namespace BalloonTrackAnalyze
                     {
                         string jsonString = File.ReadAllText(openFileDialog.FileName);
                         //DonutTask donut = JsonSerializer.Deserialize<DonutTask>(jsonString);
-                        DonutTask donut = JsonConvert.DeserializeObject<DonutTask>(jsonString);
+                        DonutTask donut = JsonConvert.DeserializeObject<DonutTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
                         DonutControl donutControl = new DonutControl(donut);
                         SuspendLayout();
                         tabPage1.Controls.Remove(tabPage1.Controls["taskControl"]);
@@ -452,7 +453,7 @@ namespace BalloonTrackAnalyze
                     {
                         string jsonString = File.ReadAllText(openFileDialog.FileName);
                         //PieTask pie = JsonSerializer.Deserialize<PieTask>(jsonString);
-                        PieTask pie = JsonConvert.DeserializeObject<PieTask>(jsonString);
+                        PieTask pie = JsonConvert.DeserializeObject<PieTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
                         PieControl pieControl = new PieControl(pie);
                         SuspendLayout();
                         tabPage1.Controls.Remove(tabPage1.Controls["taskControl"]);
@@ -466,7 +467,7 @@ namespace BalloonTrackAnalyze
                     {
                         string jsonString = File.ReadAllText(openFileDialog.FileName);
                         //ElbowTask elbow = JsonSerializer.Deserialize<ElbowTask>(jsonString);
-                        ElbowTask elbow = JsonConvert.DeserializeObject<ElbowTask>(jsonString);
+                        ElbowTask elbow = JsonConvert.DeserializeObject<ElbowTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
                         ElbowControl elbowControl = new ElbowControl(elbow);
                         SuspendLayout();
                         tabPage1.Controls.Remove(tabPage1.Controls["taskControl"]);
@@ -480,7 +481,7 @@ namespace BalloonTrackAnalyze
                     {
                         string jsonString = File.ReadAllText(openFileDialog.FileName);
                         //LandRunTask landRun = JsonSerializer.Deserialize<LandRunTask>(jsonString);
-                        LandRunTask landRun = JsonConvert.DeserializeObject<LandRunTask>(jsonString);
+                        LandRunTask landRun = JsonConvert.DeserializeObject<LandRunTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
                         LandRunControl landrunControl = new LandRunControl(landRun);
                         SuspendLayout();
                         tabPage1.Controls.Remove(tabPage1.Controls["taskControl"]);

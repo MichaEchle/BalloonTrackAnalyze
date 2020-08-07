@@ -61,7 +61,7 @@
             this.btRemoveTier.Location = new System.Drawing.Point(8, 506);
             this.btRemoveTier.Name = "btRemoveTier";
             this.btRemoveTier.Size = new System.Drawing.Size(196, 23);
-            this.btRemoveTier.TabIndex = 3;
+            this.btRemoveTier.TabIndex = 5;
             this.btRemoveTier.Text = "Remove Tier";
             this.btRemoveTier.UseVisualStyleBackColor = true;
             this.btRemoveTier.Click += new System.EventHandler(this.btRemoveTier_Click);
@@ -90,7 +90,7 @@
             this.lbPieTiers.Location = new System.Drawing.Point(8, 406);
             this.lbPieTiers.Name = "lbPieTiers";
             this.lbPieTiers.Size = new System.Drawing.Size(196, 94);
-            this.lbPieTiers.TabIndex = 6;
+            this.lbPieTiers.TabIndex = 3;
             this.lbPieTiers.SelectedIndexChanged += new System.EventHandler(this.lbPieTiers_SelectedIndexChanged);
             // 
             // pieTierControl1

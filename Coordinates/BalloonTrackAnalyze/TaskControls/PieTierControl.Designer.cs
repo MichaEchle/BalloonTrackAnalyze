@@ -274,7 +274,7 @@
             this.btCreate.Location = new System.Drawing.Point(10, 206);
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(298, 33);
-            this.btCreate.TabIndex = 12;
+            this.btCreate.TabIndex = 13;
             this.btCreate.Text = "Create Tier";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);
@@ -286,7 +286,7 @@
             this.lbRules.Location = new System.Drawing.Point(325, 39);
             this.lbRules.Name = "lbRules";
             this.lbRules.Size = new System.Drawing.Size(298, 94);
-            this.lbRules.TabIndex = 14;
+            this.lbRules.TabIndex = 12;
             this.lbRules.SelectedIndexChanged += new System.EventHandler(this.lbRules_SelectedIndexChanged);
             // 
             // btRemoveRule
@@ -294,7 +294,7 @@
             this.btRemoveRule.Location = new System.Drawing.Point(527, 139);
             this.btRemoveRule.Name = "btRemoveRule";
             this.btRemoveRule.Size = new System.Drawing.Size(96, 24);
-            this.btRemoveRule.TabIndex = 11;
+            this.btRemoveRule.TabIndex = 14;
             this.btRemoveRule.Text = "Remove Rule";
             this.btRemoveRule.UseVisualStyleBackColor = true;
             this.btRemoveRule.Click += new System.EventHandler(this.btRemoveRule_Click);

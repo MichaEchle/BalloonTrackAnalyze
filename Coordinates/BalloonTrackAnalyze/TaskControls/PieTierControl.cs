@@ -174,6 +174,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         Controls.Remove(Controls["ruleControl"]);
                         declarationToGoalDistanceRuleControl.Location = RuleControlLocation;
                         declarationToGoalDistanceRuleControl.Name = "ruleControl";
+                        declarationToGoalDistanceRuleControl.TabIndex = 11;
                         declarationToGoalDistanceRuleControl.DataValid += DeclarationToGoalDistanceRuleControl_DataValid;
                         Controls.Add(declarationToGoalDistanceRuleControl);
                         ResumeLayout();
@@ -186,6 +187,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         Controls.Remove(Controls["ruleControl"]);
                         declarationToGoalHeigthRuleControl.Location = RuleControlLocation;
                         declarationToGoalHeigthRuleControl.Name = "ruleControl";
+                        declarationToGoalHeigthRuleControl.TabIndex = 11;
                         declarationToGoalHeigthRuleControl.DataValid += DeclarationToGoalHeigthRuleControl_DataValid;
                         Controls.Add(declarationToGoalHeigthRuleControl);
                         ResumeLayout();
@@ -198,6 +200,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         Controls.Remove(Controls["ruleControl"]);
                         goalToOtherGoalsDistanceRuleControl.Location = RuleControlLocation;
                         goalToOtherGoalsDistanceRuleControl.Name = "ruleControl";
+                        goalToOtherGoalsDistanceRuleControl.TabIndex = 11;
                         goalToOtherGoalsDistanceRuleControl.DataValid += GoalToOtherGoalsDistanceRuleControl_DataValid;
                         Controls.Add(goalToOtherGoalsDistanceRuleControl);
                         ResumeLayout();
@@ -217,6 +220,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         Controls.Remove(Controls["ruleControl"]);
                         declarationToGoalDistanceRuleControl.Location = RuleControlLocation;
                         declarationToGoalDistanceRuleControl.Name = "ruleControl";
+                        declarationToGoalDistanceRuleControl.TabIndex = 11;
                         declarationToGoalDistanceRuleControl.DataValid += DeclarationToGoalDistanceRuleControl_DataValid;
                         Controls.Add(declarationToGoalDistanceRuleControl);
                         ResumeLayout();
@@ -229,6 +233,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         Controls.Remove(Controls["ruleControl"]);
                         declarationToGoalHeigthRuleControl.Location = RuleControlLocation;
                         declarationToGoalHeigthRuleControl.Name = "ruleControl";
+                        declarationToGoalHeigthRuleControl.TabIndex = 11;
                         declarationToGoalHeigthRuleControl.DataValid += DeclarationToGoalHeigthRuleControl_DataValid;
                         Controls.Add(declarationToGoalHeigthRuleControl);
                         ResumeLayout();
@@ -241,6 +246,7 @@ namespace BalloonTrackAnalyze.TaskControls
                         Controls.Remove(Controls["ruleControl"]);
                         goalToOtherGoalsDistanceRuleControl.Location = RuleControlLocation;
                         goalToOtherGoalsDistanceRuleControl.Name = "ruleControl";
+                        goalToOtherGoalsDistanceRuleControl.TabIndex = 11;
                         goalToOtherGoalsDistanceRuleControl.DataValid += GoalToOtherGoalsDistanceRuleControl_DataValid;
                         Controls.Add(goalToOtherGoalsDistanceRuleControl);
                         ResumeLayout();

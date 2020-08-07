@@ -98,7 +98,7 @@
             this.tbMaximumHeightDifference.Location = new System.Drawing.Point(124, 65);
             this.tbMaximumHeightDifference.Name = "tbMaximumHeightDifference";
             this.tbMaximumHeightDifference.Size = new System.Drawing.Size(84, 23);
-            this.tbMaximumHeightDifference.TabIndex = 1;
+            this.tbMaximumHeightDifference.TabIndex = 3;
             // 
             // rbMinimumHeightDifferenceFeet
             // 
@@ -131,7 +131,7 @@
             this.panel1.Location = new System.Drawing.Point(214, 36);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(94, 23);
-            this.panel1.TabIndex = 4;
+            this.panel1.TabIndex = 2;
             // 
             // rbMaximumHeightDifferenceFeet
             // 
@@ -197,14 +197,14 @@
             this.panel3.Location = new System.Drawing.Point(124, 94);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(150, 23);
-            this.panel3.TabIndex = 4;
+            this.panel3.TabIndex = 5;
             // 
             // btCreate
             // 
             this.btCreate.Location = new System.Drawing.Point(10, 123);
             this.btCreate.Name = "btCreate";
             this.btCreate.Size = new System.Drawing.Size(298, 28);
-            this.btCreate.TabIndex = 5;
+            this.btCreate.TabIndex = 6;
             this.btCreate.Text = "Create Rule";
             this.btCreate.UseVisualStyleBackColor = true;
             this.btCreate.Click += new System.EventHandler(this.btCreate_Click);

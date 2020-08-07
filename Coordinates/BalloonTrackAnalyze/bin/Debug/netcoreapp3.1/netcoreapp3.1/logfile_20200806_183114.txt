@@ -1,7 +1,0 @@
-8/6/2020 6:30:03 PM: Info: Loaded Competition Folder 'E:\Daten\Competition' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 6:30:03 PM: Info: Loaded Pilot Name Mapping File 'E:\Daten\Competition\PilotNameMapping.csv' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 6:30:03 PM: Info: Loaded Track Source 'Balloon Live' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 6:30:03 PM: Info: Loaded Height Source 'GPS' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 6:30:48 PM: Info: Goal to other Goals Distance Rules created/modified (logged from 'Donut Setup Control')
-8/6/2020 6:30:49 PM: Info: Task#1 (Donut) created/modified (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 6:31:14 PM: Error: Failed to calculate result for Task#1 (Donut) and Pilot '#1(Micha, Echle)': No valid goal found for goal '#1' (logged from 'Task#1 (Donut)')

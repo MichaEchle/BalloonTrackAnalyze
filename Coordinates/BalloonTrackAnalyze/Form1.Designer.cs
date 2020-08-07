@@ -86,7 +86,7 @@
             this.cbTaskList.Location = new System.Drawing.Point(10, 146);
             this.cbTaskList.Name = "cbTaskList";
             this.cbTaskList.Size = new System.Drawing.Size(154, 23);
-            this.cbTaskList.TabIndex = 1;
+            this.cbTaskList.TabIndex = 2;
             this.cbTaskList.SelectedIndexChanged += new System.EventHandler(this.cbTaskList_SelectedIndexChanged);
             // 
             // tabControl1
@@ -143,7 +143,7 @@
             this.btImportTask.Location = new System.Drawing.Point(170, 146);
             this.btImportTask.Name = "btImportTask";
             this.btImportTask.Size = new System.Drawing.Size(100, 23);
-            this.btImportTask.TabIndex = 5;
+            this.btImportTask.TabIndex = 4;
             this.btImportTask.Text = "Import Task";
             this.btImportTask.UseVisualStyleBackColor = true;
             this.btImportTask.Click += new System.EventHandler(this.btImportTask_Click);
@@ -155,7 +155,7 @@
             this.lbTaskList.Location = new System.Drawing.Point(10, 46);
             this.lbTaskList.Name = "lbTaskList";
             this.lbTaskList.Size = new System.Drawing.Size(366, 94);
-            this.lbTaskList.TabIndex = 4;
+            this.lbTaskList.TabIndex = 3;
             this.lbTaskList.SelectedIndexChanged += new System.EventHandler(this.lbTaskList_SelectedIndexChanged);
             // 
             // tbFlightNumber
@@ -163,7 +163,7 @@
             this.tbFlightNumber.Location = new System.Drawing.Point(75, 17);
             this.tbFlightNumber.Name = "tbFlightNumber";
             this.tbFlightNumber.Size = new System.Drawing.Size(84, 23);
-            this.tbFlightNumber.TabIndex = 3;
+            this.tbFlightNumber.TabIndex = 1;
             // 
             // label3
             // 
@@ -211,7 +211,7 @@
             this.panel2.Location = new System.Drawing.Point(134, 103);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(142, 22);
-            this.panel2.TabIndex = 4;
+            this.panel2.TabIndex = 6;
             // 
             // rbBarometricAltitude
             // 
@@ -219,7 +219,8 @@
             this.rbBarometricAltitude.Location = new System.Drawing.Point(52, 0);
             this.rbBarometricAltitude.Name = "rbBarometricAltitude";
             this.rbBarometricAltitude.Size = new System.Drawing.Size(83, 19);
-            this.rbBarometricAltitude.TabIndex = 1;
+            this.rbBarometricAltitude.TabIndex = 7;
+            this.rbBarometricAltitude.TabStop = true;
             this.rbBarometricAltitude.Text = "Barometric";
             this.rbBarometricAltitude.UseVisualStyleBackColor = true;
             // 
@@ -242,7 +243,7 @@
             this.panel1.Location = new System.Drawing.Point(133, 75);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(175, 22);
-            this.panel1.TabIndex = 4;
+            this.panel1.TabIndex = 5;
             // 
             // rbFAILogger
             // 
@@ -251,6 +252,7 @@
             this.rbFAILogger.Name = "rbFAILogger";
             this.rbFAILogger.Size = new System.Drawing.Size(81, 19);
             this.rbFAILogger.TabIndex = 1;
+            this.rbFAILogger.TabStop = true;
             this.rbFAILogger.Text = "FAI Logger";
             this.rbFAILogger.UseVisualStyleBackColor = true;
             // 
@@ -280,7 +282,7 @@
             this.btSaveCompetitionSettings.Location = new System.Drawing.Point(10, 131);
             this.btSaveCompetitionSettings.Name = "btSaveCompetitionSettings";
             this.btSaveCompetitionSettings.Size = new System.Drawing.Size(203, 32);
-            this.btSaveCompetitionSettings.TabIndex = 3;
+            this.btSaveCompetitionSettings.TabIndex = 7;
             this.btSaveCompetitionSettings.Text = "Save Competition Settings";
             this.btSaveCompetitionSettings.UseVisualStyleBackColor = true;
             this.btSaveCompetitionSettings.Click += new System.EventHandler(this.btSaveCompetitionSettings_Click);
@@ -290,7 +292,7 @@
             this.btSelectPilotMappingFile.Location = new System.Drawing.Point(1038, 45);
             this.btSelectPilotMappingFile.Name = "btSelectPilotMappingFile";
             this.btSelectPilotMappingFile.Size = new System.Drawing.Size(88, 23);
-            this.btSelectPilotMappingFile.TabIndex = 3;
+            this.btSelectPilotMappingFile.TabIndex = 4;
             this.btSelectPilotMappingFile.Text = "Select File";
             this.btSelectPilotMappingFile.UseVisualStyleBackColor = true;
             this.btSelectPilotMappingFile.Click += new System.EventHandler(this.btSelectPilotMappingFile_Click);
@@ -300,7 +302,7 @@
             this.btSelectCompetitionFolder.Location = new System.Drawing.Point(1038, 16);
             this.btSelectCompetitionFolder.Name = "btSelectCompetitionFolder";
             this.btSelectCompetitionFolder.Size = new System.Drawing.Size(88, 23);
-            this.btSelectCompetitionFolder.TabIndex = 3;
+            this.btSelectCompetitionFolder.TabIndex = 2;
             this.btSelectCompetitionFolder.Text = "Select Folder";
             this.btSelectCompetitionFolder.UseVisualStyleBackColor = true;
             this.btSelectCompetitionFolder.Click += new System.EventHandler(this.btSelectCompetitionFolder_Click);
@@ -310,14 +312,14 @@
             this.tbPilotMappingFile.Location = new System.Drawing.Point(132, 46);
             this.tbPilotMappingFile.Name = "tbPilotMappingFile";
             this.tbPilotMappingFile.Size = new System.Drawing.Size(900, 23);
-            this.tbPilotMappingFile.TabIndex = 2;
+            this.tbPilotMappingFile.TabIndex = 3;
             // 
             // tbCompetitionFolder
             // 
             this.tbCompetitionFolder.Location = new System.Drawing.Point(132, 17);
             this.tbCompetitionFolder.Name = "tbCompetitionFolder";
             this.tbCompetitionFolder.Size = new System.Drawing.Size(900, 23);
-            this.tbCompetitionFolder.TabIndex = 2;
+            this.tbCompetitionFolder.TabIndex = 1;
             // 
             // label2
             // 

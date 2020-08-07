@@ -1,8 +1,0 @@
-8/6/2020 6:54:06 PM: Info: Loaded Competition Folder 'D:\Competition' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 6:54:06 PM: Info: Loaded Pilot Name Mapping File 'D:\Competition\PilotNameMapping.csv' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 6:54:06 PM: Info: Loaded Track Source 'Balloon Live' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 6:54:06 PM: Info: Loaded Height Source 'GPS' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 6:54:32 PM: Info: Declaration to Goal Distance Rule created/modified (logged from 'Donut Setup Control')
-8/6/2020 6:54:34 PM: Info: Task#1 (Donut) created/modified (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 6:54:37 PM: Error: Failed to calculate Results :Please enter a Flight No first (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/6/2020 6:57:48 PM: Info: Stop Logging... (logged from 'LoggerComponent.LogListView')
