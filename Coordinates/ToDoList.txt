@@ -23,6 +23,8 @@ Special threatment
 	Allow tasks to be recalculated with differnet goal numbers
 Bonus
 	create unit tests
+	test
+
 
 
 Add more validations if needed

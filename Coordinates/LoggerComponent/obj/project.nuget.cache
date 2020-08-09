@@ -1,10 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "ht4NxQ9v7Cc4aDpvuEx95zSJEwaSdl3wOa617oZk3yx+zIMlx9CafYAgwW/2niRA/ZSxix2cJr0NSx8rfWqJtg==",
+  "dgSpecHash": "GdGWKuokUtVR5+R854gDdhb3z/Y5wuM5JwuPgRomP6rmPr9dZNhWo9FMiFF5E1HWTSDSiDXCG54gcZFcUTfzWQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\LoggerComponent\\LoggerComponent.csproj",
+  "projectFilePath": "C:\\Users\\dressen\\Source\\Repos\\BalloonTrackAnalyze\\Coordinates\\LoggerComponent\\LoggerComponent.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\micechle\\.nuget\\packages\\system.resources.extensions\\4.7.1\\system.resources.extensions.4.7.1.nupkg.sha512"
+    "C:\\Users\\dressen\\.nuget\\packages\\system.resources.extensions\\4.7.1\\system.resources.extensions.4.7.1.nupkg.sha512"
   ],
   "logs": []
 }

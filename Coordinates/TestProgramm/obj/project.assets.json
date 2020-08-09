@@ -197,10 +197,7 @@
         },
         "runtime": {
           "bin/placeholder/Competition.dll": {}
-        },
-        "frameworkReferences": [
-          "Microsoft.WindowsDesktop.App.WindowsForms"
-        ]
+        }
       },
       "Coordinates/1.0.0": {
         "type": "project",
@@ -1137,27 +1134,20 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\micechle\\.nuget\\packages\\": {},
-    "C:\\Microsoft\\Xamarin\\NuGet\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "C:\\Users\\dressen\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\TestProgramm\\TestProgramm.csproj",
+      "projectUniqueName": "C:\\Users\\dressen\\Source\\Repos\\BalloonTrackAnalyze\\Coordinates\\TestProgramm\\TestProgramm.csproj",
       "projectName": "TestProgramm",
-      "projectPath": "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\TestProgramm\\TestProgramm.csproj",
-      "packagesPath": "C:\\Users\\micechle\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\TestProgramm\\obj\\",
+      "projectPath": "C:\\Users\\dressen\\Source\\Repos\\BalloonTrackAnalyze\\Coordinates\\TestProgramm\\TestProgramm.csproj",
+      "packagesPath": "C:\\Users\\dressen\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\dressen\\Source\\Repos\\BalloonTrackAnalyze\\Coordinates\\TestProgramm\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Microsoft\\Xamarin\\NuGet\\",
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-      ],
       "configFilePaths": [
-        "C:\\Users\\micechle\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        "C:\\Users\\dressen\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
         "netcoreapp3.1"
@@ -1169,11 +1159,11 @@
       "frameworks": {
         "netcoreapp3.1": {
           "projectReferences": {
-            "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\Competition\\Competition.csproj": {
-              "projectPath": "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\Competition\\Competition.csproj"
+            "C:\\Users\\dressen\\Source\\Repos\\BalloonTrackAnalyze\\Coordinates\\Competition\\Competition.csproj": {
+              "projectPath": "C:\\Users\\dressen\\Source\\Repos\\BalloonTrackAnalyze\\Coordinates\\Competition\\Competition.csproj"
             },
-            "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj": {
-              "projectPath": "C:\\Users\\micechle\\source\\repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj"
+            "C:\\Users\\dressen\\Source\\Repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj": {
+              "projectPath": "C:\\Users\\dressen\\Source\\Repos\\BalloonTrackAnalyze\\Coordinates\\Coordinates\\Coordinates.csproj"
             }
           }
         }
