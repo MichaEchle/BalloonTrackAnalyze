@@ -4,25 +4,26 @@ Implement tasks (done)
 	pie (done)
 	land run (done)
 	elbow (done)
-Create UI
+Create UI (done)
 	logging concept (done)
 	implement logging (done for now)
-	controls for tasks
-	controls for validation rules
-serialization
-	enable import/export of task setups (JSON)
-	create goals and marker file (csv)
-	create results file (csv)
-	import pilot names
+	controls for tasks (done)
+	controls for validation rules (done)
+serialization (done)
+	enable import/export of task setups (JSON) (done)
+	create goals and marker file (csv) (done)
+	create results file (csv) (done)
+	import pilot names (done)
 Parser
 	create FAI logger parser (done) [changes with each firmware version/ ongoing adjustments may needed]
 Align folder structure
 	discuss proposal with Mike
-Special threatment
+Special treatment
 	Allow tasks to be recalculated with different marker numbers
-	Allow tasks to be recalculated with differnet goal numbers
+	Allow tasks to be recalculated with different goal numbers
+Increase Robustness
+	When declared without height, log warning but use height of 0
 Bonus
 	create unit tests
-
 
 Add more validations if needed

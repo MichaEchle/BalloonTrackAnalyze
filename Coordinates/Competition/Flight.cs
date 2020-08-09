@@ -72,7 +72,7 @@ namespace Competition
 
         public bool ParseTrackFiles(string path, bool useBalloonLiveParse)
         {
-            string functionErrorMessage = "Failed to parse track files";
+            string functionErrorMessage = "Failed to parse track files: ";
             DirectoryInfo directoryInfo = new DirectoryInfo($@"{path}");
             if (!directoryInfo.Exists)
                 Log(LogSeverityType.Error, functionErrorMessage + $"Directory '{path}' does not exists");
@@ -81,17 +81,25 @@ namespace Competition
             foreach (FileInfo trackFile in trackFiles)
             {
                 Track track;
+                bool trackIsValid = true;
                 if (useBalloonLiveParse)
                 {
                     if (!BalloonLiveParser.ParseFile(trackFile.FullName, out track))
-                        Log(LogSeverityType.Error, functionErrorMessage);
+                    {
+                        Log(LogSeverityType.Error, functionErrorMessage + $"Track from '{trackFile.FullName}' won't be used for further processing");
+                        trackIsValid = false;
+                    }
                 }
                 else
                 {
                     if (!FAILoggerParser.ParseFile(trackFile.FullName, out track))
-                        Log(LogSeverityType.Error, functionErrorMessage);
+                    {
+                        Log(LogSeverityType.Error, functionErrorMessage + $"Track from '{trackFile.FullName}' won't be used for further processing");
+                        trackIsValid = false;
+                    }
                 }
-                Tracks.Add(track);
+                if (trackIsValid)
+                    Tracks.Add(track);
             }
             return true;
         }
@@ -427,7 +435,7 @@ namespace Competition
                         if (!isResultValid)
                             results[index] += "*";
                     }
-                    writer.WriteLine(string.Join(',', track.Pilot.PilotNumber, track.Pilot.FirstName, track.Pilot.LastName, string.Join(',',results)));
+                    writer.WriteLine(string.Join(',', track.Pilot.PilotNumber, track.Pilot.FirstName, track.Pilot.LastName, string.Join(',', results)));
                 }
             }
         }
