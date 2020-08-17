@@ -14,23 +14,60 @@ namespace BalloonTrackAnalyze.ValidationControls
 {
     public partial class MarkerToOtherMarkersDistanceRuleControl : UserControl
     {
+        #region Properties
+
+        /// <summary>
+        /// The rule to be created or modified with this control
+        /// </summary>
+        public MarkerToOtherMarkersDistanceRule MarkerToOtherMarkersDistanceRule { get; private set; }
+
+        /// <summary>
+        /// Delegate for the DataValid event
+        /// </summary>
         public delegate void DataValidDelegate();
 
+        /// <summary>
+        /// Event will be fired when the input for the rule is value
+        /// </summary>
         public event DataValidDelegate DataValid;
-
-        public MarkerToOtherMarkersDistanceRule MarkerToOtherMarkersDistanceRule { get; private set; }
+        #endregion
+        #region Constructors
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public MarkerToOtherMarkersDistanceRuleControl()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Constructor which pre-fills control from existing rule
+        /// </summary>
+        /// <param name="markerToOtherMarkersDistanceRule">the existing marker to other markers distance rule</param>
         public MarkerToOtherMarkersDistanceRuleControl(MarkerToOtherMarkersDistanceRule markerToOtherMarkersDistanceRule)
         {
             MarkerToOtherMarkersDistanceRule = markerToOtherMarkersDistanceRule;
             InitializeComponent();
             Prefill();
         }
+        #endregion
 
+        #region API
+        /// <summary>
+        /// Convert the object suitable for display representation
+        /// </summary>
+        /// <returns>display text of the this object</returns>
+        public override string ToString()
+        {
+            return "Marker to other Markers Distance Rule Setup Control";
+        }
+
+        #endregion
+
+        #region private methods
+        /// <summary>
+        /// Pre-fills control form existing rule
+        /// </summary>
         public void Prefill()
         {
             if (MarkerToOtherMarkersDistanceRule != null)
@@ -49,6 +86,11 @@ namespace BalloonTrackAnalyze.ValidationControls
             }
         }
 
+        /// <summary>
+        /// Validates the user input and creates new / modifies exsiting marker to other markers distance rule
+        /// </summary>
+        /// <param name="sender">sender of the event</param>
+        /// <param name="e">event arguments</param>
         private void btCreate_Click(object sender, EventArgs e)
         {
             bool isDataValid = true;
@@ -114,19 +156,23 @@ namespace BalloonTrackAnalyze.ValidationControls
             }
         }
 
+        /// <summary>
+        /// Called when input for rule is valid
+        /// </summary>
         protected virtual void OnDataValid()
         {
             DataValid?.Invoke();
         }
 
-        public override string ToString()
-        {
-            return "Marker to other Markers Distance Rule Setup Control";
-        }
-
+        /// <summary>
+        /// Logs a user message
+        /// </summary>
+        /// <param name="logSeverity">the severity of the message</param>
+        /// <param name="text">the message text</param>
         private void Log(LogSeverityType logSeverity, string text)
         {
             Logger.Log(this, logSeverity, text);
         }
+        #endregion
     }
 }

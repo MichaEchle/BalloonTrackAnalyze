@@ -435,27 +435,46 @@ namespace Coordinates.Parsers
                 return false;
             }
             string[] parts = line.Split(',');
-            int declaredAltitude;
+            int declarationPartIndex=2;
             double declaredAltitudeInMeter;
-            if (!int.TryParse(parts[1], out declaredAltitude))
+            if (parts.Length == 2)
             {
-                //Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration altitude portion '{parts[1]}' in '{line}'");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration altitude portion '{parts[1]}' in '{line}'");
-                return false;
+                if (!string.IsNullOrWhiteSpace(parts[1]))
+                {
+                    string altitudePart = parts[1].Replace("ft", "").Replace("m", "");
+                    int declaredAltitude;
+                    if (!int.TryParse(altitudePart, out declaredAltitude))
+                    {
+                        //Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration altitude portion '{parts[1]}' in '{line}'");
+                        Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration altitude portion '{altitudePart}' in '{line}'");
+                        return false;
+                    }
+                    if (declaredAltitudeIsInFeet)
+                        declaredAltitudeInMeter = CoordinateHelpers.ConvertToMeter((double)declaredAltitude);
+                    else
+                        declaredAltitudeInMeter = (double)declaredAltitude;
+                }
+                else 
+                {
+                    declaredAltitudeInMeter = 0.0;
+                    Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
+                }
             }
-            if (declaredAltitudeIsInFeet)
-                declaredAltitudeInMeter = CoordinateHelpers.ConvertToMeter((double)declaredAltitude);
             else
-                declaredAltitudeInMeter = (double)declaredAltitude;
+            {
+                declaredAltitudeInMeter = 0.0;
+                Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
+                declarationPartIndex = 1;
+            }
             double declarationLatitude;
-            if (!ParseLatitude(parts[2][0..8], out declarationLatitude))
+            if (!ParseLatitude(parts[declarationPartIndex][0..8], out declarationLatitude))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse latitude at declaration position '{parts[2][0..8]}' in '{line}'");
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse latitude at declaration position '{parts[2][0..8]}' in '{line}'");
                 return false;
             }
             double declarationLongitude;
-            if (!ParseLongitude(parts[2][8..17], out declarationLongitude))
+            if (!ParseLongitude(parts[declarationPartIndex][8..17], out declarationLongitude))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse longitude at declaration position '{parts[2][8..17]}' in '{line}'");
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse longitude at declaration position '{parts[2][8..17]}' in '{line}'");
@@ -463,7 +482,7 @@ namespace Coordinates.Parsers
             }
 
             double declarationPositonAltitudeBarometric;
-            if (!double.TryParse(parts[2][18..23], out declarationPositonAltitudeBarometric))
+            if (!double.TryParse(parts[declarationPartIndex][18..23], out declarationPositonAltitudeBarometric))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse barometric altitude at declaration position '{parts[2][18..23]}' in '{line}'");
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse barometric altitude at declaration position '{parts[2][18..23]}' in '{line}'");
@@ -471,7 +490,7 @@ namespace Coordinates.Parsers
             }
 
             double declarationPositionAltitudeGPS;
-            if (!double.TryParse(parts[2][23..28], out declarationPositionAltitudeGPS))
+            if (!double.TryParse(parts[declarationPartIndex][23..28], out declarationPositionAltitudeGPS))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse GPS altitude at declaration position '{parts[2][23..28]}' in '{line}'");
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse GPS altitude at declaration position '{parts[2][23..28]}' in '{line}'");
