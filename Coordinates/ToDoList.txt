@@ -25,8 +25,7 @@ Increase Robustness
 	When declared without height, log warning but use height of 0
 Bonus
 	create unit tests
-	test
-	test2
+
 
 
 Add more validations if needed
