@@ -13,23 +13,62 @@ namespace BalloonTrackAnalyze.ValidationControls
 {
     public partial class DeclarationToGoalDistanceRuleControl : UserControl
     {
+        #region Properties
+
+        /// <summary>
+        /// The rule to be created or modified with this control
+        /// </summary>
+        public DeclarationToGoalDistanceRule DeclarationToGoalDistanceRule { get; private set; }
+
+        /// <summary>
+        /// Delegate for the DataValid event
+        /// </summary>
         public delegate void DataValidDelegate();
 
+        /// <summary>
+        /// Event will be fired when the input for the rule is value
+        /// </summary>
         public event DataValidDelegate DataValid;
 
-        public DeclarationToGoalDistanceRule DeclarationToGoalDistanceRule { get; private set; }
+        #endregion
+
+        #region Constructors
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public DeclarationToGoalDistanceRuleControl()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Constructor which pre-fills control from existing rule
+        /// </summary>
+        /// <param name="declarationToGoalDistanceRule">the existing declaration to goal distance rule</param>
         public DeclarationToGoalDistanceRuleControl(DeclarationToGoalDistanceRule declarationToGoalDistanceRule)
         {
             DeclarationToGoalDistanceRule = declarationToGoalDistanceRule;
             InitializeComponent();
             Prefill();
         }
+        #endregion
 
+        #region API
+        /// <summary>
+        /// Convert the object suitable for display representation
+        /// </summary>
+        /// <returns>display text of the this object</returns>
+        public override string ToString()
+        {
+            return "Declaration to Goal Distance Rule Setup Control";
+        }
+
+        #endregion
+
+        #region private methods
+        /// <summary>
+        /// Pre-fills control form existing rule
+        /// </summary>
         private void Prefill()
         {
             if (DeclarationToGoalDistanceRule != null)
@@ -46,6 +85,12 @@ namespace BalloonTrackAnalyze.ValidationControls
                 }
             }
         }
+
+        /// <summary>
+        /// Validates the user input and creates new / modifies exsiting declaration to goal distance rule 
+        /// </summary>
+        /// <param name="sender">sender of the event</param>
+        /// <param name="e">event arguments</param>
         private void btCreate_Click(object sender, EventArgs e)
         {
             bool isDataValid = true;
@@ -105,19 +150,24 @@ namespace BalloonTrackAnalyze.ValidationControls
             }
         }
 
+        /// <summary>
+        /// Called when input for rule is valid
+        /// </summary>
         protected virtual void OnDataValid()
         {
             DataValid?.Invoke();
         }
 
-        public override string ToString()
-        {
-            return "Declaration to Goal Distance Rule Setup Control";
-        }
 
+        /// <summary>
+        /// Logs a user message
+        /// </summary>
+        /// <param name="logSeverity">the severity of the message</param>
+        /// <param name="text">the message text</param>
         private void Log(LogSeverityType logSeverity, string text)
         {
             Logger.Log(this, logSeverity, text);
         }
+        #endregion
     }
 }

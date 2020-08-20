@@ -212,7 +212,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case MarkerToOtherMarkersDistanceRule markerToOtherMarkersDistanceRule:
                     {
-                        MarkerToOtherMarkersDistanceRuleControl markerToOtherMarkerDistanceRuleControl = new MarkerToOtherMarkersDistanceRuleControl();
+                        MarkerToOtherMarkersDistanceRuleControl markerToOtherMarkerDistanceRuleControl = new MarkerToOtherMarkersDistanceRuleControl(markerToOtherMarkersDistanceRule);
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerToOtherMarkerDistanceRuleControl.Location = RuleControlLocation;

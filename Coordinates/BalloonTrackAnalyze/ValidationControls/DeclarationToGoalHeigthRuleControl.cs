@@ -13,24 +13,62 @@ namespace BalloonTrackAnalyze.ValidationControls
 {
     public partial class DeclarationToGoalHeigthRuleControl : UserControl
     {
-        public delegate void DataValidDelegate();
+        #region Properties
 
-        public event DataValidDelegate DataValid;
-
+        /// <summary>
+        /// The rule to be created or modified with this control
+        /// </summary>
         public DeclarationToGoalHeightRule DeclarationToGoalHeightRule { get; private set; }
 
+        /// <summary>
+        /// Delegate for the DataValid event
+        /// </summary>
+        public delegate void DataValidDelegate();
+
+        /// <summary>
+        /// Event will be fired when the input for the rule is value
+        /// </summary>
+        public event DataValidDelegate DataValid;
+
+        #endregion
+
+        #region Constructors
+        /// <summary>
+        /// Default constructor
+        /// </summary>
         public DeclarationToGoalHeigthRuleControl()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        /// Constructor which pre-fills control from existing rule
+        /// </summary>
+        /// <param name="declarationToGoalHeightRule">the existing declaration to goal height rule</param>
         public DeclarationToGoalHeigthRuleControl(DeclarationToGoalHeightRule declarationToGoalHeightRule)
         {
             DeclarationToGoalHeightRule = declarationToGoalHeightRule;
             InitializeComponent();
             Prefill();
         }
+        #endregion
 
+        #region API
+        /// <summary>
+        /// Convert the object suitable for display representation
+        /// </summary>
+        /// <returns>display text of the this object</returns>
+        public override string ToString()
+        {
+            return "Declaration to Goal Height Rule Setup Control";
+        }
+
+        #endregion
+
+        #region private methods
+        /// <summary>
+        /// Pre-fills control form existing rule
+        /// </summary>
         private void Prefill()
         {
             if (DeclarationToGoalHeightRule != null)
@@ -49,6 +87,11 @@ namespace BalloonTrackAnalyze.ValidationControls
             }
         }
 
+        /// <summary>
+        /// Validates the user input and creates new / modifies exsiting declaration to goal height rule 
+        /// </summary>
+        /// <param name="sender">sender of the event</param>
+        /// <param name="e">event arguments</param>
         private void btCreate_Click(object sender, EventArgs e)
         {
             bool isDataValid = true;
@@ -109,19 +152,23 @@ namespace BalloonTrackAnalyze.ValidationControls
             }
         }
 
+        /// <summary>
+        /// Called when input for rule is valid
+        /// </summary>
         protected virtual void OnDataValid()
         {
             DataValid?.Invoke();
         }
 
-        public override string ToString()
-        {
-            return "Declaration to Goal Height Rule Setup Control";
-        }
-
+        /// <summary>
+        /// Logs a user message
+        /// </summary>
+        /// <param name="logSeverity">the severity of the message</param>
+        /// <param name="text">the message text</param>
         private void Log(LogSeverityType logSeverity, string text)
         {
             Logger.Log(this, logSeverity, text);
         }
+        #endregion
     }
 }

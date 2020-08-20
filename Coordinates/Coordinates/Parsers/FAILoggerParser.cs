@@ -485,18 +485,34 @@ namespace Coordinates.Parsers
             int declaredAltitude;
             double declaredAltitudeInMeter;
             //TODO clarify with Mike
-            parts[1] = parts[1].Replace("ft", "").Replace("m", "");
-
-            if (!int.TryParse(parts[1], out declaredAltitude))
+            if (parts.Length > 1)
             {
-                //Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration altitude portion '{parts[1]}' in '{line}'");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration altitude portion '{parts[1]}' in '{line}'");
-                return false;
+                if (!string.IsNullOrWhiteSpace(parts[1]))
+                {
+                    parts[1] = parts[1].Replace("ft", "").Replace("m", "");
+
+                    if (!int.TryParse(parts[1], out declaredAltitude))
+                    {
+                        //Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration altitude portion '{parts[1]}' in '{line}'");
+                        Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration altitude portion '{parts[1]}' in '{line}'");
+                        return false;
+                    }
+                    if (declaredAltitudeIsInFeet)
+                        declaredAltitudeInMeter = CoordinateHelpers.ConvertToMeter((double)declaredAltitude);
+                    else
+                        declaredAltitudeInMeter = (double)declaredAltitude;
+                }
+                else
+                {
+                    declaredAltitudeInMeter = 0.0;
+                    Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
+                }
             }
-            if (declaredAltitudeIsInFeet)
-                declaredAltitudeInMeter = CoordinateHelpers.ConvertToMeter((double)declaredAltitude);
             else
-                declaredAltitudeInMeter = (double)declaredAltitude;
+            {
+                declaredAltitudeInMeter = 0.0;
+                Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
+            }
             //double declarationLatitude;
             //if (!ParseLatitude(parts[2][0..8], out declarationLatitude))
             //{
