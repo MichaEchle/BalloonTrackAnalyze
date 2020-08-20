@@ -1,3 +1,0 @@
-8/8/2020 8:29:26 PM: Info: Loaded Track Source 'Balloon Live' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/8/2020 8:29:26 PM: Info: Loaded Height Source 'GPS' from settings (logged from 'BalloonTrackAnalyze.Form1, Text: Form1')
-8/8/2020 8:30:02 PM: Info: Stop Logging... (logged from 'LoggerComponent.LogListView')
