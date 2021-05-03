@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Competition
 {
@@ -16,6 +17,7 @@ namespace Competition
         /// The task number
         /// <para>mandatory</para>
         /// </summary>
+        [JsonIgnore]
         public int TaskNumber
         {
             get;
@@ -26,6 +28,7 @@ namespace Competition
         /// The target goal number
         /// <para>mandatory</para>
         /// </summary>
+        [JsonProperty("Goal number")]
         public int GoalNumber
         {
             get; set;
@@ -35,6 +38,7 @@ namespace Competition
         /// Number of allowed declarations
         /// <para>currently not used</para>
         /// </summary>
+        [JsonProperty("Number of declarations")]
         public int NumberOfDeclarations
         {
             get; set;
@@ -44,6 +48,7 @@ namespace Competition
         /// The radius of the inner circle in meter
         /// <para>mandatory</para>
         /// </summary>
+        [JsonProperty("Inner radius [m]")]
         public double InnerRadius
         {
             get; set;
@@ -53,6 +58,7 @@ namespace Competition
         /// The radius of the outer circle in meter
         /// <para>mandatory</para>
         /// </summary>
+        [JsonProperty("Outer radius [m]")]
         public double OuterRadius
         {
             get; set;
@@ -62,6 +68,7 @@ namespace Competition
         /// Lower boundary of the donut in meter
         /// <para>optional; use double.NaN to omit</para>
         /// </summary>
+        [JsonProperty("Lower boundary [m]")]
         public double LowerBoundary
         {
             get; set;
@@ -71,6 +78,7 @@ namespace Competition
         /// Upper boundary of the donut in meter
         /// <para>optional; use double.NaN to omit</para>
         /// </summary>
+        [JsonProperty("Upper boundary [m]")]
         public double UpperBoundary
         {
             get; set;
@@ -80,6 +88,7 @@ namespace Competition
         /// Specify whether or not re-entrance in the donut is allowed
         /// <para>mandatory</para>
         /// </summary>
+        [JsonProperty("Is reentrance allowed")]
         public bool IsReentranceAllowed
         {
             get; set;
@@ -89,6 +98,7 @@ namespace Competition
         /// List of rules for declaration validation
         /// <para>optional; leave list empty to omit</para>
         /// </summary>
+        [JsonIgnore]
         public List<IDeclarationValidationRules> DeclarationValidationRules
         {
             get; set;

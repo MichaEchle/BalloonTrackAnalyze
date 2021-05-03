@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.IO;
 using Competition;
 using Coordinates;
 using Coordinates.Parsers;
+using Newtonsoft.Json;
 
 namespace TestProgramm
 {
@@ -28,6 +30,18 @@ namespace TestProgramm
             //{
             //    Console.WriteLine("Error parsing FAI logger track");
             //}
+
+            DonutTask donutTask = new DonutTask();
+
+            donutTask.SetupDonut(-1, 2, 1, 300, 500, 50, double.NaN, true, null);
+            
+            string donut=JsonConvert.SerializeObject(donutTask,Formatting.Indented);
+
+            using (StreamWriter writer = new StreamWriter(@"./donutConfig.json"))
+            {
+                writer.Write(donut);
+            }
+
             CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator("32U", 567000, 5489000);
             CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
 
