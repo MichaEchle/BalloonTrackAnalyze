@@ -33,5 +33,7 @@ namespace Coordinates
             GoalDeclared = goalDeclared;
             PositionAtDeclaration = positionAtDeclaration;
         }
+
+        
     }
 }

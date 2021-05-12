@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using Competition;
@@ -24,29 +25,47 @@ namespace TestProgramm
             //double distance3D = CoordinateHelpers.CalculateDistance3D(trackOriginal.TrackPoints[100], trackOriginal.TrackPoints[101],true);
             //Console.WriteLine("3D Distance:" + distance3D);
 
-
-            //Track faiLogger;
-            //if (!FAILoggerParser.ParseFile(@"C:\Users\Micha\Source\repos\BalloonTrackAnalyze\TestTrack\5AD_f003_p002_l0.igc", out faiLogger))
-            //{
-            //    Console.WriteLine("Error parsing FAI logger track");
-            //}
-
-            DonutTask donutTask = new DonutTask();
-
-            donutTask.SetupDonut(-1, 2, 1, 300, 500, 50, double.NaN, true, null);
-            
-            string donut=JsonConvert.SerializeObject(donutTask,Formatting.Indented);
-
-            using (StreamWriter writer = new StreamWriter(@"./donutConfig.json"))
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            string trackFileName = @"C:\Users\Micha\Source\repos\BalloonTrackAnalyze\TestTrack\5AD_f003_p002_l0.igc";
+            Track faiTrack;
+            if (!FAILoggerParser.ParseFile(trackFileName, out faiTrack))
             {
-                writer.Write(donut);
+                Console.WriteLine("Error parsing FAI logger track");
             }
+
+            string reportFileName = Path.Combine(Path.GetDirectoryName(trackFileName) , Path.GetFileNameWithoutExtension(trackFileName)+".xlsx");
+
+            TrackReport.GenerateTrackReport(reportFileName, faiTrack,true);
+            stopwatch.Stop();
+
+            Console.WriteLine($"Time for parsing track file and generate report: {stopwatch.Elapsed:mm\\:ss}");
+            //DonutTask donutTask = new DonutTask();
+
+            //donutTask.SetupDonut(-1, 2, 1, 300, 500, 50, double.NaN, true, null);
+
+            //string donut=JsonConvert.SerializeObject(donutTask,Formatting.Indented);
+
+            //using (StreamWriter writer = new StreamWriter(@"./donutConfig.json"))
+            //{
+            //    writer.Write(donut);
+            //}
 
             CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator("32U", 567000, 5489000);
             CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
 
             Console.WriteLine(coordinate.Latitude);
             Console.WriteLine(ToProperText(coordinate.Latitude));
+
+            //int[] array =new int[6]{ 1,2,3,4,5,6};
+
+            //for (int index = 0; index < array.Length; index++)
+            //{
+            //    for (int iterator = index+1; iterator < array.Length; iterator++)
+            //    {
+            //        Console.WriteLine($"{array[index]}->{array[iterator]}");
+            //    }
+            //}
             //Coordinate declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, double.NaN, double.NaN, DateTime.Now);
             //faiLogger.DeclaredGoals.Add(new DeclaredGoal(2, declaredGoal, declaredGoal));
 
