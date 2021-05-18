@@ -27,8 +27,8 @@ namespace TestProgramm
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            //string trackFileName = @"C:\Users\Micha\Source\repos\BalloonTrackAnalyze\TestTrack\5AD_f003_p002_l0.igc";
-            string trackFileName = @"E:\BLC2021\SynologyDrive\tracks\Flight 1\work\E[BLC21]F[1]P[20]-6DD95BC6-020.igc";
+            string trackFileName = @"C:\Users\Micha\Source\repos\BalloonTrackAnalyze\TestTrack\5AD_f003_p002_l0.igc";
+            //string trackFileName = @"E:\BLC2021\SynologyDrive\tracks\Flight 1\work\E[BLC21]F[1]P[20]-6DD95BC6-020.igc";
             Track track;
             if (!BalloonLiveParser.ParseFile(trackFileName, out track))
             {
