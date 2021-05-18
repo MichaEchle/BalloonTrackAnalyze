@@ -11,12 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Competition", "Competition\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{89727CE0-9B98-4ED5-87CA-5B51310984B0}"
 	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
 		ToDoList.txt = ToDoList.txt
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BalloonTrackAnalyze", "BalloonTrackAnalyze\BalloonTrackAnalyze.csproj", "{05937557-29AF-46EC-A81D-CCE71C296E62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggerComponent", "LoggerComponent\LoggerComponent.csproj", "{A20BCF11-5770-4ED8-90A6-32CE4829C7B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggerComponent", "LoggerComponent\LoggerComponent.csproj", "{A20BCF11-5770-4ED8-90A6-32CE4829C7B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

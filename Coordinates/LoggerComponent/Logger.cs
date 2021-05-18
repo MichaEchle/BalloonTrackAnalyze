@@ -127,10 +127,12 @@ namespace LoggerComponent
 				if (finalText[i] == '\n')
 					finalText[i] = ' ';
 			}
-			LogItem logItem = new LogItem(source, severity, new String(finalText));
-
-			// log item
-			Log(logItem);
+			LogItem logItem = new LogItem(source, severity, new string(finalText));
+#if DEBUG
+            Debug.WriteLine($"{source}: {severity} - {new string(finalText)}");
+#endif
+            // log item
+            Log(logItem);
 		}
 
 		/// <summary>

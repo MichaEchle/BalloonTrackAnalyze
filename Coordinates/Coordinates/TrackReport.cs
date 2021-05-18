@@ -155,9 +155,9 @@ namespace Coordinates
 
                 ExcelWorksheet wsTrackpoints = package.Workbook.Worksheets.Add("Trackpoints");
                 wsTrackpoints.Cells[1, 1].Value = "Pilot Number";
-                wsTrackpoints.Cells[1, 2].Value = track.Pilot.PilotNumber;
+                wsTrackpoints.Cells[1, 2].Value = track.Pilot?.PilotNumber;
                 wsTrackpoints.Cells[2, 1].Value = "Pilot Identifier";
-                wsTrackpoints.Cells[2, 2].Value = track.Pilot.PilotIdentifier;
+                wsTrackpoints.Cells[2, 2].Value = track.Pilot?.PilotIdentifier;
 
                 wsTrackpoints.Cells[4, 1].Value = "Timestamp";
                 wsTrackpoints.Cells[4, 2].Value = "Long";

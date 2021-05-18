@@ -27,16 +27,17 @@ namespace TestProgramm
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
-            string trackFileName = @"C:\Users\Micha\Source\repos\BalloonTrackAnalyze\TestTrack\5AD_f003_p002_l0.igc";
-            Track faiTrack;
-            if (!FAILoggerParser.ParseFile(trackFileName, out faiTrack))
+            //string trackFileName = @"C:\Users\Micha\Source\repos\BalloonTrackAnalyze\TestTrack\5AD_f003_p002_l0.igc";
+            string trackFileName = @"E:\BLC2021\SynologyDrive\tracks\Flight 1\work\E[BLC21]F[1]P[20]-6DD95BC6-020.igc";
+            Track track;
+            if (!BalloonLiveParser.ParseFile(trackFileName, out track))
             {
-                Console.WriteLine("Error parsing FAI logger track");
+                Console.WriteLine("Error parsing logger track");
             }
 
             string reportFileName = Path.Combine(Path.GetDirectoryName(trackFileName) , Path.GetFileNameWithoutExtension(trackFileName)+".xlsx");
 
-            TrackReport.GenerateTrackReport(reportFileName, faiTrack,true);
+            TrackReport.GenerateTrackReport(reportFileName, track,true);
             stopwatch.Stop();
 
             Console.WriteLine($"Time for parsing track file and generate report: {stopwatch.Elapsed:mm\\:ss}");
