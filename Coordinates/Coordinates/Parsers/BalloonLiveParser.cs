@@ -52,214 +52,226 @@ namespace Coordinates.Parsers
 
             string functionErrorMessage = $"Failed to parse file '{fileNameAndPath}':";
             track = null;
+            try
+            {
 
-            FileInfo fileInfo = new FileInfo(fileNameAndPath);
-            if (!fileInfo.Exists)
-            {
-                //Debug.WriteLine(functionErrorMessage + $"The file '{fileNameAndPath}' does not exists");
-                Log(LogSeverityType.Error, functionErrorMessage + $"The file '{fileNameAndPath}' does not exists");
-                return false;
-            }
-
-            if (!fileInfo.Extension.EndsWith("igc"))
-            {
-                //Debug.WriteLine(functionErrorMessage + $"The file extension '{fileInfo.Extension}' is not supported");
-                Log(LogSeverityType.Error, functionErrorMessage + $"The file extension '{fileInfo.Extension}' is not supported");
-                return false;
-            }
-            ResetProperties();
-            track = new Track();
-            int pilotNumber = -1;
-            string pilotIdentifier = "";
-            DateTime date = new DateTime();
-            //int goalNortingDigits = -1;
-            //int goalEastingDigits = -1;
-            bool declaredAltitudeIsInFeet = true;
-            List<string> lines = new List<string>();
-            using (StreamReader reader = new StreamReader(fileNameAndPath))
-            {
-                while (!reader.EndOfStream)
+                FileInfo fileInfo = new FileInfo(fileNameAndPath);
+                if (!fileInfo.Exists)
                 {
-                    string line = reader.ReadLine();
-                    lines.Add(line);
+                    //Debug.WriteLine(functionErrorMessage + $"The file '{fileNameAndPath}' does not exists");
+                    Log(LogSeverityType.Error, functionErrorMessage + $"The file '{fileNameAndPath}' does not exists");
+                    return false;
                 }
-            }
-            //string[] identifierLine = lines.Where(x => x.StartsWith("AXXX")).ToArray();
-            string[] identifierLine = lines.Where(x => x.StartsWith("AXBL")).ToArray();
-            if (identifierLine.Length == 0)
-            {
-                identifierLine = lines.Where(x => x.StartsWith("AXXX")).ToArray();
+
+                if (!fileInfo.Extension.EndsWith("igc"))
+                {
+                    //Debug.WriteLine(functionErrorMessage + $"The file extension '{fileInfo.Extension}' is not supported");
+                    Log(LogSeverityType.Error, functionErrorMessage + $"The file extension '{fileInfo.Extension}' is not supported");
+                    return false;
+                }
+                ResetProperties();
+                track = new Track();
+                int pilotNumber = -1;
+                string pilotIdentifier = "";
+                DateTime date = new DateTime();
+                //int goalNortingDigits = -1;
+                //int goalEastingDigits = -1;
+                bool declaredAltitudeIsInFeet = true;
+                List<string> lines = new List<string>();
+                using (StreamReader reader = new StreamReader(fileNameAndPath))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                        string line = reader.ReadLine();
+                        lines.Add(line);
+                    }
+                }
+                //string[] identifierLine = lines.Where(x => x.StartsWith("AXXX")).ToArray();
+                string[] identifierLine = lines.Where(x => x.StartsWith("AXBL")).ToArray();
                 if (identifierLine.Length == 0)
                 {
-                    Log(LogSeverityType.Error, "Line with Pilot Identifier 'AXBL' or 'AXXX' is missing");
-                    return false;
+                    identifierLine = lines.Where(x => x.StartsWith("AXXX")).ToArray();
+                    if (identifierLine.Length == 0)
+                    {
+                        Log(LogSeverityType.Error, "Line with Pilot Identifier 'AXBL' or 'AXXX' is missing");
+                        return false;
+                    }
+                    if (identifierLine.Length > 1)
+                    {
+                        //Debug.WriteLine("More the one line with Pilot Identifier is found. First occurrence will be used.");
+                        Log(LogSeverityType.Warning, "More the one line with Pilot Identifier ('AXXX') is found. First occurrence will be used.");
+                    }
+                    else
+                    {
+                        pilotIdentifier = identifierLine[0].Replace("AXXX", "").Replace("BalloonLive", "");
+                    }
                 }
                 if (identifierLine.Length > 1)
                 {
                     //Debug.WriteLine("More the one line with Pilot Identifier is found. First occurrence will be used.");
-                    Log(LogSeverityType.Warning, "More the one line with Pilot Identifier ('AXXX') is found. First occurrence will be used.");
+                    Log(LogSeverityType.Warning, "More the one line with Pilot Identifier ('AXBL') is found. First occurrence will be used.");
                 }
                 else
                 {
-                    pilotIdentifier = identifierLine[0].Replace("AXXX", "").Replace("BalloonLive", "");
+                    pilotIdentifier = identifierLine[0][4..12];
                 }
-            }
-            if (identifierLine.Length > 1)
-            {
-                //Debug.WriteLine("More the one line with Pilot Identifier is found. First occurrence will be used.");
-                Log(LogSeverityType.Warning, "More the one line with Pilot Identifier ('AXBL') is found. First occurrence will be used.");
-            }
-            else
-            {
-                pilotIdentifier = identifierLine[0][4..12];
-            }
-            //pilotIdentifier = identifierLine[0].Replace("AXXX", "").Replace("BalloonLive", "");
+                //pilotIdentifier = identifierLine[0].Replace("AXXX", "").Replace("BalloonLive", "");
 
 
-            string[] headerLines = lines.Where(x => x.StartsWith('H')).ToArray();
-            if (!ParseHeaders(headerLines, out pilotNumber, out date))
-            {
-                Log(LogSeverityType.Error, functionErrorMessage);
-                return false;
-            }
-
-            string[] configLines = lines.Where(x => x.StartsWith("LXXX")).ToArray();
-            foreach (string configLine in configLines)
-            {
-                //if (configLine.StartsWith("LXXX declaration digits"))
-                //{
-                //    if (!int.TryParse(configLine[^3..^2], out goalNortingDigits))
-                //    {
-                //        //Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration northing digits '{configLine[^3..^2]}' in '{configLine}'");
-                //        Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration northing digits '{configLine[^3..^2]}' in '{configLine}'");
-                //        return false;
-                //    }
-                //    if (!int.TryParse(configLine[^1..^0], out goalEastingDigits))
-                //    {
-                //        //Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration easting digits '{configLine[^1..^0]}' in '{configLine}'");
-                //        Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration easting digits '{configLine[^1..^0]}' in '{configLine}'");
-                //        return false;
-                //    }
-                //}
-                if (configLine.StartsWith("LXXX alt unit"))
+                string[] headerLines = lines.Where(x => x.StartsWith('H')).ToArray();
+                if (!ParseHeaders(headerLines, out pilotNumber, out date))
                 {
-                    if (configLine.Contains("feet"))
+                    Log(LogSeverityType.Error, functionErrorMessage);
+                    return false;
+                }
+
+                string[] configLines = lines.Where(x => x.StartsWith("LXXX")).ToArray();
+                foreach (string configLine in configLines)
+                {
+                    //if (configLine.StartsWith("LXXX declaration digits"))
+                    //{
+                    //    if (!int.TryParse(configLine[^3..^2], out goalNortingDigits))
+                    //    {
+                    //        //Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration northing digits '{configLine[^3..^2]}' in '{configLine}'");
+                    //        Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration northing digits '{configLine[^3..^2]}' in '{configLine}'");
+                    //        return false;
+                    //    }
+                    //    if (!int.TryParse(configLine[^1..^0], out goalEastingDigits))
+                    //    {
+                    //        //Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration easting digits '{configLine[^1..^0]}' in '{configLine}'");
+                    //        Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration easting digits '{configLine[^1..^0]}' in '{configLine}'");
+                    //        return false;
+                    //    }
+                    //}
+                    if (configLine.StartsWith("LXXX alt unit"))
                     {
-                        declaredAltitudeIsInFeet = true;
+                        if (configLine.Contains("feet"))
+                        {
+                            declaredAltitudeIsInFeet = true;
+                        }
+                        else
+                        {
+                            declaredAltitudeIsInFeet = false;
+                        }
                     }
+                }
+
+                string iRecordLine = lines.Where(x => x.StartsWith('I')).FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(iRecordLine))
+                {
+                    int numberOfAdditions;
+                    if (!int.TryParse(iRecordLine[1..3], out numberOfAdditions))
+                    {
+                        Log(LogSeverityType.Error, functionErrorMessage + " Failed to parse number of additions from I-record");
+                        return false;
+                    }
+                    int offset = 3;
+                    for (int index = 0; index < numberOfAdditions; index++)
+                    {
+                        offset = index * 7 + 3;
+                        int startPosition;
+                        if (!int.TryParse(iRecordLine[offset..(offset + 2)], out startPosition))
+                        {
+                            Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse start position of addition no {index + 1}");
+                            return false;
+                        }
+                        offset += 2;
+                        int stopPosition;
+                        if (!int.TryParse(iRecordLine[(offset)..(offset + 2)], out stopPosition))
+                        {
+                            Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse stop position of addition no {index + 1}");
+                            return false;
+                        }
+                        offset += 2;
+                        string additionIdentifier = iRecordLine[(offset)..(offset + 3)];
+
+                        if (additionIdentifier.ToUpper() == "LAD")
+                        {
+                            TrackPoint_HasAdditionalLatitudeDecimals = true;
+                            TrackPoint_StartOfAdditionalLatitudeDecimals = startPosition - 1;//adjust to zero based index
+                            TrackPoint_EndOfAdditionalLatitudeDecimals = stopPosition;
+                        }
+                        if (additionIdentifier.ToUpper() == "LOD")
+                        {
+                            TrackPoint_HasAdditionalLongitudeDecimals = true;
+                            TrackPoint_StartOfAdditionalLongitudeDecimals = startPosition - 1;//adjust to zero based index
+                            TrackPoint_EndOfAdditionalLongitudeDecimals = stopPosition;
+                        }
+                    }
+                }
+                string[] trackPointLines = lines.Where(x => x.StartsWith('B')).ToArray();
+                foreach (string trackPointLine in trackPointLines)
+                {
+                    Coordinate coordinate;
+                    if (!ParseTrackPoint(trackPointLine, date, out coordinate))
+                    {
+                        //Debug.WriteLine(functionErrorMessage + "Failed to parse trackpoint");
+                        Log(LogSeverityType.Error, functionErrorMessage + "Failed to parse trackpoint");
+                        return false;
+                    }
+                    track.TrackPoints.Add(coordinate);
+                }
+
+                string[] markerDropLines = lines.Where(x => x.StartsWith('E') && x.Contains("XX0")).ToArray();
+                foreach (string markerDropLine in markerDropLines)
+                {
+                    MarkerDrop markerDrop;
+                    if (!ParseMarkerDrop(markerDropLine, date, out markerDrop))
+                    {
+                        //Debug.WriteLine(functionErrorMessage + "Failed to parse marker drop");
+                        Log(LogSeverityType.Error, functionErrorMessage + "Failed to parse marker drop");
+                        return false;
+                    }
+                    track.MarkerDrops.Add(markerDrop);
+                }
+
+                Coordinate referenceCoordinate = null;
+                if (track.MarkerDrops.Count > 0)
+                {
+                    MarkerDrop markerDrop = track.MarkerDrops.Find(x => x.MarkerNumber == 1);
+                    if (markerDrop != null)
+                        referenceCoordinate = markerDrop.MarkerLocation;
                     else
                     {
-                        declaredAltitudeIsInFeet = false;
+                        referenceCoordinate = track.MarkerDrops[0].MarkerLocation;
+                        //Debug.WriteLine($"No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference");
+                        Log(LogSeverityType.Warning, $"No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference");
                     }
                 }
-            }
-
-            string iRecordLine = lines.Where(x => x.StartsWith('I')).FirstOrDefault();
-            if (!string.IsNullOrWhiteSpace(iRecordLine))
-            {
-                int numberOfAdditions;
-                if (!int.TryParse(iRecordLine[1..3], out numberOfAdditions))
-                {
-                    Log(LogSeverityType.Error, functionErrorMessage + " Failed to parse number of additions from I-record");
-                    return false;
-                }
-                int offset = 3;
-                for (int index = 0; index < numberOfAdditions; index++)
-                {
-                    offset = index * 7 + 3;
-                    int startPosition;
-                    if (!int.TryParse(iRecordLine[offset..(offset + 2)], out startPosition))
-                    {
-                        Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse start position of addition no {index + 1}");
-                        return false;
-                    }
-                    offset += 2;
-                    int stopPosition;
-                    if (!int.TryParse(iRecordLine[(offset)..(offset + 2)], out stopPosition))
-                    {
-                        Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse stop position of addition no {index + 1}");
-                        return false;
-                    }
-                    offset += 2;
-                    string additionIdentifier = iRecordLine[(offset)..(offset + 3)];
-
-                    if (additionIdentifier.ToUpper() == "LAD")
-                    {
-                        TrackPoint_HasAdditionalLatitudeDecimals = true;
-                        TrackPoint_StartOfAdditionalLatitudeDecimals = startPosition - 1;//adjust to zero based index
-                        TrackPoint_EndOfAdditionalLatitudeDecimals = stopPosition;
-                    }
-                    if (additionIdentifier.ToUpper() == "LOD")
-                    {
-                        TrackPoint_HasAdditionalLongitudeDecimals = true;
-                        TrackPoint_StartOfAdditionalLongitudeDecimals = startPosition - 1;//adjust to zero based index
-                        TrackPoint_EndOfAdditionalLongitudeDecimals = stopPosition;
-                    }
-                }
-            }
-            string[] trackPointLines = lines.Where(x => x.StartsWith('B')).ToArray();
-            foreach (string trackPointLine in trackPointLines)
-            {
-                Coordinate coordinate;
-                if (!ParseTrackPoint(trackPointLine, date, out coordinate))
-                {
-                    //Debug.WriteLine(functionErrorMessage + "Failed to parse trackpoint");
-                    Log(LogSeverityType.Error, functionErrorMessage + "Failed to parse trackpoint");
-                    return false;
-                }
-                track.TrackPoints.Add(coordinate);
-            }
-
-            string[] markerDropLines = lines.Where(x => x.StartsWith('E') && x.Contains("XX0")).ToArray();
-            foreach (string markerDropLine in markerDropLines)
-            {
-                MarkerDrop markerDrop;
-                if (!ParseMarkerDrop(markerDropLine, date, out markerDrop))
-                {
-                    //Debug.WriteLine(functionErrorMessage + "Failed to parse marker drop");
-                    Log(LogSeverityType.Error, functionErrorMessage + "Failed to parse marker drop");
-                    return false;
-                }
-                track.MarkerDrops.Add(markerDrop);
-            }
-
-            Coordinate referenceCoordinate = null;
-            if (track.MarkerDrops.Count > 0)
-            {
-                MarkerDrop markerDrop = track.MarkerDrops.Find(x => x.MarkerNumber == 1);
-                if (markerDrop != null)
-                    referenceCoordinate = markerDrop.MarkerLocation;
                 else
                 {
-                    referenceCoordinate = track.MarkerDrops[0].MarkerLocation;
-                    //Debug.WriteLine($"No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference");
-                    Log(LogSeverityType.Warning, $"No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference");
+                    //Debug.WriteLine("No marker drops found. Position at declaration will be used as reference instead");
+                    Log(LogSeverityType.Warning, "No marker drops found. Position at declaration will be used as reference instead");
                 }
-            }
-            else
-            {
-                //Debug.WriteLine("No marker drops found. Position at declaration will be used as reference instead");
-                Log(LogSeverityType.Warning, "No marker drops found. Position at declaration will be used as reference instead");
-            }
-            string[] goalDeclarationLines = lines.Where(x => x.StartsWith('E') && x.Contains("XL1")).ToArray();
-            foreach (string goalDeclarationLine in goalDeclarationLines)
-            {
-
-                DeclaredGoal declaredGoal;
-                if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, referenceCoordinate, out declaredGoal))
+                string[] goalDeclarationLines = lines.Where(x => x.StartsWith('E') && x.Contains("XL1")).ToArray();
+                foreach (string goalDeclarationLine in goalDeclarationLines)
                 {
-                    //Debug.WriteLine(functionErrorMessage + "Failed to parse goal declaration");
-                    Log(LogSeverityType.Error, functionErrorMessage + "Failed to parse goal declaration");
-                    return false;
-                }
-                track.DeclaredGoals.Add(declaredGoal);
-            }
 
-            Pilot pilot = new Pilot(pilotNumber, pilotIdentifier);
-            track.Pilot = pilot;
+                    DeclaredGoal declaredGoal;
+                    if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, referenceCoordinate, out declaredGoal))
+                    {
+                        //Debug.WriteLine(functionErrorMessage + "Failed to parse goal declaration");
+                        Log(LogSeverityType.Error, functionErrorMessage + "Failed to parse goal declaration");
+                        return false;
+                    }
+                    track.DeclaredGoals.Add(declaredGoal);
+                }
+
+                Pilot pilot = new Pilot(pilotNumber, pilotIdentifier);
+                track.Pilot = pilot;
+            }
+            catch (Exception ex)
+            {
+                Log(LogSeverityType.Error, functionErrorMessage + $" {ex.Message}");
+                return false;
+            }
+            Log(LogSeverityType.Info, $"Successfully parsed file '{fileNameAndPath}'");
             return true;
         }
 
+        #endregion
+
+        #region Private methods
         private static bool ParseHeaders(string[] headerLines, out int pilotNumber, out DateTime date)
         {
             date = DateTime.MinValue;
@@ -393,9 +405,6 @@ namespace Coordinates.Parsers
             }
             return true;
         }
-        #endregion
-
-        #region Private methods
 
 
         /// <summary>
@@ -704,15 +713,15 @@ namespace Coordinates.Parsers
             }
 
             double declarationPositonAltitudeBarometric;
-            if (!double.TryParse(line[31..36], out declarationPositonAltitudeBarometric))
+            if (!double.TryParse(line[30..35], out declarationPositonAltitudeBarometric))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse barometric altitude at declaration position '{parts[2][18..23]}' in '{line}'");
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse barometric altitude at declaration position in '{line}'");
                 return false;
             }
-
+            
             double declarationPositionAltitudeGPS;
-            if (!double.TryParse(line[36..41], out declarationPositionAltitudeGPS))
+            if (!double.TryParse(line[35..40], out declarationPositionAltitudeGPS))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse GPS altitude at declaration position '{parts[2][23..28]}' in '{line}'");
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse GPS altitude at declaration position in '{line}'");

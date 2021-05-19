@@ -35,9 +35,9 @@ namespace TestProgramm
                 Console.WriteLine("Error parsing logger track");
             }
 
-            string reportFileName = Path.Combine(Path.GetDirectoryName(trackFileName) , Path.GetFileNameWithoutExtension(trackFileName)+".xlsx");
+            string reportFileName = Path.Combine(Path.GetDirectoryName(trackFileName), Path.GetFileNameWithoutExtension(trackFileName) + ".xlsx");
 
-            TrackReport.GenerateTrackReport(reportFileName, track,true);
+            //TrackReportGenerator.GenerateTrackReport(reportFileName, track,true);
             stopwatch.Stop();
 
             Console.WriteLine($"Time for parsing track file and generate report: {stopwatch.Elapsed:mm\\:ss}");

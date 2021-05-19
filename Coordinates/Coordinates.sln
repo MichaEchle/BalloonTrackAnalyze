@@ -19,6 +19,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BalloonTrackAnalyze", "Ball
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggerComponent", "LoggerComponent\LoggerComponent.csproj", "{A20BCF11-5770-4ED8-90A6-32CE4829C7B3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrackReportGenerator", "TrackReportGenerator\TrackReportGenerator.csproj", "{A6AE023A-1347-4771-9382-B9A406074775}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{A20BCF11-5770-4ED8-90A6-32CE4829C7B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A20BCF11-5770-4ED8-90A6-32CE4829C7B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A20BCF11-5770-4ED8-90A6-32CE4829C7B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6AE023A-1347-4771-9382-B9A406074775}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6AE023A-1347-4771-9382-B9A406074775}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6AE023A-1347-4771-9382-B9A406074775}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6AE023A-1347-4771-9382-B9A406074775}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
