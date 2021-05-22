@@ -24,23 +24,64 @@ namespace TestProgramm
             //Console.WriteLine("2D Distance:"+distance2D);
             //double distance3D = CoordinateHelpers.CalculateDistance3D(trackOriginal.TrackPoints[100], trackOriginal.TrackPoints[101],true);
             //Console.WriteLine("3D Distance:" + distance3D);
+            Coordinate home = new Coordinate(48.735996605840015, 9.100416159912585, 0.0, 0.0, DateTime.Now);
 
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
-            string trackFileName = @"C:\Users\Micha\Source\repos\BalloonTrackAnalyze\TestTrack\5AD_f003_p002_l0.igc";
-            //string trackFileName = @"E:\BLC2021\SynologyDrive\tracks\Flight 1\work\E[BLC21]F[1]P[20]-6DD95BC6-020.igc";
+            CoordinateSharp.Coordinate coordinate1 = new CoordinateSharp.Coordinate(51.017558333333, 4.0108133333333);
+
+            double easting = Math.Round(coordinate1.UTM.Easting,0,MidpointRounding.AwayFromZero);
+            double northing = Math.Round(coordinate1.UTM.Northing,0,MidpointRounding.AwayFromZero);
+            string latZone = coordinate1.UTM.LatZone;
+            int longZone = coordinate1.UTM.LongZone;
+
+            //double northingNorth = Math.Round(northing + 1000,0,MidpointRounding.AwayFromZero);
+            //double northingSouth = Math.Round(northing - 1000,0,MidpointRounding.AwayFromZero);
+
+            //double eastingEast = Math.Round(easting + 1000,0,MidpointRounding.AwayFromZero);
+            //double eastingWest = Math.Round(easting - 1000, 0, MidpointRounding.AwayFromZero);
+
+            CoordinateSharp.UniversalTransverseMercator universalTransverseMercator = new CoordinateSharp.UniversalTransverseMercator("U31", 577486, 5668346);
+
+            double[] latLong=CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoSignedDegree(universalTransverseMercator);
+
+            Console.WriteLine($"Marker 2 (UTM): {latZone}{longZone} {easting} {northing}");
+            Console.WriteLine($"Marker 2 (lat/long): {latLong[0]}N {latLong[1]}E");
+            //Console.WriteLine($"Goal East (UTM): {latZone}{longZone} {eastingEast} {northing}");
+            //Console.WriteLine($"Goal South (UTM): {latZone}{longZone} {easting} {northingSouth}");
+            //Console.WriteLine($"Goal West (UTM): {latZone}{longZone} {eastingWest} {northing}");
+
+            //Coordinate goalNorth = CoordinateHelpers.CalculatePointWithDistanceAndBearing(home, 1000, 0.0);
+            //Coordinate goalEast = CoordinateHelpers.CalculatePointWithDistanceAndBearing(home, 1000, 90.0);
+            //Coordinate goalSouth = CoordinateHelpers.CalculatePointWithDistanceAndBearing(home, 1000, 180.0);
+            //Coordinate goalWest = CoordinateHelpers.CalculatePointWithDistanceAndBearing(home, 1000, 270.0);
+
+            //CoordinateSharp.Coordinate coordinateGoalNorth = new CoordinateSharp.Coordinate(goalNorth.Latitude, goalNorth.Longitude);
+            //CoordinateSharp.Coordinate coordinateGoalEast = new CoordinateSharp.Coordinate(goalEast.Latitude, goalEast.Longitude);
+            //CoordinateSharp.Coordinate coordinateGoalSouth = new CoordinateSharp.Coordinate(goalSouth.Latitude, goalSouth.Longitude);
+            //CoordinateSharp.Coordinate coordinateGoalWest = new CoordinateSharp.Coordinate(goalWest.Latitude, goalWest.Longitude);
+
+            //Console.WriteLine(coordinateGoalNorth.UTM.ToString());
+            //Console.WriteLine(coordinateGoalEast.UTM.ToString());
+            //Console.WriteLine(coordinateGoalSouth.UTM.ToString());
+            //Console.WriteLine(coordinateGoalWest.UTM.ToString());
+
+
+
+            //Stopwatch stopwatch = new Stopwatch();
+            //stopwatch.Start();
+            //string trackFileName = @"C:\Users\Micha\Source\repos\BalloonTrackAnalyze\TestTrack\5AD_f003_p002_l0.igc";
+            string trackFileName = @"E:\BLC2021\SynologyDrive\tracks\Flight 1\work\E[BLC21]F[1]P[20]-6DD95BC6-020.igc";
             Track track;
             if (!BalloonLiveParser.ParseFile(trackFileName, out track))
             {
                 Console.WriteLine("Error parsing logger track");
             }
+            
+            //string reportFileName = Path.Combine(Path.GetDirectoryName(trackFileName), Path.GetFileNameWithoutExtension(trackFileName) + ".xlsx");
 
-            string reportFileName = Path.Combine(Path.GetDirectoryName(trackFileName), Path.GetFileNameWithoutExtension(trackFileName) + ".xlsx");
+            ////TrackReportGenerator.GenerateTrackReport(reportFileName, track,true);
+            //stopwatch.Stop();
 
-            //TrackReportGenerator.GenerateTrackReport(reportFileName, track,true);
-            stopwatch.Stop();
-
-            Console.WriteLine($"Time for parsing track file and generate report: {stopwatch.Elapsed:mm\\:ss}");
+            //Console.WriteLine($"Time for parsing track file and generate report: {stopwatch.Elapsed:mm\\:ss}");
             //DonutTask donutTask = new DonutTask();
 
             //donutTask.SetupDonut(-1, 2, 1, 300, 500, 50, double.NaN, true, null);

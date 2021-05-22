@@ -4,6 +4,10 @@ using System.Text;
 
 namespace Coordinates
 {
+    /// <summary>
+    /// Formulas has been taken from:
+    /// <para>https://www.movable-type.co.uk/scripts/latlong.html</para>
+    /// </summary>
     public static class CoordinateHelpers
     {
         /// <summary>
@@ -24,12 +28,12 @@ namespace Coordinates
         /// <param name="degreeSeconds">the integer degree seconds</param>
         /// <param name="isNorthingOrEasting">true: is northing or easting; false: is southing or westing </param>
         /// <returns>the part of a coordinate in decimal degree</returns>
-        public static double ConvertToDecimalDegree(int degrees, int degreeMinutes, int degreeSeconds,int degreeTenthseconds, bool isNorthingOrEasting)
+        public static double ConvertToDecimalDegree(int degrees, int degreeMinutes, int degreeSeconds, int degreeTenthseconds, bool isNorthingOrEasting)
         {
-            return degrees + (degreeMinutes / 60.0) + (degreeSeconds / 3600.0) + (degreeTenthseconds/36000.0)*(isNorthingOrEasting ? 1.0 : -1.0);
+            return degrees + (degreeMinutes / 60.0) + (degreeSeconds / 3600.0) + (degreeTenthseconds / 36000.0) * (isNorthingOrEasting ? 1.0 : -1.0);
         }
 
-        public static (int degrees, int degreeMinutes, int degreeSeconds,int degreeTenthSeconds) ConvertToDegreeMinutes(double decimalDegrees)
+        public static (int degrees, int degreeMinutes, int degreeSeconds, int degreeTenthSeconds) ConvertToDegreeMinutes(double decimalDegrees)
         {
             while (decimalDegrees < -180.0)
                 decimalDegrees += 360.0;
@@ -44,7 +48,7 @@ namespace Coordinates
             int degreeSeconds = (int)Math.Floor(seconds);
             int degreeTenthSeconds = (int)Math.Round(tenths, 0, MidpointRounding.AwayFromZero);
 
-            return (degrees, degreeMinutes, degreeSeconds,degreeTenthSeconds);
+            return (degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds);
         }
 
 
@@ -264,7 +268,7 @@ namespace Coordinates
                 throw new ArgumentException(nameof(bearingInDecimalDegree));
             }
 
-            double angularDistance =Math.Abs( distanceInMeters)/ EARTH_RADIUS_METER;
+            double angularDistance = Math.Abs(distanceInMeters) / EARTH_RADIUS_METER;
             double lat1 = coordinate1.Latitude * Math.PI / 180.0;
             double long1 = coordinate1.Longitude * Math.PI / 180.0;
             double bearing = (bearingInDecimalDegree % 360.0) * Math.PI / 180.0;
@@ -272,9 +276,44 @@ namespace Coordinates
             double latitude = Math.Asin(Math.Sin(lat1) * Math.Cos(angularDistance) + Math.Cos(lat1) * Math.Sin(angularDistance) * Math.Cos(bearing));
             double longitude = long1 + Math.Atan2(Math.Sin(bearing) * Math.Sin(angularDistance) * Math.Cos(lat1), Math.Cos(angularDistance) - Math.Sin(lat1) * Math.Sin(latitude));
 
+            latitude *= 180.0 / Math.PI;
+            longitude *= 180.0 / Math.PI;
             Coordinate coordinate = new Coordinate(latitude, longitude, coordinate1.AltitudeGPS, coordinate1.AltitudeBarometric, DateTime.UtcNow);
 
             return coordinate;
+        }
+
+        /// <summary>
+        /// Calculate the initial bearing (forward azimuth) between the two coordinates 
+        /// </summary>
+        /// <param name="coordinate1">first coordinate</param>
+        /// <param name="coordinate2">second coordinate</param>
+        /// <returns>the initial bearing in degrees</returns>
+        public static double CalculateInitalBearing(Coordinate coordinate1, Coordinate coordinate2)
+        {
+            if (coordinate1 is null)
+            {
+                throw new ArgumentNullException(nameof(coordinate1));
+            }
+
+            if (coordinate2 is null)
+            {
+                throw new ArgumentNullException(nameof(coordinate2));
+            }
+
+            double phi1 = coordinate1.Latitude * Math.PI / 180.0;
+            double phi2 = coordinate2.Latitude * Math.PI / 180.0;
+
+            double lambda1 = coordinate1.Longitude * Math.PI / 180.0;
+            double lambda2 = coordinate2.Longitude * Math.PI / 180.0;
+
+            double deltaLambda = lambda2 - lambda1;
+            double bearing = Math.Atan2(Math.Sin(deltaLambda) * Math.Cos(phi2), Math.Cos(phi1) * Math.Sin(phi2) - Math.Sin(phi1) * Math.Cos(phi2) * Math.Cos(deltaLambda));
+
+            bearing = ((bearing * 180.0 / Math.PI) + 360) % 360;
+
+            return bearing;
+
         }
     }
 }

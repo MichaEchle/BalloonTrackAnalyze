@@ -23,12 +23,15 @@ namespace Competition.Validation
             foreach (DeclaredGoal declaredGoal in declarations)
             {
                 bool isValid = true;
-                foreach (IDeclarationValidationRules declarationValidationRule in declarationValidationRules)
+                if (declarationValidationRules != null)
                 {
-                    if (!declarationValidationRule.CheckConformance(declaredGoal))
+                    foreach (IDeclarationValidationRules declarationValidationRule in declarationValidationRules)
                     {
-                        isValid = false;
-                        break;
+                        if (!declarationValidationRule.CheckConformance(declaredGoal))
+                        {
+                            isValid = false;
+                            break;
+                        }
                     }
                 }
                 if (isValid)
@@ -77,9 +80,12 @@ namespace Competition.Validation
             }
             else
             {
-                foreach (IMarkerValidationRules markerValidationRule in markerValidationRules)
+                if (markerValidationRules != null)
                 {
-                    isValid &= markerValidationRule.CheckConformance(markerDrop);
+                    foreach (IMarkerValidationRules markerValidationRule in markerValidationRules)
+                    {
+                        isValid &= markerValidationRule.CheckConformance(markerDrop);
+                    }
                 }
             }
             return isValid;

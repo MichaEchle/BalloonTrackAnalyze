@@ -63,8 +63,16 @@ namespace TrackReportGenerator
             return await Task<bool>.Run(() =>
             {
                 Track track;
-                if (!Coordinates.Parsers.BalloonLiveParser.ParseFile(igcFile, out track))
-                    return false;
+                if (rbBallonLiveParser.Checked)
+                {
+                    if (!Coordinates.Parsers.BalloonLiveParser.ParseFile(igcFile, out track))
+                        return false;
+                }
+                else
+                {
+                    if (!Coordinates.Parsers.FAILoggerParser.ParseFile(igcFile, out track))
+                        return false;
+                }
 
                 string reportFileName = Path.Combine(Path.GetDirectoryName(igcFile), Path.GetFileNameWithoutExtension(igcFile) + ".xlsx");
                 if (!ExcelTrackReportGenerator.GenerateTrackReport(reportFileName, track, true))

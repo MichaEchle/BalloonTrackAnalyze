@@ -991,7 +991,6 @@ namespace Coordinates.Parsers
                 return false;
             }
             double decimalAngle = double.NaN;
-
             if (!double.TryParse(standardLatitudeText[2..7] + additionalDecimals, out decimalAngle))
             {
                 //Debug.WriteLine($"Failed to parse latitude text '{latitudeText}'");
@@ -1001,7 +1000,8 @@ namespace Coordinates.Parsers
             if (decimalAngle > 0.0)
             {
                 //decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal angles
-                decimalAngle /= (Math.Pow(10.0, Math.Floor(Math.Log10(decimalAngle))) * 60.0);
+            int divider = (standardLatitudeText[2..7] + additionalDecimals).Length-2;//first two digits are integer the rest are decimal places
+                decimalAngle /= (Math.Pow(10.0, divider) * 60.0);//divide two get decimal places right and convert from minutes to degrees
             }
             latitude = factor * (fullAngle + decimalAngle);
             return true;
@@ -1042,7 +1042,7 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, $"Failed to parse longitude text '{longitudeText}'");
                 return false;
             }
-            decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal angles
+            decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal degree
 
             longitude = factor * (fullAngle + decimalAngle);
             return true;
@@ -1080,7 +1080,8 @@ namespace Coordinates.Parsers
             //decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal angles
             if (decimalAngle > 0.0)
             {
-                decimalAngle /= (Math.Pow(10.0, Math.Floor(Math.Log10(decimalAngle))) * 60.0);
+                int divider = (standardLongitudeText[3..8] + additinalDecimals).Length - 2;//first two digits are integer the rest are decimal places
+                decimalAngle /= (Math.Pow(10.0,divider) * 60.0);//divide two get decimal places right and convert from minutes to degrees
             }
             longitude = factor * (fullAngle + decimalAngle);
             return true;

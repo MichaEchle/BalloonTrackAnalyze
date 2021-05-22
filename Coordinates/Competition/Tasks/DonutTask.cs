@@ -17,7 +17,7 @@ namespace Competition
         /// The task number
         /// <para>mandatory</para>
         /// </summary>
-        [JsonIgnore]
+        [JsonProperty("Task number")]
         public int TaskNumber
         {
             get;
