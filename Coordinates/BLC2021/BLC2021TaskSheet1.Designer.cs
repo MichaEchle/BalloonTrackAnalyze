@@ -234,7 +234,7 @@ namespace BLC2021
             // lbCommentTask1
             // 
             this.lbCommentTask1.AutoSize = true;
-            this.lbCommentTask1.Location = new System.Drawing.Point(381, 42);
+            this.lbCommentTask1.Location = new System.Drawing.Point(394, 42);
             this.lbCommentTask1.Name = "lbCommentTask1";
             this.lbCommentTask1.Size = new System.Drawing.Size(67, 15);
             this.lbCommentTask1.TabIndex = 11;
@@ -243,9 +243,9 @@ namespace BLC2021
             // 
             // tbCommentTask1
             // 
-            this.tbCommentTask1.Location = new System.Drawing.Point(454, 39);
+            this.tbCommentTask1.Location = new System.Drawing.Point(467, 39);
             this.tbCommentTask1.Name = "tbCommentTask1";
-            this.tbCommentTask1.Size = new System.Drawing.Size(442, 23);
+            this.tbCommentTask1.Size = new System.Drawing.Size(429, 23);
             this.tbCommentTask1.TabIndex = 10;
             this.tbCommentTask1.Visible = false;
             // 

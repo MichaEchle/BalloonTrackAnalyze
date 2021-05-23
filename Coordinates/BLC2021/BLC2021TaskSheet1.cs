@@ -17,6 +17,8 @@ namespace BLC2021
 {
     public partial class BLC2021TaskSheet1 : Form
     {
+        #region Properties
+
         private bool BatchMode
         {
             get; set;
@@ -76,6 +78,9 @@ namespace BLC2021
         {
             get; set;
         } = 1000;
+        #endregion
+
+        #region Constructor
 
         public BLC2021TaskSheet1(bool batchMode)
         {
@@ -91,6 +96,13 @@ namespace BLC2021
             logListView1.StartLogging();
             btSelectIGCFiles.Enabled = false;
         }
+
+        #endregion
+
+
+        #region Methods
+        #region General
+
 
         private void ConfigureForBatchMode()
         {
@@ -230,8 +242,6 @@ namespace BLC2021
             richTextBox6.Text = " * Use 3D distance between marker and goal\r\n * Divide marker to goal distance(in m) through declaration to goal distance(in km)";
 
         }
-
-
         public override string ToString()
         {
             if (BatchMode)
@@ -239,7 +249,6 @@ namespace BLC2021
             else
                 return "BLC 2021 Task Sheet 1 (Fiddle Mode)";
         }
-
         private void btSelectOutputFolder_Click(object sender, EventArgs e)
         {
             using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
@@ -252,49 +261,9 @@ namespace BLC2021
                 }
             }
         }
-
-        private List<Coordinate> CalculateGoals(Track track)
+        private void Log(LogSeverityType logSeverity, string logMessage)
         {
-            DeclaredGoal goal = track.DeclaredGoals.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).FirstOrDefault(x => x.GoalNumber == Task1_GoalNumber);
-            double distanceFromDeclaredGoal = 1000.0;
-            CoordinateSharp.Coordinate tempDeclaredGoal = new CoordinateSharp.Coordinate(goal.GoalDeclared.Latitude, goal.GoalDeclared.Longitude);
-
-            double easting = Math.Round(tempDeclaredGoal.UTM.Easting, 0, MidpointRounding.AwayFromZero);
-            double northing = Math.Round(tempDeclaredGoal.UTM.Northing, 0, MidpointRounding.AwayFromZero);
-            string latZone = tempDeclaredGoal.UTM.LatZone;
-            int longZone = tempDeclaredGoal.UTM.LongZone;
-
-            double northingNorth = Math.Round(northing + distanceFromDeclaredGoal, 0, MidpointRounding.AwayFromZero);
-            double northingSouth = Math.Round(northing - distanceFromDeclaredGoal, 0, MidpointRounding.AwayFromZero);
-
-            double eastingEast = Math.Round(easting + distanceFromDeclaredGoal, 0, MidpointRounding.AwayFromZero);
-            double eastingWest = Math.Round(easting - distanceFromDeclaredGoal, 0, MidpointRounding.AwayFromZero);
-
-            List<Coordinate> goals = new List<Coordinate>();
-
-            CoordinateSharp.UniversalTransverseMercator utmGoalNorth = new CoordinateSharp.UniversalTransverseMercator($"{latZone}{longZone}", easting, northingNorth);
-            CoordinateSharp.Coordinate tempGoal = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmGoalNorth);
-            Coordinate goalNorth = new Coordinate(tempGoal.Latitude.DecimalDegree, tempGoal.Longitude.DecimalDegree, goal.GoalDeclared.AltitudeGPS, goal.GoalDeclared.AltitudeBarometric, DateTime.Now);
-
-            CoordinateSharp.UniversalTransverseMercator utmGoalEast = new CoordinateSharp.UniversalTransverseMercator($"{latZone}{longZone}", eastingEast, northing);
-            tempGoal = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmGoalEast);
-            Coordinate goalEast = new Coordinate(tempGoal.Latitude.DecimalDegree, tempGoal.Longitude.DecimalDegree, goal.GoalDeclared.AltitudeGPS, goal.GoalDeclared.AltitudeBarometric, DateTime.Now);
-
-            CoordinateSharp.UniversalTransverseMercator utmGoalSouth = new CoordinateSharp.UniversalTransverseMercator($"{latZone}{longZone}", easting, northingSouth);
-            tempGoal = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmGoalSouth);
-            Coordinate goalSouth = new Coordinate(tempGoal.Latitude.DecimalDegree, tempGoal.Longitude.DecimalDegree, goal.GoalDeclared.AltitudeGPS, goal.GoalDeclared.AltitudeBarometric, DateTime.Now);
-
-            CoordinateSharp.UniversalTransverseMercator utmGoalWest = new CoordinateSharp.UniversalTransverseMercator($"{latZone}{longZone}", eastingWest, northing);
-            tempGoal = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmGoalWest);
-            Coordinate goalWest = new Coordinate(tempGoal.Latitude.DecimalDegree, tempGoal.Longitude.DecimalDegree, goal.GoalDeclared.AltitudeGPS, goal.GoalDeclared.AltitudeBarometric, DateTime.Now);
-
-            goals.Add(goalNorth);
-            goals.Add(goalEast);
-            goals.Add(goalSouth);
-            goals.Add(goalWest);
-
-
-            return goals;
+            Logger.Log(this, logSeverity, logMessage);
         }
 
         private async void btSelectIGCFiles_Click(object sender, EventArgs e)
@@ -375,6 +344,54 @@ namespace BLC2021
                 }
             }
         }
+        #endregion
+
+
+        #region Batch Mode
+        private List<Coordinate> CalculateGoals(Track track)
+        {
+            DeclaredGoal goal = track.DeclaredGoals.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).FirstOrDefault(x => x.GoalNumber == Task1_GoalNumber);
+            double distanceFromDeclaredGoal = 1000.0;
+            CoordinateSharp.Coordinate tempDeclaredGoal = new CoordinateSharp.Coordinate(goal.GoalDeclared.Latitude, goal.GoalDeclared.Longitude);
+
+            double easting = Math.Round(tempDeclaredGoal.UTM.Easting, 0, MidpointRounding.AwayFromZero);
+            double northing = Math.Round(tempDeclaredGoal.UTM.Northing, 0, MidpointRounding.AwayFromZero);
+            string latZone = tempDeclaredGoal.UTM.LatZone;
+            int longZone = tempDeclaredGoal.UTM.LongZone;
+
+            double northingNorth = Math.Round(northing + distanceFromDeclaredGoal, 0, MidpointRounding.AwayFromZero);
+            double northingSouth = Math.Round(northing - distanceFromDeclaredGoal, 0, MidpointRounding.AwayFromZero);
+
+            double eastingEast = Math.Round(easting + distanceFromDeclaredGoal, 0, MidpointRounding.AwayFromZero);
+            double eastingWest = Math.Round(easting - distanceFromDeclaredGoal, 0, MidpointRounding.AwayFromZero);
+
+            List<Coordinate> goals = new List<Coordinate>();
+
+            CoordinateSharp.UniversalTransverseMercator utmGoalNorth = new CoordinateSharp.UniversalTransverseMercator($"{latZone}{longZone}", easting, northingNorth);
+            CoordinateSharp.Coordinate tempGoal = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmGoalNorth);
+            Coordinate goalNorth = new Coordinate(tempGoal.Latitude.DecimalDegree, tempGoal.Longitude.DecimalDegree, goal.GoalDeclared.AltitudeGPS, goal.GoalDeclared.AltitudeBarometric, DateTime.Now);
+
+            CoordinateSharp.UniversalTransverseMercator utmGoalEast = new CoordinateSharp.UniversalTransverseMercator($"{latZone}{longZone}", eastingEast, northing);
+            tempGoal = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmGoalEast);
+            Coordinate goalEast = new Coordinate(tempGoal.Latitude.DecimalDegree, tempGoal.Longitude.DecimalDegree, goal.GoalDeclared.AltitudeGPS, goal.GoalDeclared.AltitudeBarometric, DateTime.Now);
+
+            CoordinateSharp.UniversalTransverseMercator utmGoalSouth = new CoordinateSharp.UniversalTransverseMercator($"{latZone}{longZone}", easting, northingSouth);
+            tempGoal = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmGoalSouth);
+            Coordinate goalSouth = new Coordinate(tempGoal.Latitude.DecimalDegree, tempGoal.Longitude.DecimalDegree, goal.GoalDeclared.AltitudeGPS, goal.GoalDeclared.AltitudeBarometric, DateTime.Now);
+
+            CoordinateSharp.UniversalTransverseMercator utmGoalWest = new CoordinateSharp.UniversalTransverseMercator($"{latZone}{longZone}", eastingWest, northing);
+            tempGoal = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmGoalWest);
+            Coordinate goalWest = new Coordinate(tempGoal.Latitude.DecimalDegree, tempGoal.Longitude.DecimalDegree, goal.GoalDeclared.AltitudeGPS, goal.GoalDeclared.AltitudeBarometric, DateTime.Now);
+
+            goals.Add(goalNorth);
+            goals.Add(goalEast);
+            goals.Add(goalSouth);
+            goals.Add(goalWest);
+
+
+            return goals;
+        }
+
 
         private async Task<bool> ParseFilesAndCalculateResultsAsync(string[] igcFiles, HesitationWaltzTask task1, LandRunTask task2)
         {
@@ -496,11 +513,9 @@ namespace BLC2021
 
             });
         }
+        #endregion
 
-        private void Log(LogSeverityType logSeverity, string logMessage)
-        {
-            Logger.Log(this, logSeverity, logMessage);
-        }
+        #region Fiddle Task 1
 
         private void cbGoalTask1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -658,7 +673,23 @@ namespace BLC2021
                 return;
             }
         }
+        #endregion
 
+        #region Fiddle Task2
+
+        private void cbFristMarkerNumber_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Task2_FirstMarkerNumber = (int)cbFristMarkerNumber.SelectedItem;
+        }
+        private void cbSecondMarkerNumber_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Task2_SecondMarkerNumber = (int)cbSecondMarkerNumber.SelectedItem;
+        }
+
+        private void cbThirdMarkerNumber_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Task2_ThirdMarkerNumber = (int)cbThirdMarkerNumber.SelectedItem;
+        }
         private void btCalculateTask2_Click(object sender, EventArgs e)
         {
             List<string> messages = new List<string>();
@@ -737,20 +768,11 @@ namespace BLC2021
             }
         }
 
-        private void cbFristMarkerNumber_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Task2_FirstMarkerNumber = (int)cbFristMarkerNumber.SelectedItem;
-        }
 
-        private void cbSecondMarkerNumber_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Task2_SecondMarkerNumber = (int)cbSecondMarkerNumber.SelectedItem;
-        }
 
-        private void cbThirdMarkerNumber_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Task2_ThirdMarkerNumber = (int)cbThirdMarkerNumber.SelectedItem;
-        }
+        #endregion
+
+        #region Fiddle Task3
 
         private void cbGoalTask3_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -848,7 +870,7 @@ namespace BLC2021
             {
                 foreach (string message in messages)
                 {
-                    Log(LogSeverityType.Error, "Cannot calculate Task 1: " + message);
+                    Log(LogSeverityType.Error, "Cannot calculate Task 3: " + message);
                 }
                 MessageBox.Show(string.Join("\r\n", messages));
                 return;
@@ -856,7 +878,7 @@ namespace BLC2021
             CoordinateSharp.UniversalTransverseMercator tempUTM = new CoordinateSharp.UniversalTransverseMercator(gridZone, easting, northing);
             double[] latLong = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoSignedDegree(tempUTM);
             Coordinate coordinate = new Coordinate(latLong[0], latLong[1], altitude, altitude, DateTime.Now);
-            Coordinate positionOfDeclaration = FiddleTrack.DeclaredGoals.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).Select(x=>x.PositionAtDeclaration).ToList()[cbGoalTask3.SelectedIndex];
+            Coordinate positionOfDeclaration = FiddleTrack.DeclaredGoals.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).Select(x => x.PositionAtDeclaration).ToList()[cbGoalTask3.SelectedIndex];
             DeclaredGoal fiddleGoal = new DeclaredGoal(Task3_GoalNumber, positionOfDeclaration, coordinate);
 
 
@@ -902,5 +924,8 @@ namespace BLC2021
                 return;
             }
         }
+        #endregion
+
+        #endregion
     }
 }
