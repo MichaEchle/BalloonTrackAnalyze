@@ -802,6 +802,7 @@ namespace BLC2021
             this.ClientSize = new System.Drawing.Size(912, 493);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.logListView1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "BLC2021TaskSheet1";
             this.Text = "BLC2021TaskSheet1";
             this.tabControl1.ResumeLayout(false);

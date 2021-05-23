@@ -29,6 +29,7 @@ namespace TrackReportGenerator
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TrackReportGeneratorForm));
             this.btSelectFiles = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.logListView1 = new LoggerComponent.LogListView();
@@ -117,6 +118,7 @@ namespace TrackReportGenerator
             this.Controls.Add(this.logListView1);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.btSelectFiles);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "TrackReportGeneratorForm";
             this.Text = "Track Report Generator";
             this.panel1.ResumeLayout(false);

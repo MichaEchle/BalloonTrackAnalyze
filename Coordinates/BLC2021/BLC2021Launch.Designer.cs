@@ -29,6 +29,7 @@ namespace BLC2021
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BLC2021Launch));
             this.btTaskSheet1 = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.rbFiddleMode = new System.Windows.Forms.RadioButton();
@@ -84,6 +85,7 @@ namespace BLC2021
             this.ClientSize = new System.Drawing.Size(397, 205);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btTaskSheet1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "BLC2021Launch";
             this.Text = "BLC 2021";
             this.panel1.ResumeLayout(false);
