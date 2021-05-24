@@ -238,8 +238,9 @@ namespace BLC2021
 
             Task3_GoalNumber = 999;
             Task3_MarkerNumber = -1;
-
-            richTextBox6.Text = " * Use 3D distance between marker and goal\r\n * Divide marker to goal distance(in m) through declaration to goal distance(in km)";
+            richTextBox6.Select(0, 122);
+            richTextBox6.SelectionFont = new Font(richTextBox6.Font, FontStyle.Strikeout);
+            //richTextBox6.Text = " * Use 3D distance between marker and goal\r\n * Divide marker to goal distance(in m) through declaration to goal distance(in km)";
 
         }
         public override string ToString()
@@ -428,7 +429,7 @@ namespace BLC2021
                         }
                         else
                         {
-                            Log(LogSeverityType.Info, $"Calculated result of '{result_Task2}' for Task 1 for Pilot No {track.Pilot.PilotNumber}");
+                            Log(LogSeverityType.Info, $"Calculated result of '{result_Task2}' for Task 2 for Pilot No {track.Pilot.PilotNumber}");
                         }
 
                         double result_Task3;
@@ -463,6 +464,7 @@ namespace BLC2021
                             else
                             {
                                 result_Task3 = CoordinateHelpers.Calculate3DDistance(selectedGoal.GoalDeclared, markerDrop.MarkerLocation, true) / (distance / 1000.0);
+                                Log(LogSeverityType.Info, $"Calculated result of '{result_Task3}' for Task 3 for Pilot No {track.Pilot.PilotNumber}");
                             }
                         }
 
@@ -877,13 +879,14 @@ namespace BLC2021
             }
             CoordinateSharp.UniversalTransverseMercator tempUTM = new CoordinateSharp.UniversalTransverseMercator(gridZone, easting, northing);
             double[] latLong = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoSignedDegree(tempUTM);
-            Coordinate coordinate = new Coordinate(latLong[0], latLong[1], altitude, altitude, DateTime.Now);
+            Coordinate fiddleGoalDeclared = new Coordinate(latLong[0], latLong[1], altitude, altitude, DateTime.Now);
             Coordinate positionOfDeclaration = FiddleTrack.DeclaredGoals.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).Select(x => x.PositionAtDeclaration).ToList()[cbGoalTask3.SelectedIndex];
-            DeclaredGoal fiddleGoal = new DeclaredGoal(Task3_GoalNumber, positionOfDeclaration, coordinate);
+            DeclaredGoal fiddleGoal = new DeclaredGoal(Task3_GoalNumber,  fiddleGoalDeclared, positionOfDeclaration);
 
 
             MarkerDrop markerDrop = FiddleTrack.MarkerDrops.First(x => x.MarkerNumber == Task3_MarkerNumber);
             double result = CoordinateHelpers.Calculate3DDistance(fiddleGoal.GoalDeclared, markerDrop.MarkerLocation, true) / (CoordinateHelpers.Calculate2DDistance(fiddleGoal.PositionAtDeclaration, fiddleGoal.GoalDeclared) / 1000.0);
+            Log(LogSeverityType.Info, $"Calculated result of '{result}' for Task 3 for Pilot No {FiddleTrack.Pilot.PilotNumber}");
             try
             {
 
