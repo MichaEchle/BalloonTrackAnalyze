@@ -82,21 +82,26 @@ namespace TrackReportGenerator
                 wsTrackpoints.Cells[1, 2].Value = track.Pilot?.PilotNumber;
                 wsTrackpoints.Cells[2, 1].Value = "Pilot Identifier";
                 wsTrackpoints.Cells[2, 2].Value = track.Pilot?.PilotIdentifier;
+                if (track.AdditionalPropertiesFromIGCFile.ContainsKey("SensBoxSerialNumber"))
+                {
+                    wsTrackpoints.Cells[3, 1].Value = "Sens Box Serial Number";
+                    wsTrackpoints.Cells[3, 2].Value = track.AdditionalPropertiesFromIGCFile["SensBoxSerialNumber"];
+                }
 
-                wsTrackpoints.Cells[4, 1].Value = "Timestamp";
-                wsTrackpoints.Cells[4, 2].Value = "Long";
-                wsTrackpoints.Cells[4, 3].Value = "Lat";
-                wsTrackpoints.Cells[4, 4].Value = "Long [°]";
-                wsTrackpoints.Cells[4, 5].Value = "Lat [°]";
-                wsTrackpoints.Cells[4, 6].Value = "UTM Zone";
-                wsTrackpoints.Cells[4, 7].Value = "East";
-                wsTrackpoints.Cells[4, 8].Value = "North";
-                wsTrackpoints.Cells[4, 9].Value = "Alt [m]";
-                wsTrackpoints.Cells[4, 10].Value = "Alt [ft]";
-                wsTrackpoints.Cells["A4:J4"].Style.Font.Bold = true;
+                wsTrackpoints.Cells[5, 1].Value = "Timestamp";
+                wsTrackpoints.Cells[5, 2].Value = "Long";
+                wsTrackpoints.Cells[5, 3].Value = "Lat";
+                wsTrackpoints.Cells[5, 4].Value = "Long [°]";
+                wsTrackpoints.Cells[5, 5].Value = "Lat [°]";
+                wsTrackpoints.Cells[5, 6].Value = "UTM Zone";
+                wsTrackpoints.Cells[5, 7].Value = "East";
+                wsTrackpoints.Cells[5, 8].Value = "North";
+                wsTrackpoints.Cells[5, 9].Value = "Alt [m]";
+                wsTrackpoints.Cells[5, 10].Value = "Alt [ft]";
+                wsTrackpoints.Cells["A5:J5"].Style.Font.Bold = true;
 
 
-                int index = 5;
+                int index = 6;
                 List<Coordinate> coordinates = track.TrackPoints.OrderBy(x => x.TimeStamp).ToList();
 
                 foreach (Coordinate coordinate in coordinates)

@@ -30,6 +30,10 @@ namespace Coordinates
             get;set;
         }
 
+        public Dictionary<string, string> AdditionalPropertiesFromIGCFile
+        {
+            get; private set;
+        } = new Dictionary<string, string>();
 
         public Track()
         {

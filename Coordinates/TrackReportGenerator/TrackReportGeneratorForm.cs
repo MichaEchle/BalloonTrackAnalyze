@@ -73,7 +73,17 @@ namespace TrackReportGenerator
                     if (!Coordinates.Parsers.FAILoggerParser.ParseFile(igcFile, out track))
                         return false;
                 }
-
+                if (rbBallonLiveParser.Checked)
+                {
+                    string changeOfPositionSource;
+                    if (track.AdditionalPropertiesFromIGCFile.TryGetValue("Change of position source", out changeOfPositionSource))
+                    {
+                        if (changeOfPositionSource.ToLower() == "yes")
+                        {
+                            MessageBox.Show("Caution: change of position source has been detected, refer the log for more details");
+                        }
+                    }
+                }
                 string reportFileName = Path.Combine(Path.GetDirectoryName(igcFile), Path.GetFileNameWithoutExtension(igcFile) + ".xlsx");
                 if (!ExcelTrackReportGenerator.GenerateTrackReport(reportFileName, track, true))
                     return false;

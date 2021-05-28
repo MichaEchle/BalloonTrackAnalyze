@@ -95,7 +95,6 @@ namespace BLC2021
             this.label24 = new System.Windows.Forms.Label();
             this.btSelectIGCFiles = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.btSelectOutputFolder = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -758,7 +757,7 @@ namespace BLC2021
             // 
             // btSelectIGCFiles
             // 
-            this.btSelectIGCFiles.Location = new System.Drawing.Point(219, 3);
+            this.btSelectIGCFiles.Location = new System.Drawing.Point(3, 3);
             this.btSelectIGCFiles.Name = "btSelectIGCFiles";
             this.btSelectIGCFiles.Size = new System.Drawing.Size(175, 23);
             this.btSelectIGCFiles.TabIndex = 0;
@@ -773,8 +772,7 @@ namespace BLC2021
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
             this.tableLayoutPanel1.Controls.Add(this.tabControl1, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.btSelectOutputFolder, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.btSelectIGCFiles, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.btSelectIGCFiles, 0, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -784,16 +782,6 @@ namespace BLC2021
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(912, 293);
             this.tableLayoutPanel1.TabIndex = 2;
-            // 
-            // btSelectOutputFolder
-            // 
-            this.btSelectOutputFolder.Location = new System.Drawing.Point(3, 3);
-            this.btSelectOutputFolder.Name = "btSelectOutputFolder";
-            this.btSelectOutputFolder.Size = new System.Drawing.Size(210, 23);
-            this.btSelectOutputFolder.TabIndex = 4;
-            this.btSelectOutputFolder.Text = "Select Output Folder";
-            this.btSelectOutputFolder.UseVisualStyleBackColor = true;
-            this.btSelectOutputFolder.Click += new System.EventHandler(this.btSelectOutputFolder_Click);
             // 
             // BLC2021TaskSheet1
             // 
@@ -827,7 +815,6 @@ namespace BLC2021
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.Button btCalculateTask1;
-        private System.Windows.Forms.Button btSelectOutputFolder;
         private System.Windows.Forms.Label lbMarkerNumberTask1;
         private System.Windows.Forms.Label lbGoalNumberTask1;
         private System.Windows.Forms.Label label3;

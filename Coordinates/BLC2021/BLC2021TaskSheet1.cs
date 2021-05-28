@@ -78,6 +78,9 @@ namespace BLC2021
         {
             get; set;
         } = 1000;
+
+        private readonly string ResultsFileNameInternal= "BLC2021TaskSheet1_Results_Internal.xlsx";
+        private readonly string ResultsFileNameProvisional = "BLC2021TaskSheet1_Results_Provisional.xlsx";
         #endregion
 
         #region Constructor
@@ -93,8 +96,32 @@ namespace BLC2021
             else
                 ConfigureForFiddleMode();
 
+            bool showDialog = false;
+            if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.DefaultOutputDirectory))
+            {
+                OutputDirectory = new DirectoryInfo(Properties.Settings.Default.DefaultOutputDirectory);
+                if (!OutputDirectory.Exists)
+                    showDialog= true;
+            }
+            else
+            {
+                showDialog = true;
+            }
+            if (showDialog)
+            {
+                using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
+                {
+                    folderBrowserDialog.RootFolder = Environment.SpecialFolder.MyComputer;
+                    if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
+                    {
+                        OutputDirectory = new DirectoryInfo(folderBrowserDialog.SelectedPath);
+                        Properties.Settings.Default.DefaultOutputDirectory = folderBrowserDialog.SelectedPath;
+                        Properties.Settings.Default.Save();
+                    }
+                }
+            }
+
             logListView1.StartLogging();
-            btSelectIGCFiles.Enabled = false;
         }
 
         #endregion
@@ -250,18 +277,7 @@ namespace BLC2021
             else
                 return "BLC 2021 Task Sheet 1 (Fiddle Mode)";
         }
-        private void btSelectOutputFolder_Click(object sender, EventArgs e)
-        {
-            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
-            {
-                folderBrowserDialog.RootFolder = Environment.SpecialFolder.MyComputer;
-                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-                {
-                    OutputDirectory = new DirectoryInfo(folderBrowserDialog.SelectedPath);
-                    btSelectIGCFiles.Enabled = true;
-                }
-            }
-        }
+
         private void Log(LogSeverityType logSeverity, string logMessage)
         {
             Logger.Log(this, logSeverity, logMessage);
@@ -317,13 +333,21 @@ namespace BLC2021
                         Log(LogSeverityType.Error, $"Failed to parse '{openFileDialog.FileName.Split("\\").Last()}'");
                         return;
                     }
+                    string changeOfPositionSource;
+                    if (track.AdditionalPropertiesFromIGCFile.TryGetValue("Change of position source", out changeOfPositionSource))
+                    {
+                        if (changeOfPositionSource.ToLower() == "yes")
+                        {
+                            MessageBox.Show("Caution: change of position source has been detected, refer the log for more details");
+                        }
+                    }
                     FiddleTrack = track;
                     cbMarkerTask1.Items.Clear();
                     cbFristMarkerNumber.Items.Clear();
                     cbSecondMarkerNumber.Items.Clear();
                     cbThirdMarkerNumber.Items.Clear();
                     cbMarkerTask3.Items.Clear();
-                    foreach (MarkerDrop markerDrop in track.MarkerDrops)
+                    foreach (MarkerDrop markerDrop in track.MarkerDrops.OrderBy(x=>x.MarkerNumber))
                     {
                         cbMarkerTask1.Items.Add(markerDrop.MarkerNumber);
                         cbFristMarkerNumber.Items.Add(markerDrop.MarkerNumber);
@@ -333,7 +357,7 @@ namespace BLC2021
                     }
                     cbGoalTask1.Items.Clear();
                     cbGoalTask3.Items.Clear();
-                    foreach (DeclaredGoal declaredGoal in track.DeclaredGoals.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp))
+                    foreach (DeclaredGoal declaredGoal in track.DeclaredGoals.OrderBy(x => x.GoalNumber).ThenByDescending(x=>x.PositionAtDeclaration.TimeStamp))
                     {
                         CoordinateSharp.Coordinate tempCoordinate = new CoordinateSharp.Coordinate(declaredGoal.GoalDeclared.Latitude, declaredGoal.GoalDeclared.Longitude);
                         cbGoalTask1.Items.Add($"No.{declaredGoal.GoalNumber} {Math.Round(tempCoordinate.UTM.Easting, 0, MidpointRounding.AwayFromZero)} , {Math.Round(tempCoordinate.UTM.Northing, 0, MidpointRounding.AwayFromZero)} / {declaredGoal.GoalDeclared.AltitudeGPS}");
@@ -411,6 +435,15 @@ namespace BLC2021
                             Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse '{igcFile}'");
                             continue;
                         }
+                        string changeOfPositionSource;
+                        if (track.AdditionalPropertiesFromIGCFile.TryGetValue("Change of position source", out changeOfPositionSource))
+                        {
+                            if (changeOfPositionSource.ToLower() == "yes")
+                            {
+                                MessageBox.Show("Caution: change of position source has been detected, refer the log for more details");
+                            }
+                        }
+
                         double result_Task1;
                         if (!task1.CalculateResults(track, true, out result_Task1))
                         {
@@ -472,8 +505,8 @@ namespace BLC2021
 
                     }
                     ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-                    FileInfo outputFile = new FileInfo(Path.Combine(OutputDirectory.FullName, "BLC2021TaskSheet1_Results" + ".xlsx"));
-                    using (ExcelPackage package = new ExcelPackage(outputFile))
+                    FileInfo resultsFileInternal = new FileInfo(Path.Combine(OutputDirectory.FullName, ResultsFileNameInternal));
+                    using (ExcelPackage package = new ExcelPackage(resultsFileInternal))
                     {
                         ExcelWorksheet wsResults = package.Workbook.Worksheets.FirstOrDefault(x => x.Name == "Results");
                         if (wsResults == default)
@@ -503,7 +536,49 @@ namespace BLC2021
                         wsResults.Cells.AutoFitColumns();
                         package.Save();
                     }
-                    Log(LogSeverityType.Info, $"Successfully created or modified results file '{outputFile.Name}'");
+                    Log(LogSeverityType.Info, $"Successfully created or modified internal results file '{resultsFileInternal.Name}'");
+                    FileInfo resultsFileProvisional = new FileInfo(Path.Combine(OutputDirectory.FullName,ResultsFileNameProvisional));
+                    using (ExcelPackage package = new ExcelPackage(resultsFileProvisional))
+                    {
+                        ExcelWorksheet wsResults = package.Workbook.Worksheets.FirstOrDefault(x => x.Name == "Results");
+                        if (wsResults == default)
+                        {
+                            wsResults = package.Workbook.Worksheets.Add("Results");
+                            wsResults.Cells[1, 1].Value = "Pilot Identifier";
+                            wsResults.Cells[1, 2].Value = "Pilot Number";
+                            wsResults.Cells[1, 3].Value = "Pilot Last Name";
+                            wsResults.Cells[1, 4].Value = "Pilot First Name";
+                            wsResults.Cells[1, 5].Value = "Task 1 HWZ [m]";
+                            wsResults.Cells[1, 6].Value = "Task 2 LRN [km²]";
+                            wsResults.Cells[1, 7].Value = "Task 3 PGD [m/km]";
+                        }
+                        string firstName;
+                        string lastName;
+                        foreach ((string pilotIdentifier, int pilotNumber, double result_T1, double result_T2, double result_T3) result in results)
+                        {
+                            wsResults.Cells[result.pilotNumber + 1, 1].Value = result.pilotIdentifier;
+                            wsResults.Cells[result.pilotNumber + 1, 2].Value = result.pilotNumber;
+                            if (!PilotMapping.Instance.GetPilotName(result.pilotNumber, out lastName, out firstName))
+                            {
+                                Log(LogSeverityType.Warning, "Last name and first name of pilot will be omitted");
+                            }
+                            else
+                            {
+                                wsResults.Cells[result.pilotNumber + 1, 3].Value = lastName;
+                                wsResults.Cells[result.pilotNumber + 1, 4].Value = firstName;
+                            }
+                            wsResults.Cells[result.pilotNumber + 1, 5].Value = Math.Round(result.result_T1, 0, MidpointRounding.AwayFromZero);
+                            wsResults.Cells[result.pilotNumber + 1, 6].Value = Math.Round(result.result_T2 / 1.0e6, 3, MidpointRounding.AwayFromZero);
+                            wsResults.Cells[result.pilotNumber + 1, 7].Value = Math.Round(result.result_T3, 3, MidpointRounding.AwayFromZero);
+
+                            wsResults.Cells[result.pilotNumber + 1, 5].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.None;
+                            wsResults.Cells[result.pilotNumber + 1, 6].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.None;
+                            wsResults.Cells[result.pilotNumber + 1, 7].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.None;
+                        }
+                        wsResults.Cells.AutoFitColumns();
+                        package.Save();
+                    }
+                    Log(LogSeverityType.Info, $"Successfully created or modified provisional results file '{resultsFileProvisional.Name}'");
                 }
                 catch (Exception ex)
                 {
@@ -521,7 +596,7 @@ namespace BLC2021
 
         private void cbGoalTask1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            DeclaredGoal selectedGoal = FiddleTrack.DeclaredGoals.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[cbGoalTask1.SelectedIndex];
+            DeclaredGoal selectedGoal = FiddleTrack.DeclaredGoals.OrderBy(x=>x.GoalNumber).ThenByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[cbGoalTask1.SelectedIndex];
             CoordinateSharp.Coordinate tempCoordinate = new CoordinateSharp.Coordinate(selectedGoal.GoalDeclared.Latitude, selectedGoal.GoalDeclared.Longitude);
             tbZoneTask1.Text = $"{tempCoordinate.UTM.LongZone}{tempCoordinate.UTM.LatZone}";
             tbEastingTask1.Text = ((int)(Math.Round(tempCoordinate.UTM.Easting, 0, MidpointRounding.AwayFromZero))).ToString("D6");
@@ -639,8 +714,8 @@ namespace BLC2021
             {
 
                 ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-                FileInfo outputFile = new FileInfo(Path.Combine(OutputDirectory.FullName, "BLC2021TaskSheet1_Results" + ".xlsx"));
-                using (ExcelPackage package = new ExcelPackage(outputFile))
+                FileInfo resultsFileInternal = new FileInfo(Path.Combine(OutputDirectory.FullName, ResultsFileNameInternal));
+                using (ExcelPackage package = new ExcelPackage(resultsFileInternal))
                 {
                     ExcelWorksheet wsResults = package.Workbook.Worksheets.FirstOrDefault(x => x.Name == "Results");
                     if (wsResults == default)
@@ -667,7 +742,42 @@ namespace BLC2021
                     wsResults.Cells.AutoFitColumns();
                     package.Save();
                 }
-                Log(LogSeverityType.Info, $"Successfully created or modified results file '{outputFile.Name}'");
+                Log(LogSeverityType.Info, $"Successfully created or modified internal results file '{resultsFileInternal.Name}'");
+                FileInfo resultsFileProvisional = new FileInfo(Path.Combine(OutputDirectory.FullName, ResultsFileNameProvisional));
+                using (ExcelPackage package = new ExcelPackage(resultsFileProvisional))
+                {
+                    ExcelWorksheet wsResults = package.Workbook.Worksheets.FirstOrDefault(x => x.Name == "Results");
+                    if (wsResults == default)
+                    {
+                        wsResults = package.Workbook.Worksheets.Add("Results");
+                        wsResults.Cells[1, 1].Value = "Pilot Identifier";
+                        wsResults.Cells[1, 2].Value = "Pilot Number";
+                        wsResults.Cells[1, 3].Value = "Pilot Last Name";
+                        wsResults.Cells[1, 4].Value = "Pilot First Name";
+                        wsResults.Cells[1, 5].Value = "Task 1 HWZ [m]";
+                        wsResults.Cells[1, 6].Value = "Task 2 LRN [km²]";
+                        wsResults.Cells[1, 7].Value = "Task 3 PGD [m/km]";
+                    }
+                    string firstName;
+                    string lastName;
+                    wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 1].Value = FiddleTrack.Pilot.PilotIdentifier;
+                    wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 2].Value = FiddleTrack.Pilot.PilotNumber;
+                    if (!PilotMapping.Instance.GetPilotName(FiddleTrack.Pilot.PilotNumber, out lastName, out firstName))
+                    {
+                        Log(LogSeverityType.Warning, "Last name and first name of pilot will be omitted");
+                    }
+                    else
+                    {
+                        wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 3].Value = lastName;
+                        wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 4].Value = firstName;
+                    }
+                    wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 5].Value = Math.Round(result, 0, MidpointRounding.AwayFromZero);
+
+
+                    wsResults.Cells.AutoFitColumns();
+                    package.Save();
+                }
+                Log(LogSeverityType.Info, $"Successfully created or modified provisional results file '{resultsFileProvisional.Name}'");
             }
             catch (Exception ex)
             {
@@ -677,7 +787,7 @@ namespace BLC2021
         }
         #endregion
 
-        #region Fiddle Task2
+        #region Fiddle Task 2
 
         private void cbFristMarkerNumber_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -733,8 +843,8 @@ namespace BLC2021
             {
 
                 ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-                FileInfo outputFile = new FileInfo(Path.Combine(OutputDirectory.FullName, "BLC2021TaskSheet1_Results" + ".xlsx"));
-                using (ExcelPackage package = new ExcelPackage(outputFile))
+                FileInfo resultsFileInternal = new FileInfo(Path.Combine(OutputDirectory.FullName, ResultsFileNameInternal));
+                using (ExcelPackage package = new ExcelPackage(resultsFileInternal))
                 {
                     ExcelWorksheet wsResults = package.Workbook.Worksheets.FirstOrDefault(x => x.Name == "Results");
                     if (wsResults == default)
@@ -755,13 +865,48 @@ namespace BLC2021
                     wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 4].Value = Math.Round(result / 1.0e6, 3, MidpointRounding.AwayFromZero);
                     wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 7].Value = "Fiddled: " + tbCommentTask2.Text;
 
-                    wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 3].Style.Fill.SetBackground(Color.Orange);
+                    wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 4].Style.Fill.SetBackground(Color.Orange);
                     wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 7].Style.Fill.SetBackground(Color.Orange);
 
                     wsResults.Cells.AutoFitColumns();
                     package.Save();
                 }
-                Log(LogSeverityType.Info, $"Successfully created or modified results file '{outputFile.Name}'");
+                Log(LogSeverityType.Info, $"Successfully created or modified internal results file '{resultsFileInternal.Name}'");
+                FileInfo resultsFileProvisional = new FileInfo(Path.Combine(OutputDirectory.FullName, ResultsFileNameProvisional));
+                using (ExcelPackage package = new ExcelPackage(resultsFileProvisional))
+                {
+                    ExcelWorksheet wsResults = package.Workbook.Worksheets.FirstOrDefault(x => x.Name == "Results");
+                    if (wsResults == default)
+                    {
+                        wsResults = package.Workbook.Worksheets.Add("Results");
+                        wsResults.Cells[1, 1].Value = "Pilot Identifier";
+                        wsResults.Cells[1, 2].Value = "Pilot Number";
+                        wsResults.Cells[1, 3].Value = "Pilot Last Name";
+                        wsResults.Cells[1, 4].Value = "Pilot First Name";
+                        wsResults.Cells[1, 5].Value = "Task 1 HWZ [m]";
+                        wsResults.Cells[1, 6].Value = "Task 2 LRN [km²]";
+                        wsResults.Cells[1, 7].Value = "Task 3 PGD [m/km]";
+                    }
+                    string firstName;
+                    string lastName;
+                    wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 1].Value = FiddleTrack.Pilot.PilotIdentifier;
+                    wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 2].Value = FiddleTrack.Pilot.PilotNumber;
+                    if (!PilotMapping.Instance.GetPilotName(FiddleTrack.Pilot.PilotNumber, out lastName, out firstName))
+                    {
+                        Log(LogSeverityType.Warning, "Last name and first name of pilot will be omitted");
+                    }
+                    else
+                    {
+                        wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 3].Value = lastName;
+                        wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 4].Value = firstName;
+                    }
+                    wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 6].Value = Math.Round(result / 1.0e6, 3, MidpointRounding.AwayFromZero);
+
+
+                    wsResults.Cells.AutoFitColumns();
+                    package.Save();
+                }
+                Log(LogSeverityType.Info, $"Successfully created or modified provisional results file '{resultsFileProvisional.Name}'");
             }
             catch (Exception ex)
             {
@@ -774,11 +919,11 @@ namespace BLC2021
 
         #endregion
 
-        #region Fiddle Task3
+        #region Fiddle Task 3
 
         private void cbGoalTask3_SelectedIndexChanged(object sender, EventArgs e)
         {
-            DeclaredGoal selectedGoal = FiddleTrack.DeclaredGoals.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[cbGoalTask3.SelectedIndex];
+            DeclaredGoal selectedGoal = FiddleTrack.DeclaredGoals.OrderBy(x => x.GoalNumber).ThenByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[cbGoalTask3.SelectedIndex];
             CoordinateSharp.Coordinate tempCoordinate = new CoordinateSharp.Coordinate(selectedGoal.GoalDeclared.Latitude, selectedGoal.GoalDeclared.Longitude);
             tbZoneTask3.Text = $"{tempCoordinate.UTM.LongZone}{tempCoordinate.UTM.LatZone}";
             tbEastingTask3.Text = ((int)(Math.Round(tempCoordinate.UTM.Easting, 0, MidpointRounding.AwayFromZero))).ToString("D6");
@@ -891,8 +1036,8 @@ namespace BLC2021
             {
 
                 ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-                FileInfo outputFile = new FileInfo(Path.Combine(OutputDirectory.FullName, "BLC2021TaskSheet1_Results" + ".xlsx"));
-                using (ExcelPackage package = new ExcelPackage(outputFile))
+                FileInfo resultsFileInternal = new FileInfo(Path.Combine(OutputDirectory.FullName,ResultsFileNameInternal));
+                using (ExcelPackage package = new ExcelPackage(resultsFileInternal))
                 {
                     ExcelWorksheet wsResults = package.Workbook.Worksheets.FirstOrDefault(x => x.Name == "Results");
                     if (wsResults == default)
@@ -919,7 +1064,42 @@ namespace BLC2021
                     wsResults.Cells.AutoFitColumns();
                     package.Save();
                 }
-                Log(LogSeverityType.Info, $"Successfully created or modified results file '{outputFile.Name}'");
+                Log(LogSeverityType.Info, $"Successfully created or modified results file '{resultsFileInternal.Name}'");
+                FileInfo resultsFileProvisional = new FileInfo(Path.Combine(OutputDirectory.FullName, ResultsFileNameProvisional));
+                using (ExcelPackage package = new ExcelPackage(resultsFileProvisional))
+                {
+                    ExcelWorksheet wsResults = package.Workbook.Worksheets.FirstOrDefault(x => x.Name == "Results");
+                    if (wsResults == default)
+                    {
+                        wsResults = package.Workbook.Worksheets.Add("Results");
+                        wsResults.Cells[1, 1].Value = "Pilot Identifier";
+                        wsResults.Cells[1, 2].Value = "Pilot Number";
+                        wsResults.Cells[1, 3].Value = "Pilot Last Name";
+                        wsResults.Cells[1, 4].Value = "Pilot First Name";
+                        wsResults.Cells[1, 5].Value = "Task 1 HWZ [m]";
+                        wsResults.Cells[1, 6].Value = "Task 2 LRN [km²]";
+                        wsResults.Cells[1, 7].Value = "Task 3 PGD [m/km]";
+                    }
+                    string firstName;
+                    string lastName;
+                    wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 1].Value = FiddleTrack.Pilot.PilotIdentifier;
+                    wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 2].Value = FiddleTrack.Pilot.PilotNumber;
+                    if (!PilotMapping.Instance.GetPilotName(FiddleTrack.Pilot.PilotNumber, out lastName, out firstName))
+                    {
+                        Log(LogSeverityType.Warning, "Last name and first name of pilot will be omitted");
+                    }
+                    else
+                    {
+                        wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 3].Value = lastName;
+                        wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 4].Value = firstName;
+                    }
+                    wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 7].Value = Math.Round(result, 3, MidpointRounding.AwayFromZero);
+
+
+                    wsResults.Cells.AutoFitColumns();
+                    package.Save();
+                }
+                Log(LogSeverityType.Info, $"Successfully created or modified provisional results file '{resultsFileProvisional.Name}'");
             }
             catch (Exception ex)
             {
