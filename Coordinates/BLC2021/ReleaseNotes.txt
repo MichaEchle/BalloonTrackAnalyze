@@ -1,0 +1,24 @@
+﻿V1.1.0.0 29-May
+- BalloonLiveParser: Parse LXXX BLSSN and add to track
+- BalloonLiveParser: Parse E records of type XS0 and XS1
+- BalloonLiveParser: Add to the track if a change of position source has been detected
+
+- BLC2021: Added pilot mapping and output directory as user settings for caching
+- BLC2021Launch: Display path to pilot mapping file and output directory
+- BLC2021Launch: Added the possibility to change pilot mapping and output directory
+- BLC2021Launch: Added version number to title
+- BLC2021TaskSheet1: Renamed output file to BLC2021TaskSheet1_Results_Internal.xlsx
+- BLC2021TaskSheet1: Added output file BLC2021TaskSheet1_Results_Provisional.xlsx with pilots first and last name but no comments
+- BLC2021TaskSheet1: Show message box when change in position source has been detected
+- BLC2021TaskSheet1: Sort makers by their number
+- BLC2021TaskSheet1: Sort declared goals by goal number then by time descending
+- BLC2021TaskSheet1: Added version number to title
+- PilotMapping: Added class to parse pilot mapping file and get first and last name of a pilot
+- Bug fixes and logging improvements such as formatted results logging and interim values for task 3
+
+V1.0.0.0 17-May
+- Fixed swap of position at declaration and declared goal in task3
+- In fiddle mode added text box for UTM grid zone
+
+V1.0.0.0 16-May
+- Initial Release

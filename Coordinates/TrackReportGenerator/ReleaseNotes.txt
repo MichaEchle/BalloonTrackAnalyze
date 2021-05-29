@@ -1,0 +1,17 @@
+﻿V1.0.0.0 29-May
+- BalloonLiveParser: Parse LXXX BLSSN and add to track
+- BalloonLiveParser: Parse E records of type XS0 and XS1
+- BalloonLiveParser: aAdd to the track if a change of position source has been detected
+- TrackReportGenerator: Show message box when change in position source has been detected
+- TrackReportGenerator: Added version number to title
+- ExcelTrackReportGenertor: Added balloon live serial number from LXXX BLSSN to track report
+
+
+V0.1.0.0 22-May (2)
+- Fixed status label not entirely visible
+
+V0.1.0.0 22-May 
+- Added the possibility to select FAI or BalloonLive Parser
+
+V0.1.0.0 19-May
+- Initial Release

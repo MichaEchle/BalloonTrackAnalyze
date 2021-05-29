@@ -17,6 +17,7 @@ namespace BLC2021
         public BLC2021Launch()
         {
             InitializeComponent();
+            Text += typeof(BLC2021Launch).Assembly.GetName().Version;
 
         }
 

@@ -17,6 +17,7 @@ namespace TrackReportGenerator
         public TrackReportGeneratorForm()
         {
             InitializeComponent();
+            Text += typeof(TrackReportGeneratorForm).Assembly.GetName().Version;
             logListView1.StartLogging();
         }
 

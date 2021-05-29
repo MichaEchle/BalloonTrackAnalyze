@@ -290,9 +290,9 @@ namespace BLC2021
         public override string ToString()
         {
             if (BatchMode)
-                return "BLC 2021 Task Sheet 1 (Batch Mode)";
+                return $"BLC 2021 Task Sheet 1 (Batch Mode) {typeof(BLC2021TaskSheet1).Assembly.GetName().Version}";
             else
-                return "BLC 2021 Task Sheet 1 (Fiddle Mode)";
+                return $"BLC 2021 Task Sheet 1 (Fiddle Mode) {typeof(BLC2021TaskSheet1).Assembly.GetName().Version}";
         }
 
         private void Log(LogSeverityType logSeverity, string logMessage)
