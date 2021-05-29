@@ -74,6 +74,8 @@ namespace BLC2021
                 using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
                 {
                     folderBrowserDialog.RootFolder = Environment.SpecialFolder.MyComputer;
+                    folderBrowserDialog.UseDescriptionForTitle = true;
+                    folderBrowserDialog.Description = "Select an output directory";
                     if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
                     {
                         Properties.Settings.Default.DefaultOutputDirectory = folderBrowserDialog.SelectedPath;

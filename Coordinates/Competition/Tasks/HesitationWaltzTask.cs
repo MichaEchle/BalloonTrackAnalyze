@@ -62,14 +62,19 @@ namespace Competition
                 try
                 {
                     Goals= CalculateGoals(track);
+                    if (Goals.Count == 0)
+                    {
+                        Log(LogSeverityType.Error, $"Failed to calculate goals: no goals could be calculated");
+                        return false;
+                    }
                 }
                 catch (Exception ex)
                 {
                     Log(LogSeverityType.Error, $"Failed to calculate goals: {ex.Message}");
-                    throw;
+                    return false;
                 }
             }
-
+           
             foreach (Coordinate goal in Goals)
             {
                 if (Use3DDistance)

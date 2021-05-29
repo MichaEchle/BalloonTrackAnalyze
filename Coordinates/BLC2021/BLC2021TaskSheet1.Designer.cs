@@ -793,6 +793,7 @@ namespace BLC2021
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "BLC2021TaskSheet1";
             this.Text = "BLC2021TaskSheet1";
+            this.Load += new System.EventHandler(this.BLC2021TaskSheet1_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();

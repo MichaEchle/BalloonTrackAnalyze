@@ -91,7 +91,19 @@ namespace BLC2021
             BatchMode = batchMode;
 
             Text = ToString();
-            if (batchMode)
+            
+        }
+
+        #endregion
+
+
+        #region Methods
+        #region General
+
+        private void BLC2021TaskSheet1_Load(object sender, EventArgs e)
+        {
+            logListView1.StartLogging();
+            if (BatchMode)
                 ConfigureForBatchMode();
             else
                 ConfigureForFiddleMode();
@@ -101,7 +113,7 @@ namespace BLC2021
             {
                 OutputDirectory = new DirectoryInfo(Properties.Settings.Default.DefaultOutputDirectory);
                 if (!OutputDirectory.Exists)
-                    showDialog= true;
+                    showDialog = true;
             }
             else
             {
@@ -112,25 +124,30 @@ namespace BLC2021
                 using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
                 {
                     folderBrowserDialog.RootFolder = Environment.SpecialFolder.MyComputer;
+                    folderBrowserDialog.UseDescriptionForTitle = true;
+                    folderBrowserDialog.Description = "Select an output directory";
                     if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
                     {
                         OutputDirectory = new DirectoryInfo(folderBrowserDialog.SelectedPath);
                         Properties.Settings.Default.DefaultOutputDirectory = folderBrowserDialog.SelectedPath;
                         Properties.Settings.Default.Save();
+                        if (!btSelectIGCFiles.Enabled)
+                            btSelectIGCFiles.Enabled = true;
+                    }
+                    else
+                    {
+                        Log(LogSeverityType.Error, "No output directory has been defined, an output directory must be configured to continue");
+                        btSelectIGCFiles.Enabled = false;
                     }
                 }
             }
+            else
+            {
+                if (!btSelectIGCFiles.Enabled)
+                    btSelectIGCFiles.Enabled = true;
+            }
 
-            logListView1.StartLogging();
         }
-
-        #endregion
-
-
-        #region Methods
-        #region General
-
-
         private void ConfigureForBatchMode()
         {
             btSelectIGCFiles.Text = "Select IGC Files";
@@ -377,6 +394,10 @@ namespace BLC2021
         {
             DeclaredGoal goal = track.DeclaredGoals.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).FirstOrDefault(x => x.GoalNumber == Task1_GoalNumber);
             double distanceFromDeclaredGoal = 1000.0;
+            List<Coordinate> goals = new List<Coordinate>();
+            if (goal is null || goal == default)
+                throw new Exception($"No goal with goal number '{Task1_GoalNumber}' has been found");
+
             CoordinateSharp.Coordinate tempDeclaredGoal = new CoordinateSharp.Coordinate(goal.GoalDeclared.Latitude, goal.GoalDeclared.Longitude);
 
             double easting = Math.Round(tempDeclaredGoal.UTM.Easting, 0, MidpointRounding.AwayFromZero);
@@ -390,7 +411,7 @@ namespace BLC2021
             double eastingEast = Math.Round(easting + distanceFromDeclaredGoal, 0, MidpointRounding.AwayFromZero);
             double eastingWest = Math.Round(easting - distanceFromDeclaredGoal, 0, MidpointRounding.AwayFromZero);
 
-            List<Coordinate> goals = new List<Coordinate>();
+            
 
             CoordinateSharp.UniversalTransverseMercator utmGoalNorth = new CoordinateSharp.UniversalTransverseMercator($"{latZone}{longZone}", easting, northingNorth);
             CoordinateSharp.Coordinate tempGoal = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmGoalNorth);
@@ -447,43 +468,43 @@ namespace BLC2021
                         double result_Task1;
                         if (!task1.CalculateResults(track, true, out result_Task1))
                         {
-                            Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result for Task 1 for Pilot No {track.Pilot.PilotNumber}");
+                            Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result at Task 1 for Pilot No {track.Pilot.PilotNumber}");
                             result_Task1 = double.NaN;
                         }
                         else
                         {
-                            Log(LogSeverityType.Info, $"Calculated result of '{result_Task1}' for Task 1 for Pilot No {track.Pilot.PilotNumber}");
+                            Log(LogSeverityType.Info, $"Calculated result of '{Math.Round(result_Task1,3,MidpointRounding.AwayFromZero)}m' at Task 1 for Pilot No {track.Pilot.PilotNumber}");
                         }
                         double result_Task2;
                         if (!task2.CalculateResults(track, true, out result_Task2))
                         {
-                            Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result for Task 2 for Pilot No {track.Pilot.PilotNumber}");
+                            Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result at Task 2 for Pilot No {track.Pilot.PilotNumber}");
                             result_Task2 = double.NaN;
                         }
                         else
                         {
-                            Log(LogSeverityType.Info, $"Calculated result of '{result_Task2}' for Task 2 for Pilot No {track.Pilot.PilotNumber}");
+                            Log(LogSeverityType.Info, $"Calculated result of '{Math.Round(result_Task2/1.0e6,3,MidpointRounding.AwayFromZero)}km²' at Task 2 for Pilot No {track.Pilot.PilotNumber}");
                         }
 
                         double result_Task3;
                         List<DeclaredGoal> declaredGoals = track.DeclaredGoals.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).Where(x => x.GoalNumber == Task3_GoalNumber).ToList();
                         bool isValid = false;
                         DeclaredGoal selectedGoal = null;
-                        double distance = double.NaN;
+                        double distanceDeclarationToGoal_Task3 = double.NaN;
                         foreach (DeclaredGoal declaredGoal in declaredGoals)
                         {
                             double tempDistance = CoordinateHelpers.Calculate2DDistance(declaredGoal.PositionAtDeclaration, declaredGoal.GoalDeclared);
                             if (tempDistance > Task3_DistanceDeclarationToGoal && declaredGoal.PositionAtDeclaration.AltitudeGPS <= declaredGoal.GoalDeclared.AltitudeGPS - CoordinateHelpers.ConvertToMeter(Task3_AltitudeDifferenceFeet))
                             {
                                 isValid = true;
-                                distance = tempDistance;
+                                distanceDeclarationToGoal_Task3 = tempDistance;
                                 selectedGoal = declaredGoal;
                                 break;
                             }
                         }
                         if (!isValid)
                         {
-                            Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result for Task 3 for Pilot No {track.Pilot.PilotNumber} as no declaration is valid");
+                            Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result at Task 3 for Pilot No {track.Pilot.PilotNumber} as no declaration is valid");
                             result_Task3 = double.NaN;
                         }
                         else
@@ -491,13 +512,15 @@ namespace BLC2021
                             MarkerDrop markerDrop = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == Task3_MarkerNumber);
                             if (markerDrop == default)
                             {
-                                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result for Task 3 for Pilot No {track.Pilot.PilotNumber} as no Marker with Maker Number '{Task3_MarkerNumber}' exists");
+                                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result at Task 3 for Pilot No {track.Pilot.PilotNumber} as no Marker with Maker Number '{Task3_MarkerNumber}' exists");
                                 result_Task3 = double.NaN;
                             }
                             else
                             {
-                                result_Task3 = CoordinateHelpers.Calculate3DDistance(selectedGoal.GoalDeclared, markerDrop.MarkerLocation, true) / (distance / 1000.0);
-                                Log(LogSeverityType.Info, $"Calculated result of '{result_Task3}' for Task 3 for Pilot No {track.Pilot.PilotNumber}");
+                                double distanceGoalToMarker_Task3 = CoordinateHelpers.Calculate3DDistance(selectedGoal.GoalDeclared, markerDrop.MarkerLocation, true);
+                                result_Task3 =distanceGoalToMarker_Task3 / (distanceDeclarationToGoal_Task3 / 1000.0);
+                                Log(LogSeverityType.Info, $"Task 3 Pilot No {track.Pilot.PilotNumber}: Distance between declaration position and declared goal is '{Math.Round(distanceDeclarationToGoal_Task3, 3, MidpointRounding.AwayFromZero)}m' / Distance goal to marker is '{Math.Round(distanceGoalToMarker_Task3 / 1000.0, 3, MidpointRounding.AwayFromZero)}km'");
+                                Log(LogSeverityType.Info, $"Calculated result of '{Math.Round(result_Task3,6,MidpointRounding.AwayFromZero)}m/km' at Task 3 for Pilot No {track.Pilot.PilotNumber}");
                             }
                         }
 
@@ -703,12 +726,12 @@ namespace BLC2021
             double result;
             if (!task1.CalculateResults(FiddleTrack, true, out result))
             {
-                Log(LogSeverityType.Error, $"Failed to calculate result for Task 1 for Pilot No {FiddleTrack.Pilot.PilotNumber}");
+                Log(LogSeverityType.Error, $"Failed to calculate result at Task 1 for Pilot No {FiddleTrack.Pilot.PilotNumber}");
                 return;
             }
             else
             {
-                Log(LogSeverityType.Info, $"Calculated result of '{result}' for Task 1 for Pilot No {FiddleTrack.Pilot.PilotNumber}");
+                Log(LogSeverityType.Info, $"Calculated result of '{Math.Round(result,3,MidpointRounding.AwayFromZero)}m' at Task 1 for Pilot No {FiddleTrack.Pilot.PilotNumber}");
             }
             try
             {
@@ -832,12 +855,12 @@ namespace BLC2021
             double result;
             if (!task2.CalculateResults(FiddleTrack, true, out result))
             {
-                Log(LogSeverityType.Error, $"Failed to calculate result for Task 2 for Pilot No {FiddleTrack.Pilot.PilotNumber}");
+                Log(LogSeverityType.Error, $"Failed to calculate result at Task 2 for Pilot No {FiddleTrack.Pilot.PilotNumber}");
                 return;
             }
             else
             {
-                Log(LogSeverityType.Info, $"Calculated result of '{result}' for Task 2 for Pilot No {FiddleTrack.Pilot.PilotNumber}");
+                Log(LogSeverityType.Info, $"Calculated result of '{Math.Round(result/1.0e6,3,MidpointRounding.AwayFromZero)}km²' at Task 2 for Pilot No {FiddleTrack.Pilot.PilotNumber}");
             }
             try
             {
@@ -1030,8 +1053,11 @@ namespace BLC2021
 
 
             MarkerDrop markerDrop = FiddleTrack.MarkerDrops.First(x => x.MarkerNumber == Task3_MarkerNumber);
-            double result = CoordinateHelpers.Calculate3DDistance(fiddleGoal.GoalDeclared, markerDrop.MarkerLocation, true) / (CoordinateHelpers.Calculate2DDistance(fiddleGoal.PositionAtDeclaration, fiddleGoal.GoalDeclared) / 1000.0);
-            Log(LogSeverityType.Info, $"Calculated result of '{result}' for Task 3 for Pilot No {FiddleTrack.Pilot.PilotNumber}");
+            double distanceDeclarationToGoal = CoordinateHelpers.Calculate3DDistance(fiddleGoal.GoalDeclared, markerDrop.MarkerLocation, true);
+            double distanceGoalToMarker = CoordinateHelpers.Calculate2DDistance(fiddleGoal.PositionAtDeclaration, fiddleGoal.GoalDeclared);
+            double result = distanceDeclarationToGoal / (distanceGoalToMarker / 1000.0);
+            Log(LogSeverityType.Info, $"Task 3 Pilot No {FiddleTrack.Pilot.PilotNumber}: Distance between declaration position and declared goal is '{Math.Round(distanceDeclarationToGoal, 3, MidpointRounding.AwayFromZero)}m' / Distance goal to marker is '{Math.Round(distanceGoalToMarker / 1000.0, 3, MidpointRounding.AwayFromZero)}km'");
+            Log(LogSeverityType.Info, $"Calculated result of '{result}' at Task 3 for Pilot No {FiddleTrack.Pilot.PilotNumber}");
             try
             {
 
@@ -1110,5 +1136,7 @@ namespace BLC2021
         #endregion
 
         #endregion
+
+
     }
 }
