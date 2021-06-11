@@ -17,7 +17,7 @@ namespace BLC2021
         public BLC2021Launch()
         {
             InitializeComponent();
-            Text += typeof(BLC2021Launch).Assembly.GetName().Version;
+            Text += $" v{typeof(BLC2021Launch).Assembly.GetName().Version}";
 
         }
 
@@ -98,6 +98,12 @@ namespace BLC2021
                 btChangeOutputDirectory.PerformClick();
             else
                 lbOutputDirectory.Text = Properties.Settings.Default.DefaultOutputDirectory;
+        }
+
+        private void btTaskSheet2_Click(object sender, EventArgs e)
+        {
+            BLC2021TaskSheet2 blc2021TaskSheet2 = new BLC2021TaskSheet2(rbBatchMode.Checked);
+            blc2021TaskSheet2.Show();
         }
     }
 }

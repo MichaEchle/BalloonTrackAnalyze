@@ -40,6 +40,7 @@ namespace BLC2021
             this.btChangeOutputDirectory = new System.Windows.Forms.Button();
             this.lbPilotMapping = new System.Windows.Forms.Label();
             this.lbOutputDirectory = new System.Windows.Forms.Label();
+            this.btTaskSheet2 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -140,11 +141,22 @@ namespace BLC2021
             this.lbOutputDirectory.Size = new System.Drawing.Size(0, 15);
             this.lbOutputDirectory.TabIndex = 7;
             // 
+            // btTaskSheet2
+            // 
+            this.btTaskSheet2.Location = new System.Drawing.Point(131, 108);
+            this.btTaskSheet2.Name = "btTaskSheet2";
+            this.btTaskSheet2.Size = new System.Drawing.Size(102, 23);
+            this.btTaskSheet2.TabIndex = 8;
+            this.btTaskSheet2.Text = "Task Sheet 2";
+            this.btTaskSheet2.UseVisualStyleBackColor = true;
+            this.btTaskSheet2.Click += new System.EventHandler(this.btTaskSheet2_Click);
+            // 
             // BLC2021Launch
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 205);
+            this.Controls.Add(this.btTaskSheet2);
             this.Controls.Add(this.lbOutputDirectory);
             this.Controls.Add(this.lbPilotMapping);
             this.Controls.Add(this.btChangeOutputDirectory);
@@ -176,6 +188,7 @@ namespace BLC2021
         private System.Windows.Forms.Button btChangeOutputDirectory;
         private System.Windows.Forms.Label lbPilotMapping;
         private System.Windows.Forms.Label lbOutputDirectory;
+        private System.Windows.Forms.Button btTaskSheet2;
     }
 }
 
