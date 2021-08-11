@@ -82,6 +82,7 @@ namespace BLC2021
             this.btSelectIGCFiles.TabIndex = 1;
             this.btSelectIGCFiles.Text = "Select IGC Files";
             this.btSelectIGCFiles.UseVisualStyleBackColor = true;
+            this.btSelectIGCFiles.Click += new System.EventHandler(this.btSelectIGCFiles_Click);
             // 
             // tabControl1
             // 

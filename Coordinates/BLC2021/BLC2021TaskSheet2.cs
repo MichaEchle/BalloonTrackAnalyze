@@ -1,4 +1,5 @@
-﻿using Coordinates;
+﻿using Competition;
+using Coordinates;
 using LoggerComponent;
 using System;
 using System.Collections.Generic;
@@ -55,6 +56,7 @@ namespace BLC2021
 
         private readonly string ResultsFileNameInternal = "BLC2021TaskSheet2_Results_Internal.xlsx";
         private readonly string ResultFileNameProvisional = "BLC2021TaskSheet2_Results_Provisional.xslx";
+        private double additionalAltitude;
         #endregion
 
         #region Constructor
@@ -189,10 +191,102 @@ namespace BLC2021
         {
             Logger.Log(this, logSeverity, logMessage);
         }
+        private async void btSelectIGCFiles_Click(object sender, EventArgs e)
+        {
+            if (BatchMode)
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.Title = "Select .igc files";
+                openFileDialog.Filter = "igc files (*.igc)|*.igc";
+                openFileDialog.CheckPathExists = true;
+                openFileDialog.CheckPathExists = true;
+                openFileDialog.Multiselect = true;
+                UseWaitCursor = true;
+
+                HesitationWaltzTask task4_1 = new HesitationWaltzTask();
+                DeclarationToGoalDistanceRule declarationToGoalDistanceRule = new DeclarationToGoalDistanceRule();
+                declarationToGoalDistanceRule.SetupRule(5000.0, double.NaN);
+                List<IDeclarationValidationRules> declarationValidationRules = new List<IDeclarationValidationRules>();
+
+                task4_1.SetupHWZ(4,CalculateGoalsTask4_1, 1, true, null, declarationValidationRules);
+
+            }
+            else//fiddle mode
+            {
+            }
+        }
         #endregion
 
         #region BatchMode
 
+        private List<Coordinate> CalculateGoalsTask4_1(Track track)
+        {
+            List<Coordinate> goals = new List<Coordinate>();
+            DeclaredGoal goal = track.GetLastDeclaredGoal(Task4_GoalNumber);
+            if (goal is null || goal == default)
+                throw new Exception($"No goal with goal number '{Task4_GoalNumber}' has been found");
+            goals.Add(goal.GoalDeclared);
+            return goals;
+        }
+        private List<Coordinate> CalculateGoalsTask4_2(Track track)
+        {
+            List<Coordinate> goals = new List<Coordinate>();
+            double distanceFromDeclaredGoal = 1000.0;
+            double additionalAltitude = CoordinateHelpers.ConvertToMeter(300.0);
+            DeclaredGoal goal = track.GetLastDeclaredGoal(Task4_GoalNumber);
+            if(goal is null || goal == default)
+                throw new Exception($"No goal with goal number '{Task4_GoalNumber}' has been found");
+
+            CoordinateSharp.Coordinate tempDeclaredGoal = new CoordinateSharp.Coordinate(goal.GoalDeclared.Latitude, goal.GoalDeclared.Longitude);
+
+            double easting = Math.Round(tempDeclaredGoal.UTM.Easting, 0, MidpointRounding.AwayFromZero);
+            double northing = Math.Round(tempDeclaredGoal.UTM.Northing, 0, MidpointRounding.AwayFromZero);
+            string latZone = tempDeclaredGoal.UTM.LatZone;
+            int longZone = tempDeclaredGoal.UTM.LongZone;
+
+            for (int northingFactor = -1; northingFactor <= 1; northingFactor++)
+            {
+                for (int eastingFactor = -1; eastingFactor <= 1; eastingFactor++)
+                {
+                    if (northingFactor == 0 && eastingFactor == 0)
+                        continue;
+                    CoordinateSharp.UniversalTransverseMercator utmTempGoal = new CoordinateSharp.UniversalTransverseMercator($"{latZone}{longZone}", easting+(distanceFromDeclaredGoal*eastingFactor), northing+(distanceFromDeclaredGoal*northingFactor));
+                    CoordinateSharp.Coordinate tempGoal = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmTempGoal);
+                    goals.Add(new Coordinate(tempGoal.Latitude.DecimalDegree, tempGoal.Longitude.DecimalDegree, goal.GoalDeclared.AltitudeGPS+ additionalAltitude, goal.GoalDeclared.AltitudeBarometric+ additionalAltitude, DateTime.Now));
+                }
+            }
+            return goals;
+        }
+
+        private List<Coordinate> CalculateGoalsTask4_3(Track track)
+        {
+            List<Coordinate> goals = new List<Coordinate>();
+            double distanceFromDeclaredGoal = 2000.0;
+            double additionalAltitude = CoordinateHelpers.ConvertToMeter(600.0);
+            DeclaredGoal goal = track.GetLastDeclaredGoal(Task4_GoalNumber);
+            if (goal is null || goal == default)
+                throw new Exception($"No goal with goal number '{Task4_GoalNumber}' has been found");
+
+            CoordinateSharp.Coordinate tempDeclaredGoal = new CoordinateSharp.Coordinate(goal.GoalDeclared.Latitude, goal.GoalDeclared.Longitude);
+
+            double easting = Math.Round(tempDeclaredGoal.UTM.Easting, 0, MidpointRounding.AwayFromZero);
+            double northing = Math.Round(tempDeclaredGoal.UTM.Northing, 0, MidpointRounding.AwayFromZero);
+            string latZone = tempDeclaredGoal.UTM.LatZone;
+            int longZone = tempDeclaredGoal.UTM.LongZone;
+
+            for (int northingFactor = -1; northingFactor <= 1; northingFactor++)
+            {
+                for (int eastingFactor = -1; eastingFactor <= 1; eastingFactor++)
+                {
+                    if (northingFactor == 0 && eastingFactor == 0)
+                        continue;
+                    CoordinateSharp.UniversalTransverseMercator utmTempGoal = new CoordinateSharp.UniversalTransverseMercator($"{latZone}{longZone}", easting + (distanceFromDeclaredGoal * eastingFactor), northing + (distanceFromDeclaredGoal * northingFactor));
+                    CoordinateSharp.Coordinate tempGoal = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmTempGoal);
+                    goals.Add(new Coordinate(tempGoal.Latitude.DecimalDegree, tempGoal.Longitude.DecimalDegree, goal.GoalDeclared.AltitudeGPS + additionalAltitude, goal.GoalDeclared.AltitudeBarometric + additionalAltitude, DateTime.Now));
+                }
+            }
+            return goals;
+        }
         #endregion
 
         #region Fiddle Task4
@@ -200,15 +294,15 @@ namespace BLC2021
         {
 
         }
+
+
+
         #endregion
 
         #region Fiddle Task5
         #endregion
 
         #endregion
-
-
-
 
     }
 }

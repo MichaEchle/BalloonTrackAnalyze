@@ -43,10 +43,15 @@ namespace Competition
             get; set;
         }
 
+        public List<IDeclarationValidationRules> DeclarationValidationRules
+        {
+            get;set;
+        }
+
         public bool CalculateResults(Track track, bool useGPSAltitude, out double result)
         {
             string functionErrorMessage = $"Failed to calculate result for {this} and Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}': ";
-            result = 0.0;
+            result = double.NaN;
             if (!ValidationHelper.IsMarkerValid(track, MarkerNumber, MarkerValidationRules))
             {
                 Log(LogSeverityType.Error, functionErrorMessage + $"Marker '{MarkerNumber}' is invalid or doesn't exists");
@@ -54,40 +59,43 @@ namespace Competition
             }
 
             MarkerDrop markerDrop = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == MarkerNumber);
-
-            List<double> distances = new List<double>();
-
-            if (Goals.Count == 0 && CalculateGoals != null)
+            if (markerDrop != null)
             {
-                try
+                List<double> distances = new List<double>();
+                result = 0.0;
+
+                if (Goals.Count == 0 && CalculateGoals != null)
                 {
-                    Goals= CalculateGoals(track);
-                    if (Goals.Count == 0)
+                    try
                     {
-                        Log(LogSeverityType.Error, $"Failed to calculate goals: no goals could be calculated");
+                        Goals = CalculateGoals(track);
+                        if (Goals.Count == 0)
+                        {
+                            Log(LogSeverityType.Error, $"Failed to calculate goals: no goals could be calculated");
+                            return false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log(LogSeverityType.Error, $"Failed to calculate goals: {ex.Message}");
                         return false;
                     }
                 }
-                catch (Exception ex)
-                {
-                    Log(LogSeverityType.Error, $"Failed to calculate goals: {ex.Message}");
-                    return false;
-                }
-            }
-           
-            foreach (Coordinate goal in Goals)
-            {
-                if (Use3DDistance)
-                {
-                    distances.Add(CoordinateHelpers.Calculate3DDistance(goal, markerDrop.MarkerLocation, useGPSAltitude));
-                }
-                else
-                {
-                    distances.Add(CoordinateHelpers.Calculate2DDistance(goal, markerDrop.MarkerLocation));
-                }
-            }
 
-            result = distances.Min();
+                foreach (Coordinate goal in Goals)
+                {
+                    if (Use3DDistance)
+                    {
+                        distances.Add(CoordinateHelpers.Calculate3DDistance(goal, markerDrop.MarkerLocation, useGPSAltitude));
+                    }
+                    else
+                    {
+                        distances.Add(CoordinateHelpers.Calculate2DDistance(goal, markerDrop.MarkerLocation));
+                    }
+                }
+
+                result = distances.Min();
+            }
             return true;
         }
 
@@ -95,23 +103,25 @@ namespace Competition
         #endregion
 
         #region API
-        public void SetupHWZ(int taskNumber, List<Coordinate> goals, int markerNumber, bool use3DDistance, List<IMarkerValidationRules> markerValidationRules)
+        public void SetupHWZ(int taskNumber, List<Coordinate> goals, int markerNumber, bool use3DDistance, List<IMarkerValidationRules> markerValidationRules,List<IDeclarationValidationRules> declarationValidationRules)
         {
             TaskNumber = taskNumber;
             Goals = goals;
             MarkerNumber = markerNumber;
             Use3DDistance = use3DDistance;
             MarkerValidationRules = markerValidationRules;
+            DeclarationValidationRules = declarationValidationRules;
 
         }
 
-        public void SetupHWZ(int taskNumber, Func<Track, List<Coordinate>> calculateGoals, int markerNumber, bool use3DDistance, List<IMarkerValidationRules> markerValidationRules)
+        public void SetupHWZ(int taskNumber, Func<Track, List<Coordinate>> calculateGoals, int markerNumber, bool use3DDistance, List<IMarkerValidationRules> markerValidationRules,List<IDeclarationValidationRules> declarationValidationRules)
         {
             TaskNumber = taskNumber;
             CalculateGoals = calculateGoals;
             MarkerNumber = markerNumber;
             Use3DDistance = use3DDistance;
             MarkerValidationRules = markerValidationRules;
+            DeclarationValidationRules = declarationValidationRules;
         }
 
         public override string ToString()
