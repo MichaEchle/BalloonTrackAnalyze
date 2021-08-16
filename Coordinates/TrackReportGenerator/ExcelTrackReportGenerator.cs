@@ -49,7 +49,7 @@ namespace TrackReportGenerator
                 }
 
                 ExcelWorksheet wsDeclarationsAndMarkerDrops = package.Workbook.Worksheets.Add("Decl. and Markers");
-                if (!WriteDeclaratrionsMarkerDrops(wsDeclarationsAndMarkerDrops, track))
+                if (!WriteDeclaratrionsAndMarkerDrops(wsDeclarationsAndMarkerDrops, track))
                 {
                     Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, functionErrorMessage);
                     return false;
@@ -149,7 +149,7 @@ namespace TrackReportGenerator
 
         }
 
-        private static bool WriteDeclaratrionsMarkerDrops(ExcelWorksheet wsDeclarationsAndMarkerDrops, Track track)
+        private static bool WriteDeclaratrionsAndMarkerDrops(ExcelWorksheet wsDeclarationsAndMarkerDrops, Track track)
         {
             try
             {

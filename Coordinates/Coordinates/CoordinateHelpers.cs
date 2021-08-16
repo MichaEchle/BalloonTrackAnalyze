@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Forms;
 
 namespace Coordinates
 {
@@ -314,6 +315,30 @@ namespace Coordinates
 
             return bearing;
 
+        }
+
+        public static Coordinate ConvertUTMToLatitudeLongitudeCoordinate(string utmZone, int easting, int northing)
+        {
+            (double latitude, double longitude) latitudeLongitude = ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
+           return new Coordinate(latitudeLongitude.latitude, latitudeLongitude.longitude, double.NaN, double.NaN, DateTime.MinValue);
+        }
+
+        public static (double latitude, double longitude) ConvertUTMToLatitudeLongitude(string utmZone, int easting, int northing)
+        {
+            CoordinateSharp.UniversalTransverseMercator utmCoordindate = new CoordinateSharp.UniversalTransverseMercator(utmZone, easting, northing);
+            CoordinateSharp.Coordinate coordinateSharp = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmCoordindate);
+            return (coordinateSharp.Latitude.DecimalDegree, coordinateSharp.Longitude.DecimalDegree);
+        }
+
+        public static (string utmZone, int easting, int northing) ConvertLatitudeLongitudeCoordinateToUTM(Coordinate coordinate)
+        {
+            return ConvertLatitudeLongitudeToUTM(coordinate.Latitude, coordinate.Longitude);
+        }
+
+        public static (string utmZone, int easting, int northing) ConvertLatitudeLongitudeToUTM(double latitude, double longitude)
+        {
+            CoordinateSharp.Coordinate coordinateSharp = new CoordinateSharp.Coordinate(latitude, longitude);
+            return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", (int)coordinateSharp.UTM.Easting, (int)coordinateSharp.UTM.Northing);
         }
     }
 }

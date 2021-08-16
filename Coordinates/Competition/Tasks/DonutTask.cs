@@ -146,7 +146,7 @@ namespace Competition
             {
                 double distanceToGoal = CoordinateHelpers.Calculate2DDistance(coordinates[index], targetGoal.GoalDeclared);//calculate distance to goal
                 if (distanceToGoal <= OuterRadius && distanceToGoal >= InnerRadius)//save all trackpoints between outer and inner radius
-                    trackPointsInDonut.Add((index, coordinates[index]));
+                    trackPointsInDonut.Add((track.TrackPoints.FindIndex(x=>x==coordinates[index]), coordinates[index]));
 
             }
             List<List<Coordinate>> chunksInDonut = new List<List<Coordinate>>();

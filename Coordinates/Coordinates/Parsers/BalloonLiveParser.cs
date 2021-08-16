@@ -157,8 +157,9 @@ namespace Coordinates.Parsers
                     if (configLine.StartsWith("LXXX BLSSN"))
                     {
                         string sensBoxSerialNumber = configLine.Split('=').Last();
-                        track.AdditionalPropertiesFromIGCFile.Add("SensBoxSerialNumber", sensBoxSerialNumber);
-                    }          
+                        if (!track.AdditionalPropertiesFromIGCFile.ContainsKey("SensBoxSerialNumber"))
+                            track.AdditionalPropertiesFromIGCFile.Add("SensBoxSerialNumber", sensBoxSerialNumber);
+                    }
                 }
 
                 string iRecordLine = lines.Where(x => x.StartsWith('I')).FirstOrDefault();
@@ -205,12 +206,12 @@ namespace Coordinates.Parsers
                     }
                 }
                 string[] positionSourceEvents = lines.Where(x => x.StartsWith('E') && x.Contains("XS")).ToArray();
-                bool isFirstSourceEvent=true;
+                bool isFirstSourceEvent = true;
                 DateTime timeStamp;
                 bool isPrimarySource;
                 bool isBallonLiveSensor;
                 string blsSerialNumber;
-                foreach (string positionSourceEvent  in positionSourceEvents)
+                foreach (string positionSourceEvent in positionSourceEvents)
                 {
                     if (!ParseSourceEvent(positionSourceEvent, date, out timeStamp, out isPrimarySource, out isBallonLiveSensor, out blsSerialNumber))
                     {
@@ -220,15 +221,16 @@ namespace Coordinates.Parsers
                     if (isFirstSourceEvent)
                     {
                         isFirstSourceEvent = false;
-                        Log(LogSeverityType.Info, $"Position source at track start is: '{(isPrimarySource ? "primary" : "fallback")}' position source '{(isBallonLiveSensor ? "Ballon Live Sensor" : "Phone Internal")}' {(isBallonLiveSensor?$"with serial number '{blsSerialNumber}'":"")}");
+                        Log(LogSeverityType.Info, $"Position source at track start is: '{(isPrimarySource ? "primary" : "fallback")}' position source '{(isBallonLiveSensor ? "Ballon Live Sensor" : "Phone Internal")}' {(isBallonLiveSensor ? $"with serial number '{blsSerialNumber}'" : "")}");
                     }
                     else
                     {
                         Log(LogSeverityType.Warning, $"Caution: Change of position source detected at '{timeStamp:dd-MMM-yyyy HH\\:mm\\:ss}' :  '{(isPrimarySource ? "primary" : "fallback")}' source '{(isBallonLiveSensor ? "Ballon Live Sensor" : "Phone Internal")}' {(isBallonLiveSensor ? $"with serial number '{blsSerialNumber}'" : "")}");
-                        track.AdditionalPropertiesFromIGCFile.Add("Change of position source", "yes");
+                        if (!track.AdditionalPropertiesFromIGCFile.ContainsKey("Change of position source"))
+                            track.AdditionalPropertiesFromIGCFile.Add("Change of position source", "yes");
                     }
                 }
-                if(!track.AdditionalPropertiesFromIGCFile.ContainsKey("Change of position source"))
+                if (!track.AdditionalPropertiesFromIGCFile.ContainsKey("Change of position source"))
                     track.AdditionalPropertiesFromIGCFile.Add("Change of position source", "no");
 
                 string[] trackPointLines = lines.Where(x => x.StartsWith('B')).ToArray();
@@ -603,7 +605,7 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse barometric altitude at declaration position in '{line}'");
                 return false;
             }
-            
+
             double declarationPositionAltitudeGPS;
             if (!double.TryParse(line[35..40], out declarationPositionAltitudeGPS))
             {
@@ -884,7 +886,7 @@ namespace Coordinates.Parsers
             if (decimalAngle > 0.0)
             {
                 //decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal angles
-            int divider = (standardLatitudeText[2..7] + additionalDecimals).Length-2;//first two digits are integer the rest are decimal places
+                int divider = (standardLatitudeText[2..7] + additionalDecimals).Length - 2;//first two digits are integer the rest are decimal places
                 decimalAngle /= (Math.Pow(10.0, divider) * 60.0);//divide two get decimal places right and convert from minutes to degrees
             }
             latitude = factor * (fullAngle + decimalAngle);
@@ -965,7 +967,7 @@ namespace Coordinates.Parsers
             if (decimalAngle > 0.0)
             {
                 int divider = (standardLongitudeText[3..8] + additinalDecimals).Length - 2;//first two digits are integer the rest are decimal places
-                decimalAngle /= (Math.Pow(10.0,divider) * 60.0);//divide two get decimal places right and convert from minutes to degrees
+                decimalAngle /= (Math.Pow(10.0, divider) * 60.0);//divide two get decimal places right and convert from minutes to degrees
             }
             longitude = factor * (fullAngle + decimalAngle);
             return true;
@@ -1040,7 +1042,7 @@ namespace Coordinates.Parsers
             TrackPoint_EndOfAdditionalLongitudeDecimals = -1;
         }
 
-        private static bool ParseSourceEvent(string line, DateTime date,out DateTime timeStamp,out bool isPrimarySource, out bool isBallonLiveSensor,out string blsSerialNumber)
+        private static bool ParseSourceEvent(string line, DateTime date, out DateTime timeStamp, out bool isPrimarySource, out bool isBallonLiveSensor, out string blsSerialNumber)
         {
             string functionErrorMessage = "Failed to parse position source event";
             timeStamp = DateTime.MinValue;
@@ -1070,13 +1072,13 @@ namespace Coordinates.Parsers
             {
                 isBallonLiveSensor = false;
             }
-            else if(line.Contains("BLS"))
+            else if (line.Contains("BLS"))
             {
                 isBallonLiveSensor = true;
                 blsSerialNumber = line.Split(',').Last();
             }
             else
-                {
+            {
                 Log(LogSeverityType.Warning, $"Unknown position source '{line[10..13]}' in line '{line}'");
             }
 

@@ -99,7 +99,7 @@ namespace Competition
             {
                 string functionErrorMessage = $"Failed to calculate result for {this} and Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}': ";
                 result = 0.0;
-                List<(int, Coordinate)> trackPointsInDonut = new List<(int trackPointNumber, Coordinate coordinate)>();
+                List<(int, Coordinate)> trackPointsInTier = new List<(int trackPointNumber, Coordinate coordinate)>();
 
                 DeclaredGoal targetGoal = ValidationHelper.GetValidGoal(track, GoalNumber, DeclarationValidationRules);
                 if (targetGoal == null)
@@ -128,57 +128,57 @@ namespace Competition
                 {
                     double distanceToGoal = CoordinateHelpers.Calculate2DDistance(coordinates[index], targetGoal.GoalDeclared);//calculate distance to goal
                     if (distanceToGoal <= Radius)//save all trackpoints within the radius
-                        trackPointsInDonut.Add((index, coordinates[index]));
+                        trackPointsInTier.Add((track.TrackPoints.FindIndex(x=>x==coordinates[index]), coordinates[index]));
 
                 }
-                List<List<Coordinate>> chunksInDonut = new List<List<Coordinate>>();
+                List<List<Coordinate>> chunksInTier = new List<List<Coordinate>>();
                 int addIndex = 0;
-                chunksInDonut.Add(new List<Coordinate>());
-                for (int index = 0; index < trackPointsInDonut.Count - 1; index++)
+                chunksInTier.Add(new List<Coordinate>());
+                for (int index = 0; index < trackPointsInTier.Count - 1; index++)
                 {
-                    if (trackPointsInDonut[index + 1].Item1 - trackPointsInDonut[index].Item1 == 1)//trackpoints are successive
+                    if (trackPointsInTier[index + 1].Item1 - trackPointsInTier[index].Item1 == 1)//trackpoints are successive
                     {
-                        if (chunksInDonut[addIndex].Count == 0)
+                        if (chunksInTier[addIndex].Count == 0)
                         {
-                            chunksInDonut[addIndex].Add(trackPointsInDonut[index].Item2);
-                            chunksInDonut[addIndex].Add(trackPointsInDonut[index + 1].Item2);
+                            chunksInTier[addIndex].Add(trackPointsInTier[index].Item2);
+                            chunksInTier[addIndex].Add(trackPointsInTier[index + 1].Item2);
                         }
                         else
                         {
-                            chunksInDonut[addIndex].Add(trackPointsInDonut[index + 1].Item2);
+                            chunksInTier[addIndex].Add(trackPointsInTier[index + 1].Item2);
                         }
                     }
                     else//trackpoints are not successive -> create new chunk
                     {
-                        chunksInDonut.Add(new List<Coordinate>());
+                        chunksInTier.Add(new List<Coordinate>());
                         addIndex++;
                     }
                 }
 
                 if (!IsReentranceAllowed)//evaluate first chunk only
                 {
-                    if (chunksInDonut[0].Count >= 2)
+                    if (chunksInTier[0].Count >= 2)
                     {
                         //for (int index = 0; index < chunksInDonut[0].Count - 1; index++)
                         //{
                         //    double tempResult = CoordinateHelpers.Calculate2DDistance(chunksInDonut[0][index], chunksInDonut[0][index + 1]);
                         //    result += tempResult;
                         //}
-                        result += CoordinateHelpers.Calculate2DDistanceBetweenPoints(chunksInDonut[0]);
+                        result += CoordinateHelpers.Calculate2DDistanceBetweenPoints(chunksInTier[0]);
                     }
                 }
                 else//evaluate all chunks
                 {
-                    for (int chuckIndex = 0; chuckIndex < chunksInDonut.Count; chuckIndex++)
+                    for (int chuckIndex = 0; chuckIndex < chunksInTier.Count; chuckIndex++)
                     {
-                        if (chunksInDonut[chuckIndex].Count >= 2)
+                        if (chunksInTier[chuckIndex].Count >= 2)
                         {
                             //for (int index = 0; index < chunksInDonut[chuckIndex].Count - 1; index++)
                             //{
                             //    double tempResult = CoordinateHelpers.Calculate2DDistance(chunksInDonut[chuckIndex][index], chunksInDonut[chuckIndex][index + 1]);
                             //    result += tempResult;
                             //}
-                            result += CoordinateHelpers.Calculate2DDistanceBetweenPoints(chunksInDonut[chuckIndex]);
+                            result += CoordinateHelpers.Calculate2DDistanceBetweenPoints(chunksInTier[chuckIndex]);
                         }
                     }
                 }

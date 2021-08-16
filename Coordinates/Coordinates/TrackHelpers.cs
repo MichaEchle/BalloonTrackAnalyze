@@ -33,10 +33,11 @@ namespace Coordinates
             List<(string identifier, double distance)> distance2DBetweenDeclaredGoals = new List<(string identifier, double distance)>();
             for (int index = 0; index < declaredGoals.Count; index++)
             {
+                bool useTimeStamp = declaredGoals.Where(x => x.GoalNumber == declaredGoals[index].GoalNumber).Count() > 1;
                 for (int iterator = index + 1; iterator < declaredGoals.Count; iterator++)
                 {
                     string identifier;
-                    if (declaredGoals[index].GoalNumber == declaredGoals[iterator].GoalNumber)
+                    if (useTimeStamp)
                         identifier = $"Goal{declaredGoals[index].GoalNumber}_{declaredGoals[index].GoalDeclared.TimeStamp:HH:mm:ss}->Goal{declaredGoals[iterator].GoalNumber}_{declaredGoals[iterator].GoalDeclared.TimeStamp:HH:mm:ss}";
                     else
                         identifier = $"Goal{declaredGoals[index].GoalNumber}->Goal{declaredGoals[iterator].GoalNumber}";
@@ -52,10 +53,11 @@ namespace Coordinates
             List<(string identifier, double distance)> distance3DBetweenDeclaredGoals = new List<(string identifier, double distance)>();
             for (int index = 0; index < declaredGoals.Count; index++)
             {
+                bool useTimeStamp = declaredGoals.Where(x => x.GoalNumber == declaredGoals[index].GoalNumber).Count() > 1;
                 for (int iterator = index + 1; iterator < declaredGoals.Count; iterator++)
                 {
                     string identifier;
-                    if (declaredGoals[index].GoalNumber == declaredGoals[iterator].GoalNumber)
+                    if (useTimeStamp)
                         identifier = $"Goal{declaredGoals[index].GoalNumber}_{declaredGoals[index].GoalDeclared.TimeStamp:HH:mm:ss}->Goal{declaredGoals[iterator].GoalNumber}_{declaredGoals[iterator].GoalDeclared.TimeStamp:HH:mm:ss}";
                     else
                         identifier = $"Goal{declaredGoals[index].GoalNumber}->Goal{declaredGoals[iterator].GoalNumber}";
@@ -71,10 +73,11 @@ namespace Coordinates
             List<(string identifier, double distance)> distance2DBetweenMarkers = new List<(string identifier, double distance)>();
             for (int index = 0; index < markerDrops.Count; index++)
             {
+                bool useTimeStamp = markerDrops.Where(x => x.MarkerNumber == markerDrops[index].MarkerNumber).Count() > 1;
                 for (int iterator = index + 1; iterator < markerDrops.Count; iterator++)
                 {
                     string identifier;
-                    if (markerDrops[index].MarkerNumber == markerDrops[iterator].MarkerNumber)
+                    if (useTimeStamp)
                         identifier = $"Marker{markerDrops[index].MarkerNumber}_{markerDrops[index].MarkerLocation.TimeStamp:HH:mm:ss}->Marker{markerDrops[iterator].MarkerNumber}_{markerDrops[iterator].MarkerLocation.TimeStamp:HH:mm:ss}";
                     else
                         identifier = $"Marker{markerDrops[index].MarkerNumber}->Marker{markerDrops[iterator].MarkerNumber}";
@@ -90,10 +93,11 @@ namespace Coordinates
             List<(string identifier, double distance)> distance3DBetweenMarkers = new List<(string identifier, double distance)>();
             for (int index = 0; index < markerDrops.Count; index++)
             {
+                bool useTimeStamp = markerDrops.Where(x => x.MarkerNumber == markerDrops[index].MarkerNumber).Count() > 1;
                 for (int iterator = index + 1; iterator < markerDrops.Count; iterator++)
                 {
                     string identifier;
-                    if (markerDrops[index].MarkerNumber == markerDrops[iterator].MarkerNumber)
+                    if (useTimeStamp)
                         identifier = $"Marker{markerDrops[index].MarkerNumber}_{markerDrops[index].MarkerLocation.TimeStamp:HH:mm:ss}->Marker{markerDrops[index].MarkerNumber}_{markerDrops[iterator].MarkerLocation.TimeStamp:HH:mm:ss}";
                     else
                         identifier = $"Marker{markerDrops[index].MarkerNumber}->Marker{markerDrops[index].MarkerNumber}";

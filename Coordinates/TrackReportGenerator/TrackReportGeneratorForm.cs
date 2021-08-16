@@ -18,7 +18,7 @@ namespace TrackReportGenerator
         {
             InitializeComponent();
             Text += typeof(TrackReportGeneratorForm).Assembly.GetName().Version;
-            logListView1.StartLogging();
+            logListView1.StartLogging(@".\Logfile.txt");
         }
 
         private async void btSelectFiles_Click(object sender, EventArgs e)
