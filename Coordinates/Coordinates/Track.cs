@@ -15,7 +15,7 @@ namespace Coordinates
         /// <summary>
         /// The list of declared goals
         /// </summary>
-        public List<DeclaredGoal> DeclaredGoals { get; private set; } = new List<DeclaredGoal>();
+        public List<Declaration> Declarations { get; private set; } = new List<Declaration>();
 
         /// <summary>
         /// The list of marker drops
@@ -40,19 +40,19 @@ namespace Coordinates
 
         }
 
-        public DeclaredGoal GetLastDeclaredGoal( int goalNumber)
+        public Declaration GetLatestDeclaration( int goalNumber)
         {
-            List<DeclaredGoal> declaredGoals = DeclaredGoals.Where(x => x.GoalNumber == goalNumber).ToList();
-            if (declaredGoals.Count == 0)
+            List<Declaration> declarations = Declarations.Where(x => x.GoalNumber == goalNumber).ToList();
+            if (declarations.Count == 0)
                 return null;
             else
-                return declaredGoals.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[0];
+                return declarations.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[0];
 
         }
 
         public List<int> GetAllGoalNumbers()
         {
-            List<int> allGoalNumbers = DeclaredGoals.Select(x => x.GoalNumber).Distinct().ToList();
+            List<int> allGoalNumbers = Declarations.Select(x => x.GoalNumber).Distinct().ToList();
             return allGoalNumbers;
         }
 

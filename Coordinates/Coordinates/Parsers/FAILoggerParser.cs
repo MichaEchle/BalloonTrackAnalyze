@@ -233,14 +233,14 @@ namespace Coordinates.Parsers
                     Log(LogSeverityType.Error, functionErrorMessage + "Failed to find a trackpoint as position of declaration");
                     return false;
                 }
-                DeclaredGoal declaredGoal;
-                if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, goalNortingDigits, goalEastingDigits, referenceCoordinate, positionAtDeclaration, out declaredGoal))
+                Declaration declaration;
+                if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, goalNortingDigits, goalEastingDigits, referenceCoordinate, positionAtDeclaration, out declaration))
                 {
                     //Debug.WriteLine(functionErrorMessage + "Failed to parse goal declaration");
                     Log(LogSeverityType.Error, functionErrorMessage + "Failed to parse goal declaration");
                     return false;
                 }
-                track.DeclaredGoals.Add(declaredGoal);
+                track.Declarations.Add(declaration);
             }
             //using (StreamReader reader = new StreamReader(fileNameAndPath))
             //{
@@ -442,12 +442,12 @@ namespace Coordinates.Parsers
         /// <param name="northingDigits">expected number of digits for goal northing</param>
         /// <param name="eastingDigits">expected number of digits for goal easting</param>
         /// <param name="referenceCoordinate">a reference coordinate to fill up the missing info from utm goal declaration. If the reference is null, the position of declaration will be used instead</param>
-        /// <param name="declaredGoal">output parameter. the declared goal</param>
+        /// <param name="declaration">output parameter. the declared goal</param>
         /// <returns>true:success; false:error</returns>
-        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, int northingDigits, int eastingDigits, Coordinate referenceCoordinate, Coordinate positionAtDeclaration, out DeclaredGoal declaredGoal)
+        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, int northingDigits, int eastingDigits, Coordinate referenceCoordinate, Coordinate positionAtDeclaration, out Declaration declaration)
         {
             string functionErrorMessage = $"Failed to parse goal declaration:";
-            declaredGoal = null;
+            declaration = null;
 
             DateTime timeStamp;
             if (!ParseTimeStamp(line, date, out timeStamp))
@@ -571,10 +571,10 @@ namespace Coordinates.Parsers
 
             CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
 
-            Coordinate goalDeclared = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
+            Coordinate declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
             //Coordinate positionAtDeclaration = new Coordinate(positionAtDeclaration.Latitude, positionAtDeclaration.Longitude, positionAtDeclaration.AltitudeGPS, positionAtDeclaration.AltitudeBarometric, positionAtDeclaration.TimeStamp);
 
-            declaredGoal = new DeclaredGoal(goalNumber, goalDeclared, positionAtDeclaration);
+            declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration);
 
             return true;
         }

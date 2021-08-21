@@ -168,7 +168,7 @@ namespace Competition
 
         public bool PreprocessTrack(Track track)
         {
-            List<DeclaredGoal> validGoals = new List<DeclaredGoal>();
+            List<Declaration> validDeclarations = new List<Declaration>();
             List<MarkerDrop> validMarkers = new List<MarkerDrop>();
             foreach (ICompetitionTask task in Tasks)
             {
@@ -176,18 +176,18 @@ namespace Competition
                 {
                     case DonutTask donut:
                         {
-                            DeclaredGoal declaredGoal = ValidationHelper.GetValidGoal(track, donut.GoalNumber, donut.DeclarationValidationRules);
-                            if (declaredGoal != null)
-                                validGoals.Add(declaredGoal);
+                            Declaration declaration = ValidationHelper.GetValidDeclaration(track, donut.GoalNumber, donut.DeclarationValidationRules);
+                            if (declaration != null)
+                                validDeclarations.Add(declaration);
                         }
                         break;
                     case PieTask pie:
                         {
                             foreach (PieTask.PieTier tier in pie.Tiers)
                             {
-                                DeclaredGoal declaredGoal = ValidationHelper.GetValidGoal(track, tier.GoalNumber, tier.DeclarationValidationRules);
-                                if (declaredGoal != null)
-                                    validGoals.Add(declaredGoal);
+                                Declaration declaration = ValidationHelper.GetValidDeclaration(track, tier.GoalNumber, tier.DeclarationValidationRules);
+                                if (declaration != null)
+                                    validDeclarations.Add(declaration);
                             }
                         }
                         break;
@@ -226,18 +226,18 @@ namespace Competition
                                 if (rule is GoalToOtherGoalsDistanceRule)
                                 {
                                     GoalToOtherGoalsDistanceRule goalToOtherGoalsDistanceRule = rule as GoalToOtherGoalsDistanceRule;
-                                    goalToOtherGoalsDistanceRule.DeclaredGoals.Clear();
+                                    goalToOtherGoalsDistanceRule.Declarations.Clear();
                                     if (goalToOtherGoalsDistanceRule.GoalNumbers.Count == 0)
                                     {
                                         foreach (int goalNumber in allGoalNumbers)
                                         {
-                                            if (validGoals.Select(x => x.GoalNumber).Contains(goalNumber))
+                                            if (validDeclarations.Select(x => x.GoalNumber).Contains(goalNumber))
                                             {
-                                                goalToOtherGoalsDistanceRule.DeclaredGoals.Add(validGoals.FirstOrDefault(x => x.GoalNumber == goalNumber));
+                                                goalToOtherGoalsDistanceRule.Declarations.Add(validDeclarations.FirstOrDefault(x => x.GoalNumber == goalNumber));
                                             }
                                             else
                                             {
-                                                goalToOtherGoalsDistanceRule.DeclaredGoals.Add(track.GetLastDeclaredGoal(goalNumber));
+                                                goalToOtherGoalsDistanceRule.Declarations.Add(track.GetLatestDeclaration(goalNumber));
                                             }
                                         }
                                     }
@@ -249,13 +249,13 @@ namespace Competition
                                                 Log(LogSeverityType.Warning, $"No goal number '{goalNumber}' declared in track of Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}'");
                                             else
                                             {
-                                                if (validGoals.Select(x => x.GoalNumber).Contains(goalNumber))
+                                                if (validDeclarations.Select(x => x.GoalNumber).Contains(goalNumber))
                                                 {
-                                                    goalToOtherGoalsDistanceRule.DeclaredGoals.Add(validGoals.FirstOrDefault(x => x.GoalNumber == goalNumber));
+                                                    goalToOtherGoalsDistanceRule.Declarations.Add(validDeclarations.FirstOrDefault(x => x.GoalNumber == goalNumber));
                                                 }
                                                 else
                                                 {
-                                                    goalToOtherGoalsDistanceRule.DeclaredGoals.Add(track.GetLastDeclaredGoal(goalNumber));
+                                                    goalToOtherGoalsDistanceRule.Declarations.Add(track.GetLatestDeclaration(goalNumber));
                                                 }
                                             }
                                         }
@@ -274,18 +274,18 @@ namespace Competition
                                     if (rule is GoalToOtherGoalsDistanceRule)
                                     {
                                         GoalToOtherGoalsDistanceRule goalToOtherGoalsDistanceRule = rule as GoalToOtherGoalsDistanceRule;
-                                        goalToOtherGoalsDistanceRule.DeclaredGoals.Clear();
+                                        goalToOtherGoalsDistanceRule.Declarations.Clear();
                                         if (goalToOtherGoalsDistanceRule.GoalNumbers.Count == 0)
                                         {
                                             foreach (int goalNumber in allGoalNumbers)
                                             {
-                                                if (validGoals.Select(x => x.GoalNumber).Contains(goalNumber))
+                                                if (validDeclarations.Select(x => x.GoalNumber).Contains(goalNumber))
                                                 {
-                                                    goalToOtherGoalsDistanceRule.DeclaredGoals.Add(validGoals.FirstOrDefault(x => x.GoalNumber == goalNumber));
+                                                    goalToOtherGoalsDistanceRule.Declarations.Add(validDeclarations.FirstOrDefault(x => x.GoalNumber == goalNumber));
                                                 }
                                                 else
                                                 {
-                                                    goalToOtherGoalsDistanceRule.DeclaredGoals.Add(track.GetLastDeclaredGoal(goalNumber));
+                                                    goalToOtherGoalsDistanceRule.Declarations.Add(track.GetLatestDeclaration(goalNumber));
                                                 }
                                             }
                                         }
@@ -297,13 +297,13 @@ namespace Competition
                                                     Log(LogSeverityType.Warning, $"No goal number '{goalNumber}' declared in track of Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}'");
                                                 else
                                                 {
-                                                    if (validGoals.Select(x => x.GoalNumber).Contains(goalNumber))
+                                                    if (validDeclarations.Select(x => x.GoalNumber).Contains(goalNumber))
                                                     {
-                                                        goalToOtherGoalsDistanceRule.DeclaredGoals.Add(validGoals.FirstOrDefault(x => x.GoalNumber == goalNumber));
+                                                        goalToOtherGoalsDistanceRule.Declarations.Add(validDeclarations.FirstOrDefault(x => x.GoalNumber == goalNumber));
                                                     }
                                                     else
                                                     {
-                                                        goalToOtherGoalsDistanceRule.DeclaredGoals.Add(track.GetLastDeclaredGoal(goalNumber));
+                                                        goalToOtherGoalsDistanceRule.Declarations.Add(track.GetLatestDeclaration(goalNumber));
                                                     }
                                                 }
                                             }
@@ -320,18 +320,18 @@ namespace Competition
                                 if (rule is MarkerToGoalDistanceRule)
                                 {
                                     MarkerToGoalDistanceRule markerToGoalDistanceRule = rule as MarkerToGoalDistanceRule;
-                                    markerToGoalDistanceRule.Goal = null;
+                                    markerToGoalDistanceRule.Declaration = null;
                                     if (!allGoalNumbers.Contains(markerToGoalDistanceRule.GoalNumber))
                                         Log(LogSeverityType.Warning, $"No goal number '{markerToGoalDistanceRule.GoalNumber}' declared in track of Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}'");
                                     else
                                     {
-                                        if (validGoals.Select(x => x.GoalNumber).Contains(markerToGoalDistanceRule.GoalNumber))
+                                        if (validDeclarations.Select(x => x.GoalNumber).Contains(markerToGoalDistanceRule.GoalNumber))
                                         {
-                                            markerToGoalDistanceRule.Goal = validGoals.FirstOrDefault(x => x.GoalNumber == markerToGoalDistanceRule.GoalNumber);
+                                            markerToGoalDistanceRule.Declaration = validDeclarations.FirstOrDefault(x => x.GoalNumber == markerToGoalDistanceRule.GoalNumber);
                                         }
                                         else
                                         {
-                                            markerToGoalDistanceRule.Goal = track.GetLastDeclaredGoal(markerToGoalDistanceRule.GoalNumber);
+                                            markerToGoalDistanceRule.Declaration = track.GetLatestDeclaration(markerToGoalDistanceRule.GoalNumber);
                                         }
                                     }
                                 }
@@ -366,18 +366,18 @@ namespace Competition
                                 if (rule is MarkerToGoalDistanceRule)
                                 {
                                     MarkerToGoalDistanceRule markerToGoalDistanceRule = rule as MarkerToGoalDistanceRule;
-                                    markerToGoalDistanceRule.Goal = null;
+                                    markerToGoalDistanceRule.Declaration = null;
                                     if (!allGoalNumbers.Contains(markerToGoalDistanceRule.GoalNumber))
                                         Log(LogSeverityType.Warning, $"No goal number '{markerToGoalDistanceRule.GoalNumber}' declared in track of Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}'");
                                     else
                                     {
-                                        if (validGoals.Select(x => x.GoalNumber).Contains(markerToGoalDistanceRule.GoalNumber))
+                                        if (validDeclarations.Select(x => x.GoalNumber).Contains(markerToGoalDistanceRule.GoalNumber))
                                         {
-                                            markerToGoalDistanceRule.Goal = validGoals.FirstOrDefault(x => x.GoalNumber == markerToGoalDistanceRule.GoalNumber);
+                                            markerToGoalDistanceRule.Declaration = validDeclarations.FirstOrDefault(x => x.GoalNumber == markerToGoalDistanceRule.GoalNumber);
                                         }
                                         else
                                         {
-                                            markerToGoalDistanceRule.Goal = track.GetLastDeclaredGoal(markerToGoalDistanceRule.GoalNumber);
+                                            markerToGoalDistanceRule.Declaration = track.GetLatestDeclaration(markerToGoalDistanceRule.GoalNumber);
                                         }
                                     }
                                 }

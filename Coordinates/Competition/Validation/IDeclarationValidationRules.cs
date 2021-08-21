@@ -7,6 +7,7 @@ namespace Competition
 {
     public interface IDeclarationValidationRules
     {
-        public bool CheckConformance(DeclaredGoal declaredGoal);
+        public bool IsComplaintToRule(Declaration declaration);
+
     }
 }

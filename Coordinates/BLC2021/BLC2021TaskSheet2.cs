@@ -222,10 +222,10 @@ namespace BLC2021
         private List<Coordinate> CalculateGoalsTask4_1(Track track)
         {
             List<Coordinate> goals = new List<Coordinate>();
-            DeclaredGoal goal = track.GetLastDeclaredGoal(Task4_GoalNumber);
-            if (goal is null || goal == default)
+            Declaration declaration = track.GetLatestDeclaration(Task4_GoalNumber);
+            if (declaration is null || declaration == default)
                 throw new Exception($"No goal with goal number '{Task4_GoalNumber}' has been found");
-            goals.Add(goal.GoalDeclared);
+            goals.Add(declaration.DeclaredGoal);
             return goals;
         }
         private List<Coordinate> CalculateGoalsTask4_2(Track track)
@@ -233,11 +233,11 @@ namespace BLC2021
             List<Coordinate> goals = new List<Coordinate>();
             double distanceFromDeclaredGoal = 1000.0;
             double additionalAltitude = CoordinateHelpers.ConvertToMeter(300.0);
-            DeclaredGoal goal = track.GetLastDeclaredGoal(Task4_GoalNumber);
-            if(goal is null || goal == default)
+            Declaration declaration = track.GetLatestDeclaration(Task4_GoalNumber);
+            if(declaration is null || declaration == default)
                 throw new Exception($"No goal with goal number '{Task4_GoalNumber}' has been found");
 
-            CoordinateSharp.Coordinate tempDeclaredGoal = new CoordinateSharp.Coordinate(goal.GoalDeclared.Latitude, goal.GoalDeclared.Longitude);
+            CoordinateSharp.Coordinate tempDeclaredGoal = new CoordinateSharp.Coordinate(declaration.DeclaredGoal.Latitude, declaration.DeclaredGoal.Longitude);
 
             double easting = Math.Round(tempDeclaredGoal.UTM.Easting, 0, MidpointRounding.AwayFromZero);
             double northing = Math.Round(tempDeclaredGoal.UTM.Northing, 0, MidpointRounding.AwayFromZero);
@@ -252,7 +252,7 @@ namespace BLC2021
                         continue;
                     CoordinateSharp.UniversalTransverseMercator utmTempGoal = new CoordinateSharp.UniversalTransverseMercator($"{latZone}{longZone}", easting+(distanceFromDeclaredGoal*eastingFactor), northing+(distanceFromDeclaredGoal*northingFactor));
                     CoordinateSharp.Coordinate tempGoal = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmTempGoal);
-                    goals.Add(new Coordinate(tempGoal.Latitude.DecimalDegree, tempGoal.Longitude.DecimalDegree, goal.GoalDeclared.AltitudeGPS+ additionalAltitude, goal.GoalDeclared.AltitudeBarometric+ additionalAltitude, DateTime.Now));
+                    goals.Add(new Coordinate(tempGoal.Latitude.DecimalDegree, tempGoal.Longitude.DecimalDegree, declaration.DeclaredGoal.AltitudeGPS+ additionalAltitude, declaration.DeclaredGoal.AltitudeBarometric+ additionalAltitude, DateTime.Now));
                 }
             }
             return goals;
@@ -263,11 +263,11 @@ namespace BLC2021
             List<Coordinate> goals = new List<Coordinate>();
             double distanceFromDeclaredGoal = 2000.0;
             double additionalAltitude = CoordinateHelpers.ConvertToMeter(600.0);
-            DeclaredGoal goal = track.GetLastDeclaredGoal(Task4_GoalNumber);
-            if (goal is null || goal == default)
+            Declaration declaration = track.GetLatestDeclaration(Task4_GoalNumber);
+            if (declaration is null || declaration == default)
                 throw new Exception($"No goal with goal number '{Task4_GoalNumber}' has been found");
 
-            CoordinateSharp.Coordinate tempDeclaredGoal = new CoordinateSharp.Coordinate(goal.GoalDeclared.Latitude, goal.GoalDeclared.Longitude);
+            CoordinateSharp.Coordinate tempDeclaredGoal = new CoordinateSharp.Coordinate(declaration.DeclaredGoal.Latitude, declaration.DeclaredGoal.Longitude);
 
             double easting = Math.Round(tempDeclaredGoal.UTM.Easting, 0, MidpointRounding.AwayFromZero);
             double northing = Math.Round(tempDeclaredGoal.UTM.Northing, 0, MidpointRounding.AwayFromZero);
@@ -282,7 +282,7 @@ namespace BLC2021
                         continue;
                     CoordinateSharp.UniversalTransverseMercator utmTempGoal = new CoordinateSharp.UniversalTransverseMercator($"{latZone}{longZone}", easting + (distanceFromDeclaredGoal * eastingFactor), northing + (distanceFromDeclaredGoal * northingFactor));
                     CoordinateSharp.Coordinate tempGoal = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmTempGoal);
-                    goals.Add(new Coordinate(tempGoal.Latitude.DecimalDegree, tempGoal.Longitude.DecimalDegree, goal.GoalDeclared.AltitudeGPS + additionalAltitude, goal.GoalDeclared.AltitudeBarometric + additionalAltitude, DateTime.Now));
+                    goals.Add(new Coordinate(tempGoal.Latitude.DecimalDegree, tempGoal.Longitude.DecimalDegree, declaration.DeclaredGoal.AltitudeGPS + additionalAltitude, declaration.DeclaredGoal.AltitudeBarometric + additionalAltitude, DateTime.Now));
                 }
             }
             return goals;

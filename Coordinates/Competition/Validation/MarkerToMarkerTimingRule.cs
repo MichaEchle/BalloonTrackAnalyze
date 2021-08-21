@@ -46,7 +46,7 @@ namespace Competition.Validation
         #endregion Properties
 
         #region API
-        public bool CheckConformance(MarkerDrop marker)
+        public bool IsComplaintToRule(MarkerDrop marker)
         {
             bool isConform = true;
             foreach (MarkerDrop markerDrop in MarkerDrops)

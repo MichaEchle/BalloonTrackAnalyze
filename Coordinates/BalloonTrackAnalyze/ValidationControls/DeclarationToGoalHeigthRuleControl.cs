@@ -145,7 +145,7 @@ namespace BalloonTrackAnalyze.ValidationControls
             if (isDataValid)
             {
                 DeclarationToGoalHeightRule ??= new DeclarationToGoalHeightRule();
-                DeclarationToGoalHeightRule.SetupRule(minimumHeightDifference,maximumHeightDifference,useGPSAltitude);
+                DeclarationToGoalHeightRule.SetupRule(minimumHeightDifference,maximumHeightDifference,DeclarationToGoalHeightRule.HeightDifferenceType.AbsoluteDifference,useGPSAltitude);
                 tbMinimumHeightDifference.Text = "";
                 tbMaximumHeightDifference.Text = "";
                 OnDataValid();

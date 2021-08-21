@@ -8,6 +8,26 @@ namespace Competition
 {
     public class DeclarationToGoalHeightRule : IDeclarationValidationRules
     {
+        #region Enum(s)
+
+        public enum HeightDifferenceType
+        {
+            /// <summary>
+            /// The declared goal must be lower than the declaration position
+            /// </summary>
+            NegativeDifferenceOnly=-1,
+            /// <summary>
+            /// The declared goal must be higher or lower than the declaration position
+            /// </summary>
+            AbsoluteDifference=0,
+            /// <summary>
+            /// The declared goal must be higher then the declaration position
+            /// </summary>
+            PositiveDifferenceOnly=1
+        }
+        #endregion Enum(s)
+
+
         #region Properties
 
         /// <summary>
@@ -36,6 +56,17 @@ namespace Competition
         {
             get; set;
         } = true;
+
+        /// <summary>
+        /// Defines the type of height difference
+        /// <para>NegativeDifferenceOnly: Declared goal must be lower than declaration position</para>
+        /// <para>AbsoltueDifference: Declared goal must be higher or lower than declaration position</para>
+        /// <para>PostivieDifferenceOnly: Declared goal must be higher than declaration position</para>
+        /// </summary>
+        public HeightDifferenceType HeightDifference
+        {
+            get; set;
+        } = HeightDifferenceType.AbsoluteDifference;
         #endregion
 
         public DeclarationToGoalHeightRule()
@@ -46,24 +77,58 @@ namespace Competition
         #region API
 
         /// <summary>
-        /// Check if the declared goal is conform to the height difference rules
+        /// Check if the declaration is conform to the height difference rules
         /// </summary>
-        /// <param name="declaredGoal">the declared goal to be checked</param>
+        /// <param name="declaration">the declaration to be checked</param>
         /// <returns>true: is conform; false: is not conform</returns>
-        public bool CheckConformance(DeclaredGoal declaredGoal)
+        public bool IsComplaintToRule(Declaration declaration)
         {
             bool isConform = true;
             double heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal;
             if (UseGPSAltitude)
-                heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal = declaredGoal.PositionAtDeclaration.AltitudeGPS - declaredGoal.GoalDeclared.AltitudeGPS;
+                heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal =   declaration.DeclaredGoal.AltitudeGPS- declaration.PositionAtDeclaration.AltitudeGPS;
             else
-                heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal = declaredGoal.PositionAtDeclaration.AltitudeBarometric - declaredGoal.GoalDeclared.AltitudeBarometric;
-            if (!double.IsNaN(MinimumHeightDifference))
-                if (heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal < MinimumHeightDifference)
-                    isConform = false;
-            if (!double.IsNaN(MaximumHeightDifference))
-                if (heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal > MaximumHeightDifference)
-                    isConform = false;
+                heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal =   declaration.DeclaredGoal.AltitudeBarometric- declaration.PositionAtDeclaration.AltitudeBarometric;
+
+            switch (HeightDifference)
+            {
+                case HeightDifferenceType.NegativeDifferenceOnly:
+                    if (!double.IsNaN(MinimumHeightDifference))
+                    {
+                        double tempMinimumDifference = MinimumHeightDifference;
+                        if (tempMinimumDifference > 0)
+                            tempMinimumDifference *= -1;
+                        if (heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal > MinimumHeightDifference)
+                            isConform = false;
+                    }
+                    if (!double.IsNaN(MaximumHeightDifference))
+                    {
+                        double tempMaximumDifference = MaximumHeightDifference;
+                        if (tempMaximumDifference > 0)
+                            tempMaximumDifference *= -1;
+                        if (heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal < MaximumHeightDifference)
+                            isConform = false;
+                    }
+                    break;
+                case HeightDifferenceType.AbsoluteDifference:
+                    heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal = Math.Abs(heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal);
+                    if (!double.IsNaN(MinimumHeightDifference))
+                        if (heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal < MinimumHeightDifference)
+                            isConform = false;
+                    if (!double.IsNaN(MaximumHeightDifference))
+                        if (heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal > MaximumHeightDifference)
+                            isConform = false;
+                    break;
+                case HeightDifferenceType.PositiveDifferenceOnly:
+                    if (!double.IsNaN(MinimumHeightDifference))
+                        if (heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal < MinimumHeightDifference)
+                            isConform = false;
+                    if (!double.IsNaN(MaximumHeightDifference))
+                        if (heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal > MaximumHeightDifference)
+                            isConform = false;
+                    break;
+            }
+
             return isConform;
         }
 
@@ -73,10 +138,11 @@ namespace Competition
         /// <param name="minimumHeightDifference">Minimum difference in height between declaration position and declared goal in meter (optional; use double.NaN to omit)</param>
         /// <param name="maximumHeightDifference">Maximum difference in height between declaration position and declared goal in meter (optional; use double.NaN to omit)</param>
         /// <param name="useGPSAltitude">rue: use GPS altitude;false: use barometric altitude</param>
-        public void SetupRule(double minimumHeightDifference, double maximumHeightDifference, bool useGPSAltitude)
+        public void SetupRule(double minimumHeightDifference, double maximumHeightDifference,HeightDifferenceType heightDifference, bool useGPSAltitude)
         {
             MinimumHeightDifference = minimumHeightDifference;
             MaximumHeightDifference = maximumHeightDifference;
+            HeightDifference = heightDifference;
             UseGPSAltitude = useGPSAltitude;
         }
 

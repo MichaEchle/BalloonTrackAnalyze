@@ -16,18 +16,18 @@ namespace Competition.Validation
         /// <param name="goalNumber">the target goal number</param>
         /// <param name="declarationValidationRules">the list of rules to be applied</param>
         /// <returns>the latest valid declaration if any exists, otherwise null</returns>
-        public static DeclaredGoal GetValidGoal(Track track, int goalNumber, List<IDeclarationValidationRules> declarationValidationRules)
+        public static Declaration GetValidDeclaration(Track track, int goalNumber, List<IDeclarationValidationRules> declarationValidationRules)
         {
-            List<DeclaredGoal> declarations = track.DeclaredGoals.Where(x => x.GoalNumber == goalNumber).ToList();
-            List<DeclaredGoal> validDeclarations = new List<DeclaredGoal>();
-            foreach (DeclaredGoal declaredGoal in declarations)
+            List<Declaration> declarations = track.Declarations.Where(x => x.GoalNumber == goalNumber).ToList();
+            List<Declaration> validDeclarations = new List<Declaration>();
+            foreach (Declaration declaration in declarations)
             {
                 bool isValid = true;
                 if (declarationValidationRules != null)
                 {
                     foreach (IDeclarationValidationRules declarationValidationRule in declarationValidationRules)
                     {
-                        if (!declarationValidationRule.CheckConformance(declaredGoal))
+                        if (!declarationValidationRule.IsComplaintToRule(declaration))
                         {
                             isValid = false;
                             break;
@@ -35,7 +35,7 @@ namespace Competition.Validation
                     }
                 }
                 if (isValid)
-                    validDeclarations.Add(declaredGoal);
+                    validDeclarations.Add(declaration);
             }
             if (validDeclarations.Count == 0)
                 return null;
@@ -84,7 +84,7 @@ namespace Competition.Validation
                 {
                     foreach (IMarkerValidationRules markerValidationRule in markerValidationRules)
                     {
-                        isValid &= markerValidationRule.CheckConformance(markerDrop);
+                        isValid &= markerValidationRule.IsComplaintToRule(markerDrop);
                     }
                 }
             }

@@ -179,45 +179,45 @@ namespace TrackReportGenerator
                 wsDeclarationsAndMarkerDrops.Cells[1, 22].Value = "Dist 2D [m]";
                 wsDeclarationsAndMarkerDrops.Cells[1, 23].Value = "Dist 3D [m]";
                 wsDeclarationsAndMarkerDrops.Cells[1,1,1,23].Style.Font.Bold = true;
-                List<DeclaredGoal> declaredGoals = track.DeclaredGoals.OrderBy(x => x.GoalNumber).ToList();
+                List<Declaration> declarations = track.Declarations.OrderBy(x => x.GoalNumber).ToList();
 
-                List<double> distance2D = TrackHelpers.Calculate2DDistanceBetweenPositionOfDeclarationsAndGoalDeclared(declaredGoals);
-                List<double> distance3D = TrackHelpers.Calculate3DDistanceBetweenPositionOfDeclarationsAndGoalDeclared(declaredGoals);
+                List<double> distance2D = TrackHelpers.Calculate2DDistanceBetweenPositionOfDeclarationsAndDeclaredGoal(declarations);
+                List<double> distance3D = TrackHelpers.Calculate3DDistanceBetweenPositionOfDeclarationsAndDeclaredGoal(declarations);
                 int index = 2;
-                foreach (DeclaredGoal declaredGoal in declaredGoals)
+                foreach (Declaration declaration in declarations)
                 {
-                    wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = declaredGoal.GoalNumber;
+                    wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = declaration.GoalNumber;
                     wsDeclarationsAndMarkerDrops.Cells[index, 2].Style.Numberformat.Format = "dd-MMM-yyyy HH:mm:ss";
-                    wsDeclarationsAndMarkerDrops.Cells[index, 2].Value = declaredGoal.PositionAtDeclaration.TimeStamp;
-                    wsDeclarationsAndMarkerDrops.Cells[index, 3].Value = declaredGoal.PositionAtDeclaration.Longitude;
-                    wsDeclarationsAndMarkerDrops.Cells[index, 4].Value = declaredGoal.PositionAtDeclaration.Latitude;
-                    (int degrees, int degreeMinutes, int degreeSeconds, int degreeTenthSeconds) = CoordinateHelpers.ConvertToDegreeMinutes(declaredGoal.PositionAtDeclaration.Longitude);
-                    string longitudeBeautified = $"{(declaredGoal.PositionAtDeclaration.Longitude < 0.0 ? "W" : "E")} {CoordinateHelpers.BeautifyDegreeMinutes(degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds)}";
+                    wsDeclarationsAndMarkerDrops.Cells[index, 2].Value = declaration.PositionAtDeclaration.TimeStamp;
+                    wsDeclarationsAndMarkerDrops.Cells[index, 3].Value = declaration.PositionAtDeclaration.Longitude;
+                    wsDeclarationsAndMarkerDrops.Cells[index, 4].Value = declaration.PositionAtDeclaration.Latitude;
+                    (int degrees, int degreeMinutes, int degreeSeconds, int degreeTenthSeconds) = CoordinateHelpers.ConvertToDegreeMinutes(declaration.PositionAtDeclaration.Longitude);
+                    string longitudeBeautified = $"{(declaration.PositionAtDeclaration.Longitude < 0.0 ? "W" : "E")} {CoordinateHelpers.BeautifyDegreeMinutes(degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds)}";
                     wsDeclarationsAndMarkerDrops.Cells[index, 5].Value = longitudeBeautified;
-                    (degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds) = CoordinateHelpers.ConvertToDegreeMinutes(declaredGoal.PositionAtDeclaration.Latitude);
-                    string latitudeBeautified = $"{(declaredGoal.PositionAtDeclaration.Latitude < 0.0 ? "S" : "N")} {CoordinateHelpers.BeautifyDegreeMinutes(degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds)}";
+                    (degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds) = CoordinateHelpers.ConvertToDegreeMinutes(declaration.PositionAtDeclaration.Latitude);
+                    string latitudeBeautified = $"{(declaration.PositionAtDeclaration.Latitude < 0.0 ? "S" : "N")} {CoordinateHelpers.BeautifyDegreeMinutes(degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds)}";
                     wsDeclarationsAndMarkerDrops.Cells[index, 6].Value = latitudeBeautified;
-                    CoordinateSharp.Coordinate coordinateSharp = new CoordinateSharp.Coordinate(declaredGoal.PositionAtDeclaration.Latitude, declaredGoal.PositionAtDeclaration.Longitude);
+                    CoordinateSharp.Coordinate coordinateSharp = new CoordinateSharp.Coordinate(declaration.PositionAtDeclaration.Latitude, declaration.PositionAtDeclaration.Longitude);
                     wsDeclarationsAndMarkerDrops.Cells[index, 7].Value = coordinateSharp.UTM.LongZone + coordinateSharp.UTM.LatZone;
                     wsDeclarationsAndMarkerDrops.Cells[index, 8].Value = Math.Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero);
                     wsDeclarationsAndMarkerDrops.Cells[index, 9].Value = Math.Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero);
-                    wsDeclarationsAndMarkerDrops.Cells[index, 10].Value = declaredGoal.PositionAtDeclaration.AltitudeGPS;
-                    wsDeclarationsAndMarkerDrops.Cells[index, 11].Value = Math.Round(CoordinateHelpers.ConvertToFeet(declaredGoal.PositionAtDeclaration.AltitudeGPS), 0, MidpointRounding.AwayFromZero);
+                    wsDeclarationsAndMarkerDrops.Cells[index, 10].Value = declaration.PositionAtDeclaration.AltitudeGPS;
+                    wsDeclarationsAndMarkerDrops.Cells[index, 11].Value = Math.Round(CoordinateHelpers.ConvertToFeet(declaration.PositionAtDeclaration.AltitudeGPS), 0, MidpointRounding.AwayFromZero);
 
-                    wsDeclarationsAndMarkerDrops.Cells[index, 13].Value = declaredGoal.GoalDeclared.Longitude;
-                    wsDeclarationsAndMarkerDrops.Cells[index, 14].Value = declaredGoal.GoalDeclared.Latitude;
-                    (degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds) = CoordinateHelpers.ConvertToDegreeMinutes(declaredGoal.GoalDeclared.Longitude);
-                    longitudeBeautified = $"{(declaredGoal.GoalDeclared.Longitude < 0.0 ? "W" : "E")} {CoordinateHelpers.BeautifyDegreeMinutes(degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds)}";
+                    wsDeclarationsAndMarkerDrops.Cells[index, 13].Value = declaration.DeclaredGoal.Longitude;
+                    wsDeclarationsAndMarkerDrops.Cells[index, 14].Value = declaration.DeclaredGoal.Latitude;
+                    (degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds) = CoordinateHelpers.ConvertToDegreeMinutes(declaration.DeclaredGoal.Longitude);
+                    longitudeBeautified = $"{(declaration.DeclaredGoal.Longitude < 0.0 ? "W" : "E")} {CoordinateHelpers.BeautifyDegreeMinutes(degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds)}";
                     wsDeclarationsAndMarkerDrops.Cells[index, 15].Value = longitudeBeautified;
-                    (degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds) = CoordinateHelpers.ConvertToDegreeMinutes(declaredGoal.GoalDeclared.Latitude);
-                    latitudeBeautified = $"{(declaredGoal.GoalDeclared.Latitude < 0.0 ? "S" : "N")} {CoordinateHelpers.BeautifyDegreeMinutes(degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds)}";
+                    (degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds) = CoordinateHelpers.ConvertToDegreeMinutes(declaration.DeclaredGoal.Latitude);
+                    latitudeBeautified = $"{(declaration.DeclaredGoal.Latitude < 0.0 ? "S" : "N")} {CoordinateHelpers.BeautifyDegreeMinutes(degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds)}";
                     wsDeclarationsAndMarkerDrops.Cells[index, 16].Value = latitudeBeautified;
-                    coordinateSharp = new CoordinateSharp.Coordinate(declaredGoal.GoalDeclared.Latitude, declaredGoal.GoalDeclared.Longitude);
+                    coordinateSharp = new CoordinateSharp.Coordinate(declaration.DeclaredGoal.Latitude, declaration.DeclaredGoal.Longitude);
                     wsDeclarationsAndMarkerDrops.Cells[index, 17].Value = coordinateSharp.UTM.LongZone + coordinateSharp.UTM.LatZone;
                     wsDeclarationsAndMarkerDrops.Cells[index, 18].Value = Math.Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero);
                     wsDeclarationsAndMarkerDrops.Cells[index, 19].Value = Math.Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero);
-                    wsDeclarationsAndMarkerDrops.Cells[index, 20].Value = declaredGoal.GoalDeclared.AltitudeGPS;
-                    wsDeclarationsAndMarkerDrops.Cells[index, 21].Value = Math.Round(CoordinateHelpers.ConvertToFeet(declaredGoal.GoalDeclared.AltitudeGPS), 0, MidpointRounding.AwayFromZero);
+                    wsDeclarationsAndMarkerDrops.Cells[index, 20].Value = declaration.DeclaredGoal.AltitudeGPS;
+                    wsDeclarationsAndMarkerDrops.Cells[index, 21].Value = Math.Round(CoordinateHelpers.ConvertToFeet(declaration.DeclaredGoal.AltitudeGPS), 0, MidpointRounding.AwayFromZero);
                     wsDeclarationsAndMarkerDrops.Cells[index, 22].Value = Math.Round(distance2D[index - 2], 0, MidpointRounding.AwayFromZero);
                     wsDeclarationsAndMarkerDrops.Cells[index, 23].Value = Math.Round(distance3D[index - 2], 0, MidpointRounding.AwayFromZero);
                     index++;
@@ -268,8 +268,8 @@ namespace TrackReportGenerator
                 markTable.TableStyle = TableStyles.Light16;
 
                 index += 3;
-                List<(string identifier, double distance)> distance2DGoals = TrackHelpers.Calculate2DDistanceBetweenDeclaredGoals(declaredGoals);
-                List<(string identifier, double distance)> distance3DGoals = TrackHelpers.Calculate3DDistanceBetweenDeclaredGoals(declaredGoals);
+                List<(string identifier, double distance)> distance2DGoals = TrackHelpers.Calculate2DDistanceBetweenDeclaredGoals(declarations);
+                List<(string identifier, double distance)> distance3DGoals = TrackHelpers.Calculate3DDistanceBetweenDeclaredGoals(declarations);
                 wsDeclarationsAndMarkerDrops.Cells[index, 1, index, 3].Merge = true;
                 wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Distance Goals";
                 wsDeclarationsAndMarkerDrops.Cells[index, 1].Style.Font.Bold = true;
@@ -293,8 +293,8 @@ namespace TrackReportGenerator
                 goalToGoalTable.TableStyle = TableStyles.Light16;
 
                 index += 3;
-                List<(string identifier, double distance)> distance2DGoalsToMarkers = TrackHelpers.Calculate2DDistanceBetweenMarkerAndGoals(declaredGoals, markerDrops);
-                List<(string identifier, double distance)> distance3DGoalsToMarkers = TrackHelpers.Calculate3DDistanceBetweenMarkerAndGoals(declaredGoals, markerDrops);
+                List<(string identifier, double distance)> distance2DGoalsToMarkers = TrackHelpers.Calculate2DDistanceBetweenMarkerAndGoals(declarations, markerDrops);
+                List<(string identifier, double distance)> distance3DGoalsToMarkers = TrackHelpers.Calculate3DDistanceBetweenMarkerAndGoals(declarations, markerDrops);
 
                 wsDeclarationsAndMarkerDrops.Cells[index, 1, index, 3].Merge = true;
                 wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Distance Goals to Markers";

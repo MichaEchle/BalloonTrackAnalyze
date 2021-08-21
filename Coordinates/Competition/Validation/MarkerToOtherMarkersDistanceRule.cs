@@ -53,7 +53,7 @@ namespace Competition
         /// </summary>
         /// <param name="marker">the marker to be checked</param>
         /// <returns>true: is conform; false: is not conform</returns>
-        public bool CheckConformance(MarkerDrop marker)
+        public bool IsComplaintToRule(MarkerDrop marker)
         {
             bool isConform = true;
             foreach (MarkerDrop markerDrop in MarkerDrops)

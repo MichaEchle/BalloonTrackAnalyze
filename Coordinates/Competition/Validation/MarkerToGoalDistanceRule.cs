@@ -32,7 +32,7 @@ namespace Competition
         /// <para>needs preprocessing of track</para>
         /// <see cref="GoalNumber"/>
         /// </summary>
-        public DeclaredGoal Goal
+        public Declaration Declaration
         {
             get; set;
         } = null;
@@ -52,10 +52,10 @@ namespace Competition
         /// </summary>
         /// <param name="marker">the marker to be checked</param>
         /// <returns>true: is conform; false: is not conform</returns>
-        public bool CheckConformance(MarkerDrop marker)
+        public bool IsComplaintToRule(MarkerDrop marker)
         {
             bool isConform = true;
-            double distanceToGoal = CoordinateHelpers.Calculate2DDistance(marker.MarkerLocation, Goal.GoalDeclared);
+            double distanceToGoal = CoordinateHelpers.Calculate2DDistance(marker.MarkerLocation, Declaration.DeclaredGoal);
             if (!double.IsNaN(MinimumDistance))
             {
                 if (distanceToGoal < MinimumDistance)
@@ -74,7 +74,7 @@ namespace Competition
         /// </summary>
         /// <param name="minimumDistance">Minimum distance between marker position and declared goal in meter (optional; use double.NaN to omit)</param>
         /// <param name="maximumDistance">Maximum distance between marker position and declared goal in meter (optional; use double.NaN to omit)</param>
-        /// <param name="declaredGoal">The number of the goal to be checked against (the last valid goal with that number will be used) (mandatory). the actual declared goal object will be fed in after track preprocessing</param>
+        /// <param name="goalNumber">The number of the goal to be checked against (the last valid goal with that number will be used) (mandatory). the actual declared goal object will be fed in after track preprocessing</param>
         public void SetupRule(double minimumDistance, double maximumDistance, int goalNumber)
         {
             MinimumDistance = minimumDistance;

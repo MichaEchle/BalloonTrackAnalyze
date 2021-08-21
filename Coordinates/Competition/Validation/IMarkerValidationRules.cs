@@ -7,6 +7,6 @@ namespace Competition
 {
     public interface IMarkerValidationRules
     {
-        public bool CheckConformance(MarkerDrop marker);
+        public bool IsComplaintToRule(MarkerDrop marker);
     }
 }

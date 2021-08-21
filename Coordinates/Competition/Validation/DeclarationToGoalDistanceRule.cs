@@ -35,14 +35,14 @@ namespace Competition
         #region API
 
         /// <summary>
-        /// Check if the declared goal is conform to the distance rules
+        /// Check if declaration is conform to the distance rules
         /// </summary>
-        /// <param name="declaredGoal">the declared goal to be checked</param>
+        /// <param name="declaration">the declaration to be checked</param>
         /// <returns>true: is conform; false: is not conform</returns>
-        public bool CheckConformance(DeclaredGoal declaredGoal)
+        public bool IsComplaintToRule(Declaration declaration)
         {
             bool isConform = true;
-            double distanceBetweenPositionOfDeclarationAndDeclaredGoal = CoordinateHelpers.Calculate2DDistance(declaredGoal.PositionAtDeclaration, declaredGoal.GoalDeclared);
+            double distanceBetweenPositionOfDeclarationAndDeclaredGoal = CoordinateHelpers.Calculate2DDistance(declaration.PositionAtDeclaration, declaration.DeclaredGoal);
 
             if (!double.IsNaN(MinimumDistance))
                 if (distanceBetweenPositionOfDeclarationAndDeclaredGoal < MinimumDistance)

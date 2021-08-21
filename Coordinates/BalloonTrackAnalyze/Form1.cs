@@ -413,18 +413,18 @@ namespace BalloonTrackAnalyze
                     writer.WriteLine();
                     string declarationHeader = "Declaration Number,Time Stamp,Position Latitude[dec],Position Longitude[dec],Position Latitude[deg],Position Longitude[deg],Position Altitude GPS[m],Position Altitude Barometric[m],Position UTM Zone,Position Easting,Position Norting,Goal Latitude[dec],Goal Longitude[dec],Goal Latitude[deg],Goal Longitude[deg],Goal UTM Zone,Goal Easting,Goal Norting,Goal Altitude GPS m],Goal Altitude Barometric[m]";
                     writer.WriteLine(declarationHeader);
-                    foreach (DeclaredGoal declaredGoal in track.DeclaredGoals)
+                    foreach (Declaration declaration in track.Declarations)
                     {
-                        string timeStamp = declaredGoal.PositionAtDeclaration.TimeStamp.ToString("dd.MM.yyyy HH:mm:ss");
-                        CoordinateSharp.Coordinate posCoordinate = new CoordinateSharp.Coordinate(declaredGoal.PositionAtDeclaration.Latitude, declaredGoal.PositionAtDeclaration.Longitude);
-                        CoordinateSharp.Coordinate goalCoordinate = new CoordinateSharp.Coordinate(declaredGoal.GoalDeclared.Latitude, declaredGoal.GoalDeclared.Longitude);
-                        string line = string.Join(',', declaredGoal.GoalNumber, timeStamp, declaredGoal.PositionAtDeclaration.Latitude,
-                            declaredGoal.PositionAtDeclaration.Longitude, posCoordinate.Latitude.Display, posCoordinate.Longitude.Display,
+                        string timeStamp = declaration.PositionAtDeclaration.TimeStamp.ToString("dd.MM.yyyy HH:mm:ss");
+                        CoordinateSharp.Coordinate posCoordinate = new CoordinateSharp.Coordinate(declaration.PositionAtDeclaration.Latitude, declaration.PositionAtDeclaration.Longitude);
+                        CoordinateSharp.Coordinate goalCoordinate = new CoordinateSharp.Coordinate(declaration.DeclaredGoal.Latitude, declaration.DeclaredGoal.Longitude);
+                        string line = string.Join(',', declaration.GoalNumber, timeStamp, declaration.PositionAtDeclaration.Latitude,
+                            declaration.PositionAtDeclaration.Longitude, posCoordinate.Latitude.Display, posCoordinate.Longitude.Display,
                             posCoordinate.UTM.LongZone + posCoordinate.UTM.LatZone, posCoordinate.UTM.Easting, posCoordinate.UTM.Northing,
-                            declaredGoal.PositionAtDeclaration.AltitudeGPS, declaredGoal.PositionAtDeclaration.AltitudeBarometric,
-                            declaredGoal.GoalDeclared.Latitude, declaredGoal.GoalDeclared.Longitude, goalCoordinate.Latitude.Display,
+                            declaration.PositionAtDeclaration.AltitudeGPS, declaration.PositionAtDeclaration.AltitudeBarometric,
+                            declaration.DeclaredGoal.Latitude, declaration.DeclaredGoal.Longitude, goalCoordinate.Latitude.Display,
                             goalCoordinate.Longitude.Display, goalCoordinate.UTM.LongZone + goalCoordinate.UTM.LatZone, goalCoordinate.UTM.Easting,
-                            goalCoordinate.UTM.Northing, declaredGoal.GoalDeclared.AltitudeGPS, declaredGoal.GoalDeclared.AltitudeBarometric);
+                            goalCoordinate.UTM.Northing, declaration.DeclaredGoal.AltitudeGPS, declaration.DeclaredGoal.AltitudeBarometric);
                         writer.WriteLine(line);
                     }
                 }

@@ -101,8 +101,8 @@ namespace Competition
                 result = 0.0;
                 List<(int, Coordinate)> trackPointsInTier = new List<(int trackPointNumber, Coordinate coordinate)>();
 
-                DeclaredGoal targetGoal = ValidationHelper.GetValidGoal(track, GoalNumber, DeclarationValidationRules);
-                if (targetGoal == null)
+                Declaration targetDeclaration = ValidationHelper.GetValidDeclaration(track, GoalNumber, DeclarationValidationRules);
+                if (targetDeclaration == null)
                 {
                     //Debug.WriteLine("No valid goal found");
                     Log(LogSeverityType.Error, functionErrorMessage + $"No valid goal found for goal '#{GoalNumber}'");
@@ -126,7 +126,7 @@ namespace Competition
 
                 for (int index = 0; index < coordinates.Count; index++)
                 {
-                    double distanceToGoal = CoordinateHelpers.Calculate2DDistance(coordinates[index], targetGoal.GoalDeclared);//calculate distance to goal
+                    double distanceToGoal = CoordinateHelpers.Calculate2DDistance(coordinates[index], targetDeclaration.DeclaredGoal);//calculate distance to goal
                     if (distanceToGoal <= Radius)//save all trackpoints within the radius
                         trackPointsInTier.Add((track.TrackPoints.FindIndex(x=>x==coordinates[index]), coordinates[index]));
 

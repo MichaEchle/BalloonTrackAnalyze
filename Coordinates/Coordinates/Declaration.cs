@@ -4,7 +4,9 @@ using System.Text;
 
 namespace Coordinates
 {
-    public class DeclaredGoal
+    public class Declaration
+
+
     {
         /// <summary>
         /// The number of the goal
@@ -14,7 +16,7 @@ namespace Coordinates
         /// <summary>
         /// The target or goal which has been declared
         /// </summary>
-        public Coordinate GoalDeclared { get; private set; }
+        public Coordinate DeclaredGoal { get; private set; }
 
         /// <summary>
         /// The position at which the goal has been declared
@@ -25,12 +27,12 @@ namespace Coordinates
         /// Creates a gaol
         /// </summary>
         /// <param name="goalNumber">The number of the goal</param>
-        /// <param name="goalDeclared">The target or goal which has been declared</param>
+        /// <param name="declaredGoal">The target or goal which has been declared</param>
         /// <param name="positionAtDeclaration">The position at which the goal has been declared</param>
-        public DeclaredGoal(int goalNumber,Coordinate goalDeclared, Coordinate positionAtDeclaration)
+        public Declaration(int goalNumber,Coordinate declaredGoal, Coordinate positionAtDeclaration)
         {
             GoalNumber = goalNumber;
-            GoalDeclared = goalDeclared;
+            DeclaredGoal = declaredGoal;
             PositionAtDeclaration = positionAtDeclaration;
         }
 

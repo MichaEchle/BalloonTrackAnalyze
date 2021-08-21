@@ -281,14 +281,15 @@ namespace Coordinates.Parsers
                 foreach (string goalDeclarationLine in goalDeclarationLines)
                 {
 
-                    DeclaredGoal declaredGoal;
-                    if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, referenceCoordinate, out declaredGoal))
+                    Declaration declaration;
+                    if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, referenceCoordinate, out declaration))
                     {
                         //Debug.WriteLine(functionErrorMessage + "Failed to parse goal declaration");
                         Log(LogSeverityType.Error, functionErrorMessage + "Failed to parse goal declaration");
                         return false;
                     }
-                    track.DeclaredGoals.Add(declaredGoal);
+                    if (declaration != null)
+                        track.Declarations.Add(declaration);
                 }
 
                 Pilot pilot = new Pilot(pilotNumber, pilotIdentifier);
@@ -534,15 +535,13 @@ namespace Coordinates.Parsers
         /// <param name="line">the line in the file</param>
         /// <param name="date">the date form the header</param>
         /// <param name="declaredAltitudeIsInFeet">true: declared height is in feet; false: declared height is in meter</param>
-        /// <param name="northingDigits">expected number of digits for goal northing</param>
-        /// <param name="eastingDigits">expected number of digits for goal easting</param>
         /// <param name="referenceCoordinate">a reference coordinate to fill up the missing info from utm goal declaration. If the reference is null, the position of declaration will be used instead</param>
-        /// <param name="declaredGoal">output parameter. the declared goal</param>
+        /// <param name="declaration">output parameter. the declaration</param>
         /// <returns>true:success; false:error</returns>
-        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, Coordinate referenceCoordinate, out DeclaredGoal declaredGoal)
+        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, Coordinate referenceCoordinate, out Declaration declaration)
         {
             string functionErrorMessage = $"Failed to parse goal declaration:";
-            declaredGoal = null;
+            declaration = null;
 
             DateTime timeStamp;
             if (!ParseTimeStamp(line, date, out timeStamp))
@@ -613,113 +612,121 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse GPS altitude at declaration position in '{line}'");
                 return false;
             }
-            string declaration = line[43..^0];
-            string[] parts = declaration.Split(',');
-            string[] locations = parts[0].Split('/');
-            int eastingDigits = -1;
-            int eastingUTM = -1;
-            int northingDigits = -1;
-            int northingUTM = -1;
-            if (locations.Length == 2)
+            string declarationText = line[43..^0];
+            if (declarationText.Length > 2)
             {
-                if (!string.IsNullOrWhiteSpace(locations[0]))
-                {
-                    eastingDigits = locations[0].Length;
-                    if (!int.TryParse(locations[0], out eastingUTM))
-                    {
-                        Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse easting of declared goal in '{declaration}'");
-                        return false;
-                    }
-                }
-                else
-                {
-                    Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse easting of declared goal in '{declaration}'");
-                    return false;
-                }
-                if (!string.IsNullOrWhiteSpace(locations[1]))
-                {
-                    northingDigits = locations[1].Length;
-                    if (!int.TryParse(locations[1], out northingUTM))
-                    {
-                        Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse northing of declared goal in '{declaration}'");
-                        return false;
-                    }
-                }
-                else
-                {
-                    Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse northing of declared goal in '{declaration}'");
-                    return false;
-                }
 
-            }
-            else
-            {
-                Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse easting and northing of declared goal in '{declaration}'");
-                return false;
-            }
-
-
-            double declaredAltitudeInMeter;
-            if (parts.Length == 2)
-            {
-                if (!string.IsNullOrWhiteSpace(parts[1]))
+                string[] parts = declarationText.Split(',');
+                string[] locations = parts[0].Split('/');
+                int eastingDigits = -1;
+                int eastingUTM = -1;
+                int northingDigits = -1;
+                int northingUTM = -1;
+                if (locations.Length == 2)
                 {
-                    string altitudePart = parts[1].Replace("ft", "").Replace("m", "");
-                    int declaredAltitude;
-                    if (!int.TryParse(altitudePart, out declaredAltitude))
+                    if (!string.IsNullOrWhiteSpace(locations[0]))
                     {
-                        //Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration altitude portion '{parts[1]}' in '{line}'");
-                        Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration altitude portion '{altitudePart}' in '{line}'");
-                        return false;
+                        eastingDigits = locations[0].Length;
+                        if (!int.TryParse(locations[0], out eastingUTM))
+                        {
+                            Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse easting of declared goal in '{declarationText}'");
+                            return false;
+                        }
                     }
-                    if (declaredAltitudeIsInFeet)
-                        declaredAltitudeInMeter = CoordinateHelpers.ConvertToMeter((double)declaredAltitude);
                     else
-                        declaredAltitudeInMeter = (double)declaredAltitude;
+                    {
+                        Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse easting of declared goal in '{declarationText}'");
+                        return false;
+                    }
+                    if (!string.IsNullOrWhiteSpace(locations[1]))
+                    {
+                        northingDigits = locations[1].Length;
+                        if (!int.TryParse(locations[1], out northingUTM))
+                        {
+                            Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse northing of declared goal in '{declarationText}'");
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse northing of declared goal in '{declarationText}'");
+                        return false;
+                    }
+
+                }
+                else
+                {
+                    Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse easting and northing of declared goal in '{declarationText}'");
+                    return false;
+                }
+
+
+                double declaredAltitudeInMeter;
+                if (parts.Length == 2)
+                {
+                    if (!string.IsNullOrWhiteSpace(parts[1]))
+                    {
+                        string altitudePart = parts[1].Replace("ft", "").Replace("m", "");
+                        int declaredAltitude;
+                        if (!int.TryParse(altitudePart, out declaredAltitude))
+                        {
+                            //Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration altitude portion '{parts[1]}' in '{line}'");
+                            Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration altitude portion '{altitudePart}' in '{line}'");
+                            return false;
+                        }
+                        if (declaredAltitudeIsInFeet)
+                            declaredAltitudeInMeter = CoordinateHelpers.ConvertToMeter((double)declaredAltitude);
+                        else
+                            declaredAltitudeInMeter = (double)declaredAltitude;
+                    }
+                    else
+                    {
+                        declaredAltitudeInMeter = 0.0;
+                        Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
+                    }
                 }
                 else
                 {
                     declaredAltitudeInMeter = 0.0;
                     Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
                 }
+
+                CoordinateSharp.Coordinate coordinateSharp;
+                if (referenceCoordinate == null)
+                    coordinateSharp = new CoordinateSharp.Coordinate(declarationLatitude, declarationLongitude);
+                else
+                    coordinateSharp = new CoordinateSharp.Coordinate(referenceCoordinate.Latitude, referenceCoordinate.Longitude);
+
+                string utmGridZone = coordinateSharp.UTM.LatZone + coordinateSharp.UTM.LongZone;
+                if (northingDigits < 6)
+                {
+                    northingUTM *= 10;
+                    northingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits + 1)) * Math.Pow(10, northingDigits + 1));
+                }
+                if (northingDigits == 6)
+                {
+                    northingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) * Math.Pow(10, northingDigits));
+                }
+
+                if (eastingDigits != 6)
+                {
+                    eastingUTM *= 10;
+                    eastingUTM += (int)(Math.Floor(coordinateSharp.UTM.Easting / Math.Pow(10, eastingDigits + 1)) * Math.Pow(10, eastingDigits + 1));
+                }
+
+                CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator(utmGridZone, eastingUTM, northingUTM);
+
+                CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
+
+                Coordinate declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
+                Coordinate positionAtDeclaration = new Coordinate(declarationLatitude, declarationLongitude, declarationPositionAltitudeGPS, declarationPositonAltitudeBarometric, timeStamp);
+
+                declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration);
             }
             else
             {
-                declaredAltitudeInMeter = 0.0;
-                Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
+                Log(LogSeverityType.Warning, "Declaration contained no coordinates and therefore has not been added to the track");
             }
-
-            CoordinateSharp.Coordinate coordinateSharp;
-            if (referenceCoordinate == null)
-                coordinateSharp = new CoordinateSharp.Coordinate(declarationLatitude, declarationLongitude);
-            else
-                coordinateSharp = new CoordinateSharp.Coordinate(referenceCoordinate.Latitude, referenceCoordinate.Longitude);
-
-            string utmGridZone = coordinateSharp.UTM.LatZone + coordinateSharp.UTM.LongZone;
-            if (northingDigits < 6)
-            {
-                northingUTM *= 10;
-                northingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits + 1)) * Math.Pow(10, northingDigits + 1));
-            }
-            if (northingDigits == 6)
-            {
-                northingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) * Math.Pow(10, northingDigits));
-            }
-
-            if (eastingDigits != 6)
-            {
-                eastingUTM *= 10;
-                eastingUTM += (int)(Math.Floor(coordinateSharp.UTM.Easting / Math.Pow(10, eastingDigits + 1)) * Math.Pow(10, eastingDigits + 1));
-            }
-
-            CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator(utmGridZone, eastingUTM, northingUTM);
-
-            CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
-
-            Coordinate goalDeclared = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
-            Coordinate positionAtDeclaration = new Coordinate(declarationLatitude, declarationLongitude, declarationPositionAltitudeGPS, declarationPositonAltitudeBarometric, timeStamp);
-
-            declaredGoal = new DeclaredGoal(goalNumber, goalDeclared, positionAtDeclaration);
 
             return true;
         }

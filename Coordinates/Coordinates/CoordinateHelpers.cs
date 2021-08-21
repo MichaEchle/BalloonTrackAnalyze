@@ -317,12 +317,27 @@ namespace Coordinates
 
         }
 
+        /// <summary>
+        /// Convert a position from UTM format to lat/long format
+        /// <para>Please note that altitude is set to double.NaN and timestamp to DateTime.MinValue</para>
+        /// </summary>
+        /// <param name="utmZone">the UTM zone e.g. "32U"</param>
+        /// <param name="easting">the easting portion e.g. 630084</param>
+        /// <param name="northing">the northing portion e.g. 4833438</param>
+        /// <returns>a Coordinate object</returns>
         public static Coordinate ConvertUTMToLatitudeLongitudeCoordinate(string utmZone, int easting, int northing)
         {
             (double latitude, double longitude) latitudeLongitude = ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
            return new Coordinate(latitudeLongitude.latitude, latitudeLongitude.longitude, double.NaN, double.NaN, DateTime.MinValue);
         }
 
+        /// <summary>
+        /// Convert a position from UTM format to lat/long format
+        /// </summary>
+        /// <param name="utmZone">the UTM zone e.g. "32U"</param>
+        /// <param name="easting">the easting portion e.g. 630084</param>
+        /// <param name="northing">the northing portion e.g. 4833438</param>
+        /// <returns>the latitude and longitude pair</returns>
         public static (double latitude, double longitude) ConvertUTMToLatitudeLongitude(string utmZone, int easting, int northing)
         {
             CoordinateSharp.UniversalTransverseMercator utmCoordindate = new CoordinateSharp.UniversalTransverseMercator(utmZone, easting, northing);
@@ -330,15 +345,26 @@ namespace Coordinates
             return (coordinateSharp.Latitude.DecimalDegree, coordinateSharp.Longitude.DecimalDegree);
         }
 
+        /// <summary>
+        /// Convert a Coordinate objects latitude and longitude to UTM format
+        /// </summary>
+        /// <param name="coordinate">the coordinate</param>
+        /// <returns>UTM zone, easting and northing rounded to the next integer</returns>
         public static (string utmZone, int easting, int northing) ConvertLatitudeLongitudeCoordinateToUTM(Coordinate coordinate)
         {
             return ConvertLatitudeLongitudeToUTM(coordinate.Latitude, coordinate.Longitude);
         }
 
+        /// <summary>
+        /// Converts latitude and longitude to UTM format
+        /// </summary>
+        /// <param name="latitude">the latitude in decimal degrees</param>
+        /// <param name="longitude">the longitude in decimal degrees</param>
+        /// <returns>UTM zone,easting and northing rounded to the next integer</returns>
         public static (string utmZone, int easting, int northing) ConvertLatitudeLongitudeToUTM(double latitude, double longitude)
         {
             CoordinateSharp.Coordinate coordinateSharp = new CoordinateSharp.Coordinate(latitude, longitude);
-            return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", (int)coordinateSharp.UTM.Easting, (int)coordinateSharp.UTM.Northing);
+            return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", (int)(Math.Round(coordinateSharp.UTM.Easting,0,MidpointRounding.AwayFromZero)), (int)(Math.Round(coordinateSharp.UTM.Northing,0,MidpointRounding.AwayFromZero)));
         }
     }
 }

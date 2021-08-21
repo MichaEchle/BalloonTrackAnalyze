@@ -33,10 +33,10 @@ namespace Competition
         /// <para>needs preprocessing of the tracks</para>
         /// <see cref="GoalNumbers"/>
         /// </summary>
-        public List<DeclaredGoal> DeclaredGoals
+        public List<Declaration> Declarations
         {
             get; set;
-        } = new List<DeclaredGoal>();
+        } = new List<Declaration>();
 
         /// <summary>
         /// List of the goals numbers to be considered and fed into after preprocessing (the last valid goal with that number will be used)
@@ -55,16 +55,16 @@ namespace Competition
         /// Check if the declared goal is conform to the distance rules to other goals
         /// <para>will not check against itself</para>
         /// </summary>
-        /// <param name="declaredGoal">the declared goal to be checked</param>
+        /// <param name="declaration">the declared goal to be checked</param>
         /// <returns>true: is conform; false: is not conform</returns>
-        public bool CheckConformance(DeclaredGoal declaredGoal)
+        public bool IsComplaintToRule(Declaration declaration)
         {
             bool isConform = true;
-            foreach (DeclaredGoal otherGoal in DeclaredGoals)
+            foreach (Declaration otherGoal in Declarations)
             {
-                if (declaredGoal.Equals(otherGoal))
+                if (declaration.Equals(otherGoal))
                     continue;
-                double distanceBetweenPositionOfDeclarationAndDeclaredGoal = CoordinateHelpers.Calculate2DDistance(declaredGoal.GoalDeclared, otherGoal.GoalDeclared);
+                double distanceBetweenPositionOfDeclarationAndDeclaredGoal = CoordinateHelpers.Calculate2DDistance(declaration.DeclaredGoal, otherGoal.DeclaredGoal);
 
                 if (!double.IsNaN(MinimumDistance))
                     if (distanceBetweenPositionOfDeclarationAndDeclaredGoal < MinimumDistance)
@@ -87,7 +87,7 @@ namespace Competition
         /// </summary>
         /// <param name="minimumDistance">Minimum distance between declaration position and declared goal in meter (optional; use double.NaN to omit)</param>
         /// <param name="maximumDistance">Maximum distance between declaration position and declared goal in meter (optional; use double.NaN to omit)</param>
-        /// <param name="declaredGoals">List of the goals numbers to be considered (the last valid goal with that number will be used) [will not check against itself] (optional; use empty list to consider the last valid goal of each goal number). The actuals declaration objects will be fed in after track-preprocessing</param>
+        /// <param name="goalNumbers">List of the goals numbers to be considered (the last valid goal with that number will be used) [will not check against itself] (optional; use empty list to consider the last valid goal of each goal number). The actuals declaration objects will be fed in after track-preprocessing</param>
         public void SetupRule(double minimumDistance, double maximumDistance, List<int> goalNumbers)
         {
             MinimumDistance = minimumDistance;
