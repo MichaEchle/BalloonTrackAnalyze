@@ -475,6 +475,7 @@ namespace BLC2021
                         {
                             Log(LogSeverityType.Info, $"Calculated result of '{Math.Round(result_Task1,3,MidpointRounding.AwayFromZero)}m' at Task 1 for Pilot No {track.Pilot.PilotNumber}");
                         }
+                        task1.Goals.Clear();
                         double result_Task2;
                         if (!task2.CalculateResults(track, true, out result_Task2))
                         {

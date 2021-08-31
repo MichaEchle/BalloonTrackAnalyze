@@ -422,7 +422,7 @@ namespace Coordinates.Parsers
             if (!double.TryParse(line[30..35], out altitudeGPS))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse barometric altitude '{line[30..35]}' in '{line}'");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse barometric altitude '{line[30..35]}' in '{line}'");
+                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse GPS altitude '{line[30..35]}' in '{line}'");
                 return false;
             }
             coordinate = new Coordinate(latitude, longitude, altitudeGPS, altitudeBarometric, timeStamp);

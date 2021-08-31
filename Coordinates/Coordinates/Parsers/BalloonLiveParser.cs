@@ -444,7 +444,7 @@ namespace Coordinates.Parsers
 
         /// <summary>
         /// Parses a line containing a track point (BttttttnnnnnnnNeeeeeeeeEAbbbbbgggggaaassddd0000)
-        /// <para>where t:timestamp n:northing e:easting b:barometric altitude g:gps altitude</para>
+        /// <para>where t:timestamp n:northing e:easting b:barometric altitude [m] g:GPS altitude [m]</para>
         /// <para>a:accuracy s:number of satellites d: engine noise level and rpm 0:carrier return and line feed</para>
         /// <para> e.g. B1058394839658N00858176EA0000000537000225940000</para>
         /// </summary>
@@ -517,7 +517,7 @@ namespace Coordinates.Parsers
             if (!double.TryParse(line[30..35], out altitudeGPS))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse barometric altitude '{line[30..35]}' in '{line}'");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse barometric altitude '{line[30..35]}' in '{line}'");
+                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse GPS altitude '{line[30..35]}' in '{line}'");
                 return false;
             }
             coordinate = new Coordinate(latitude, longitude, altitudeGPS, altitudeBarometric, timeStamp);

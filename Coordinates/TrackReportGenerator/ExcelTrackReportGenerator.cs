@@ -88,20 +88,83 @@ namespace TrackReportGenerator
                     wsTrackpoints.Cells[3, 2].Value = track.AdditionalPropertiesFromIGCFile["SensBoxSerialNumber"];
                 }
 
-                wsTrackpoints.Cells[5, 1].Value = "Timestamp";
-                wsTrackpoints.Cells[5, 2].Value = "Long";
-                wsTrackpoints.Cells[5, 3].Value = "Lat";
-                wsTrackpoints.Cells[5, 4].Value = "Long [°]";
-                wsTrackpoints.Cells[5, 5].Value = "Lat [°]";
-                wsTrackpoints.Cells[5, 6].Value = "UTM Zone";
-                wsTrackpoints.Cells[5, 7].Value = "East";
-                wsTrackpoints.Cells[5, 8].Value = "North";
-                wsTrackpoints.Cells[5, 9].Value = "Alt [m]";
-                wsTrackpoints.Cells[5, 10].Value = "Alt [ft]";
-                wsTrackpoints.Cells["A5:J5"].Style.Font.Bold = true;
+                Coordinate launchPoint;
+                Coordinate landingPoint;
+                bool isDangerousFlyingDetected;
+                TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launchPoint, out landingPoint, out isDangerousFlyingDetected);
+
+                wsTrackpoints.Cells[1, 5].Value = "Timestamp";
+                wsTrackpoints.Cells[1, 6].Value = "Long";
+                wsTrackpoints.Cells[1, 7].Value = "Lat";
+                wsTrackpoints.Cells[1, 8].Value = "Long [°]";
+                wsTrackpoints.Cells[1, 9].Value = "Lat [°]";
+                wsTrackpoints.Cells[1, 10].Value = "UTM Zone";
+                wsTrackpoints.Cells[1, 11].Value = "East";
+                wsTrackpoints.Cells[1, 12].Value = "North";
+                wsTrackpoints.Cells[1, 13].Value = "Alt [m]";
+                wsTrackpoints.Cells[1, 14].Value = "Alt [ft]";
+                wsTrackpoints.Cells["E1:N1"].Style.Font.Bold = true;
+
+                (int degrees, int degreeMinutes, int degreeSeconds, int degreeTenthSeconds) degreeMinuteFormat;
+                string longitudeBeautified;
+                string latitudeBeautified;
+                CoordinateSharp.Coordinate coordinateSharp;
+
+                wsTrackpoints.Cells[2, 4].Value = "Launch Point";
+
+                wsTrackpoints.Cells[2, 5].Style.Numberformat.Format = "dd-MMM-yyyy HH:mm:ss";
+                wsTrackpoints.Cells[2, 5].Value = launchPoint.TimeStamp;
+                wsTrackpoints.Cells[2, 6].Value = launchPoint.Longitude;
+                wsTrackpoints.Cells[2, 7].Value = launchPoint.Latitude;
+                degreeMinuteFormat = CoordinateHelpers.ConvertToDegreeMinutes(launchPoint.Longitude);
+                longitudeBeautified = $"{(launchPoint.Longitude < 0.0 ? "W" : "E")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
+                wsTrackpoints.Cells[2, 8].Value = longitudeBeautified;
+                degreeMinuteFormat = CoordinateHelpers.ConvertToDegreeMinutes(launchPoint.Latitude);
+                latitudeBeautified = $"{(launchPoint.Latitude < 0.0 ? "S" : "N")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
+                wsTrackpoints.Cells[2, 9].Value = latitudeBeautified;
+                coordinateSharp = new CoordinateSharp.Coordinate(launchPoint.Latitude, launchPoint.Longitude);
+                wsTrackpoints.Cells[2, 10].Value = coordinateSharp.UTM.LongZone + coordinateSharp.UTM.LatZone;
+                wsTrackpoints.Cells[2, 11].Value = Math.Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero);
+                wsTrackpoints.Cells[2, 12].Value = Math.Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero);
+                wsTrackpoints.Cells[2, 13].Value = launchPoint.AltitudeGPS;
+                wsTrackpoints.Cells[2, 14].Value = Math.Round(CoordinateHelpers.ConvertToFeet(launchPoint.AltitudeGPS), 0, MidpointRounding.AwayFromZero);
 
 
-                int index = 6;
+                wsTrackpoints.Cells[3, 4].Value = "Landing Point";
+                wsTrackpoints.Cells[3, 5].Style.Numberformat.Format = "dd-MMM-yyyy HH:mm:ss";
+                wsTrackpoints.Cells[3, 5].Value = landingPoint.TimeStamp;
+                wsTrackpoints.Cells[3, 6].Value = landingPoint.Longitude;
+                wsTrackpoints.Cells[3, 7].Value = landingPoint.Latitude;
+                degreeMinuteFormat = CoordinateHelpers.ConvertToDegreeMinutes(landingPoint.Longitude);
+                longitudeBeautified = $"{(landingPoint.Longitude < 0.0 ? "W" : "E")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
+                wsTrackpoints.Cells[3, 8].Value = longitudeBeautified;
+                degreeMinuteFormat= CoordinateHelpers.ConvertToDegreeMinutes(landingPoint.Latitude);
+                latitudeBeautified = $"{(landingPoint.Latitude < 0.0 ? "S" : "N")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
+                wsTrackpoints.Cells[3, 9].Value = latitudeBeautified;
+                coordinateSharp = new CoordinateSharp.Coordinate(landingPoint.Latitude, landingPoint.Longitude);
+                wsTrackpoints.Cells[3, 10].Value = coordinateSharp.UTM.LongZone + coordinateSharp.UTM.LatZone;
+                wsTrackpoints.Cells[3, 11].Value = Math.Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero);
+                wsTrackpoints.Cells[3, 12].Value = Math.Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero);
+                wsTrackpoints.Cells[3, 13].Value = landingPoint.AltitudeGPS;
+                wsTrackpoints.Cells[3, 14].Value = Math.Round(CoordinateHelpers.ConvertToFeet(landingPoint.AltitudeGPS), 0, MidpointRounding.AwayFromZero);
+
+                wsTrackpoints.Cells[4, 4].Value = "Dangerous Flying";
+                wsTrackpoints.Cells[4, 5].Value = $"{(isDangerousFlyingDetected ? "yes" : "no")}";
+
+                wsTrackpoints.Cells[6, 1].Value = "Timestamp";
+                wsTrackpoints.Cells[6, 2].Value = "Long";
+                wsTrackpoints.Cells[6, 3].Value = "Lat";
+                wsTrackpoints.Cells[6, 4].Value = "Long [°]";
+                wsTrackpoints.Cells[6, 5].Value = "Lat [°]";
+                wsTrackpoints.Cells[6, 6].Value = "UTM Zone";
+                wsTrackpoints.Cells[6, 7].Value = "East";
+                wsTrackpoints.Cells[6, 8].Value = "North";
+                wsTrackpoints.Cells[6, 9].Value = "Alt [m]";
+                wsTrackpoints.Cells[6, 10].Value = "Alt [ft]";
+                wsTrackpoints.Cells["A6:J6"].Style.Font.Bold = true;
+
+
+                int index = 7;
                 List<Coordinate> coordinates = track.TrackPoints.OrderBy(x => x.TimeStamp).ToList();
 
                 foreach (Coordinate coordinate in coordinates)
@@ -112,13 +175,13 @@ namespace TrackReportGenerator
                     wsTrackpoints.Cells[index, 1].Value = coordinate.TimeStamp;
                     wsTrackpoints.Cells[index, 2].Value = coordinate.Longitude;
                     wsTrackpoints.Cells[index, 3].Value = coordinate.Latitude;
-                    (int degrees, int degreeMinutes, int degreeSeconds, int degreeTenthSeconds) = CoordinateHelpers.ConvertToDegreeMinutes(coordinate.Longitude);
-                    string longitudeBeautified = $"{(coordinate.Longitude < 0.0 ? "W" : "E")} {CoordinateHelpers.BeautifyDegreeMinutes(degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds)}";
+                    degreeMinuteFormat = CoordinateHelpers.ConvertToDegreeMinutes(coordinate.Longitude);
+                    longitudeBeautified = $"{(coordinate.Longitude < 0.0 ? "W" : "E")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
                     wsTrackpoints.Cells[index, 4].Value = longitudeBeautified;
-                    (degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds) = CoordinateHelpers.ConvertToDegreeMinutes(coordinate.Latitude);
-                    string latitudeBeautified = $"{(coordinate.Latitude < 0.0 ? "S" : "N")} {CoordinateHelpers.BeautifyDegreeMinutes(degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds)}";
+                    degreeMinuteFormat= CoordinateHelpers.ConvertToDegreeMinutes(coordinate.Latitude);
+                    latitudeBeautified = $"{(coordinate.Latitude < 0.0 ? "S" : "N")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
                     wsTrackpoints.Cells[index, 5].Value = latitudeBeautified;
-                    CoordinateSharp.Coordinate coordinateSharp = new CoordinateSharp.Coordinate(coordinate.Latitude, coordinate.Longitude);
+                    coordinateSharp = new CoordinateSharp.Coordinate(coordinate.Latitude, coordinate.Longitude);
                     wsTrackpoints.Cells[index, 6].Value = coordinateSharp.UTM.LongZone + coordinateSharp.UTM.LatZone;
                     wsTrackpoints.Cells[index, 7].Value = Math.Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero);
                     wsTrackpoints.Cells[index, 8].Value = Math.Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero);
@@ -132,7 +195,7 @@ namespace TrackReportGenerator
                     index++;
                 }
 
-                ExcelRange range = wsTrackpoints.Cells[4, 1, index - 1, 10];
+                ExcelRange range = wsTrackpoints.Cells[6, 1, index - 1, 10];
                 ExcelTable table = wsTrackpoints.Tables.Add(range, "Trackpoints");
                 table.TableStyle = TableStyles.Light16;
                 wsTrackpoints.Cells.Style.Font.Size = 10;

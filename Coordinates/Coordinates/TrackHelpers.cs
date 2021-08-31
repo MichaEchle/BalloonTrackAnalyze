@@ -137,5 +137,102 @@ namespace Coordinates
             }
             return distance3DBetweenMarkerAndGoals;
         }
+
+        public static void EstimateLaunchAndLandingTime(Track track, bool useGPSAltitude, out Coordinate launchPoint, out Coordinate landingPoint, out bool isDangerousFlyingDetected)
+        {
+            if (track is null)
+            {
+                throw new ArgumentNullException(nameof(track));
+            }
+
+            launchPoint = null;
+            landingPoint = null;
+            isDangerousFlyingDetected = true;
+            List<double> altitudesFiltered;
+
+            List<Coordinate> trackPointsClean = new List<Coordinate>();
+            for (int index = 0; index < track.TrackPoints.Count - 1; index++)
+            {
+                if (Math.Abs(track.TrackPoints[index].Latitude) <= double.Epsilon || Math.Abs(track.TrackPoints[index].Longitude) <= double.Epsilon)
+                    continue;
+                if (Math.Abs(track.TrackPoints[index + 1].Latitude) <= double.Epsilon || Math.Abs(track.TrackPoints[index + 1].Longitude) <= double.Epsilon)
+                    continue;
+                if (useGPSAltitude)
+                {
+                    if (Math.Abs(track.TrackPoints[index + 1].AltitudeGPS - track.TrackPoints[index].AltitudeGPS) > 25.0)
+                        continue;
+                }
+                else
+                {
+                    if (Math.Abs(track.TrackPoints[index + 1].AltitudeBarometric - track.TrackPoints[index].AltitudeBarometric) > 25.0)
+                        continue;
+                }
+                trackPointsClean.Add(track.TrackPoints[index]);
+            }
+
+            if (useGPSAltitude)
+                altitudesFiltered = trackPointsClean.Select(x => x.AltitudeGPS).ToList();
+            else
+                altitudesFiltered = trackPointsClean.Select(x => x.AltitudeBarometric).ToList();
+            int filterLength = 5;
+            int halfFilterLength = filterLength / 2;//integer division is inteded
+            for (int index = 0; index < altitudesFiltered.Count; index++)//moving average
+            {
+
+                if (index - halfFilterLength < 0)
+                    continue;
+                if (index + halfFilterLength > altitudesFiltered.Count - 1)
+                    continue;
+                int filterStart = index - halfFilterLength;
+                altitudesFiltered[index] = Math.Round(altitudesFiltered.GetRange(filterStart, filterLength).Average(), 0, MidpointRounding.AwayFromZero);
+            }
+            List<(int index, double altitudeDifference)> altitudeFilteredDerivative = new List<(int index, double altitudeDifference)>();
+            List<double> altitudeDerivative = new List<double>();
+            for (int index = 0; index < trackPointsClean.Count - 1; index++)
+            {
+                if (useGPSAltitude)
+                    altitudeDerivative.Add((trackPointsClean[index + 1].AltitudeGPS - trackPointsClean[index].AltitudeGPS) / (trackPointsClean[index + 1].TimeStamp.Subtract(trackPointsClean[index].TimeStamp).TotalSeconds));
+                else
+                    altitudeDerivative.Add((trackPointsClean[index + 1].AltitudeBarometric - trackPointsClean[index].AltitudeBarometric) / (trackPointsClean[index + 1].TimeStamp.Subtract(trackPointsClean[index].TimeStamp).TotalSeconds));
+
+                altitudeFilteredDerivative.Add((index, altitudesFiltered[index + 1] - altitudesFiltered[index]));
+            }
+            isDangerousFlyingDetected = altitudeDerivative.Any(x => Math.Abs(x) > 10.0);
+
+            int firstPeak = altitudeFilteredDerivative.FindIndex(x => x.altitudeDifference > 2.0);
+            int counter = 0;
+            int launchPointIndex = 0;
+            for (int index = firstPeak; index >= 0; index--)
+            {
+                if (altitudeFilteredDerivative[index].altitudeDifference <= 0)
+                    counter++;
+                else
+                    counter = 0;
+                if (counter == 10)
+                {
+                    launchPointIndex = altitudeFilteredDerivative[index + 10].index;
+                    break;
+                }
+            }
+            //int launchPointIndex = altitudeDerivative.Take( firstPeak).Last( x => x.altitudeDifference == 0).index;
+            launchPoint = trackPointsClean[launchPointIndex];
+            int lastPeak = altitudeFilteredDerivative.FindLastIndex(x => x.altitudeDifference < -2.0);
+            counter = 0;
+            int landingPointIndex = altitudeFilteredDerivative[altitudeDerivative.Count - 1].index;
+            for (int index = lastPeak; index < altitudeFilteredDerivative.Count; index++)
+            {
+                if (altitudeFilteredDerivative[index].altitudeDifference >= 0)
+                    counter++;
+                else
+                    counter = 0;
+                if (counter == 10)
+                {
+                    landingPointIndex = altitudeFilteredDerivative[index - 10].index;
+                    break;
+                }
+            }
+            //int landingPointIndex = altitudeDerivative.Skip(lastPeak).First( x => x.altitudeDifference == 0).index;
+            landingPoint = trackPointsClean[landingPointIndex];
+        }
     }
 }

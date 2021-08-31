@@ -1,31 +1,15 @@
-Donut (done)
-	Use the validations to find the goal for scoring (done)
-Implement tasks (done)
-	pie (done)
-	land run (done)
-	elbow (done)
-Create UI (done)
-	logging concept (done)
-	implement logging (done for now)
-	controls for tasks (done)
-	controls for validation rules (done)
-serialization (done)
-	enable import/export of task setups (JSON) (done)
-	create goals and marker file (csv) (done)
-	create results file (csv) (done)
-	import pilot names (done)
-Parser
-	create FAI logger parser (done) [changes with each firmware version/ ongoing adjustments may needed]
-Align folder structure
-	discuss proposal with Mike
-Special treatment
-	Allow tasks to be recalculated with different marker numbers
-	Allow tasks to be recalculated with different goal numbers
-Increase Robustness
-	When declared without height, log warning but use height of 0
-Bonus
-	create unit tests
-
-
-
-Add more validations if needed
+Describe areas
+	2D
+		Circles
+		Rectangle
+		Grid Lines
+		Polygons
+	3D
+		Cylinders
+		Spheres
+Check if point is inside or outside area
+Create PZ Checking
+	yellow PZ (around power cords, check if take off and landing are not is close approximate)
+Estimate Launch and Landing Position
+Creating Picking Tool to let user selected specific markers, declarations etc from all tracks and put into one file
+Calculate scores from results

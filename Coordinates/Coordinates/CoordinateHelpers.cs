@@ -175,6 +175,54 @@ namespace Coordinates
         }
 
         /// <summary>
+        /// Calculates the distance [m] between two coordinates using a separation altitude to switch between 2D and 3D distance calculation
+        /// <para>if the target coordinate is below the separation altitude, the 2D distance will be calculated</para>
+        /// <para>if the target coordinate is above the separation altitude, the 3D distance between the target coordinate at separation altitude and the coordinate will be calculated</para>
+        /// </summary>
+        /// <param name="targetCoordinate">the target coordinate, will be lifted to separation altitude if coordinate is above the separation altitude</param>
+        /// <param name="targetCoordinate">the coordinate for which to calculate the distance with respect to the separation altitude</param>
+        /// <param name="separationAltitude">the separation altitude in [m]</param>
+        /// <param name="useGPSAltitude">true: use GPS altitude; false: use barometric altitude</param>
+        /// <returns>the distance in [m]</returns>
+        public static double CalculateDistanceWithSeparationAltitude(Coordinate targetCoordinate, Coordinate coordinate, double separationAltitude, bool useGPSAltitude)
+        {
+            if (targetCoordinate is null)
+            {
+                throw new ArgumentNullException(nameof(targetCoordinate));
+            }
+
+            if (coordinate is null)
+            {
+                throw new ArgumentNullException(nameof(coordinate));
+            }
+
+            if (useGPSAltitude)
+            {
+                if (coordinate.AltitudeGPS > separationAltitude)
+                {
+                    Coordinate tempCoordinate = new Coordinate(targetCoordinate.Latitude, targetCoordinate.Longitude, separationAltitude, separationAltitude, targetCoordinate.TimeStamp);
+                    return Calculate3DDistance(tempCoordinate, coordinate, true);
+                }
+                else
+                {
+                    return Calculate2DDistance(targetCoordinate, coordinate);
+                }
+            }
+            else
+            {
+                if (coordinate.AltitudeBarometric > separationAltitude)
+                {
+                    Coordinate tempCoordinate = new Coordinate(targetCoordinate.Latitude, targetCoordinate.Longitude, separationAltitude, separationAltitude, targetCoordinate.TimeStamp);
+                    return Calculate3DDistance(tempCoordinate, coordinate, false);
+                }
+                else
+                {
+                    return Calculate2DDistance(targetCoordinate, coordinate);
+                }
+            }
+        }
+
+        /// <summary>
         /// Calculate the interior angle at <paramref name="coordinateB"/> where the route is defined from <paramref name="coordinateA"/> to <paramref name="coordinateB"/> and <paramref name="coordinateB"/> to <paramref name="coordinateC"/>  
         /// </summary>
         /// <param name="coordinateA">first coordinate</param>
