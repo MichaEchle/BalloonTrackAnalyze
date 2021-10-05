@@ -68,14 +68,20 @@ namespace TestProgramm
 
             //Stopwatch stopwatch = new Stopwatch();
             //stopwatch.Start();
-            //string trackFileName = @"C:\Users\Micha\Source\repos\BalloonTrackAnalyze\TestTrack\5AD_f003_p002_l0.igc";
-            string trackFileName = @"E:\BLC2021\SynologyDrive\tracks\Flight 1\work\E[BLC21]F[1]P[20]-6DD95BC6-020.igc";
+            string trackFileName = @"C:\Users\Micha\SynologyDrive\tracks\Flight 3\work\E[BLC21]F[3]P[30]-50695E05-030.igc";
+            //string trackFileName = @"C:\Users\Micha\SynologyDrive\tracks\Flight 3\work\E[BLC21]F[3]P[19]-80BE388D-003-2192655248.igc";
             Track track;
             if (!BalloonLiveParser.ParseFile(trackFileName, out track))
             {
                 Console.WriteLine("Error parsing logger track");
             }
-            
+
+            LandRunTask landRunTask = new LandRunTask();
+            landRunTask.SetupLandRun(6, 1, 2, 3, null);
+            landRunTask.CalculateResults(track, true, out double result);
+
+            Console.WriteLine($"Pilot 19 Task6 result: {Math.Round(result/1.0e6,2,MidpointRounding.AwayFromZero)}");
+
             //string reportFileName = Path.Combine(Path.GetDirectoryName(trackFileName), Path.GetFileNameWithoutExtension(trackFileName) + ".xlsx");
 
             ////TrackReportGenerator.GenerateTrackReport(reportFileName, track,true);
@@ -93,11 +99,11 @@ namespace TestProgramm
             //    writer.Write(donut);
             //}
 
-            CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator("32U", 567000, 5489000);
-            CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
+            //CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator("32U", 567000, 5489000);
+            //CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
 
-            Console.WriteLine(coordinate.Latitude);
-            Console.WriteLine(ToProperText(coordinate.Latitude));
+            //Console.WriteLine(coordinate.Latitude);
+            //Console.WriteLine(ToProperText(coordinate.Latitude));
 
             //int[] array =new int[6]{ 1,2,3,4,5,6};
 

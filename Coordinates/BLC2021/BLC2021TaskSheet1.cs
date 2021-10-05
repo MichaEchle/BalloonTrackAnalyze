@@ -313,7 +313,7 @@ namespace BLC2021
                 UseWaitCursor = true;
 
                 HesitationWaltzTask task1 = new HesitationWaltzTask();
-                task1.SetupHWZ(1, CalculateGoals, Task1_MarkerNumber, true, null,null);
+                task1.SetupHWZ(1, CalculateGoals, Task1_MarkerNumber, true, null);
                 LandRunTask task2 = new LandRunTask();
                 task2.SetupLandRun(2, Task2_FirstMarkerNumber, Task2_SecondMarkerNumber, Task2_ThirdMarkerNumber, null);
 
@@ -722,7 +722,7 @@ namespace BLC2021
             FiddleTrack.Declarations.Add(fiddleDeclaration);
 
             HesitationWaltzTask task1 = new HesitationWaltzTask();
-            task1.SetupHWZ(1, CalculateGoals, Task1_MarkerNumber, true, null,null);
+            task1.SetupHWZ(1, CalculateGoals, Task1_MarkerNumber, true, null);
 
             double result;
             if (!task1.CalculateResults(FiddleTrack, true, out result))

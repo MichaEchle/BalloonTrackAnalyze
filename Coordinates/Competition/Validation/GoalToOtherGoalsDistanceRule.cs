@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using LoggerComponent;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -64,17 +65,23 @@ namespace Competition
             {
                 if (declaration.Equals(otherGoal))
                     continue;
-                double distanceBetweenPositionOfDeclarationAndDeclaredGoal = CoordinateHelpers.Calculate2DDistance(declaration.DeclaredGoal, otherGoal.DeclaredGoal);
+                double distanceBetweenGoals = CoordinateHelpers.Calculate2DDistance(declaration.DeclaredGoal, otherGoal.DeclaredGoal);
 
                 if (!double.IsNaN(MinimumDistance))
-                    if (distanceBetweenPositionOfDeclarationAndDeclaredGoal < MinimumDistance)
+                    if (distanceBetweenGoals < MinimumDistance)
                     {
+                        double absoluteInfringement = MinimumDistance - distanceBetweenGoals;
+                        double relativeInfringement = absoluteInfringement / MinimumDistance;
+                        Log(LogSeverityType.Warning, $"Declaration {declaration.GoalNumber} is not conform: {MinimumDistance:0.#}m - {distanceBetweenGoals:0.#}m = {absoluteInfringement:0.#}m ({relativeInfringement:P1}%) [minimum - actual = absolute (relative)] ");
                         isConform = false;
                         break;
                     }
                 if (!double.IsNaN(MaximumDistance))
-                    if (distanceBetweenPositionOfDeclarationAndDeclaredGoal > MaximumDistance)
+                    if (distanceBetweenGoals > MaximumDistance)
                     {
+                        double absoluteInfringement = distanceBetweenGoals - MaximumDistance;
+                        double relativeInfringement = absoluteInfringement / MaximumDistance;
+                        Log(LogSeverityType.Warning, $"Declaration {declaration.GoalNumber} is not conform: {distanceBetweenGoals:0.#}m - {MaximumDistance:0.#}m = {absoluteInfringement:0.#}m ({relativeInfringement:P1}%) [actual - minimum = absolute (relative)] ");
                         isConform = false;
                         break;
                     }
@@ -98,6 +105,12 @@ namespace Competition
         public override string ToString()
         {
             return "Goal to other Goals Distance Rules";
+        }
+        #endregion
+        #region Private methods
+        private void Log(LogSeverityType logSeverity, string text)
+        {
+            Logger.Log(this, logSeverity, text);
         }
         #endregion
     }

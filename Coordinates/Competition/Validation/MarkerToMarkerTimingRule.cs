@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using LoggerComponent;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -84,6 +85,12 @@ namespace Competition.Validation
         public override string ToString()
         {
             return "Marker to Markers Timing Rule";
+        }
+        #endregion
+        #region Private methods
+        private void Log(LogSeverityType logSeverity, string text)
+        {
+            Logger.Log(this, logSeverity, text);
         }
         #endregion
     }

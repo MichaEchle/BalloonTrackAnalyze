@@ -81,6 +81,8 @@ namespace BalloonTrackAnalyze.ValidationControls
                     tbMaximumDistance.Text = Math.Round(MarkerToGoalDistanceRule.MaximumDistance, 3, MidpointRounding.AwayFromZero).ToString();
                     rbMinimumDistanceMeter.Checked = true;
                 }
+                cbUse2DDistance.Checked = MarkerToGoalDistanceRule.Use2DDistance;
+                cbUseGPSAltitude.Checked = MarkerToGoalDistanceRule.UseGPSAltitude;
                 tbGoalNumber.Text = MarkerToGoalDistanceRule.GoalNumber.ToString();
             }
         }
@@ -152,7 +154,7 @@ namespace BalloonTrackAnalyze.ValidationControls
             if (isDataValid)
             {
                 MarkerToGoalDistanceRule ??= new MarkerToGoalDistanceRule();
-                MarkerToGoalDistanceRule.SetupRule(minimumDistance, maximumDistance, goalNumber);
+                MarkerToGoalDistanceRule.SetupRule(minimumDistance, maximumDistance, cbUse2DDistance.Checked, cbUseGPSAltitude.Checked, goalNumber);
                 tbMinimumDistance.Text = "";
                 tbMaximumDistance.Text = "";
                 tbGoalNumber.Text = "";

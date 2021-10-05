@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using LoggerComponent;
 
 namespace Competition
 {
@@ -46,10 +47,21 @@ namespace Competition
 
             if (!double.IsNaN(MinimumDistance))
                 if (distanceBetweenPositionOfDeclarationAndDeclaredGoal < MinimumDistance)
+                {
+                    double absoluteInfringement = MinimumDistance - distanceBetweenPositionOfDeclarationAndDeclaredGoal;
+                    double relativeInfringement = absoluteInfringement / MinimumDistance;
+                    Log(LogSeverityType.Warning, $"Declaration {declaration.GoalNumber} is not conform: {MinimumDistance:0.#}m - {distanceBetweenPositionOfDeclarationAndDeclaredGoal:0.#}m = {absoluteInfringement:0.#}m ({relativeInfringement:P1}%) [minimum - actual = absolute (relative)] ");
                     isConform = false;
+                }
             if (!double.IsNaN(MaximumDistance))
                 if (distanceBetweenPositionOfDeclarationAndDeclaredGoal > MaximumDistance)
+                {
+                    double absoluteInfringement = distanceBetweenPositionOfDeclarationAndDeclaredGoal - MaximumDistance;
+                    double relativeInfringement = absoluteInfringement / MaximumDistance;
+                    Log(LogSeverityType.Warning, $"Declaration {declaration.GoalNumber} is not conform: {distanceBetweenPositionOfDeclarationAndDeclaredGoal:0.#}m - {MaximumDistance:0.#}m = {absoluteInfringement:0.#}m ({relativeInfringement:P1}%) [actual - minimum = absolute (relative)] ");
                     isConform = false;
+
+                }
             return isConform;
         }
 
@@ -67,6 +79,13 @@ namespace Competition
         public override string ToString()
         {
             return "Declaration to Goal Distance Rule";
+        }
+
+        #endregion
+        #region Private methods
+        private void Log(LogSeverityType logSeverity, string text)
+        {
+            Logger.Log(this, logSeverity, text);
         }
         #endregion
     }

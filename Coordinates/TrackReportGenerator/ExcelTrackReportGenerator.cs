@@ -63,6 +63,14 @@ namespace TrackReportGenerator
                     return false;
                 }
 
+                ExcelWorksheet wsIncidents = package.Workbook.Worksheets.Add("Incidents");
+                if (!WriteIncidentsInOrder(wsIncidents, track))
+                {
+                    Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, functionErrorMessage);
+                    return false;
+
+                }
+
                 package.Save();
                 Logger.Log("TrackReportGenerator", LogSeverityType.Info, $"Successfully generated and saved report at '{fileInfo.FullName}'");
             }
@@ -331,14 +339,15 @@ namespace TrackReportGenerator
                 markTable.TableStyle = TableStyles.Light16;
 
                 index += 3;
+                int indexDistance = index;
                 List<(string identifier, double distance)> distance2DGoals = TrackHelpers.Calculate2DDistanceBetweenDeclaredGoals(declarations);
                 List<(string identifier, double distance)> distance3DGoals = TrackHelpers.Calculate3DDistanceBetweenDeclaredGoals(declarations);
                 wsDeclarationsAndMarkerDrops.Cells[index, 1, index, 3].Merge = true;
-                wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Distance Goals";
+                wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Dist. Goals";
                 wsDeclarationsAndMarkerDrops.Cells[index, 1].Style.Font.Bold = true;
                 index++;
                 int distGoalsStartRow = index;
-                wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Identifier";
+                wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "ID";
                 wsDeclarationsAndMarkerDrops.Cells[index, 2].Value = "Dist 2D [m]";
                 wsDeclarationsAndMarkerDrops.Cells[index, 3].Value = "Dist 3D [m]";
                 wsDeclarationsAndMarkerDrops.Cells[index, 1, index, 3].Style.Font.Bold = true;
@@ -360,11 +369,11 @@ namespace TrackReportGenerator
                 List<(string identifier, double distance)> distance3DGoalsToMarkers = TrackHelpers.Calculate3DDistanceBetweenMarkerAndGoals(declarations, markerDrops);
 
                 wsDeclarationsAndMarkerDrops.Cells[index, 1, index, 3].Merge = true;
-                wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Distance Goals to Markers";
+                wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Dist. Goals to Markers";
                 wsDeclarationsAndMarkerDrops.Cells[index, 1].Style.Font.Bold = true;
                 index++;
                 int distGoalToMarkStartRow = index;
-                wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Identifier";
+                wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "ID";
                 wsDeclarationsAndMarkerDrops.Cells[index, 2].Value = "Dist 2D [m]";
                 wsDeclarationsAndMarkerDrops.Cells[index, 3].Value = "Dist 3D [m]";
                 wsDeclarationsAndMarkerDrops.Cells[index, 1, index, 3].Style.Font.Bold = true;
@@ -386,26 +395,79 @@ namespace TrackReportGenerator
                 List<(string identifier, double distance)> distance2DMarkers = TrackHelpers.Calculate2DDistanceBetweenMarkers(markerDrops);
                 List<(string identifier, double distance)> distance3DMarkers = TrackHelpers.Calculate3DDistanceBetweenMarkers(markerDrops);
                 wsDeclarationsAndMarkerDrops.Cells[index, 1, index, 3].Merge = true;
-                wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Distance Markers";
+                wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Dist. Markers";
                 wsDeclarationsAndMarkerDrops.Cells[index, 1].Style.Font.Bold = true;
                 index++;
                 int distMarkStartRow = index;
-                wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Identifier";
+                wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "ID";
                 wsDeclarationsAndMarkerDrops.Cells[index, 2].Value = "Dist 2D [m]";
                 wsDeclarationsAndMarkerDrops.Cells[index, 3].Value = "Dist 3D [m]";
                 wsDeclarationsAndMarkerDrops.Cells[index, 1, index, 3].Style.Font.Bold = true;
                 index++;
-                for (int goalsIndex = 0; goalsIndex < distance2DMarkers.Count; goalsIndex++)
+                for (int markerIndex = 0; markerIndex < distance2DMarkers.Count; markerIndex++)
                 {
 
-                    wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = distance2DMarkers[goalsIndex].identifier;
-                    wsDeclarationsAndMarkerDrops.Cells[index, 2].Value = Math.Round(distance2DMarkers[goalsIndex].distance, 0, MidpointRounding.AwayFromZero);
-                    wsDeclarationsAndMarkerDrops.Cells[index, 3].Value = Math.Round(distance3DMarkers[goalsIndex].distance, 0, MidpointRounding.AwayFromZero);
+                    wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = distance2DMarkers[markerIndex].identifier;
+                    wsDeclarationsAndMarkerDrops.Cells[index, 2].Value = Math.Round(distance2DMarkers[markerIndex].distance, 0, MidpointRounding.AwayFromZero);
+                    wsDeclarationsAndMarkerDrops.Cells[index, 3].Value = Math.Round(distance3DMarkers[markerIndex].distance, 0, MidpointRounding.AwayFromZero);
                     index++;
                 }
                 ExcelRange distMarkRange = wsDeclarationsAndMarkerDrops.Cells[distMarkStartRow, 1, index - 1, 3];
                 ExcelTable distMarkTable = wsDeclarationsAndMarkerDrops.Tables.Add(distMarkRange, "Distance_Markers");
                 distMarkTable.TableStyle = TableStyles.Light16;
+
+
+                index = indexDistance;
+                Coordinate launchPoint;
+                Coordinate landingPoint;
+                TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launchPoint, out landingPoint, out _);
+                List<(string identifier,double distance) > distance2DLaunchToGoals = TrackHelpers.Calculate2DDistanceBetweenLaunchPointAndGoals(launchPoint, declarations);
+                List<(string identifier, double distance)> distance3DLaunchToGoals = TrackHelpers.Calculate3DDistanceBetweenLaunchPointAndGoals(launchPoint, declarations);
+                wsDeclarationsAndMarkerDrops.Cells[index, 5, index, 7].Merge = true;
+                wsDeclarationsAndMarkerDrops.Cells[index, 5].Value = "Dist. Launch to Goals";
+                wsDeclarationsAndMarkerDrops.Cells[index, 5].Style.Font.Bold = true;
+                index++;
+                int distLaunchStartRow=index;
+                wsDeclarationsAndMarkerDrops.Cells[index, 5].Value = "ID";
+                wsDeclarationsAndMarkerDrops.Cells[index, 6].Value = "Dist 2D [m]";
+                wsDeclarationsAndMarkerDrops.Cells[index, 7].Value = "Dist 3D [m]";
+                wsDeclarationsAndMarkerDrops.Cells[index, 5, index, 6].Style.Font.Bold = true;
+                index++;
+                for (int goalIndex = 0; goalIndex < distance2DLaunchToGoals.Count;goalIndex++)
+                {
+                    wsDeclarationsAndMarkerDrops.Cells[index, 5].Value = distance2DLaunchToGoals[goalIndex].identifier;
+                    wsDeclarationsAndMarkerDrops.Cells[index, 6].Value = Math.Round(distance2DLaunchToGoals[goalIndex].distance,0,MidpointRounding.AwayFromZero);
+                    wsDeclarationsAndMarkerDrops.Cells[index, 7].Value = Math.Round(distance3DLaunchToGoals[goalIndex].distance, 0, MidpointRounding.AwayFromZero);
+                    index++;
+                }
+                ExcelRange distLaunchRange = wsDeclarationsAndMarkerDrops.Cells[distLaunchStartRow, 5, index - 1, 7];
+                ExcelTable distLaunchTable = wsDeclarationsAndMarkerDrops.Tables.Add(distLaunchRange, "Distance_Launch");
+                distLaunchTable.TableStyle = TableStyles.Light16;
+
+                index += 3;
+
+                List<(string identifier, double distance)> distance2DLandingToGoals = TrackHelpers.Calculate2DDistanceBetweenLandingPointAndGoals(landingPoint, declarations);
+                List<(string identifier, double distance)> distance3DLandingToGoals = TrackHelpers.Calculate3DDistanceBetweenLandingPointAndGoals(landingPoint, declarations);
+                wsDeclarationsAndMarkerDrops.Cells[index, 5, index, 7].Merge = true;
+                wsDeclarationsAndMarkerDrops.Cells[index, 5].Value = "Dist. Landing to Goals";
+                wsDeclarationsAndMarkerDrops.Cells[index, 5].Style.Font.Bold = true;
+                index++;
+                int distLandingStartRow = index;
+                wsDeclarationsAndMarkerDrops.Cells[index, 5].Value = "ID";
+                wsDeclarationsAndMarkerDrops.Cells[index, 6].Value = "Dist 2D [m]";
+                wsDeclarationsAndMarkerDrops.Cells[index, 7].Value = "Dist 3D [m]";
+                wsDeclarationsAndMarkerDrops.Cells[index, 5, index, 6].Style.Font.Bold = true;
+                index++;
+                for (int goalIndex = 0; goalIndex < distance2DLandingToGoals.Count; goalIndex++)
+                {
+                    wsDeclarationsAndMarkerDrops.Cells[index, 5].Value = distance2DLandingToGoals[goalIndex].identifier;
+                    wsDeclarationsAndMarkerDrops.Cells[index, 6].Value = Math.Round(distance2DLandingToGoals[goalIndex].distance, 0, MidpointRounding.AwayFromZero);
+                    wsDeclarationsAndMarkerDrops.Cells[index, 7].Value = Math.Round(distance3DLandingToGoals[goalIndex].distance, 0, MidpointRounding.AwayFromZero);
+                    index++;
+                }
+                ExcelRange distLandingRange = wsDeclarationsAndMarkerDrops.Cells[distLandingStartRow, 5, index - 1, 7];
+                ExcelTable distLandingTable = wsDeclarationsAndMarkerDrops.Tables.Add(distLandingRange, "Distance_Landing");
+                distLandingTable.TableStyle = TableStyles.Light16;
 
                 wsDeclarationsAndMarkerDrops.Cells.Style.Font.Size = 10;
                 wsDeclarationsAndMarkerDrops.Cells.AutoFitColumns();
@@ -441,7 +503,7 @@ namespace TrackReportGenerator
                         index++;
                     }
 
-                    ExcelLineChart trackChart = wsCharts.Drawings.AddLineChart("Track", eLineChartType.Line);
+                    ExcelLineChart trackChart = wsCharts.Drawings.AddLineChart("Track", eLineChartType.LineMarkers);
                     trackChart.Title.Text = "2D Track (every 10th trackpoint only)";
                     trackChart.Series.Add(wsCharts.Cells[2, 2, index - 1, 2], wsCharts.Cells[2, 1, index - 1, 1]);
                     trackChart.SetPosition(1, 0, 6, 0);
@@ -464,6 +526,54 @@ namespace TrackReportGenerator
             catch (Exception ex)
             {
                 Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, $"Failed to generate charts: {ex.Message}");
+                return false;
+            }
+            return true;
+        }
+
+        private static bool WriteIncidentsInOrder(ExcelWorksheet wsIncidients, Track track)
+        {
+            try
+            {
+                Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Info, "Write incidents in order of occurrence ...");
+                Coordinate launchPoint;
+                Coordinate landingPoint;
+                TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launchPoint, out landingPoint, out _);
+                List<(DateTime timeStamp, string incident)> incidents = new List<(DateTime timeStamp, string incidient)>();
+                incidents.Add((launchPoint.TimeStamp, "Take Off"));
+                incidents.Add((landingPoint.TimeStamp, "Touch Down"));
+                foreach (Declaration declaration in track.Declarations)
+                {
+                    incidents.Add((declaration.PositionAtDeclaration.TimeStamp, $"Dec. Goal{declaration.GoalNumber}"));
+                }
+                foreach (MarkerDrop markerDrop in track.MarkerDrops)
+                {
+                    incidents.Add((markerDrop.MarkerLocation.TimeStamp, $"Marker{markerDrop.MarkerNumber}"));
+                }
+
+                incidents = incidents.OrderBy(x => x.timeStamp).ToList();
+
+                wsIncidients.Cells[1, 1].Value = "Time";
+                wsIncidients.Cells[1, 2].Value = "Incident";
+                int index = 2;
+                foreach ((DateTime timeStamp,string incidient) item in incidents)
+                {
+                    wsIncidients.Cells[index,1].Value = item.timeStamp;
+                    wsIncidients.Cells[index, 1].Style.Numberformat.Format = "HH:mm:ss";
+                    wsIncidients.Cells[index, 2].Value = item.incidient;
+                    index++;
+                }
+
+                ExcelRange incidentsRange = wsIncidients.Cells[1, 1, index - 1, 2];
+                ExcelTable incidentsTable = wsIncidients.Tables.Add(incidentsRange, "Incidents");
+                incidentsTable.TableStyle = TableStyles.Light16;
+
+                wsIncidients.Cells.Style.Font.Size = 10;
+                wsIncidients.Cells.AutoFitColumns();
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, $"Failed to write events in order :{ex.Message}");
                 return false;
             }
             return true;

@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using LoggerComponent;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -91,6 +92,12 @@ namespace Competition
         public override string ToString()
         {
             return "Marker to other Markers Distance Rule";
+        }
+        #endregion
+        #region Private methods
+        private void Log(LogSeverityType logSeverity, string text)
+        {
+            Logger.Log(this, logSeverity, text);
         }
         #endregion
     }

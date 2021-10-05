@@ -20,29 +20,40 @@ namespace Competition.Validation
         {
             List<Declaration> declarations = track.Declarations.Where(x => x.GoalNumber == goalNumber).ToList();
             List<Declaration> validDeclarations = new List<Declaration>();
-            foreach (Declaration declaration in declarations)
+            if (declarations.Count == 0)
             {
-                bool isValid = true;
-                if (declarationValidationRules != null)
+                Logger.Log(LogSeverityType.Warning, $"No declaration found for goal number '{goalNumber}'");
+                return null;
+            }
+            else
+            {
+                foreach (Declaration declaration in declarations)
                 {
-                    foreach (IDeclarationValidationRules declarationValidationRule in declarationValidationRules)
+                    bool isValid = true;
+                    if (declarationValidationRules != null)
                     {
-                        if (!declarationValidationRule.IsComplaintToRule(declaration))
+                        foreach (IDeclarationValidationRules declarationValidationRule in declarationValidationRules)
                         {
-                            isValid = false;
-                            break;
+                            if (!declarationValidationRule.IsComplaintToRule(declaration))
+                            {
+                                isValid = false;
+                                break;
+                            }
                         }
                     }
+                    if (isValid)
+                        validDeclarations.Add(declaration);
                 }
-                if (isValid)
-                    validDeclarations.Add(declaration);
+                if (validDeclarations.Count == 0)
+                {
+                    Logger.Log(LogSeverityType.Warning, $"No declaration of goal number '{goalNumber}' is conform to specified rules");
+                    return null;
+                }
+                else if (validDeclarations.Count == 1)
+                    return validDeclarations[0];
+                else
+                    return validDeclarations.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[0];
             }
-            if (validDeclarations.Count == 0)
-                return null;
-            else if (validDeclarations.Count == 1)
-                return validDeclarations[0];
-            else
-                return validDeclarations.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[0];
         }
 
         ///// <summary>
@@ -75,7 +86,7 @@ namespace Competition.Validation
             if (markerDrop == null)
             {
                 //Console.WriteLine($"No Marker '{FirstMarkerNumber}' found");
-                Logger.Log(LogSeverityType.Error, $"No Marker '{markerNumber}' found");
+                Logger.Log(LogSeverityType.Warning, $"No Marker '{markerNumber}' found");
                 isValid = false;
             }
             else
@@ -86,6 +97,10 @@ namespace Competition.Validation
                     {
                         isValid &= markerValidationRule.IsComplaintToRule(markerDrop);
                     }
+                }
+                if (!isValid)
+                {
+                    Logger.Log(LogSeverityType.Warning, $"Marker '{markerNumber}' is not conform to specified rules");
                 }
             }
             return isValid;

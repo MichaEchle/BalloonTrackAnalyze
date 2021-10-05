@@ -29,60 +29,33 @@ namespace BLC2021
 
         private void btChangePilotMapping_Click(object sender, EventArgs e)
         {
-            bool showDialog = false;
-            if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.PathToPilotMapping))
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.AddExtension = true;
+            openFileDialog.CheckFileExists = true;
+            openFileDialog.CheckPathExists = true;
+            openFileDialog.Multiselect = false;
+            openFileDialog.Title = "Select pilot mapping";
+            openFileDialog.Filter = "xlsx files (*.xlsx)|*.xlsx";
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                FileInfo pilotMappingFile = new FileInfo(Properties.Settings.Default.PathToPilotMapping);
-                if (!pilotMappingFile.Exists)
-                    showDialog = true;
-            }
-            else
-                showDialog = true;
-            if (showDialog)
-            {
-                OpenFileDialog openFileDialog = new OpenFileDialog();
-                openFileDialog.AddExtension = true;
-                openFileDialog.CheckFileExists = true;
-                openFileDialog.CheckPathExists = true;
-                openFileDialog.Multiselect = false;
-                openFileDialog.Title = "Select pilot mapping";
-                openFileDialog.Filter = "xlsx files (*.xlsx)|*.xlsx";
-                if (openFileDialog.ShowDialog() == DialogResult.OK)
-                {
-                    Properties.Settings.Default.PathToPilotMapping = openFileDialog.FileName;
-                    lbPilotMapping.Text = Properties.Settings.Default.PathToPilotMapping;
-                    Properties.Settings.Default.Save();
-                }
-
+                Properties.Settings.Default.PathToPilotMapping = openFileDialog.FileName;
+                lbPilotMapping.Text = Properties.Settings.Default.PathToPilotMapping;
+                Properties.Settings.Default.Save();
             }
         }
 
         private void btChangeOutputDirectory_Click(object sender, EventArgs e)
         {
-            bool showDialog = false;
-            if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.DefaultOutputDirectory))
+            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
             {
-                DirectoryInfo directoryInfo = new DirectoryInfo(Properties.Settings.Default.DefaultOutputDirectory);
-                if (!directoryInfo.Exists)
-                    showDialog = true;
-            }
-            else
-            {
-                showDialog = true;
-            }
-            if (showDialog)
-            {
-                using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
+                folderBrowserDialog.RootFolder = Environment.SpecialFolder.MyComputer;
+                folderBrowserDialog.UseDescriptionForTitle = true;
+                folderBrowserDialog.Description = "Select an output directory";
+                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
                 {
-                    folderBrowserDialog.RootFolder = Environment.SpecialFolder.MyComputer;
-                    folderBrowserDialog.UseDescriptionForTitle = true;
-                    folderBrowserDialog.Description = "Select an output directory";
-                    if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-                    {
-                        Properties.Settings.Default.DefaultOutputDirectory = folderBrowserDialog.SelectedPath;
-                        lbOutputDirectory.Text = Properties.Settings.Default.DefaultOutputDirectory;
-                        Properties.Settings.Default.Save();
-                    }
+                    Properties.Settings.Default.DefaultOutputDirectory = folderBrowserDialog.SelectedPath;
+                    lbOutputDirectory.Text = Properties.Settings.Default.DefaultOutputDirectory;
+                    Properties.Settings.Default.Save();
                 }
             }
         }

@@ -28,6 +28,22 @@ namespace Competition
         } = double.NaN;
 
         /// <summary>
+        /// Specify whether 3D or 2D distance between marker and goal should be considered
+        /// </summary>
+        public bool Use3DDistance
+        {
+            get; set;
+        } = false;
+
+        /// <summary>
+        /// Specify whether GPS or barometric altitude should be used to calculate 3D distance
+        /// </summary>
+        public bool UseGPSAltitude
+        {
+            get; set;
+        } = false;
+
+        /// <summary>
         /// The declared goal to check against
         /// <para>needs preprocessing of track</para>
         /// <see cref="GoalNumber"/>
@@ -55,16 +71,31 @@ namespace Competition
         public bool IsComplaintToRule(MarkerDrop marker)
         {
             bool isConform = true;
-            double distanceToGoal = CoordinateHelpers.Calculate2DDistance(marker.MarkerLocation, Declaration.DeclaredGoal);
-            if (!double.IsNaN(MinimumDistance))
+            if (Declaration != null)
             {
-                if (distanceToGoal < MinimumDistance)
-                    isConform = false;
+                double distanceBetweenMarkerAndGoal;
+                if (Use3DDistance)
+                {
+                    distanceBetweenMarkerAndGoal = CoordinateHelpers.Calculate3DDistance(marker.MarkerLocation, Declaration.DeclaredGoal, UseGPSAltitude);
+                }
+                else
+                {
+                    distanceBetweenMarkerAndGoal = CoordinateHelpers.Calculate2DDistance(marker.MarkerLocation, Declaration.DeclaredGoal);
+                }
+                if (!double.IsNaN(MinimumDistance))
+                {
+                    if (distanceBetweenMarkerAndGoal < MinimumDistance)
+                        isConform = false;
+                }
+                if (!double.IsNaN(MaximumDistance))
+                {
+                    if (distanceBetweenMarkerAndGoal > MaximumDistance)
+                        isConform = false;
+                }
             }
-            if (!double.IsNaN(MaximumDistance))
+            else
             {
-                if (distanceToGoal > MaximumDistance)
-                    isConform = false;
+                isConform = false;
             }
             return isConform;
         }
@@ -74,11 +105,15 @@ namespace Competition
         /// </summary>
         /// <param name="minimumDistance">Minimum distance between marker position and declared goal in meter (optional; use double.NaN to omit)</param>
         /// <param name="maximumDistance">Maximum distance between marker position and declared goal in meter (optional; use double.NaN to omit)</param>
+        /// <param name="use3DDistance">True: 3D distance is considered; false: only 2D distance is considered</param>
+        /// <param name="useGPSAltitude">True: GPS altitude is used to calculate 3D distance; false: barometric altitude is used to calculate 3D distance</param>
         /// <param name="goalNumber">The number of the goal to be checked against (the last valid goal with that number will be used) (mandatory). the actual declared goal object will be fed in after track preprocessing</param>
-        public void SetupRule(double minimumDistance, double maximumDistance, int goalNumber)
+        public void SetupRule(double minimumDistance, double maximumDistance,bool use3DDistance,bool useGPSAltitude, int goalNumber)
         {
             MinimumDistance = minimumDistance;
             MaximumDistance = maximumDistance;
+            Use3DDistance = use3DDistance;
+            UseGPSAltitude = useGPSAltitude;
             GoalNumber = goalNumber;
         }
 

@@ -1,6 +1,8 @@
 ﻿using Competition;
+using Competition.Validation;
 using Coordinates;
 using LoggerComponent;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -41,7 +43,7 @@ namespace BLC2021
         private int Task4_FirstMarkerNumber
         {
             get; set;
-        } = 1;
+        } = 1;//1
 
         private int Task4_SecondMarkerNumber
         {
@@ -51,12 +53,21 @@ namespace BLC2021
         private int Task4_ThridMarkerNumber
         {
             get; set;
-        } = 3;
+        } = 3;//3
+
+        private int Task5_GoalNumber
+        {
+            get; set;
+        } = 2;
+
+        private int Task5_MarkerNumber
+        {
+            get; set;
+        } = 4;
 
 
         private readonly string ResultsFileNameInternal = "BLC2021TaskSheet2_Results_Internal.xlsx";
-        private readonly string ResultFileNameProvisional = "BLC2021TaskSheet2_Results_Provisional.xslx";
-        private double additionalAltitude;
+        private readonly string ResultsFileNameProvisional = "BLC2021TaskSheet2_Results_Provisional.xlsx";
         #endregion
 
         #region Constructor
@@ -134,10 +145,10 @@ namespace BLC2021
             //////////////////
             //Task 4
             //////////////////
-            Task4_GoalNumber = 99;
-            Task4_FirstMarkerNumber = -1;
-            Task4_SecondMarkerNumber = -1;
-            Task4_ThridMarkerNumber = -1;
+            Task4_GoalNumber = 1;
+            Task4_FirstMarkerNumber = 1;//1
+            Task4_SecondMarkerNumber = 2;
+            Task4_ThridMarkerNumber = 3;//3
             cbGoalTask4.Visible = false;
             lbZoneTask4.Visible = false;
             tbZoneTask4.Visible = false;
@@ -163,10 +174,10 @@ namespace BLC2021
             //////////////////
             //Task 4
             //////////////////
-            Task4_GoalNumber = 1;
-            Task4_FirstMarkerNumber = 1;
-            Task4_SecondMarkerNumber = 2;
-            Task4_ThridMarkerNumber = 3;
+            Task4_GoalNumber = 99;
+            Task4_FirstMarkerNumber = -1;
+            Task4_SecondMarkerNumber = -1;
+            Task4_ThridMarkerNumber = -1;
             cbGoalTask4.Visible = true;
             lbZoneTask4.Visible = true;
             tbZoneTask4.Visible = true;
@@ -204,11 +215,44 @@ namespace BLC2021
                 UseWaitCursor = true;
 
                 HesitationWaltzTask task4_1 = new HesitationWaltzTask();
-                DeclarationToGoalDistanceRule declarationToGoalDistanceRule = new DeclarationToGoalDistanceRule();
-                declarationToGoalDistanceRule.SetupRule(5000.0, double.NaN);
-                List<IDeclarationValidationRules> declarationValidationRules = new List<IDeclarationValidationRules>();
+                task4_1.SetupHWZ(4, CalculateGoalsTask4_1, Task4_FirstMarkerNumber, true, null);
 
-                task4_1.SetupHWZ(4,CalculateGoalsTask4_1, 1, true, null, declarationValidationRules);
+                HesitationWaltzTask task4_2 = new HesitationWaltzTask();
+                task4_2.SetupHWZ(4, CalculateGoalsTask4_2, Task4_SecondMarkerNumber, true, null);
+
+                HesitationWaltzTask task4_3 = new HesitationWaltzTask();
+                task4_3.SetupHWZ(4, CalculateGoalsTask4_3, Task4_ThridMarkerNumber, true, null);
+
+                MarkerTimingRule markerTimingRule = new MarkerTimingRule();
+                markerTimingRule.SetupRule(new List<(int openAtMinute, int closeAtMinute)>() { (0, 5), (20, 25), (40, 45) });
+
+
+                MarkerToGoalDistanceRule markerToGoalDistanceRule = new MarkerToGoalDistanceRule();
+                markerToGoalDistanceRule.SetupRule(double.NaN, 300.0, true, true, Task5_GoalNumber);
+
+
+                List<IMarkerValidationRules> markerValidationRules = new List<IMarkerValidationRules>();
+                markerValidationRules.Add(markerTimingRule);
+                markerValidationRules.Add(markerToGoalDistanceRule);
+                HesitationWaltzTask task5 = new HesitationWaltzTask();
+                task5.SetupHWZ(5, CalculateGoalsTask5, Task5_MarkerNumber, true, markerValidationRules);
+
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    string[] igcFiles = openFileDialog.FileNames;
+                    bool success = await ParseFilesAndCalculateResultsAsync(igcFiles, task4_1, task4_2, task4_3, task5);
+                    if (success)
+                    {
+                        Log(LogSeverityType.Info, "Parsing and result calculation completed");
+                    }
+                    else
+                    {
+                        Log(LogSeverityType.Error, "Failed to parse and calculate results");
+                    }
+                }
+                UseWaitCursor = false;
+
 
             }
             else//fiddle mode
@@ -234,7 +278,7 @@ namespace BLC2021
             double distanceFromDeclaredGoal = 1000.0;
             double additionalAltitude = CoordinateHelpers.ConvertToMeter(300.0);
             Declaration declaration = track.GetLatestDeclaration(Task4_GoalNumber);
-            if(declaration is null || declaration == default)
+            if (declaration is null || declaration == default)
                 throw new Exception($"No goal with goal number '{Task4_GoalNumber}' has been found");
 
             CoordinateSharp.Coordinate tempDeclaredGoal = new CoordinateSharp.Coordinate(declaration.DeclaredGoal.Latitude, declaration.DeclaredGoal.Longitude);
@@ -250,9 +294,9 @@ namespace BLC2021
                 {
                     if (northingFactor == 0 && eastingFactor == 0)
                         continue;
-                    CoordinateSharp.UniversalTransverseMercator utmTempGoal = new CoordinateSharp.UniversalTransverseMercator($"{latZone}{longZone}", easting+(distanceFromDeclaredGoal*eastingFactor), northing+(distanceFromDeclaredGoal*northingFactor));
+                    CoordinateSharp.UniversalTransverseMercator utmTempGoal = new CoordinateSharp.UniversalTransverseMercator($"{latZone}{longZone}", easting + (distanceFromDeclaredGoal * eastingFactor), northing + (distanceFromDeclaredGoal * northingFactor));
                     CoordinateSharp.Coordinate tempGoal = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmTempGoal);
-                    goals.Add(new Coordinate(tempGoal.Latitude.DecimalDegree, tempGoal.Longitude.DecimalDegree, declaration.DeclaredGoal.AltitudeGPS+ additionalAltitude, declaration.DeclaredGoal.AltitudeBarometric+ additionalAltitude, DateTime.Now));
+                    goals.Add(new Coordinate(tempGoal.Latitude.DecimalDegree, tempGoal.Longitude.DecimalDegree, declaration.DeclaredGoal.AltitudeGPS + additionalAltitude, declaration.DeclaredGoal.AltitudeBarometric + additionalAltitude, DateTime.Now));
                 }
             }
             return goals;
@@ -286,6 +330,188 @@ namespace BLC2021
                 }
             }
             return goals;
+        }
+
+        private List<Coordinate> CalculateGoalsTask5(Track track)
+        {
+            {
+                List<Coordinate> goals = new List<Coordinate>();
+                Declaration declaration = track.GetLatestDeclaration(Task5_GoalNumber);
+                if (declaration is null || declaration == default)
+                    throw new Exception($"No goal with goal number '{Task5_GoalNumber}' has been found");
+                goals.Add(declaration.DeclaredGoal);
+                return goals;
+            }
+        }
+
+        private async Task<bool> ParseFilesAndCalculateResultsAsync(string[] igcFiles, HesitationWaltzTask task4_1, HesitationWaltzTask task4_2, HesitationWaltzTask task4_3, HesitationWaltzTask task5)
+        {
+            return await Task.Run(() =>
+            {
+                string functionErrorMessage = "Failed to parse files and calculate results: ";
+                Track track;
+                List<(string pilotIdenifier, int pilotNumber, double result_T4, double result_T5)> results = new List<(string pilotIdenifier, int pilotNumber, double result_T4, double result_T5)>();
+                try
+                {
+                    DeclarationToGoalDistanceRule declarationToGoalDistanceRule = new DeclarationToGoalDistanceRule();
+                    declarationToGoalDistanceRule.SetupRule(5000.0, double.NaN);
+                    DeclarationToGoalHeightRule declarationToGoalHeightRule = new DeclarationToGoalHeightRule();
+                    declarationToGoalHeightRule.SetupRule(CoordinateHelpers.ConvertToMeter(1000), double.NaN, DeclarationToGoalHeightRule.HeightDifferenceType.PositiveDifferenceOnly, true);
+                    List<IDeclarationValidationRules> declarationValidationRules = new List<IDeclarationValidationRules>();
+                    declarationValidationRules.Add(declarationToGoalDistanceRule);
+                    declarationValidationRules.Add(declarationToGoalHeightRule);
+                    foreach (string igcFile in igcFiles)
+                    {
+                        if (!Coordinates.Parsers.BalloonLiveParser.ParseFile(igcFile, out track))
+                        {
+                            Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse '{igcFile}'");
+                            continue;
+                        }
+                        double result_Task4;
+                        if (ValidationHelper.GetValidDeclaration(track, Task4_GoalNumber, declarationValidationRules) != null)
+                        {
+                            double result_Task4_1;
+                            if (!task4_1.CalculateResults(track, true, out result_Task4_1))
+                            {
+                                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result at Task 4 for Pilot No {track.Pilot.PilotNumber}");
+                                result_Task4_1 = double.NaN;
+                            }
+                            task4_1.Goals.Clear();
+
+                            double result_Task4_2;
+                            if (!task4_2.CalculateResults(track, true, out result_Task4_2))
+                            {
+                                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result at Task 4 for Pilot No {track.Pilot.PilotNumber}");
+                                result_Task4_2 = double.NaN;
+                            }
+                            task4_2.Goals.Clear();
+
+                            double result_Task4_3;
+                            if (!task4_3.CalculateResults(track, true, out result_Task4_3))
+                            {
+                                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result at Task 4 for Pilot No {track.Pilot.PilotNumber}");
+                                result_Task4_3 = double.NaN;
+                            }
+                            task4_3.Goals.Clear();
+
+                            if (!double.IsNaN(result_Task4_1) && !double.IsNaN(result_Task4_2) && !double.IsNaN(result_Task4_3))
+                            {
+                                result_Task4 = result_Task4_1 + result_Task4_2 + result_Task4_3;
+                                Log(LogSeverityType.Info, $"Calculated result of '{Math.Round(result_Task4, 0, MidpointRounding.AwayFromZero)}m' ({result_Task4_1:0.#}+{result_Task4_2:0.#}+{result_Task4_3:0.#}) at Task 4 for Pilot No {track.Pilot.PilotNumber}");
+                            }
+                            else
+                            {
+                                result_Task4 = double.NaN;
+                            }
+
+                        }
+                        else
+                        {
+                            result_Task4 = double.NaN;
+                        }
+                        double result_Task5;
+                        Declaration declaration = ValidationHelper.GetValidDeclaration(track, Task5_GoalNumber, declarationValidationRules);
+                        if (declaration != null)
+                        {
+                            task5.MarkerValidationRules.OfType<MarkerToGoalDistanceRule>().First().Declaration = declaration;
+                            if (!task5.CalculateResults(track, true, out result_Task5))
+                            {
+                                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result at Task 5 for Pilot No {track.Pilot.PilotNumber}");
+                                result_Task5 = double.NaN;
+                            }
+                            else
+                            {
+                                Log(LogSeverityType.Info, $"Calculated result of '{Math.Round(result_Task5, 3, MidpointRounding.AwayFromZero)}m' at Task 5 for Pilot No {track.Pilot.PilotNumber}");
+                            }
+                            task5.Goals.Clear();
+                        }
+                        else
+                        {
+                            result_Task5 = double.NaN;
+                        }
+                        results.Add((track.Pilot.PilotIdentifier, track.Pilot.PilotNumber, result_Task4, result_Task5));
+                    }
+
+                    ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+                    FileInfo resultsFileInternal = new FileInfo(Path.Combine(OutputDirectory.FullName, ResultsFileNameInternal));
+                    using (ExcelPackage package = new ExcelPackage(resultsFileInternal))
+                    {
+                        ExcelWorksheet wsResults = package.Workbook.Worksheets.FirstOrDefault(x => x.Name == "Results");
+                        if (wsResults == default)
+                        {
+                            wsResults = package.Workbook.Worksheets.Add("Results");
+                            wsResults.Cells[1, 1].Value = "Pilot Identifier";
+                            wsResults.Cells[1, 2].Value = "Pilot Number";
+                            wsResults.Cells[1, 3].Value = "Task 4 PDG [m]";
+                            wsResults.Cells[1, 4].Value = "Task 5 CRT [m]";
+                            wsResults.Cells[1, 5].Value = "Task 4 Comment";
+                            wsResults.Cells[1, 6].Value = "Task 5 Comment";
+                            
+                        }
+                        foreach ((string pilotIdentifier, int pilotNumber, double result_T4, double result_T5) result in results)
+                        {
+                            wsResults.Cells[result.pilotNumber + 1, 1].Value = result.pilotIdentifier;
+                            wsResults.Cells[result.pilotNumber + 1, 2].Value = result.pilotNumber;
+                            wsResults.Cells[result.pilotNumber + 1, 3].Value = Math.Round(result.result_T4, 0, MidpointRounding.AwayFromZero);
+                            wsResults.Cells[result.pilotNumber + 1, 4].Value = Math.Round(result.result_T5 , 0, MidpointRounding.AwayFromZero);
+                            
+                            wsResults.Cells[result.pilotNumber + 1, 3].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.None;
+                            wsResults.Cells[result.pilotNumber + 1, 4].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.None;
+                        }
+                        wsResults.Cells.AutoFitColumns();
+                        package.Save();
+                    }
+                    Log(LogSeverityType.Info, $"Successfully created or modified internal results file '{resultsFileInternal.Name}'");
+                    FileInfo resultsFileProvisional = new FileInfo(Path.Combine(OutputDirectory.FullName, ResultsFileNameProvisional));
+                    using (ExcelPackage package = new ExcelPackage(resultsFileProvisional))
+                    {
+                        ExcelWorksheet wsResults = package.Workbook.Worksheets.FirstOrDefault(x => x.Name == "Results");
+                        if (wsResults == default)
+                        {
+                            wsResults = package.Workbook.Worksheets.Add("Results");
+                            wsResults.Cells[1, 1].Value = "Pilot Identifier";
+                            wsResults.Cells[1, 2].Value = "Pilot Number";
+                            wsResults.Cells[1, 3].Value = "Pilot Last Name";
+                            wsResults.Cells[1, 4].Value = "Pilot First Name";
+                            wsResults.Cells[1, 5].Value = "Task 4 PDG [m]";
+                            wsResults.Cells[1, 6].Value = "Task 5 CRT [m]";
+                            
+                        }
+                        string firstName;
+                        string lastName;
+                        foreach ((string pilotIdentifier, int pilotNumber, double result_T4, double result_T5) result in results)
+                        {
+                            wsResults.Cells[result.pilotNumber + 1, 1].Value = result.pilotIdentifier;
+                            wsResults.Cells[result.pilotNumber + 1, 2].Value = result.pilotNumber;
+                            if (!PilotMapping.Instance.GetPilotName(result.pilotNumber, out lastName, out firstName))
+                            {
+                                Log(LogSeverityType.Warning, "Last name and first name of pilot will be omitted");
+                            }
+                            else
+                            {
+                                wsResults.Cells[result.pilotNumber + 1, 3].Value = lastName;
+                                wsResults.Cells[result.pilotNumber + 1, 4].Value = firstName;
+                            }
+                            wsResults.Cells[result.pilotNumber + 1, 5].Value = Math.Round(result.result_T4, 0, MidpointRounding.AwayFromZero);
+                            wsResults.Cells[result.pilotNumber + 1, 6].Value = Math.Round(result.result_T5 , 0, MidpointRounding.AwayFromZero);
+                            
+
+                            wsResults.Cells[result.pilotNumber + 1, 5].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.None;
+                            wsResults.Cells[result.pilotNumber + 1, 6].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.None;
+                        }
+                        wsResults.Cells.AutoFitColumns();
+                        package.Save();
+                    }
+                    Log(LogSeverityType.Info, $"Successfully created or modified provisional results file '{resultsFileProvisional.Name}'");
+                }
+                catch (Exception ex)
+                {
+                    Log(LogSeverityType.Error, functionErrorMessage + $"{ex.Message}");
+                    return false;
+                }
+
+                return true;
+            });
         }
         #endregion
 

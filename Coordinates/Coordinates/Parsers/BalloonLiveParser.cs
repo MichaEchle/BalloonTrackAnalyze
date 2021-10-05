@@ -712,6 +712,7 @@ namespace Coordinates.Parsers
                 {
                     eastingUTM *= 10;
                     eastingUTM += (int)(Math.Floor(coordinateSharp.UTM.Easting / Math.Pow(10, eastingDigits + 1)) * Math.Pow(10, eastingDigits + 1));
+                
                 }
 
                 CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator(utmGridZone, eastingUTM, northingUTM);

@@ -65,13 +65,14 @@ namespace BalloonTrackAnalyze.ValidationControls
         {
             if (MarkerTimingRule != null)
             {
-                tbOpenAtMinute.Text = MarkerTimingRule.OpenAtMinute.ToString();
-                tbCloseAtMinute.Text = MarkerTimingRule.CloseAtMinute.ToString();
+                //TODO adapt to changed definition of markertiming rule
+                //tbOpenAtMinute.Text = MarkerTimingRule.OpenAtMinute.ToString();
+                //tbCloseAtMinute.Text = MarkerTimingRule.CloseAtMinute.ToString();
             }
         }
 
         /// <summary>
-        /// Validates the user input and creates new / modifies exsiting marker timing rule
+        /// Validates the user input and creates new / modifies existing marker timing rule
         /// </summary>
         /// <param name="sender">sender of the event</param>
         /// <param name="e">event arguments</param>
@@ -115,7 +116,8 @@ namespace BalloonTrackAnalyze.ValidationControls
             if (isDataValid)
             {
                 MarkerTimingRule ??= new MarkerTimingRule();
-                MarkerTimingRule.SetupRule(openAtMinute, closeAtMinute);
+                //TODO adapt to changed definition of markertiming rule
+                //MarkerTimingRule.SetupRule(openAtMinute, closeAtMinute);
                 tbOpenAtMinute.Text = "";
                 tbCloseAtMinute.Text = "";
                 OnDataValid();

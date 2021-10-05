@@ -43,10 +43,6 @@ namespace Competition
             get; set;
         }
 
-        public List<IDeclarationValidationRules> DeclarationValidationRules
-        {
-            get;set;
-        }
 
         public bool CalculateResults(Track track, bool useGPSAltitude, out double result)
         {
@@ -103,25 +99,24 @@ namespace Competition
         #endregion
 
         #region API
-        public void SetupHWZ(int taskNumber, List<Coordinate> goals, int markerNumber, bool use3DDistance, List<IMarkerValidationRules> markerValidationRules,List<IDeclarationValidationRules> declarationValidationRules)
+        public void SetupHWZ(int taskNumber, List<Coordinate> goals, int markerNumber, bool use3DDistance, List<IMarkerValidationRules> markerValidationRules)
         {
             TaskNumber = taskNumber;
             Goals = goals;
             MarkerNumber = markerNumber;
             Use3DDistance = use3DDistance;
             MarkerValidationRules = markerValidationRules;
-            DeclarationValidationRules = declarationValidationRules;
 
         }
 
-        public void SetupHWZ(int taskNumber, Func<Track, List<Coordinate>> calculateGoals, int markerNumber, bool use3DDistance, List<IMarkerValidationRules> markerValidationRules,List<IDeclarationValidationRules> declarationValidationRules)
+        public void SetupHWZ(int taskNumber, Func<Track, List<Coordinate>> calculateGoals, int markerNumber, bool use3DDistance, List<IMarkerValidationRules> markerValidationRules)
         {
             TaskNumber = taskNumber;
             CalculateGoals = calculateGoals;
             MarkerNumber = markerNumber;
             Use3DDistance = use3DDistance;
             MarkerValidationRules = markerValidationRules;
-            DeclarationValidationRules = declarationValidationRules;
+
         }
 
         public override string ToString()
