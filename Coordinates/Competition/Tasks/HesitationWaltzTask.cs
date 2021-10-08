@@ -44,6 +44,11 @@ namespace Competition
         }
 
 
+
+
+        #endregion
+
+        #region API
         public bool CalculateResults(Track track, bool useGPSAltitude, out double result)
         {
             string functionErrorMessage = $"Failed to calculate result for {this} and Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}': ";
@@ -94,11 +99,6 @@ namespace Competition
             }
             return true;
         }
-
-
-        #endregion
-
-        #region API
         public void SetupHWZ(int taskNumber, List<Coordinate> goals, int markerNumber, bool use3DDistance, List<IMarkerValidationRules> markerValidationRules)
         {
             TaskNumber = taskNumber;

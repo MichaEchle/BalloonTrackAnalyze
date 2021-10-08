@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using LoggerComponent;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,12 +15,23 @@ namespace TrackReportGenerator
 {
     public partial class TrackReportGeneratorForm : Form
     {
+        #region Properties
+        private bool UseGPSAltitude=true;
+        private double MaxAllowedAltitude=CoordinateHelpers.ConvertToMeter(10000);
+        private bool SkipCoordinatesWithoutLocation=true;
+        #endregion Properties
+
+        #region Constructor
         public TrackReportGeneratorForm()
         {
             InitializeComponent();
             Text += typeof(TrackReportGeneratorForm).Assembly.GetName().Version;
             logListView1.StartLogging(@".\Logfile.txt");
         }
+
+        #endregion Constructor
+
+        #region Methods
 
         private async void btSelectFiles_Click(object sender, EventArgs e)
         {
@@ -81,16 +93,77 @@ namespace TrackReportGenerator
                     {
                         if (changeOfPositionSource.ToLower() == "yes")
                         {
-                            MessageBox.Show("Caution: change of position source has been detected, refer the log for more details");
+                            Logger.Log(LogSeverityType.Warning, "Caution: change of position source has been detected, refer the log for more details");
+                         //   MessageBox.Show("Caution: change of position source has been detected, refer the log for more details");
                         }
                     }
                 }
                 string reportFileName = Path.Combine(Path.GetDirectoryName(igcFile), Path.GetFileNameWithoutExtension(igcFile) + ".xlsx");
-                if (!ExcelTrackReportGenerator.GenerateTrackReport(reportFileName, track, true))
+                if (!ExcelTrackReportGenerator.GenerateTrackReport(reportFileName, track, SkipCoordinatesWithoutLocation, UseGPSAltitude,MaxAllowedAltitude))
                     return false;
 
                 return true;
             });
         }
+
+        private void rbGPSAltitude_CheckedChanged(object sender, EventArgs e)
+        {
+            UseGPSAltitude = rbGPSAltitude.Checked;
+        }
+
+        
+
+        private void rbMeter_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rbMeter.Checked)
+            {
+                tbMaxAltitude.Text = $"{MaxAllowedAltitude:0.#}";
+            }
+            else
+            {
+                tbMaxAltitude.Text = $"{Math.Round(CoordinateHelpers.ConvertToFeet(MaxAllowedAltitude),0,MidpointRounding.AwayFromZero)}";
+            }
+        }
+
+        private void cbSkipCoordinates_CheckedChanged(object sender, EventArgs e)
+        {
+            SkipCoordinatesWithoutLocation = cbSkipCoordinates.Checked;
+        }
+
+        private void cbCheckMaxAltitude_CheckedChanged(object sender, EventArgs e)
+        {
+            if (cbCheckMaxAltitude.Checked)
+            {
+                tbMaxAltitude.Text = "10000";
+                MaxAllowedAltitude = CoordinateHelpers.ConvertToMeter(10000);
+                tbMaxAltitude.Enabled = true;
+                rbFeet.Enabled = true;
+                rbFeet.Checked = true;
+                rbMeter.Enabled = true;
+            }
+            else
+            {
+                MaxAllowedAltitude = double.NaN;
+                tbMaxAltitude.Text = "";
+                tbMaxAltitude.Enabled = false;
+                rbFeet.Enabled = false;
+                rbMeter.Enabled = false;
+            }
+        }
+
+        private void tbMaxAltitude_Leave(object sender, EventArgs e)
+        {
+            double tempMaxAltitude;
+            if (!double.TryParse(tbMaxAltitude.Text, out tempMaxAltitude))
+            {
+                Logger.Log(LogSeverityType.Error, $"Failed to parse '{tbMaxAltitude.Text}' as double. Please enter a number");
+                return;
+            }
+            if (rbMeter.Checked)
+                MaxAllowedAltitude = tempMaxAltitude;
+            else
+                MaxAllowedAltitude = CoordinateHelpers.ConvertToMeter(tempMaxAltitude);
+        }
+        #endregion Methods
     }
 }

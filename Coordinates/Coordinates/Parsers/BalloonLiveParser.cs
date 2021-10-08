@@ -692,35 +692,80 @@ namespace Coordinates.Parsers
                 }
 
                 CoordinateSharp.Coordinate coordinateSharp;
-                if (referenceCoordinate == null)
-                    coordinateSharp = new CoordinateSharp.Coordinate(declarationLatitude, declarationLongitude);
-                else
+                double goalNorthingUTM = double.NaN;
+                double goalEastingUTM = double.NaN;
+                Coordinate declaredGoal = null;
+                Coordinate positionAtDeclaration = null;
+                bool useDeclarationPosition = false;
+                if (referenceCoordinate != null)
+                {
                     coordinateSharp = new CoordinateSharp.Coordinate(referenceCoordinate.Latitude, referenceCoordinate.Longitude);
 
-                string utmGridZone = coordinateSharp.UTM.LatZone + coordinateSharp.UTM.LongZone;
-                if (northingDigits < 6)
-                {
-                    northingUTM *= 10;
-                    northingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits + 1)) * Math.Pow(10, northingDigits + 1));
+                    string utmGridZone = coordinateSharp.UTM.LatZone + coordinateSharp.UTM.LongZone;
+                    if (northingDigits < 6)
+                    {
+                        goalNorthingUTM = northingUTM * 10;
+                        goalNorthingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits + 1)) * Math.Pow(10, northingDigits + 1));
+                    }
+                    if (northingDigits == 6)
+                    {
+                        northingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) * Math.Pow(10, northingDigits));
+                    }
+
+                    if (eastingDigits != 6)
+                    {
+                        goalEastingUTM = eastingUTM * 10;
+                        goalEastingUTM += (int)(Math.Floor(coordinateSharp.UTM.Easting / Math.Pow(10, eastingDigits + 1)) * Math.Pow(10, eastingDigits + 1));
+
+                    }
+
+                    CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator(utmGridZone, goalEastingUTM, goalNorthingUTM);
+
+                    CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
+
+                    declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
+                    positionAtDeclaration = new Coordinate(declarationLatitude, declarationLongitude, declarationPositionAltitudeGPS, declarationPositonAltitudeBarometric, timeStamp);
+                    double distance = CoordinateHelpers.Calculate2DDistance(declaredGoal, positionAtDeclaration);
+                    if (distance > 70e3)
+                    {
+
+                        useDeclarationPosition = true;
+                    }
                 }
-                if (northingDigits == 6)
+                if (useDeclarationPosition)
                 {
-                    northingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) * Math.Pow(10, northingDigits));
+                    coordinateSharp = new CoordinateSharp.Coordinate(declarationLatitude, declarationLongitude);
+                    string utmGridZone = coordinateSharp.UTM.LatZone + coordinateSharp.UTM.LongZone;
+                    if (northingDigits < 6)
+                    {
+                        goalNorthingUTM = northingUTM * 10;
+                        goalNorthingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits + 1)) * Math.Pow(10, northingDigits + 1));
+                    }
+                    if (northingDigits == 6)
+                    {
+                        northingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) * Math.Pow(10, northingDigits));
+                    }
+
+                    if (eastingDigits != 6)
+                    {
+                        goalEastingUTM = eastingUTM * 10;
+                        goalEastingUTM += (int)(Math.Floor(coordinateSharp.UTM.Easting / Math.Pow(10, eastingDigits + 1)) * Math.Pow(10, eastingDigits + 1));
+
+                    }
+
+                    CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator(utmGridZone, goalEastingUTM, goalNorthingUTM);
+
+                    CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
+
+                    declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
+                    positionAtDeclaration = new Coordinate(declarationLatitude, declarationLongitude, declarationPositionAltitudeGPS, declarationPositonAltitudeBarometric, timeStamp);
+                    double distance = CoordinateHelpers.Calculate2DDistance(declaredGoal, positionAtDeclaration);
+                    if (distance > 70e3)
+                    {
+
+                        Log(LogSeverityType.Warning, $"Suspicious declaration of gaol {goalNumber}: {locations[0]}/{locations[1]}");
+                    }
                 }
-
-                if (eastingDigits != 6)
-                {
-                    eastingUTM *= 10;
-                    eastingUTM += (int)(Math.Floor(coordinateSharp.UTM.Easting / Math.Pow(10, eastingDigits + 1)) * Math.Pow(10, eastingDigits + 1));
-                
-                }
-
-                CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator(utmGridZone, eastingUTM, northingUTM);
-
-                CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
-
-                Coordinate declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
-                Coordinate positionAtDeclaration = new Coordinate(declarationLatitude, declarationLongitude, declarationPositionAltitudeGPS, declarationPositonAltitudeBarometric, timeStamp);
 
                 declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration);
             }

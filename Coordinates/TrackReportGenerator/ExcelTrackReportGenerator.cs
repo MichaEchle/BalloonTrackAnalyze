@@ -14,7 +14,7 @@ namespace TrackReportGenerator
 {
     public static class ExcelTrackReportGenerator
     {
-        public static bool GenerateTrackReport(string filename, Track track, bool skipCoordinatesWithOutLocation)
+        public static bool GenerateTrackReport(string filename, Track track, bool skipCoordinatesWithOutLocation, bool useGPSAltitude, double maxAllowedAltitude)
         {
             string functionErrorMessage = "Failed to generate track report";
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -42,14 +42,14 @@ namespace TrackReportGenerator
                 ExcelWorksheet wsTrackpoints = package.Workbook.Worksheets.Add("Trackpoints");
                 List<(int easting, int norting)> trackChartPoints;
                 List<(DateTime timestamp, double altitude)> altitudeChartPoints;
-                if (!WriteTrackPoints(wsTrackpoints, track, skipCoordinatesWithOutLocation, out trackChartPoints, out altitudeChartPoints))
+                if (!WriteTrackPoints(wsTrackpoints, track, skipCoordinatesWithOutLocation, useGPSAltitude, out trackChartPoints, out altitudeChartPoints))
                 {
                     Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, functionErrorMessage);
                     return false;
                 }
 
                 ExcelWorksheet wsDeclarationsAndMarkerDrops = package.Workbook.Worksheets.Add("Decl. and Markers");
-                if (!WriteDeclaratrionsAndMarkerDrops(wsDeclarationsAndMarkerDrops, track))
+                if (!WriteDeclaratrionsAndMarkerDrops(wsDeclarationsAndMarkerDrops, track, useGPSAltitude))
                 {
                     Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, functionErrorMessage);
                     return false;
@@ -71,6 +71,13 @@ namespace TrackReportGenerator
 
                 }
 
+                ExcelWorksheet wsViolations = package.Workbook.Worksheets.Add("Violations");
+                if (!WriteViolations(wsViolations, track, useGPSAltitude, maxAllowedAltitude))
+                {
+                    Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, functionErrorMessage);
+                    return false;
+                }
+
                 package.Save();
                 Logger.Log("TrackReportGenerator", LogSeverityType.Info, $"Successfully generated and saved report at '{fileInfo.FullName}'");
             }
@@ -79,7 +86,7 @@ namespace TrackReportGenerator
         }
 
 
-        private static bool WriteTrackPoints(ExcelWorksheet wsTrackpoints, Track track, bool skipCoordinatesWithOutLocation, out List<(int easting, int norting)> trackChartPoints, out List<(DateTime timestamp, double altitude)> altitudeChartPoints)
+        private static bool WriteTrackPoints(ExcelWorksheet wsTrackpoints, Track track, bool skipCoordinatesWithOutLocation, bool useGPSAltitude, out List<(int easting, int norting)> trackChartPoints, out List<(DateTime timestamp, double altitude)> altitudeChartPoints)
         {
             trackChartPoints = new List<(int easting, int norting)>();
             altitudeChartPoints = new List<(DateTime timestamp, double altitude)>();
@@ -98,8 +105,7 @@ namespace TrackReportGenerator
 
                 Coordinate launchPoint;
                 Coordinate landingPoint;
-                bool isDangerousFlyingDetected;
-                TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launchPoint, out landingPoint, out isDangerousFlyingDetected);
+                TrackHelpers.EstimateLaunchAndLandingTime(track, useGPSAltitude, out launchPoint, out landingPoint);
 
                 wsTrackpoints.Cells[1, 5].Value = "Timestamp";
                 wsTrackpoints.Cells[1, 6].Value = "Long";
@@ -119,6 +125,7 @@ namespace TrackReportGenerator
                 CoordinateSharp.Coordinate coordinateSharp;
 
                 wsTrackpoints.Cells[2, 4].Value = "Launch Point";
+                wsTrackpoints.Cells[2, 4].Style.Font.Bold = true;
 
                 wsTrackpoints.Cells[2, 5].Style.Numberformat.Format = "dd-MMM-yyyy HH:mm:ss";
                 wsTrackpoints.Cells[2, 5].Value = launchPoint.TimeStamp;
@@ -139,6 +146,7 @@ namespace TrackReportGenerator
 
 
                 wsTrackpoints.Cells[3, 4].Value = "Landing Point";
+                wsTrackpoints.Cells[3, 4].Style.Font.Bold = true;
                 wsTrackpoints.Cells[3, 5].Style.Numberformat.Format = "dd-MMM-yyyy HH:mm:ss";
                 wsTrackpoints.Cells[3, 5].Value = landingPoint.TimeStamp;
                 wsTrackpoints.Cells[3, 6].Value = landingPoint.Longitude;
@@ -146,7 +154,7 @@ namespace TrackReportGenerator
                 degreeMinuteFormat = CoordinateHelpers.ConvertToDegreeMinutes(landingPoint.Longitude);
                 longitudeBeautified = $"{(landingPoint.Longitude < 0.0 ? "W" : "E")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
                 wsTrackpoints.Cells[3, 8].Value = longitudeBeautified;
-                degreeMinuteFormat= CoordinateHelpers.ConvertToDegreeMinutes(landingPoint.Latitude);
+                degreeMinuteFormat = CoordinateHelpers.ConvertToDegreeMinutes(landingPoint.Latitude);
                 latitudeBeautified = $"{(landingPoint.Latitude < 0.0 ? "S" : "N")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
                 wsTrackpoints.Cells[3, 9].Value = latitudeBeautified;
                 coordinateSharp = new CoordinateSharp.Coordinate(landingPoint.Latitude, landingPoint.Longitude);
@@ -156,8 +164,10 @@ namespace TrackReportGenerator
                 wsTrackpoints.Cells[3, 13].Value = landingPoint.AltitudeGPS;
                 wsTrackpoints.Cells[3, 14].Value = Math.Round(CoordinateHelpers.ConvertToFeet(landingPoint.AltitudeGPS), 0, MidpointRounding.AwayFromZero);
 
-                wsTrackpoints.Cells[4, 4].Value = "Dangerous Flying";
-                wsTrackpoints.Cells[4, 5].Value = $"{(isDangerousFlyingDetected ? "yes" : "no")}";
+
+                ExcelRange takeOffTouchDownRange = wsTrackpoints.Cells["E1:N3"];
+                ExcelTable takeOffTouchDownTable = wsTrackpoints.Tables.Add(takeOffTouchDownRange, "TakeOff_TouchDown");
+                takeOffTouchDownTable.TableStyle = TableStyles.Light16;
 
                 wsTrackpoints.Cells[6, 1].Value = "Timestamp";
                 wsTrackpoints.Cells[6, 2].Value = "Long";
@@ -186,7 +196,7 @@ namespace TrackReportGenerator
                     degreeMinuteFormat = CoordinateHelpers.ConvertToDegreeMinutes(coordinate.Longitude);
                     longitudeBeautified = $"{(coordinate.Longitude < 0.0 ? "W" : "E")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
                     wsTrackpoints.Cells[index, 4].Value = longitudeBeautified;
-                    degreeMinuteFormat= CoordinateHelpers.ConvertToDegreeMinutes(coordinate.Latitude);
+                    degreeMinuteFormat = CoordinateHelpers.ConvertToDegreeMinutes(coordinate.Latitude);
                     latitudeBeautified = $"{(coordinate.Latitude < 0.0 ? "S" : "N")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
                     wsTrackpoints.Cells[index, 5].Value = latitudeBeautified;
                     coordinateSharp = new CoordinateSharp.Coordinate(coordinate.Latitude, coordinate.Longitude);
@@ -220,7 +230,7 @@ namespace TrackReportGenerator
 
         }
 
-        private static bool WriteDeclaratrionsAndMarkerDrops(ExcelWorksheet wsDeclarationsAndMarkerDrops, Track track)
+        private static bool WriteDeclaratrionsAndMarkerDrops(ExcelWorksheet wsDeclarationsAndMarkerDrops, Track track, bool useGPSAltitude)
         {
             try
             {
@@ -249,11 +259,11 @@ namespace TrackReportGenerator
 
                 wsDeclarationsAndMarkerDrops.Cells[1, 22].Value = "Dist 2D [m]";
                 wsDeclarationsAndMarkerDrops.Cells[1, 23].Value = "Dist 3D [m]";
-                wsDeclarationsAndMarkerDrops.Cells[1,1,1,23].Style.Font.Bold = true;
+                wsDeclarationsAndMarkerDrops.Cells[1, 1, 1, 23].Style.Font.Bold = true;
                 List<Declaration> declarations = track.Declarations.OrderBy(x => x.GoalNumber).ToList();
 
                 List<double> distance2D = TrackHelpers.Calculate2DDistanceBetweenPositionOfDeclarationsAndDeclaredGoal(declarations);
-                List<double> distance3D = TrackHelpers.Calculate3DDistanceBetweenPositionOfDeclarationsAndDeclaredGoal(declarations);
+                List<double> distance3D = TrackHelpers.Calculate3DDistanceBetweenPositionOfDeclarationsAndDeclaredGoal(declarations, useGPSAltitude);
                 int index = 2;
                 foreach (Declaration declaration in declarations)
                 {
@@ -341,7 +351,7 @@ namespace TrackReportGenerator
                 index += 3;
                 int indexDistance = index;
                 List<(string identifier, double distance)> distance2DGoals = TrackHelpers.Calculate2DDistanceBetweenDeclaredGoals(declarations);
-                List<(string identifier, double distance)> distance3DGoals = TrackHelpers.Calculate3DDistanceBetweenDeclaredGoals(declarations);
+                List<(string identifier, double distance)> distance3DGoals = TrackHelpers.Calculate3DDistanceBetweenDeclaredGoals(declarations, useGPSAltitude);
                 wsDeclarationsAndMarkerDrops.Cells[index, 1, index, 3].Merge = true;
                 wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Dist. Goals";
                 wsDeclarationsAndMarkerDrops.Cells[index, 1].Style.Font.Bold = true;
@@ -366,7 +376,7 @@ namespace TrackReportGenerator
 
                 index += 3;
                 List<(string identifier, double distance)> distance2DGoalsToMarkers = TrackHelpers.Calculate2DDistanceBetweenMarkerAndGoals(declarations, markerDrops);
-                List<(string identifier, double distance)> distance3DGoalsToMarkers = TrackHelpers.Calculate3DDistanceBetweenMarkerAndGoals(declarations, markerDrops);
+                List<(string identifier, double distance)> distance3DGoalsToMarkers = TrackHelpers.Calculate3DDistanceBetweenMarkerAndGoals(declarations, markerDrops, useGPSAltitude);
 
                 wsDeclarationsAndMarkerDrops.Cells[index, 1, index, 3].Merge = true;
                 wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Dist. Goals to Markers";
@@ -393,7 +403,7 @@ namespace TrackReportGenerator
 
                 index += 3;
                 List<(string identifier, double distance)> distance2DMarkers = TrackHelpers.Calculate2DDistanceBetweenMarkers(markerDrops);
-                List<(string identifier, double distance)> distance3DMarkers = TrackHelpers.Calculate3DDistanceBetweenMarkers(markerDrops);
+                List<(string identifier, double distance)> distance3DMarkers = TrackHelpers.Calculate3DDistanceBetweenMarkers(markerDrops, useGPSAltitude);
                 wsDeclarationsAndMarkerDrops.Cells[index, 1, index, 3].Merge = true;
                 wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Dist. Markers";
                 wsDeclarationsAndMarkerDrops.Cells[index, 1].Style.Font.Bold = true;
@@ -420,23 +430,23 @@ namespace TrackReportGenerator
                 index = indexDistance;
                 Coordinate launchPoint;
                 Coordinate landingPoint;
-                TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launchPoint, out landingPoint, out _);
-                List<(string identifier,double distance) > distance2DLaunchToGoals = TrackHelpers.Calculate2DDistanceBetweenLaunchPointAndGoals(launchPoint, declarations);
-                List<(string identifier, double distance)> distance3DLaunchToGoals = TrackHelpers.Calculate3DDistanceBetweenLaunchPointAndGoals(launchPoint, declarations);
+                TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launchPoint, out landingPoint);
+                List<(string identifier, double distance)> distance2DLaunchToGoals = TrackHelpers.Calculate2DDistanceBetweenLaunchPointAndGoals(launchPoint, declarations);
+                List<(string identifier, double distance)> distance3DLaunchToGoals = TrackHelpers.Calculate3DDistanceBetweenLaunchPointAndGoals(launchPoint, declarations, useGPSAltitude);
                 wsDeclarationsAndMarkerDrops.Cells[index, 5, index, 7].Merge = true;
                 wsDeclarationsAndMarkerDrops.Cells[index, 5].Value = "Dist. Launch to Goals";
                 wsDeclarationsAndMarkerDrops.Cells[index, 5].Style.Font.Bold = true;
                 index++;
-                int distLaunchStartRow=index;
+                int distLaunchStartRow = index;
                 wsDeclarationsAndMarkerDrops.Cells[index, 5].Value = "ID";
                 wsDeclarationsAndMarkerDrops.Cells[index, 6].Value = "Dist 2D [m]";
                 wsDeclarationsAndMarkerDrops.Cells[index, 7].Value = "Dist 3D [m]";
-                wsDeclarationsAndMarkerDrops.Cells[index, 5, index, 6].Style.Font.Bold = true;
+                wsDeclarationsAndMarkerDrops.Cells[index, 5, index, 7].Style.Font.Bold = true;
                 index++;
-                for (int goalIndex = 0; goalIndex < distance2DLaunchToGoals.Count;goalIndex++)
+                for (int goalIndex = 0; goalIndex < distance2DLaunchToGoals.Count; goalIndex++)
                 {
                     wsDeclarationsAndMarkerDrops.Cells[index, 5].Value = distance2DLaunchToGoals[goalIndex].identifier;
-                    wsDeclarationsAndMarkerDrops.Cells[index, 6].Value = Math.Round(distance2DLaunchToGoals[goalIndex].distance,0,MidpointRounding.AwayFromZero);
+                    wsDeclarationsAndMarkerDrops.Cells[index, 6].Value = Math.Round(distance2DLaunchToGoals[goalIndex].distance, 0, MidpointRounding.AwayFromZero);
                     wsDeclarationsAndMarkerDrops.Cells[index, 7].Value = Math.Round(distance3DLaunchToGoals[goalIndex].distance, 0, MidpointRounding.AwayFromZero);
                     index++;
                 }
@@ -447,7 +457,7 @@ namespace TrackReportGenerator
                 index += 3;
 
                 List<(string identifier, double distance)> distance2DLandingToGoals = TrackHelpers.Calculate2DDistanceBetweenLandingPointAndGoals(landingPoint, declarations);
-                List<(string identifier, double distance)> distance3DLandingToGoals = TrackHelpers.Calculate3DDistanceBetweenLandingPointAndGoals(landingPoint, declarations);
+                List<(string identifier, double distance)> distance3DLandingToGoals = TrackHelpers.Calculate3DDistanceBetweenLandingPointAndGoals(landingPoint, declarations, useGPSAltitude);
                 wsDeclarationsAndMarkerDrops.Cells[index, 5, index, 7].Merge = true;
                 wsDeclarationsAndMarkerDrops.Cells[index, 5].Value = "Dist. Landing to Goals";
                 wsDeclarationsAndMarkerDrops.Cells[index, 5].Style.Font.Bold = true;
@@ -456,7 +466,7 @@ namespace TrackReportGenerator
                 wsDeclarationsAndMarkerDrops.Cells[index, 5].Value = "ID";
                 wsDeclarationsAndMarkerDrops.Cells[index, 6].Value = "Dist 2D [m]";
                 wsDeclarationsAndMarkerDrops.Cells[index, 7].Value = "Dist 3D [m]";
-                wsDeclarationsAndMarkerDrops.Cells[index, 5, index, 6].Style.Font.Bold = true;
+                wsDeclarationsAndMarkerDrops.Cells[index, 5, index, 7].Style.Font.Bold = true;
                 index++;
                 for (int goalIndex = 0; goalIndex < distance2DLandingToGoals.Count; goalIndex++)
                 {
@@ -486,8 +496,8 @@ namespace TrackReportGenerator
             try
             {
                 Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Info, "Create track charts ...");
-                wsCharts.Cells[1, 1].Value = "Northing";
-                wsCharts.Cells[1, 2].Value = "Easting";
+                wsCharts.Cells[1, 1].Value = "Easting";
+                wsCharts.Cells[1, 2].Value = "Northing";
                 wsCharts.Cells[1, 3].Value = "Time";
                 wsCharts.Cells[1, 4].Value = "Alt [m]";
                 int index = 2;
@@ -495,15 +505,15 @@ namespace TrackReportGenerator
                 {
                     for (int chartIndex = 0; chartIndex < trackChartPoints.Count; chartIndex++)
                     {
-                        wsCharts.Cells[index, 1].Value = trackChartPoints[chartIndex].norting;
-                        wsCharts.Cells[index, 2].Value = trackChartPoints[chartIndex].easting;
+                        wsCharts.Cells[index, 1].Value = trackChartPoints[chartIndex].easting;
+                        wsCharts.Cells[index, 2].Value = trackChartPoints[chartIndex].norting;
                         wsCharts.Cells[index, 3].Style.Numberformat.Format = "HH:mm:ss";
                         wsCharts.Cells[index, 3].Value = altitudeChartPoints[chartIndex].timestamp;
                         wsCharts.Cells[index, 4].Value = altitudeChartPoints[chartIndex].altitude;
                         index++;
                     }
 
-                    ExcelLineChart trackChart = wsCharts.Drawings.AddLineChart("Track", eLineChartType.LineMarkers);
+                    ExcelScatterChart trackChart = wsCharts.Drawings.AddScatterChart("Track", eScatterChartType.XYScatterLinesNoMarkers);
                     trackChart.Title.Text = "2D Track (every 10th trackpoint only)";
                     trackChart.Series.Add(wsCharts.Cells[2, 2, index - 1, 2], wsCharts.Cells[2, 1, index - 1, 1]);
                     trackChart.SetPosition(1, 0, 6, 0);
@@ -538,7 +548,7 @@ namespace TrackReportGenerator
                 Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Info, "Write incidents in order of occurrence ...");
                 Coordinate launchPoint;
                 Coordinate landingPoint;
-                TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launchPoint, out landingPoint, out _);
+                TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launchPoint, out landingPoint);
                 List<(DateTime timeStamp, string incident)> incidents = new List<(DateTime timeStamp, string incidient)>();
                 incidents.Add((launchPoint.TimeStamp, "Take Off"));
                 incidents.Add((landingPoint.TimeStamp, "Touch Down"));
@@ -556,9 +566,9 @@ namespace TrackReportGenerator
                 wsIncidients.Cells[1, 1].Value = "Time";
                 wsIncidients.Cells[1, 2].Value = "Incident";
                 int index = 2;
-                foreach ((DateTime timeStamp,string incidient) item in incidents)
+                foreach ((DateTime timeStamp, string incidient) item in incidents)
                 {
-                    wsIncidients.Cells[index,1].Value = item.timeStamp;
+                    wsIncidients.Cells[index, 1].Value = item.timeStamp;
                     wsIncidients.Cells[index, 1].Style.Numberformat.Format = "HH:mm:ss";
                     wsIncidients.Cells[index, 2].Value = item.incidient;
                     index++;
@@ -574,6 +584,153 @@ namespace TrackReportGenerator
             catch (Exception ex)
             {
                 Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, $"Failed to write events in order :{ex.Message}");
+                return false;
+            }
+            return true;
+        }
+
+        private static bool WriteViolations(ExcelWorksheet wsViolations, Track track, bool useGPSAltitude, double maxAllowedAltitude)
+        {
+            try
+            {
+                Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Info, "List violations ...");
+                bool isDangerousFlyingDetected;
+                List<Coordinate> relatedCoordinates;
+                double maxDropRate;
+                double maxClimbRate;
+                TimeSpan totalDuration;
+                int penaltyPointsDangerousFlying;
+                TrackHelpers.CheckForDangerousFlying(track, useGPSAltitude, out isDangerousFlyingDetected, out relatedCoordinates, out maxDropRate, out maxClimbRate, out totalDuration, out penaltyPointsDangerousFlying);
+                wsViolations.Cells[1, 1].Value = "Dangerous Flying";
+                wsViolations.Cells[2, 1].Value = isDangerousFlyingDetected ? "yes" : "no";
+                wsViolations.Cells[1, 2].Value = "Vertical Limit [m/s]";
+                wsViolations.Cells[2, 2].Value = "+/-8";
+                wsViolations.Cells[1, 3].Value = "Trigger Threshold [s]";
+                wsViolations.Cells[2, 3].Value = "5";
+                wsViolations.Cells[1, 4].Value = "Duration";
+                wsViolations.Cells[2, 4].Value = totalDuration;
+                wsViolations.Cells[2, 4].Style.Numberformat.Format = "HH:mm:ss";
+                wsViolations.Cells[1, 5].Value = "Max Drop Rate [m/s]";
+                wsViolations.Cells[2, 5].Value = maxDropRate;
+                wsViolations.Cells[1, 6].Value = "Max Climb Rate [m/s]";
+                wsViolations.Cells[2, 6].Value = maxClimbRate;
+                wsViolations.Cells[1, 7].Value = "Penalties";
+                wsViolations.Cells[2, 7].Value = penaltyPointsDangerousFlying;
+                wsViolations.Cells[1, 1, 1, 7].Style.Font.Bold = true;
+
+                ExcelRange dangerousFlyingSummaryRange = wsViolations.Cells[1, 1, 2, 7];
+                ExcelTable dangerousFlyingSummaryTable = wsViolations.Tables.Add(dangerousFlyingSummaryRange, "Dangerous_Flying_Sum");
+                dangerousFlyingSummaryTable.TableStyle = TableStyles.Light16;
+
+
+                wsViolations.Cells[4, 1].Value = "Timestamp";
+                wsViolations.Cells[4, 2].Value = "Long";
+                wsViolations.Cells[4, 3].Value = "Lat";
+                wsViolations.Cells[4, 4].Value = "Long [°]";
+                wsViolations.Cells[4, 5].Value = "Lat [°]";
+                wsViolations.Cells[4, 6].Value = "UTM Zone";
+                wsViolations.Cells[4, 7].Value = "East";
+                wsViolations.Cells[4, 8].Value = "North";
+                wsViolations.Cells[4, 9].Value = "Alt [m]";
+                wsViolations.Cells[4, 10].Value = "Alt [ft]";
+                wsViolations.Cells[4, 1, 4, 10].Style.Font.Bold = true;
+                int index = 5;
+                (int degrees, int degreeMinutes, int degreeSeconds, int degreeTenthSeconds) degreeMinuteFormat;
+                string longitudeBeautified;
+                string latitudeBeautified;
+                CoordinateSharp.Coordinate coordinateSharp;
+                foreach (Coordinate coordinate in relatedCoordinates)
+                {
+                    wsViolations.Cells[index, 1].Style.Numberformat.Format = "dd-MMM-yyyy HH:mm:ss";
+                    wsViolations.Cells[index, 1].Value = coordinate.TimeStamp;
+                    wsViolations.Cells[index, 2].Value = coordinate.Longitude;
+                    wsViolations.Cells[index, 3].Value = coordinate.Latitude;
+                    degreeMinuteFormat = CoordinateHelpers.ConvertToDegreeMinutes(coordinate.Longitude);
+                    longitudeBeautified = $"{(coordinate.Longitude < 0.0 ? "W" : "E")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
+                    wsViolations.Cells[index, 4].Value = longitudeBeautified;
+                    degreeMinuteFormat = CoordinateHelpers.ConvertToDegreeMinutes(coordinate.Latitude);
+                    latitudeBeautified = $"{(coordinate.Latitude < 0.0 ? "S" : "N")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
+                    wsViolations.Cells[index, 5].Value = latitudeBeautified;
+                    coordinateSharp = new CoordinateSharp.Coordinate(coordinate.Latitude, coordinate.Longitude);
+                    wsViolations.Cells[index, 6].Value = coordinateSharp.UTM.LongZone + coordinateSharp.UTM.LatZone;
+                    wsViolations.Cells[index, 7].Value = Math.Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero);
+                    wsViolations.Cells[index, 8].Value = Math.Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero);
+                    wsViolations.Cells[index, 9].Value = coordinate.AltitudeGPS;
+                    wsViolations.Cells[index, 10].Value = Math.Round(CoordinateHelpers.ConvertToFeet(coordinate.AltitudeGPS), 0, MidpointRounding.AwayFromZero);
+                    index++;
+                }
+
+
+                ExcelRange dangerousFlyingRange = wsViolations.Cells[4, 1, index - 1, 10];
+                ExcelTable dangerousFlyingTable = wsViolations.Tables.Add(dangerousFlyingRange, "Dangerous_Flying");
+                dangerousFlyingTable.TableStyle = TableStyles.Light16;
+
+                //12
+                if (double.IsFinite(maxAllowedAltitude))
+                {
+                    List<Coordinate> trackPointsAbove;
+                    TimeSpan durationAbove;
+                    double maxAltitude;
+                    int penaltyPointsAltitude;
+                    TrackHelpers.CheckFlyingAboveSpecifedAltitude(track, useGPSAltitude, maxAllowedAltitude, out trackPointsAbove, out durationAbove, out maxAltitude, out penaltyPointsAltitude);
+                    wsViolations.Cells[1, 12].Value = "Max Allowed Altitude [m]";
+                    wsViolations.Cells[2, 12].Value = Math.Round(maxAllowedAltitude, 0, MidpointRounding.AwayFromZero);
+                    wsViolations.Cells[1, 13].Value = "Max Altitude [m]";
+                    wsViolations.Cells[2, 13].Value = Math.Round(maxAltitude, 0, MidpointRounding.AwayFromZero);
+                    wsViolations.Cells[1, 14].Value = "Duration";
+                    wsViolations.Cells[2, 14].Value = durationAbove;
+                    wsViolations.Cells[2, 14].Style.Numberformat.Format = "HH:mm:ss";
+                    wsViolations.Cells[1, 15].Value = "Penalties";
+                    wsViolations.Cells[2, 15].Value = penaltyPointsAltitude;
+                    wsViolations.Cells[1, 12, 1, 15].Style.Font.Bold = true;
+                    ExcelRange maxAltitudeSummaryRange = wsViolations.Cells[1, 12, 2, 15];
+                    ExcelTable maxAltitudeSummaryTable = wsViolations.Tables.Add(maxAltitudeSummaryRange, "Max_Altitude_Sum");
+                    maxAltitudeSummaryTable.TableStyle = TableStyles.Light16;
+
+                    index = 5;
+                    wsViolations.Cells[4, 12].Value = "Timestamp";
+                    wsViolations.Cells[4, 13].Value = "Long";
+                    wsViolations.Cells[4, 14].Value = "Lat";
+                    wsViolations.Cells[4, 15].Value = "Long [°]";
+                    wsViolations.Cells[4, 16].Value = "Lat [°]";
+                    wsViolations.Cells[4, 17].Value = "UTM Zone";
+                    wsViolations.Cells[4, 18].Value = "East";
+                    wsViolations.Cells[4, 19].Value = "North";
+                    wsViolations.Cells[4, 20].Value = "Alt [m]";
+                    wsViolations.Cells[4, 21].Value = "Alt [ft]";
+                    wsViolations.Cells[4, 12, 4, 21].Style.Font.Bold = true;
+                    foreach (Coordinate coordinate in trackPointsAbove)
+                    {
+                        wsViolations.Cells[index, 12].Style.Numberformat.Format = "dd-MMM-yyyy HH:mm:ss";
+                        wsViolations.Cells[index, 12].Value = coordinate.TimeStamp;
+                        wsViolations.Cells[index, 13].Value = coordinate.Longitude;
+                        wsViolations.Cells[index, 14].Value = coordinate.Latitude;
+                        degreeMinuteFormat = CoordinateHelpers.ConvertToDegreeMinutes(coordinate.Longitude);
+                        longitudeBeautified = $"{(coordinate.Longitude < 0.0 ? "W" : "E")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
+                        wsViolations.Cells[index, 15].Value = longitudeBeautified;
+                        degreeMinuteFormat = CoordinateHelpers.ConvertToDegreeMinutes(coordinate.Latitude);
+                        latitudeBeautified = $"{(coordinate.Latitude < 0.0 ? "S" : "N")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
+                        wsViolations.Cells[index, 16].Value = latitudeBeautified;
+                        coordinateSharp = new CoordinateSharp.Coordinate(coordinate.Latitude, coordinate.Longitude);
+                        wsViolations.Cells[index, 17].Value = coordinateSharp.UTM.LongZone + coordinateSharp.UTM.LatZone;
+                        wsViolations.Cells[index, 18].Value = Math.Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero);
+                        wsViolations.Cells[index, 19].Value = Math.Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero);
+                        wsViolations.Cells[index, 20].Value = coordinate.AltitudeGPS;
+                        wsViolations.Cells[index, 21].Value = Math.Round(CoordinateHelpers.ConvertToFeet(coordinate.AltitudeGPS), 0, MidpointRounding.AwayFromZero);
+                        index++;
+                    }
+                    ExcelRange maxAltitudeRange = wsViolations.Cells[4, 12, index - 1, 21];
+                    ExcelTable maxAltitudeTable = wsViolations.Tables.Add(maxAltitudeRange, "Max_Altitude");
+                    maxAltitudeTable.TableStyle = TableStyles.Light16;
+                }
+
+                wsViolations.Cells.Style.Font.Size = 10;
+                wsViolations.Cells.AutoFitColumns();
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, $"Failed to list violations :{ex.Message}");
                 return false;
             }
             return true;

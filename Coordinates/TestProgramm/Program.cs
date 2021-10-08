@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
+using System.Linq;
+using Accessibility;
 using Competition;
 using Coordinates;
 using Coordinates.Parsers;
@@ -14,209 +16,105 @@ namespace TestProgramm
     {
         static void Main(string[] args)
         {
-            //Track trackOriginal;
-            //if (!BallonLiveParser.ParseFile(@"C:\Users\Micha\Source\repos\BalloonTrackAnalyze\TestTrack\E94BC98E-001-20611105838 - Original.igc", out trackOriginal))
+
+            //string trackFileName = @"C:\temp\2907p025.igc";
+            ////string trackFileName = @"C:\Users\Micha\SynologyDrive\tracks\Flight 3\work\E[BLC21]F[3]P[19]-80BE388D-003-2192655248.igc";
+            //Track track;
+            //if (!FAILoggerParser.ParseFile(trackFileName, out track))
             //{
-            //    Console.WriteLine("Error parsing track");
+            //    Console.WriteLine("Error parsing logger track");
             //}
+            //bool isDangerousFlyingDetected;
+            //List<Coordinate> relatedCoordinates;
+            //TimeSpan totalDuration;
+            //TrackHelpers.CheckForDangerousFlying(track, true,out isDangerousFlyingDetected, out relatedCoordinates,out _, out _,out totalDuration,out _);
 
-            //double distance2D = CoordinateHelpers.CalculateDistance2D(trackOriginal.TrackPoints[100], trackOriginal.TrackPoints[101]);
-            //Console.WriteLine("2D Distance:"+distance2D);
-            //double distance3D = CoordinateHelpers.CalculateDistance3D(trackOriginal.TrackPoints[100], trackOriginal.TrackPoints[101],true);
-            //Console.WriteLine("3D Distance:" + distance3D);
-            Coordinate home = new Coordinate(48.735996605840015, 9.100416159912585, 0.0, 0.0, DateTime.Now);
-
-            CoordinateSharp.Coordinate coordinate1 = new CoordinateSharp.Coordinate(51.017558333333, 4.0108133333333);
-
-            double easting = Math.Round(coordinate1.UTM.Easting,0,MidpointRounding.AwayFromZero);
-            double northing = Math.Round(coordinate1.UTM.Northing,0,MidpointRounding.AwayFromZero);
-            string latZone = coordinate1.UTM.LatZone;
-            int longZone = coordinate1.UTM.LongZone;
-
-            //double northingNorth = Math.Round(northing + 1000,0,MidpointRounding.AwayFromZero);
-            //double northingSouth = Math.Round(northing - 1000,0,MidpointRounding.AwayFromZero);
-
-            //double eastingEast = Math.Round(easting + 1000,0,MidpointRounding.AwayFromZero);
-            //double eastingWest = Math.Round(easting - 1000, 0, MidpointRounding.AwayFromZero);
-
-            CoordinateSharp.UniversalTransverseMercator universalTransverseMercator = new CoordinateSharp.UniversalTransverseMercator("U31", 577486, 5668346);
-
-            double[] latLong=CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoSignedDegree(universalTransverseMercator);
-
-            Console.WriteLine($"Marker 2 (UTM): {latZone}{longZone} {easting} {northing}");
-            Console.WriteLine($"Marker 2 (lat/long): {latLong[0]}N {latLong[1]}E");
-            //Console.WriteLine($"Goal East (UTM): {latZone}{longZone} {eastingEast} {northing}");
-            //Console.WriteLine($"Goal South (UTM): {latZone}{longZone} {easting} {northingSouth}");
-            //Console.WriteLine($"Goal West (UTM): {latZone}{longZone} {eastingWest} {northing}");
-
-            //Coordinate goalNorth = CoordinateHelpers.CalculatePointWithDistanceAndBearing(home, 1000, 0.0);
-            //Coordinate goalEast = CoordinateHelpers.CalculatePointWithDistanceAndBearing(home, 1000, 90.0);
-            //Coordinate goalSouth = CoordinateHelpers.CalculatePointWithDistanceAndBearing(home, 1000, 180.0);
-            //Coordinate goalWest = CoordinateHelpers.CalculatePointWithDistanceAndBearing(home, 1000, 270.0);
-
-            //CoordinateSharp.Coordinate coordinateGoalNorth = new CoordinateSharp.Coordinate(goalNorth.Latitude, goalNorth.Longitude);
-            //CoordinateSharp.Coordinate coordinateGoalEast = new CoordinateSharp.Coordinate(goalEast.Latitude, goalEast.Longitude);
-            //CoordinateSharp.Coordinate coordinateGoalSouth = new CoordinateSharp.Coordinate(goalSouth.Latitude, goalSouth.Longitude);
-            //CoordinateSharp.Coordinate coordinateGoalWest = new CoordinateSharp.Coordinate(goalWest.Latitude, goalWest.Longitude);
-
-            //Console.WriteLine(coordinateGoalNorth.UTM.ToString());
-            //Console.WriteLine(coordinateGoalEast.UTM.ToString());
-            //Console.WriteLine(coordinateGoalSouth.UTM.ToString());
-            //Console.WriteLine(coordinateGoalWest.UTM.ToString());
-
-
-
-            //Stopwatch stopwatch = new Stopwatch();
-            //stopwatch.Start();
-            string trackFileName = @"C:\Users\Micha\SynologyDrive\tracks\Flight 3\work\E[BLC21]F[3]P[30]-50695E05-030.igc";
-            //string trackFileName = @"C:\Users\Micha\SynologyDrive\tracks\Flight 3\work\E[BLC21]F[3]P[19]-80BE388D-003-2192655248.igc";
+            //string trackFileName = @"\\esdmob1\TGS2021\Tracks\E[DM2021]F[1]\E[DM2021]F[1]P[9]-87A53D33-009.igc";
+            //string trackFileName = @"\\esdmob1\TGS2021\Tracks\E[DM2021]F[1]\E[DM2021]F[1]P[18]-DE7EECC0-018.igc";
+            // string trackFileName = @"\\esdmob1\TGS2021\Tracks\E[DM2021]F[1]\E[DM2021]F[1]P[21]-28B482B2-021.igc";
+            // //32T 0702443 5300449
+            // Track track;
+            // Coordinate goal1 = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32T", 702443, 5300449);
+            // if (!BalloonLiveParser.ParseFile(trackFileName, out track))
+            // {
+            //     Console.WriteLine("Error parsing logger track");
+            // }
+            //double distance=CoordinateHelpers.CalculateDistanceWithSeparationAltitude(goal1, track.MarkerDrops.First(x => x.MarkerNumber == 3).MarkerLocation, CoordinateHelpers.ConvertToMeter(3000.0), true);
+            // Console.WriteLine(Math.Round(distance,0,MidpointRounding.AwayFromZero));
+            // Console.ReadLine();
+            DirectoryInfo directoryInfo = new DirectoryInfo(@"\\esdmob1\TGS2021\Tracks\E[DM2021]F[2]");
+            FileInfo[] files = directoryInfo.GetFiles("*.igc");
             Track track;
-            if (!BalloonLiveParser.ParseFile(trackFileName, out track))
+            Coordinate goalTask5 = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32T", 698351, 5293750);
+            PieTask pieTask = new PieTask();
+            PieTask.PieTier pieTier = new PieTask.PieTier();
+            pieTier.SetupPieTier(2, 1000, true, 1.0, double.NaN, CoordinateHelpers.ConvertToMeter(4000.0), null);
+            pieTask.SetupPie(6, new List<PieTask.PieTier>() { pieTier });
+
+            //using (StreamWriter writer = new StreamWriter(@"c:\temp\ResultT4_NewSpec.csv"))
+            //{
+            //    writer.WriteLine("Pilot,Result,DecOk");
+
+            foreach (FileInfo fileInfo in files)
             {
-                Console.WriteLine("Error parsing logger track");
+                if (!fileInfo.Name.Contains("P[28]"))
+                    continue;
+                if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out track))
+                {
+                    Console.WriteLine($"Failed to parse track '{fileInfo.FullName}'");
+                    continue;
+                }
+                //Coordinate firstPoint = track.TrackPoints.First(x => x.Latitude>0);
+                //Coordinate launch;
+                //TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launch, out _);
+                //Declaration declaration1 = track.Declarations.FindLast(x => x.GoalNumber == 1);
+                //if (declaration1 == null || declaration1 == default)
+                //    continue;
+                //Declaration declaration2 = track.Declarations.Find(x => x.GoalNumber == 2);
+                //if (declaration2 == null || declaration2 == default)
+                //    continue;
+                //double ilpToG1 = CoordinateHelpers.Calculate2DDistance(launch, declaration1.DeclaredGoal);
+                //double ilpToG2 = CoordinateHelpers.Calculate2DDistance(launch, declaration2.DeclaredGoal);
+                //double ilpToT5 = CoordinateHelpers.Calculate2DDistance(launch, goalTask5);
+                //writer.WriteLine($"{track.Pilot.PilotNumber},{firstPoint.TimeStamp},{launch.TimeStamp},{ilpToG1},{ilpToT5},{ilpToG2}");
+                MarkerDrop markerDrop = track.MarkerDrops.Find(x => x.MarkerNumber == 1);
+                if (markerDrop == null || markerDrop == default)
+                    continue;
+                //Declaration declaration = track.Declarations.Find(x => x.GoalNumber == 2);
+                //if (declaration == null || declaration == default)
+                //    continue;
+                //bool decBeforeMark = declaration.PositionAtDeclaration.TimeStamp < markerDrop.MarkerLocation.TimeStamp;
+                if (pieTask.CalculateResults(track, true, out double result))
+                {
+                    result = Math.Round(result, 0, MidpointRounding.AwayFromZero);
+                    Console.WriteLine($"{track.Pilot.PilotNumber},{result}");
+                    //writer.WriteLine($"{track.Pilot.PilotNumber},{result},{decBeforeMark}");
+                }
+                //Declaration declaration = track.Declarations.Find(x => x.GoalNumber == 1);
+                //MarkerDrop markerDrop = track.MarkerDrops.Find(x => x.MarkerNumber == 1);
+                //if (markerDrop == null || markerDrop == default)
+                //    continue;
+
+                //if (declaration == null || declaration == default)
+                //    continue;
+                //double distanceDecToGoal = CoordinateHelpers.Calculate2DDistance(declaration1.PositionAtDeclaration, declaration1.DeclaredGoal);
+                //bool decOk = distanceDecToGoal > 1000.0;
+                //if (declaration1.DeclaredGoal.AltitudeGPS > 0)
+                //{
+                //    //Coordinate coordinate = new Coordinate(declaration1.DeclaredGoal.Latitude, declaration1.DeclaredGoal.Longitude,
+                //    //   CoordinateHelpers.ConvertToMeter(3000), CoordinateHelpers.ConvertToMeter(3000), declaration1.DeclaredGoal.TimeStamp);
+                //    double result = Math.Round(CoordinateHelpers.Calculate3DDistance(declaration1.DeclaredGoal, markerDrop.MarkerLocation, true), 0, MidpointRounding.AwayFromZero);
+                //    Console.WriteLine($"{track.Pilot.PilotNumber},{result},{decOk}");
+                    //writer.WriteLine($"{track.Pilot.PilotNumber},{result},{decOk}");
+                //}
             }
-
-            LandRunTask landRunTask = new LandRunTask();
-            landRunTask.SetupLandRun(6, 1, 2, 3, null);
-            landRunTask.CalculateResults(track, true, out double result);
-
-            Console.WriteLine($"Pilot 19 Task6 result: {Math.Round(result/1.0e6,2,MidpointRounding.AwayFromZero)}");
-
-            //string reportFileName = Path.Combine(Path.GetDirectoryName(trackFileName), Path.GetFileNameWithoutExtension(trackFileName) + ".xlsx");
-
-            ////TrackReportGenerator.GenerateTrackReport(reportFileName, track,true);
-            //stopwatch.Stop();
-
-            //Console.WriteLine($"Time for parsing track file and generate report: {stopwatch.Elapsed:mm\\:ss}");
-            //DonutTask donutTask = new DonutTask();
-
-            //donutTask.SetupDonut(-1, 2, 1, 300, 500, 50, double.NaN, true, null);
-
-            //string donut=JsonConvert.SerializeObject(donutTask,Formatting.Indented);
-
-            //using (StreamWriter writer = new StreamWriter(@"./donutConfig.json"))
-            //{
-            //    writer.Write(donut);
-            //}
-
-            //CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator("32U", 567000, 5489000);
-            //CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
-
-            //Console.WriteLine(coordinate.Latitude);
-            //Console.WriteLine(ToProperText(coordinate.Latitude));
-
-            //int[] array =new int[6]{ 1,2,3,4,5,6};
-
-            //for (int index = 0; index < array.Length; index++)
-            //{
-            //    for (int iterator = index+1; iterator < array.Length; iterator++)
-            //    {
-            //        Console.WriteLine($"{array[index]}->{array[iterator]}");
-            //    }
-            //}
-            //Coordinate declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, double.NaN, double.NaN, DateTime.Now);
-            //faiLogger.DeclaredGoals.Add(new DeclaredGoal(2, declaredGoal, declaredGoal));
-
-            //DonutTask donut = new DonutTask();
-            //donut.GoalNumber = 2;
-            //donut.InnerRadius = 250;
-            //donut.OuterRadius = 750;
-            //donut.UpperBoundary = double.NaN;
-            //donut.IsReentranceAllowed = true;
-            //donut.LowerBoundary = CoordinateHelpers.ConvertToMeter(3200);
-            //donut.DeclarationValidationRules = new List<IDeclarationValidationRules>();
-
-            //double donutResult;
-            //if (!donut.CalculateResults(faiLogger, true, out donutResult))
-            //{
-            //    Console.WriteLine("Failed to calculate donut result");
-            //}
-            //else
-            //{
-            //    Console.WriteLine("Result Donut:"+donutResult);
-            //}
-
-            //PieTask pie = new PieTask();
-            //pie.Tiers = new List<PieTask.PieTier>();
-
-            //PieTask.PieTier tier1 = new PieTask.PieTier();
-            //tier1.DeclarationValidationRules = new List<IDeclarationValidationRules>();
-            //tier1.IsReentranceAllowed = true;
-            //tier1.Multiplier = 1.0;
-            //tier1.LowerBoundary = CoordinateHelpers.ConvertToMeter(3500);
-            //tier1.UpperBoundary = double.NaN;
-            //tier1.Radius = 500;
-            //tier1.GoalNumber = 3;
-            //pie.Tiers.Add(tier1);
-
-            //utm= new CoordinateSharp.UniversalTransverseMercator("32U", 567950, 5489300);
-            //coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
-            //Coordinate centerTier1 = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, double.NaN, double.NaN, DateTime.Now);
-            //faiLogger.DeclaredGoals.Add(new DeclaredGoal(3, centerTier1, centerTier1));
-
-            //PieTask.PieTier tier2 = new PieTask.PieTier();
-            //tier2.DeclarationValidationRules = new List<IDeclarationValidationRules>();
-            //tier2.IsReentranceAllowed = true;
-            //tier2.Multiplier = 1.0;
-            //tier2.LowerBoundary = CoordinateHelpers.ConvertToMeter(3500);
-            //tier2.UpperBoundary = double.NaN;
-            //tier2.Radius = 500;
-            //tier2.GoalNumber = 4;
-            //pie.Tiers.Add(tier2);
-
-            //utm = new CoordinateSharp.UniversalTransverseMercator("32U", 567950, 5488700);
-            //coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
-            //Coordinate centerTier2 = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, double.NaN, double.NaN, DateTime.Now);
-            //faiLogger.DeclaredGoals.Add(new DeclaredGoal(4, centerTier2, centerTier2));
-
-            //PieTask.PieTier tier3 = new PieTask.PieTier();
-            //tier3.DeclarationValidationRules = new List<IDeclarationValidationRules>();
-            //tier3.IsReentranceAllowed = true;
-            //tier3.Multiplier = 3.0;
-            //tier3.LowerBoundary = CoordinateHelpers.ConvertToMeter(3800);
-            //tier3.UpperBoundary = double.NaN;
-            //tier3.Radius = 250;
-            //tier3.GoalNumber = 5;
-            //pie.Tiers.Add(tier3);
-
-            //utm = new CoordinateSharp.UniversalTransverseMercator("32U", 568550, 5489000);
-            //coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
-            //Coordinate centerTier3 = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, double.NaN, double.NaN, DateTime.Now);
-            //faiLogger.DeclaredGoals.Add(new DeclaredGoal(5, centerTier3, centerTier3));
-
-            //double pieResult;
-            //if (!pie.CalculateResults(faiLogger, true, out pieResult))
-            //{
-            //    Console.WriteLine("Failed to calculate pie result");
-            //}
-            //else
-            //{
-            //    Console.WriteLine("Result pie:"+pieResult);
-            //}
-            //CoordinateSharp.Coordinate coordinate1 = new CoordinateSharp.Coordinate(49.550316666666667, 9.92055);
-            //Console.WriteLine(coordinate1.UTM.Easting);
-            //Console.WriteLine(coordinate1.UTM.Northing);
-
-            //Track track4x4;
-            //if (!IGCParser.ParseFile(@"C:\Users\Micha\Source\repos\BalloonTrackAnalyze\TestTrack\E94BC98E-001-20611105838 - 4x4.igc", out track4x4))
-            //{
-            //    Console.WriteLine("Error parsing track");
-            //}
-
-            //double latitude = trackOriginal.DeclaredGoals[1].GoalDeclared.Latitude;
-            //double longitude = trackOriginal.DeclaredGoals[1].GoalDeclared.Longitude;
-            //CoordinateSharp.Coordinate coordinate = new CoordinateSharp.Coordinate(latitude,longitude);
-            //string gridZone = coordinate.UTM.LongZone + coordinate.UTM.LatZone;
-            //Console.WriteLine("Long/Lat (min):" + coordinate);
-            //Console.WriteLine("Long/Lat (degree):" + latitude + "N " + longitude + "E");
-            //Console.WriteLine("UTM:" + gridZone + coordinate.UTM.Northing + "N " + coordinate.UTM.Easting + "E");
-
-            Console.ReadLine();
         }
+
+
 
         private static string ToProperText(CoordinateSharp.CoordinatePart part)
         {
-            string text = part.Degrees + "° " + part.Minutes + "ʹ " + Math.Round(part.Seconds,2,MidpointRounding.AwayFromZero) + "ʺ";
+            string text = part.Degrees + "° " + part.Minutes + "ʹ " + Math.Round(part.Seconds, 2, MidpointRounding.AwayFromZero) + "ʺ";
             return text;
         }
 

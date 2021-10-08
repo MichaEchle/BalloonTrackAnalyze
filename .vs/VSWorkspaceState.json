@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\Coordinates",
+    "\\Coordinates\\Coordinates"
   ],
+  "SelectedNode": "\\Coordinates\\Coordinates\\CoordinateHelpers.cs",
   "PreviewInSolutionExplorer": false
 }
