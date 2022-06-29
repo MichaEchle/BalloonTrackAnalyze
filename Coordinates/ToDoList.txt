@@ -1,9 +1,10 @@
 Create PZ Checking
 	yellow PZ (around power cords, check if take off and landing are not is close approximate)
+Estimate Launch and Landing Position (done but needs more testing)
 Creating Picking Tool to let user selected specific markers, declarations etc from all tracks and put into one file
 Calculate scores from results
 Define a set of validation rules where only one or more have to be met. E.g. when a goal is open at different times, marker is valid if he is within one window not all
 	For now, Marker Timing Rules have been adapted to allow multiple opening and closing
 Create easy to read report with information about result calculation
-Dangerous Flying 8+/- m/s for 5 consecutive seconds (report value and duration)
-Check Flying above FL100 (10000ft)
+Dangerous Flying 8+/- m/s for 5 consecutive seconds (done needs testing)
+Check Flying above specified altitude (done needs testing)
