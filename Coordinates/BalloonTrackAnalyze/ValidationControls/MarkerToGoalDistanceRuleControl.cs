@@ -81,7 +81,7 @@ namespace BalloonTrackAnalyze.ValidationControls
                     tbMaximumDistance.Text = Math.Round(MarkerToGoalDistanceRule.MaximumDistance, 3, MidpointRounding.AwayFromZero).ToString();
                     rbMinimumDistanceMeter.Checked = true;
                 }
-                cbUse2DDistance.Checked = MarkerToGoalDistanceRule.Use2DDistance;
+                cbUse2DDistance.Checked = !MarkerToGoalDistanceRule.Use3DDistance;
                 cbUseGPSAltitude.Checked = MarkerToGoalDistanceRule.UseGPSAltitude;
                 tbGoalNumber.Text = MarkerToGoalDistanceRule.GoalNumber.ToString();
             }

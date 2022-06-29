@@ -1,16 +1,5 @@
-Describe areas
-	2D
-		Circles
-		Rectangle
-		Grid Lines
-		Polygons
-	3D
-		Cylinders
-		Spheres
-Check if point is inside or outside area
 Create PZ Checking
 	yellow PZ (around power cords, check if take off and landing are not is close approximate)
-Estimate Launch and Landing Position
 Creating Picking Tool to let user selected specific markers, declarations etc from all tracks and put into one file
 Calculate scores from results
 Define a set of validation rules where only one or more have to be met. E.g. when a goal is open at different times, marker is valid if he is within one window not all
