@@ -18,3 +18,7 @@ Define a set of validation rules where only one or more have to be met. E.g. whe
 Create easy to read report with information about result calculation
 Dangerous Flying 8+/- m/s for 5 consecutive seconds (done needs testing)
 Check Flying above specified altitude (done needs testing)
+
+Balloon Track Analyze:
+State how pilot mapping should look like,
+Allow semicolon as separator as well
