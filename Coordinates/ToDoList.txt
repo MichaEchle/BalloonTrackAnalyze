@@ -1,13 +1,3 @@
-Describe areas
-	2D
-		Circles
-		Rectangle
-		Grid Lines
-		Polygons
-	3D
-		Cylinders
-		Spheres
-Check if point is inside or outside area
 Create PZ Checking
 	yellow PZ (around power cords, check if take off and landing are not is close approximate)
 Estimate Launch and Landing Position (done but needs more testing)
