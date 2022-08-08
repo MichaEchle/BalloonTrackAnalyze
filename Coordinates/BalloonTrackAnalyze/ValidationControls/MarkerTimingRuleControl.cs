@@ -31,6 +31,7 @@ namespace BalloonTrackAnalyze.ValidationControls
         public MarkerTimingRuleControl()
         {
             InitializeComponent();
+            btCreate.Text = "Create rule";
         }
 
         /// <summary>
@@ -42,6 +43,7 @@ namespace BalloonTrackAnalyze.ValidationControls
             MarkerTimingRule = markerTimingRule;
             InitializeComponent();
             Prefill();
+            btCreate.Text = "Create rule";
         }
         #endregion
 

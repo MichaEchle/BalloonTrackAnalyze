@@ -20,6 +20,11 @@ namespace BalloonTrackAnalyze.TaskControls
         /// </summary>
         public LandRunTask LandRun { get; private set; }
 
+        public bool IsNewTask
+        {
+            get;private set;
+        }
+
         /// <summary>
         /// The delegate for the DataValid event
         /// </summary>
@@ -43,6 +48,8 @@ namespace BalloonTrackAnalyze.TaskControls
         public LandRunControl()
         {
             InitializeComponent();
+            IsNewTask = true;
+            btCreate.Text = "Create task";
         }
 
         /// <summary>
@@ -53,6 +60,8 @@ namespace BalloonTrackAnalyze.TaskControls
         {
             LandRun = landRun;
             InitializeComponent();
+            IsNewTask = false;
+            btCreate.Text = "Modify task";
             Prefill();
         }
         #endregion
@@ -147,14 +156,13 @@ namespace BalloonTrackAnalyze.TaskControls
             if (isDataValid)
             {
                 LandRun ??= new LandRunTask();
-                List<IMarkerValidationRules> rules = new List<IMarkerValidationRules>();
+                List<IMarkerValidationRules> markerValidationRules = new List<IMarkerValidationRules>();
                 foreach (object item in lbRules.Items)
                 {
-                    if (item is IMarkerValidationRules)
-                        if (!LandRun.MarkerValidationRules.Contains(item as IMarkerValidationRules))
-                            rules.Add(item as IMarkerValidationRules);
+                    if (item is IMarkerValidationRules markerValidationRule)
+                            markerValidationRules.Add(markerValidationRule);
                 }
-                LandRun.SetupLandRun(taskNumber, firstMarkerNumber, secondMarkerNumber, thirdMarkerNumber, rules);
+                LandRun.SetupLandRun(taskNumber, firstMarkerNumber, secondMarkerNumber, thirdMarkerNumber, markerValidationRules);
                 tbTaskNumber.Text = "";
                 tbFirstMarkerNumber.Text = "";
                 tbSecondMarkerNumber.Text = "";

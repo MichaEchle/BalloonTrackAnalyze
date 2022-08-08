@@ -39,6 +39,7 @@ namespace BalloonTrackAnalyze.ValidationControls
         public GoalToOtherGoalsDistanceRuleControl()
         {
             InitializeComponent();
+            btCreate.Text = "Create rule";
         }
 
         /// <summary>
@@ -50,6 +51,7 @@ namespace BalloonTrackAnalyze.ValidationControls
             GoalToOtherGoalsDistanceRule = goalToOtherGoalsDistanceRule;
             InitializeComponent();
             Prefill();
+            btCreate.Text = "Create rule";
         }
         #endregion
 

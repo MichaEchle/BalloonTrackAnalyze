@@ -22,6 +22,11 @@ namespace BalloonTrackAnalyze.TaskControls
             get; private set;
         }
 
+        public bool IsNewTask
+        {
+            get; private set;
+        }
+
         /// <summary>
         /// The delegate for the DataValid event
         /// </summary>
@@ -40,6 +45,8 @@ namespace BalloonTrackAnalyze.TaskControls
         public PieControl()
         {
             InitializeComponent();
+            IsNewTask = true;
+            btCreate.Text = "Create task";
             pieTierControl1.DataValid += PieTierControl1_DataValid;
         }
 
@@ -51,6 +58,8 @@ namespace BalloonTrackAnalyze.TaskControls
         {
             PieTask = pieTask;
             InitializeComponent();
+            IsNewTask = false;
+            btCreate.Text = "Modify task";
             Prefill();
             pieTierControl1.DataValid += PieTierControl1_DataValid;
         }
@@ -88,10 +97,20 @@ namespace BalloonTrackAnalyze.TaskControls
         /// </summary>
         private void PieTierControl1_DataValid()
         {
-            PieTask.PieTier tier = (Controls["pieTierControl1"] as PieTierControl).Tier;
-            if (!lbPieTiers.Items.Contains(tier))
-                lbPieTiers.Items.Add(tier);
-            Log(LogSeverityType.Info, $"{tier} created/modified");
+            if (Controls["pieTierControl1"] is PieTierControl tierControl)
+            {
+                PieTask.PieTier tier = tierControl.Tier;
+                if (tierControl.IsNewTier)
+                {
+                    if (!lbPieTiers.Items.Contains(tier))
+                        lbPieTiers.Items.Add(tier);
+                    Log(LogSeverityType.Info, $"{tier} created successfully");
+                }
+                else
+                {
+                    Log(LogSeverityType.Info, $"{tier} modified successfully");
+                }
+            }
         }
 
         /// <summary>
@@ -150,7 +169,6 @@ namespace BalloonTrackAnalyze.TaskControls
                 foreach (object item in lbPieTiers.Items)
                 {
                     if (item is PieTask.PieTier)
-                        if (!PieTask.Tiers.Contains(item as PieTask.PieTier))
                             tiers.Add(item as PieTask.PieTier);
                 }
                 PieTask.SetupPie(taskNumber, tiers);
@@ -169,9 +187,17 @@ namespace BalloonTrackAnalyze.TaskControls
         {
             if (lbPieTiers.SelectedItem != null)
             {
+                SuspendLayout();
                 pieTierControl1.Prefill(lbPieTiers.SelectedItem as PieTask.PieTier);
+                if (pieTierControl1.Controls["plRuleControl"] is Panel ruleControlPanel)
+                {
+                    ruleControlPanel.Controls.Remove(ruleControlPanel.Controls["ruleControl"]);
+                }
+                ResumeLayout();
             }
         }
+
+        
         #endregion
     }
 }

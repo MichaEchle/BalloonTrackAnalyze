@@ -39,6 +39,7 @@ namespace BalloonTrackAnalyze.ValidationControls
         public DeclarationToGoalHeigthRuleControl()
         {
             InitializeComponent();
+            btCreate.Text = "Create rule";
         }
 
         /// <summary>
@@ -50,6 +51,7 @@ namespace BalloonTrackAnalyze.ValidationControls
             DeclarationToGoalHeightRule = declarationToGoalHeightRule;
             InitializeComponent();
             Prefill();
+            btCreate.Text = "Modify rule";
         }
         #endregion
 

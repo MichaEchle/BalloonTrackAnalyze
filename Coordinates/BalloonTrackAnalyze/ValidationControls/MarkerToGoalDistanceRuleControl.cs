@@ -37,6 +37,7 @@ namespace BalloonTrackAnalyze.ValidationControls
         public MarkerToGoalDistanceRuleControl()
         {
             InitializeComponent();
+            btCreate.Text = "Create rule";
         }
 
         /// <summary>
@@ -48,6 +49,7 @@ namespace BalloonTrackAnalyze.ValidationControls
             MarkerToGoalDistanceRule = markerToGoalDistanceRule;
             InitializeComponent();
             Prefill();
+            btCreate.Text = "Modify rule";
         }
         #endregion
 

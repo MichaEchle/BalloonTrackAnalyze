@@ -20,6 +20,7 @@ namespace BalloonTrackAnalyze.ValidationControls
         /// </summary>
         public DeclarationToGoalDistanceRule DeclarationToGoalDistanceRule { get; private set; }
 
+
         /// <summary>
         /// Delegate for the DataValid event
         /// </summary>
@@ -30,6 +31,7 @@ namespace BalloonTrackAnalyze.ValidationControls
         /// </summary>
         public event DataValidDelegate DataValid;
 
+
         #endregion
 
         #region Constructors
@@ -39,6 +41,7 @@ namespace BalloonTrackAnalyze.ValidationControls
         public DeclarationToGoalDistanceRuleControl()
         {
             InitializeComponent();
+            btCreate.Text = "Create rule";
         }
 
         /// <summary>
@@ -50,6 +53,7 @@ namespace BalloonTrackAnalyze.ValidationControls
             DeclarationToGoalDistanceRule = declarationToGoalDistanceRule;
             InitializeComponent();
             Prefill();
+            btCreate.Text = "Modify rule";
         }
         #endregion
 

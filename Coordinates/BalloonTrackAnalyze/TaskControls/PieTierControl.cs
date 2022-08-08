@@ -21,6 +21,11 @@ namespace BalloonTrackAnalyze.TaskControls
         /// </summary>
         public PieTask.PieTier Tier { get; private set; }
 
+
+        public bool IsNewTier
+        {
+            get;private set;
+        }
         /// <summary>
         /// The delegate for the DataValid event
         /// </summary>
@@ -36,10 +41,6 @@ namespace BalloonTrackAnalyze.TaskControls
         /// </summary>
         private Point RuleControlLocation = new Point(0, 0);
 
-        /// <summary>
-        /// Indicates whether the pie tier shall be created or modified
-        /// </summary>
-        private bool IsExisting { get; set; } = false;
 
         #endregion
 
@@ -50,6 +51,8 @@ namespace BalloonTrackAnalyze.TaskControls
         public PieTierControl()
         {
             InitializeComponent();
+            IsNewTier = true;
+            btCreate.Text = "Create tier";
         }
 
         #endregion
@@ -58,11 +61,13 @@ namespace BalloonTrackAnalyze.TaskControls
         /// <summary>
         /// Pre-fill control from existing pie tier
         /// </summary>
-        public void Prefill(PieTask.PieTier tier)
+        public void Prefill(PieTask.PieTier pieTier)
         {
-            Tier = tier;
-            if (Tier != null)
+            Tier = pieTier;
+            if (Tier is not null)
             {
+                IsNewTier = false;
+                btCreate.Text = "Modify tier";
                 tbGoalNumber.Text = Tier.GoalNumber.ToString();
                 tbRadius.Text = Math.Round(Tier.Radius, 3, MidpointRounding.AwayFromZero).ToString();
                 rbRadiusMeter.Checked = true;
@@ -82,11 +87,11 @@ namespace BalloonTrackAnalyze.TaskControls
                     rbUpperBoundaryMeter.Checked = true;
                     rbUpperBoundaryFeet.Checked = false;
                 }
+                lbRules.Items.Clear();
                 foreach (IDeclarationValidationRules rule in Tier.DeclarationValidationRules)
                 {
                     lbRules.Items.Add(rule);
                 }
-                IsExisting = true;
             }
         }
 
@@ -173,23 +178,23 @@ namespace BalloonTrackAnalyze.TaskControls
             //TODO add goal validations;
             if (isDataValid)
             {
-                if (!IsExisting)
+                if (IsNewTier)
                     Tier = new PieTask.PieTier();
                 List<IDeclarationValidationRules> declarationValidationRules = new List<IDeclarationValidationRules>();
                 foreach (object item in lbRules.Items)
                 {
-                    if (item is IDeclarationValidationRules)
-                        if (!Tier.DeclarationValidationRules.Contains(item as IDeclarationValidationRules))
-                            declarationValidationRules.Add(item as IDeclarationValidationRules);
+                    if (item is IDeclarationValidationRules declarationValidationRule)
+                            declarationValidationRules.Add(declarationValidationRule);
                 }
                 Tier.SetupPieTier(goalNumber, radius, isReentranceAllowed, multiplier, lowerBoundary, upperBoundary, declarationValidationRules);
-                IsExisting = false;
                 tbGoalNumber.Text = "";
                 tbRadius.Text = "";
                 tbMultiplier.Text = "";
                 tbLowerBoundary.Text = "";
                 tbUpperBoundary.Text = "";
                 lbRules.Items.Clear();
+                plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
+                cbRuleList.SelectedIndex = 0;
                 OnDataValid();
             }
         }

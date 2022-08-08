@@ -103,6 +103,11 @@ namespace BalloonTrackAnalyze
                         ResumeLayout();
                     }
                     break;
+                default:
+                    SuspendLayout();
+                    plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
+                    ResumeLayout();
+                    break;
             }
         }
 
@@ -113,69 +118,108 @@ namespace BalloonTrackAnalyze
 
         private void LandrunControl_DataValid()
         {
-            LandRunTask landRun = (plUserControl.Controls["taskControl"] as LandRunControl).LandRun;
-            if (DoesTaskNumberAlreadyExists(landRun.TaskNumber))
+            if (plUserControl.Controls["taskControl"] is LandRunControl landRunControl)
             {
-                Log(LogSeverityType.Error, $"Failed to create {landRun}: A task with the number '{landRun.TaskNumber}' already exists");
-            }
-            else
-            {
-                if (!lbTaskList.Items.Contains(landRun))
+                LandRunTask landRun = landRunControl.LandRun;
+                if (landRunControl.IsNewTask)
                 {
-                    lbTaskList.Items.Add(landRun);
-                    Log(LogSeverityType.Info, $"{landRun} created/modified");
+                    if (DoesTaskNumberAlreadyExists(landRun.TaskNumber))
+                    {
+                        Log(LogSeverityType.Error, $"Failed to create {landRun}: A task with the number '{landRun.TaskNumber}' already exists");
+                    }
+                    else
+                    {
+                        if (!lbTaskList.Items.Contains(landRun))
+                        {
+                            lbTaskList.Items.Add(landRun);
+                            Log(LogSeverityType.Info, $"{landRun} created successfully");
+                        }
+                    }
+                }
+                else
+                {
+                    Log(LogSeverityType.Info, $"{landRun} modified successfully");
                 }
             }
         }
 
         private void ElbowControl_DataValid()
         {
-            ElbowTask elbow = (plUserControl.Controls["taskControl"] as ElbowControl).Elbow;
-            if (DoesTaskNumberAlreadyExists(elbow.TaskNumber))
+            if (plUserControl.Controls["taskControl"] is ElbowControl elbowControl)
             {
-                Log(LogSeverityType.Error, $"Failed to create {elbow}: A task with the number '{elbow.TaskNumber}' already exists");
-            }
-            else
-            {
-                if (!lbTaskList.Items.Contains(elbow))
+                ElbowTask elbow = elbowControl.Elbow;
+                if (elbowControl.IsNewTask)
                 {
-                    lbTaskList.Items.Add(elbow);
-                    Log(LogSeverityType.Info, $"{elbow} created/modified");
+                    if (DoesTaskNumberAlreadyExists(elbow.TaskNumber))
+                    {
+                        Log(LogSeverityType.Error, $"Failed to create {elbow}: A task with the number '{elbow.TaskNumber}' already exists");
+                    }
+                    else
+                    {
+                        if (!lbTaskList.Items.Contains(elbow))
+                        {
+                            lbTaskList.Items.Add(elbow);
+                            Log(LogSeverityType.Info, $"{elbow} created successfully");
+                        }
+                    }
+                }
+                else
+                {
+                    Log(LogSeverityType.Info, $"{elbow} modified successfully");
                 }
             }
         }
 
         private void PieControl_DataValid()
         {
-            PieTask pie = (plUserControl.Controls["taskControl"] as PieControl).PieTask;
-            if (DoesTaskNumberAlreadyExists(pie.TaskNumber))
+            if (plUserControl.Controls["taskControl"] is PieControl pieControl)
             {
-                Log(LogSeverityType.Error, $"Failed to create {pie}: A task with the number '{pie.TaskNumber}' already exists");
-            }
-            else
-            {
-                if (!lbTaskList.Items.Contains(pie))
+                PieTask pie = pieControl.PieTask;
+                if (pieControl.IsNewTask)
                 {
-                    lbTaskList.Items.Add(pie);
-                    Log(LogSeverityType.Info, $"{pie} created/modified");
+                    if (DoesTaskNumberAlreadyExists(pie.TaskNumber))
+                    {
+                        Log(LogSeverityType.Error, $"Failed to create {pie}: A task with the number '{pie.TaskNumber}' already exists");
+                    }
+                    else
+                    {
+                        if (!lbTaskList.Items.Contains(pie))
+                        {
+                            lbTaskList.Items.Add(pie);
+                            Log(LogSeverityType.Info, $"{pie} created successfully");
+                        }
+                    }
+                }
+                else
+                {
+                    Log(LogSeverityType.Info, $"{pie} modified successfully");
                 }
             }
         }
 
         private void DonutControl_DataValid()
         {
-            DonutTask donut = (plUserControl.Controls["taskControl"] as DonutControl).Donut;
-            if (DoesTaskNumberAlreadyExists(donut.TaskNumber))
+            if (plUserControl.Controls["taskControl"] is DonutControl donutControl)
             {
-                Log(LogSeverityType.Error, $"Failed to create {donut}: A task with the number '{donut.TaskNumber}' already exists");
-            }
-            else
-            {
-                if (!lbTaskList.Items.Contains(donut))
+
+                DonutTask donut = donutControl.Donut;
+                if (donutControl.IsNewTask)
                 {
-                    lbTaskList.Items.Add(donut);
-                    Log(LogSeverityType.Info, $"{donut} created/modified");
+                    if (DoesTaskNumberAlreadyExists(donut.TaskNumber))
+                    {
+                        Log(LogSeverityType.Error, $"Failed to create {donut}: A task with the number '{donut.TaskNumber}' already exists");
+                    }
+                    else
+                    {
+                        if (!lbTaskList.Items.Contains(donut))
+                        {
+                            lbTaskList.Items.Add(donut);
+                            Log(LogSeverityType.Info, $"{donut} created successfully");
+                        }
+                    }
                 }
+                else
+                    Log(LogSeverityType.Info, $"{donut} modified successfully");
             }
         }
 
@@ -520,13 +564,13 @@ namespace BalloonTrackAnalyze
             {
                 if (string.IsNullOrWhiteSpace(tbFlightNumber.Text))
                 {
-                    Log(LogSeverityType.Error,  "Please enter a Flight No first");
+                    Log(LogSeverityType.Error, "Please enter a Flight No first");
                     return;
                 }
                 int flightNumber;
                 if (!int.TryParse(tbFlightNumber.Text, out flightNumber))
                 {
-                    Log(LogSeverityType.Error,  $"Failed to parse Flight No '{tbFlightNumber.Text}' as integer");
+                    Log(LogSeverityType.Error, $"Failed to parse Flight No '{tbFlightNumber.Text}' as integer");
                     return;
                 }
                 CreateFolderStructure(flightNumber);

@@ -125,6 +125,7 @@ namespace Competition
                 while (!reader.EndOfStream)
                 {
                     string line = reader.ReadLine();
+                    line=line.Replace(';',',');
                     string[] parts = line.Split(',');
                     int pilotNumber;
                     if (!int.TryParse(parts[0], out pilotNumber))

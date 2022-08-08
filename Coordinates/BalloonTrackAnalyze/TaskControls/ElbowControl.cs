@@ -24,6 +24,11 @@ namespace BalloonTrackAnalyze.TaskControls
             get; private set;
         }
 
+        public bool IsNewTask
+        {
+            get; private set;
+        }
+
         /// <summary>
         /// The delegate for the DataValid event
         /// </summary>
@@ -48,6 +53,8 @@ namespace BalloonTrackAnalyze.TaskControls
         public ElbowControl()
         {
             InitializeComponent();
+            btCreate.Text = "Create task";
+            IsNewTask = true;
         }
 
         /// <summary>
@@ -58,6 +65,8 @@ namespace BalloonTrackAnalyze.TaskControls
         {
             Elbow = elbow;
             InitializeComponent();
+            btCreate.Text = "Modify task";
+            IsNewTask = false;
             Prefill();
         }
         #endregion
@@ -152,14 +161,13 @@ namespace BalloonTrackAnalyze.TaskControls
             if (isDataValid)
             {
                 Elbow ??= new ElbowTask();
-                List<IMarkerValidationRules> rules = new List<IMarkerValidationRules>();
+                List<IMarkerValidationRules> markerValidaitonRules = new List<IMarkerValidationRules>();
                 foreach (object item in lbRules.Items)
                 {
-                    if (item is IMarkerValidationRules)
-                        if (!Elbow.MarkerValidationRules.Contains(item as IMarkerValidationRules))
-                            rules.Add(item as IMarkerValidationRules);
+                    if (item is IMarkerValidationRules markerValidationRule)
+                            markerValidaitonRules.Add(markerValidationRule);
                 }
-                Elbow.SetupElbow(taskNumber, firstMarkerNumber, secondMarkerNumber, thirdMarkerNumber, rules);
+                Elbow.SetupElbow(taskNumber, firstMarkerNumber, secondMarkerNumber, thirdMarkerNumber, markerValidaitonRules);
                 tbTaskNumber.Text = "";
                 tbFirstMarkerNumber.Text = "";
                 tbSecondMarkerNumber.Text = "";

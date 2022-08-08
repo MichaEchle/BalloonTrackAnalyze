@@ -25,6 +25,11 @@ namespace BalloonTrackAnalyze.TaskControls
             get; private set;
         }
 
+        public bool IsNewTask
+        {
+            get; private set;
+        }
+
         /// <summary>
         /// Delegate for DataValid event
         /// </summary>
@@ -39,6 +44,8 @@ namespace BalloonTrackAnalyze.TaskControls
         /// Location for the user controls of the different rules
         /// </summary>
         private Point RuleControlLocation = new Point(0, 0);
+
+        
         #endregion
 
         #region Constructors
@@ -49,6 +56,8 @@ namespace BalloonTrackAnalyze.TaskControls
         public DonutControl()
         {
             InitializeComponent();
+            IsNewTask = true;
+            btCreate.Text = "Create Task";
         }
 
         /// <summary>
@@ -58,7 +67,9 @@ namespace BalloonTrackAnalyze.TaskControls
         public DonutControl(DonutTask donut)
         {
             Donut = donut;
+            IsNewTask = false;
             InitializeComponent();
+            btCreate.Text = "Modify Task";
             Prefill();
         }
         #endregion
@@ -82,7 +93,7 @@ namespace BalloonTrackAnalyze.TaskControls
         /// </summary>
         private void Prefill()
         {
-            if (Donut != null)
+            if (Donut is not null)
             {
                 tbTaskNumber.Text = Donut.TaskNumber.ToString();
                 tbGoalNumber.Text = Donut.GoalNumber.ToString();
@@ -93,6 +104,7 @@ namespace BalloonTrackAnalyze.TaskControls
                 rbOuterRadiusMeter.Checked = true;
                 //rbOuterRadiusFeet.Checked = false;
                 cbIsReetranceAllowed.Checked = Donut.IsReentranceAllowed;
+                
                 if (!double.IsNaN(Donut.LowerBoundary))
                 {
                     tbLowerBoundary.Text = Math.Round(Donut.LowerBoundary, 3, MidpointRounding.AwayFromZero).ToString();
@@ -205,9 +217,8 @@ namespace BalloonTrackAnalyze.TaskControls
                 List<IDeclarationValidationRules> declarationValidationRules = new List<IDeclarationValidationRules>();
                 foreach (object item in lbRules.Items)
                 {
-                    if (item is IDeclarationValidationRules)
-                        if (!Donut.DeclarationValidationRules.Contains(item as IDeclarationValidationRules))
-                            declarationValidationRules.Add(item as IDeclarationValidationRules);
+                    if (item is IDeclarationValidationRules declarationValidationRule)
+                            declarationValidationRules.Add(declarationValidationRule);
                 }
 
                 Donut.SetupDonut(taskNumber, goalNumber, 1, innerRadius, outerRadius, lowerBoundary, upperBoundary, isReentranceAllowed, declarationValidationRules);
