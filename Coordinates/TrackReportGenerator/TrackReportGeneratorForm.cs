@@ -99,8 +99,15 @@ namespace TrackReportGenerator
                     }
                 }
                 string reportFileName = Path.Combine(Path.GetDirectoryName(igcFile), Path.GetFileNameWithoutExtension(igcFile) + ".xlsx");
-                if (!ExcelTrackReportGenerator.GenerateTrackReport(reportFileName, track, SkipCoordinatesWithoutLocation, UseGPSAltitude,MaxAllowedAltitude))
-                    return false;
+                if (!File.Exists(reportFileName) || !cbSkipExistingReports.Checked)
+                {
+                    if (!ExcelTrackReportGenerator.GenerateTrackReport(reportFileName, track, SkipCoordinatesWithoutLocation, UseGPSAltitude, MaxAllowedAltitude))
+                        return false;
+                }
+                else
+                {
+                    Logger.Log(LogSeverityType.Info, $"File '{Path.GetFileName(igcFile)}' skipped");
+                }
 
                 return true;
             });

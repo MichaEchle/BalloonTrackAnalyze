@@ -48,6 +48,7 @@ namespace TrackReportGenerator
             this.rbMeter = new System.Windows.Forms.RadioButton();
             this.rbFeet = new System.Windows.Forms.RadioButton();
             this.cbSkipCoordinates = new System.Windows.Forms.CheckBox();
+            this.cbSkipExistingReports = new System.Windows.Forms.CheckBox();
             this.panel1.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
@@ -244,11 +245,24 @@ namespace TrackReportGenerator
             this.cbSkipCoordinates.UseVisualStyleBackColor = true;
             this.cbSkipCoordinates.CheckedChanged += new System.EventHandler(this.cbSkipCoordinates_CheckedChanged);
             // 
+            // cbSkipExisting
+            // 
+            this.cbSkipExistingReports.AutoSize = true;
+            this.cbSkipExistingReports.Checked = true;
+            this.cbSkipExistingReports.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.cbSkipExistingReports.Location = new System.Drawing.Point(769, 54);
+            this.cbSkipExistingReports.Name = "cbSkipExisting";
+            this.cbSkipExistingReports.Size = new System.Drawing.Size(165, 24);
+            this.cbSkipExistingReports.TabIndex = 13;
+            this.cbSkipExistingReports.Text = "Skip existing reports";
+            this.cbSkipExistingReports.UseVisualStyleBackColor = true;
+            // 
             // TrackReportGeneratorForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1198, 449);
+            this.Controls.Add(this.cbSkipExistingReports);
             this.Controls.Add(this.cbSkipCoordinates);
             this.Controls.Add(this.flowLayoutPanel2);
             this.Controls.Add(this.tbMaxAltitude);
@@ -296,6 +310,7 @@ namespace TrackReportGenerator
         private System.Windows.Forms.RadioButton rbMeter;
         private System.Windows.Forms.RadioButton rbFeet;
         private System.Windows.Forms.CheckBox cbSkipCoordinates;
+        private System.Windows.Forms.CheckBox cbSkipExistingReports;
     }
 }
 
