@@ -117,13 +117,13 @@ namespace Competition
         {
             string functionErrorMessage = $"Failed to calculate result for {this} and Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}': ";
             result = 0.0;
-            List<(int, Coordinate)> trackPointsInDonut = new List<(int trackPointNumber, Coordinate coordinate)>();
-            
-            Declaration targetDeclaration = ValidationHelper.GetValidDeclaration(track,GoalNumber,DeclarationValidationRules);
-            if(targetDeclaration==null)
+            List<(int trackPointNumber, Coordinate coordinate)> trackPointsInDonut = new List<(int trackPointNumber, Coordinate coordinate)>();
+
+            Declaration targetDeclaration = ValidationHelper.GetValidDeclaration(track, GoalNumber, DeclarationValidationRules);
+            if (targetDeclaration == null)
             {
                 //Debug.WriteLine("No valid goal found");
-                Log(LogSeverityType.Error, functionErrorMessage+$"No valid goal found for goal '#{GoalNumber}'");
+                Log(LogSeverityType.Error, functionErrorMessage + $"No valid goal found for goal '#{GoalNumber}'");
                 return false;
             }
             List<Coordinate> coordinates = track.TrackPoints;
@@ -146,7 +146,7 @@ namespace Competition
             {
                 double distanceToGoal = CoordinateHelpers.Calculate2DDistance(coordinates[index], targetDeclaration.DeclaredGoal);//calculate distance to goal
                 if (distanceToGoal <= OuterRadius && distanceToGoal >= InnerRadius)//save all trackpoints between outer and inner radius
-                    trackPointsInDonut.Add((track.TrackPoints.FindIndex(x=>x==coordinates[index]), coordinates[index]));
+                    trackPointsInDonut.Add((track.TrackPoints.FindIndex(x => x == coordinates[index]), coordinates[index]));
 
             }
             List<List<Coordinate>> chunksInDonut = new List<List<Coordinate>>();
@@ -154,16 +154,16 @@ namespace Competition
             chunksInDonut.Add(new List<Coordinate>());
             for (int index = 0; index < trackPointsInDonut.Count - 1; index++)
             {
-                if (trackPointsInDonut[index + 1].Item1 - trackPointsInDonut[index].Item1 == 1)//trackpoints are successive
+                if (trackPointsInDonut[index + 1].trackPointNumber - trackPointsInDonut[index].trackPointNumber == 1)//trackpoints are successive
                 {
                     if (chunksInDonut[addIndex].Count == 0)
                     {
-                        chunksInDonut[addIndex].Add(trackPointsInDonut[index].Item2);
-                        chunksInDonut[addIndex].Add(trackPointsInDonut[index + 1].Item2);
+                        chunksInDonut[addIndex].Add(trackPointsInDonut[index].coordinate);
+                        chunksInDonut[addIndex].Add(trackPointsInDonut[index + 1].coordinate);
                     }
                     else
                     {
-                        chunksInDonut[addIndex].Add(trackPointsInDonut[index + 1].Item2);
+                        chunksInDonut[addIndex].Add(trackPointsInDonut[index + 1].coordinate);
                     }
                 }
                 else//trackpoints are not successive -> create new chunk
@@ -173,7 +173,7 @@ namespace Competition
                 }
             }
 
-            
+
             if (!IsReentranceAllowed)//evaluate first chunk only
             {
                 if (chunksInDonut[0].Count >= 2)

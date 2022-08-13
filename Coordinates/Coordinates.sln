@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30128.74
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32319.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Coordinates", "Coordinates\Coordinates.csproj", "{DE7F6BD6-A3B7-4214-954B-43EDE4612C0A}"
 EndProject
@@ -28,7 +28,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLC2021", "BLC2021\BLC2021.
 		{DE7F6BD6-A3B7-4214-954B-43EDE4612C0A} = {DE7F6BD6-A3B7-4214-954B-43EDE4612C0A}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shapes", "AreasAndShapes\Shapes.csproj", "{84B05DE9-F1EF-46CD-A34D-51E31411B160}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shapes", "AreasAndShapes\Shapes.csproj", "{84B05DE9-F1EF-46CD-A34D-51E31411B160}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoordinateConverter", "CoordinateConverter\CoordinateConverter.csproj", "{6BFCCE62-EC91-48B4-A334-DC7BF01365CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,6 +70,10 @@ Global
 		{84B05DE9-F1EF-46CD-A34D-51E31411B160}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84B05DE9-F1EF-46CD-A34D-51E31411B160}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{84B05DE9-F1EF-46CD-A34D-51E31411B160}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BFCCE62-EC91-48B4-A334-DC7BF01365CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BFCCE62-EC91-48B4-A334-DC7BF01365CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BFCCE62-EC91-48B4-A334-DC7BF01365CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BFCCE62-EC91-48B4-A334-DC7BF01365CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

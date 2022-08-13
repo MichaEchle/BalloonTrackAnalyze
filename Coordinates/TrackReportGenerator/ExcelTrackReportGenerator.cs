@@ -105,8 +105,8 @@ namespace TrackReportGenerator
 
                 Coordinate launchPoint;
                 Coordinate landingPoint;
-                TrackHelpers.EstimateLaunchAndLandingTime(track, useGPSAltitude, out launchPoint, out landingPoint);
-
+                if (!TrackHelpers.EstimateLaunchAndLandingTime(track, useGPSAltitude, out launchPoint, out landingPoint))
+                    Logger.Log(LogSeverityType.Error, "Launch or landing point not correctly calculated");
                 wsTrackpoints.Cells[1, 5].Value = "Timestamp";
                 wsTrackpoints.Cells[1, 6].Value = "Long";
                 wsTrackpoints.Cells[1, 7].Value = "Lat";
@@ -430,7 +430,8 @@ namespace TrackReportGenerator
                 index = indexDistance;
                 Coordinate launchPoint;
                 Coordinate landingPoint;
-                TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launchPoint, out landingPoint);
+                if (!TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launchPoint, out landingPoint))
+                    Logger.Log(LogSeverityType.Error, "Launch or landing point not correctly calculated");
                 List<(string identifier, double distance)> distance2DLaunchToGoals = TrackHelpers.Calculate2DDistanceBetweenLaunchPointAndGoals(launchPoint, declarations);
                 List<(string identifier, double distance)> distance3DLaunchToGoals = TrackHelpers.Calculate3DDistanceBetweenLaunchPointAndGoals(launchPoint, declarations, useGPSAltitude);
                 wsDeclarationsAndMarkerDrops.Cells[index, 5, index, 7].Merge = true;
@@ -548,7 +549,8 @@ namespace TrackReportGenerator
                 Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Info, "Write incidents in order of occurrence ...");
                 Coordinate launchPoint;
                 Coordinate landingPoint;
-                TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launchPoint, out landingPoint);
+                if (!TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launchPoint, out landingPoint))
+                    Logger.Log(LogSeverityType.Error, "Launch or landing point not correctly calculated");
                 List<(DateTime timeStamp, string incident)> incidents = new List<(DateTime timeStamp, string incidient)>();
                 incidents.Add((launchPoint.TimeStamp, "Take Off"));
                 incidents.Add((landingPoint.TimeStamp, "Touch Down"));

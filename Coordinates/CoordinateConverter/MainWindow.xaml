@@ -1,0 +1,262 @@
+﻿<Window x:Class="CoordinateConverter.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CoordinateConverter"
+        mc:Ignorable="d"
+        Title="MainWindow"
+        SizeToContent="WidthAndHeight"
+        Loaded="Window_Loaded"
+        DataContext="{Binding RelativeSource={RelativeSource Self}}"
+        FontSize="14">
+
+    <Window.Resources>
+
+        <Style TargetType="FrameworkElement"
+               x:Key="baseStyle">
+            <Setter Property="Margin"
+                    Value="3,3" />
+        </Style>
+        <Style TargetType="TextBlock"
+               BasedOn="{StaticResource baseStyle}" />
+        <Style TargetType="Button"
+               BasedOn="{StaticResource baseStyle}">
+            <Setter Property="MinWidth"
+                    Value="170" />
+        </Style>
+        <Style TargetType="TextBox"
+               BasedOn="{StaticResource baseStyle}">
+            <Setter Property="MinWidth"
+                    Value="200" />
+        </Style>
+        <Style TargetType="ComboBox"
+               BasedOn="{StaticResource baseStyle}" />
+    </Window.Resources>
+    <Grid>
+        <TabControl>
+            <TabItem Header="UTM to Lat/Long">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Paste complete UTM:" />
+                    <TextBox x:Name="TbPasteCompleteUTM"
+                             Grid.Column="1"
+                             TextChanged="TbPasteCompleteUTM_TextChanged"
+                             ToolTip="Values must be separated by white space e.g. 32U 513224 5402843" />
+                    <TextBlock Text="UTM Zone:"
+                               Grid.Row="1" />
+                    <ComboBox x:Name="CbUTMZone"
+                              Grid.Column="1"
+                              IsEditable="True"
+                              ItemsSource="{Binding UTMZones}"
+                              Grid.Row="1"
+                              ToolTip="Enter a UTMZone or select from drop down; e.g 33S" />
+                    <TextBlock Text="Easting:"
+                               Grid.Row="2" />
+                    <TextBox x:Name="TbEastingInput"
+                             Grid.Row="2"
+                             Grid.Column="1"
+                             ToolTip="Enter the easting value (6 digits) e.g. 513224" />
+                    <TextBlock Text="Northing:"
+                               Grid.Row="3" />
+                    <TextBox x:Name="TbNorthingInput"
+                             Grid.Row="3"
+                             Grid.Column="1"
+                             ToolTip="Enter the northing value (7 digits) e.g. 5402843" />
+                    <Button x:Name="BtConvertToLatLong"
+                            Content="Convert"
+                            Grid.Row="4"
+                            Grid.ColumnSpan="2"
+                            Click="BtConvertToLatLong_Click" />
+                    <TextBlock Text="Latitude:"
+                               Grid.Row="5" />
+                    <TextBlock x:Name="TbLatitudeOutput"
+                               Grid.Row="5"
+                               Grid.Column="1" />
+                    <TextBlock Text="Longitude:"
+                               Grid.Row="6" />
+                    <TextBlock x:Name="TbLongitudeOutput"
+                               Grid.Row="6"
+                               Grid.Column="1" />
+                    <Button x:Name="BtCopyDecimalDegrees"
+                            Content="Copy Decimal Degrees"
+                            Grid.Row="7"
+                            IsEnabled="False"
+                            Click="BtCopyDecimalDegrees_Click" />
+                    <Button x:Name="BtCopyDgreeeMinutes"
+                            Content="Copy Degree Minutes"
+                            Grid.Row="7"
+                            Grid.Column="1"
+                            IsEnabled="False"
+                            Click="BtCopyDgreeeMinutes_Click" />
+                </Grid>
+
+            </TabItem>
+            <TabItem Header="Lat/Long to UTM">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Paste complete Lat Long" />
+                    <TextBox x:Name="TbPastCompleteLatLong"
+                             Grid.Column="1"
+                             TextChanged="TbPastCompleteLatLong_TextChanged"
+                             ToolTip="Values must be separated by white space; e.g.48.77844803N 9.180000721E or48° 46ʹ 42ʺ 4ʺʹN 9° 10ʹ 48ʺ 0ʺʹE" />
+                    <TextBlock Text="Latitude:"
+                               Grid.Row="1" />
+                    <TextBox x:Name="TbLatitudeInput"
+                             Grid.Column="1"
+                             Grid.Row="1"
+                             ToolTip="Enter a latitude e.g. 48.7784480 or 48° 46ʹ 42ʺ 4ʺʹ" />
+                    <TextBlock Text="Longitude:"
+                               Grid.Row="2" />
+                    <TextBox x:Name="TbLongitudeInput"
+                             Grid.Row="2"
+                             Grid.Column="1"
+                             ToolTip="Enter a longitude e.g. 9.1800007 or 9° 10ʹ 48ʺ 0ʺʹ" />
+                    <Button x:Name="BtConvertToUTM"
+                            Grid.Row="3"
+                            Grid.ColumnSpan="2"
+                            Content="Convert"
+                            Click="BtConvertToUTM_Click" />
+                    <TextBlock Text="UTM Zone:"
+                               Grid.Row="4" />
+                    <TextBlock x:Name="TbUTMZoneOutput"
+                               Grid.Row="4"
+                               Grid.Column="1" />
+                    <TextBlock Text="Easting"
+                               Grid.Row="5" />
+                    <TextBlock x:Name="TbEastingOutput"
+                               Grid.Row="5"
+                               Grid.Column="1" />
+                    <TextBlock Text="Northing:"
+                               Grid.Row="6" />
+                    <TextBlock x:Name="TbNorthingOutput"
+                               Grid.Row="6"
+                               Grid.Column="1" />
+                    <Button x:Name="BtCopyUTM"
+                            Content="Copy UTM"
+                            Grid.Row="7"
+                            Grid.ColumnSpan="2"
+                            Click="BtCopyUTM_Click"
+                            IsEnabled="False" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="IGC Line parser">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Button Content="Select IGC File"
+                            x:Name="BtSelectIGCFile"
+                            Click="BtSelectIGCFile_Click"
+                            Grid.ColumnSpan="2" />
+                    <RadioButton x:Name="RbBallonLiveParser"
+                                 Content="BallonLive Parser"
+                                 IsChecked="True"
+                                 Grid.Row="1" />
+                    <RadioButton x:Name="RbFAIParser"
+                                 Content="FAI Parser"
+                                 Grid.Column="1"
+                                 Grid.Row="1" />
+                    <TextBlock Text="Line Number:"
+                               Grid.Row="2" />
+                    <TextBox x:Name="TbLineNumber"
+                             Grid.Row="2"
+                             Grid.Column="1" />
+                    <Button x:Name="BtParseLine"
+                            Content="Parse Line"
+                            Click="BtParseLine_Click"
+                            Grid.Row="3"
+                            Grid.ColumnSpan="2"
+                            IsEnabled="False" />
+                    <TextBlock Text="Line Type:"
+                               Grid.Row="4" />
+                    <TextBlock x:Name="TbLineTypeOutputIGC"
+                               Grid.Column="1"
+                               Grid.Row="4" />
+                    <TextBlock Text="Time-stamp:"
+                               Grid.Row="5" />
+                    <TextBlock x:Name="TbtimestampOutputIGC"
+                               Grid.Column="1"
+                               Grid.Row="5" />
+                    <TextBlock Text="Latitude:"
+                               Grid.Row="6" />
+                    <TextBlock x:Name="TbLatitudeOutputIGC"
+                               Grid.Column="1"
+                               Grid.Row="6" />
+                    <TextBlock Text="Longitude:"
+                               Grid.Row="7" />
+                    <TextBlock x:Name="TbLongitudeOutputIGC"
+                               Grid.Column="1"
+                               Grid.Row="7" />
+                    <TextBlock Text="GPS Altitude [m]:"
+                               Grid.Row="8" />
+                    <TextBlock x:Name="TbGPSAltitudeMeterOutputIGC"
+                               Grid.Row="8"
+                               Grid.Column="1" />
+                    <TextBlock Text="GPS Altitude [ft]:"
+                               Grid.Row="9" />
+                    <TextBlock x:Name="TbGPSAltitudeFeetOutputIGC"
+                               Grid.Row="9"
+                               Grid.Column="1" />
+                    <TextBlock Text="UTM Zone:"
+                               Grid.Row="10" />
+                    <TextBlock x:Name="TbUTMZoneOutputIGC"
+                               Grid.Column="1"
+                               Grid.Row="10" />
+                    <TextBlock Text="Easting:"
+                               Grid.Row="11" />
+                    <TextBlock x:Name="TbEastingOutputIGC"
+                               Grid.Column="1"
+                               Grid.Row="11" />
+                    <TextBlock Text="Northing:"
+                               Grid.Row="12" />
+                    <TextBlock x:Name="TbNorthingOutputIGC"
+                               Grid.Column="1"
+                               Grid.Row="12" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

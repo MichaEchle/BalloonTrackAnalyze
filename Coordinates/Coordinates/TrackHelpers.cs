@@ -1,9 +1,11 @@
-﻿using System;
+﻿using OfficeOpenXml.Drawing.Slicer.Style;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Background;
 
 namespace Coordinates
 {
@@ -232,88 +234,100 @@ namespace Coordinates
                 foreach ((string goalName, Coordinate goalCoordinate) judgeDeclaredGoal in judgeDeclaredGoals)
                 {
                     string identifier = $"Goal{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}->Goal{judgeDeclaredGoal.goalName}";
-                    double distance = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, judgeDeclaredGoal.goalCoordinate,useGPSAltitude);
+                    double distance = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, judgeDeclaredGoal.goalCoordinate, useGPSAltitude);
                     distance3DBetweenPilotAndJudgeDeclaredGoals.Add((identifier, distance));
                 }
             }
             return distance3DBetweenPilotAndJudgeDeclaredGoals;
         }
 
-        public static void EstimateLaunchAndLandingTime(Track track, bool useGPSAltitude, out Coordinate launchPoint, out Coordinate landingPoint)
+        public static bool EstimateLaunchAndLandingTime(Track track, bool useGPSAltitude, out Coordinate launchPoint, out Coordinate landingPoint)
         {
-            if (track is null)
-            {
-                throw new ArgumentNullException(nameof(track));
-            }
-
-            launchPoint = null;
-            landingPoint = null;
-            List<double> altitudesFiltered;
-
-            List<Coordinate> cleanedUpTrackPoints;
-            CleanTrackPoints(track, useGPSAltitude, 15.0, out cleanedUpTrackPoints);
-
-            if (useGPSAltitude)
-                altitudesFiltered = cleanedUpTrackPoints.Select(x => x.AltitudeGPS).ToList();
-            else
-                altitudesFiltered = cleanedUpTrackPoints.Select(x => x.AltitudeBarometric).ToList();
-            int filterLength = 5;
-            int halfFilterLength = filterLength / 2;//integer division is intended
-            for (int index = 0; index < altitudesFiltered.Count; index++)//moving average
+            launchPoint = new Coordinate(0, 0, -1, -1, DateTime.MinValue);
+            landingPoint = new Coordinate(0, 0, -1, -1, DateTime.MinValue);
+            try
             {
 
-                if (index - halfFilterLength < 0)
-                    continue;
-                if (index + halfFilterLength > altitudesFiltered.Count - 1)
-                    continue;
-                int filterStart = index - halfFilterLength;
-                altitudesFiltered[index] = Math.Round(altitudesFiltered.GetRange(filterStart, filterLength).Average(), 0, MidpointRounding.AwayFromZero);
-            }
-            List<(int index, double altitudeDifference)> altitudeFilteredDerivative = new List<(int index, double altitudeDifference)>();
-
-            for (int index = 0; index < cleanedUpTrackPoints.Count - 1; index++)
-            {
-                altitudeFilteredDerivative.Add((index, altitudesFiltered[index + 1] - altitudesFiltered[index]));
-            }
-
-
-            int firstPeak = altitudeFilteredDerivative.FindIndex(x => x.altitudeDifference > 2.0);
-            int counter = 0;
-            int launchPointIndex = 0;
-            for (int index = firstPeak; index >= 1; index--)
-            {
-                if ((altitudeFilteredDerivative[index].altitudeDifference <= 0) && (Math.Abs(CoordinateHelpers.Calculate2DDistance(cleanedUpTrackPoints[altitudeFilteredDerivative[index].index], cleanedUpTrackPoints[altitudeFilteredDerivative[index].index - 1])) <= 2))
-                    counter++;
-                else
-                    counter = 0;
-                if (counter == 20)
+                if (track is null)
                 {
-                    launchPointIndex = altitudeFilteredDerivative[index + 20].index;
-                    break;
+                    throw new ArgumentNullException(nameof(track));
                 }
-            }
-            //int launchPointIndex = altitudeDerivative.Take( firstPeak).Last( x => x.altitudeDifference == 0).index;
-            launchPoint = cleanedUpTrackPoints[launchPointIndex];
-            int lastPeak = altitudeFilteredDerivative.FindLastIndex(x => x.altitudeDifference < -2.0);
-            counter = 0;
-            int landingPointIndex = altitudeFilteredDerivative[altitudeFilteredDerivative.Count - 1].index;
-            for (int index = lastPeak; index < altitudeFilteredDerivative.Count - 2; index++)
-            {
-                if ((altitudeFilteredDerivative[index].altitudeDifference >= 0) && (Math.Abs(CoordinateHelpers.Calculate2DDistance(cleanedUpTrackPoints[altitudeFilteredDerivative[index].index], cleanedUpTrackPoints[altitudeFilteredDerivative[index].index + 1])) >= 2))
-                    counter++;
+
+                List<double> altitudesFiltered;
+
+                List<Coordinate> cleanedUpTrackPoints;
+                CleanTrackPoints(track, useGPSAltitude, 15.0, out cleanedUpTrackPoints);
+
+                if (useGPSAltitude)
+                    altitudesFiltered = cleanedUpTrackPoints.Select(x => x.AltitudeGPS).ToList();
                 else
-                    counter = 0;
-                if (counter == 20)
+                    altitudesFiltered = cleanedUpTrackPoints.Select(x => x.AltitudeBarometric).ToList();
+                int filterLength = 5;
+                int halfFilterLength = filterLength / 2;//integer division is intended
+                for (int index = 0; index < altitudesFiltered.Count; index++)//moving average
                 {
-                    landingPointIndex = altitudeFilteredDerivative[index - 20].index;
-                    break;
+
+                    if (index - halfFilterLength < 0)
+                        continue;
+                    if (index + halfFilterLength > altitudesFiltered.Count - 1)
+                        continue;
+                    int filterStart = index - halfFilterLength;
+                    altitudesFiltered[index] = Math.Round(altitudesFiltered.GetRange(filterStart, filterLength).Average(), 0, MidpointRounding.AwayFromZero);
                 }
+                List<(int index, double altitudeDifference)> altitudeFilteredDerivative = new List<(int index, double altitudeDifference)>();
+
+                for (int index = 0; index < cleanedUpTrackPoints.Count - 1; index++)
+                {
+                    altitudeFilteredDerivative.Add((index, altitudesFiltered[index + 1] - altitudesFiltered[index]));
+                }
+
+
+                int firstPeak = altitudeFilteredDerivative.FindIndex(x => x.altitudeDifference > 2.0);
+                int counter = 0;
+                int launchPointIndex = 0;
+                for (int index = firstPeak; index >= 1; index--)
+                {
+                    if ((altitudeFilteredDerivative[index].altitudeDifference <= 0) && (Math.Abs(CoordinateHelpers.Calculate2DDistance(cleanedUpTrackPoints[altitudeFilteredDerivative[index].index], cleanedUpTrackPoints[altitudeFilteredDerivative[index].index - 1])) <= 2))
+                        counter++;
+                    else
+                        counter = 0;
+                    if (counter == 20)
+                    {
+                        launchPointIndex = altitudeFilteredDerivative[index + 20].index;
+                        break;
+                    }
+                }
+                //int launchPointIndex = altitudeDerivative.Take( firstPeak).Last( x => x.altitudeDifference == 0).index;
+                launchPoint = cleanedUpTrackPoints[launchPointIndex];
+                int lastPeak = altitudeFilteredDerivative.FindLastIndex(x => x.altitudeDifference < -2.0);
+                if (lastPeak == -1)
+                    lastPeak = altitudeFilteredDerivative.Count - 1;
+                counter = 0;
+                int landingPointIndex = altitudeFilteredDerivative[altitudeFilteredDerivative.Count - 1].index;
+                for (int index = lastPeak; index < altitudeFilteredDerivative.Count - 2; index++)
+                {
+                    if ((altitudeFilteredDerivative[index].altitudeDifference >= 0) && (Math.Abs(CoordinateHelpers.Calculate2DDistance(cleanedUpTrackPoints[altitudeFilteredDerivative[index].index], cleanedUpTrackPoints[altitudeFilteredDerivative[index].index + 1])) >= 2))
+                        counter++;
+                    else
+                        counter = 0;
+                    if (counter == 20)
+                    {
+                        landingPointIndex = altitudeFilteredDerivative[index - 20].index;
+                        break;
+                    }
+                }
+                //int landingPointIndex = altitudeDerivative.Skip(lastPeak).First( x => x.altitudeDifference == 0).index;
+                landingPoint = cleanedUpTrackPoints[landingPointIndex];
             }
-            //int landingPointIndex = altitudeDerivative.Skip(lastPeak).First( x => x.altitudeDifference == 0).index;
-            landingPoint = cleanedUpTrackPoints[landingPointIndex];
+            catch (Exception ex)
+            {
+                LoggerComponent.Logger.Log(LoggerComponent.LogSeverityType.Error, $"Failed to estimate launch or landing point: '{ex.Message}'");
+                return false;
+            }
+            return true;
         }
 
-        public static void CheckForDangerousFlying(Track track, bool useGPSAltitude, out bool isDangerousFlyingDetected, out List<Coordinate> relatedCoordinates, out double minVerticalVelocity, out double maxVerticalVelocity, out TimeSpan totalDuration, out int penaltyPoints, double maxAbsVerticalVelocity = 8.0, int minDurationSeconds = 5)
+        public static void CheckForDangerousFlying(Track track, bool useGPSAltitude, out bool isDangerousFlyingDetected, out List<Coordinate> relatedCoordinates, out double minVerticalVelocity, out double maxVerticalVelocity, out TimeSpan totalDuration, out int penaltyPoints, double maxAbsVerticalVelocityLimit = 8.0, int minDurationSeconds = 5)
         {
             isDangerousFlyingDetected = false;
             maxVerticalVelocity = double.NaN;
@@ -321,7 +335,7 @@ namespace Coordinates
             totalDuration = TimeSpan.Zero;
             penaltyPoints = 0;
             relatedCoordinates = new List<Coordinate>();
-            if (double.IsFinite(maxAbsVerticalVelocity) && minDurationSeconds > 0)
+            if (double.IsFinite(maxAbsVerticalVelocityLimit) && minDurationSeconds > 0)
             {
 
                 List<Coordinate> cleanedUpTrackPoints;
@@ -358,7 +372,7 @@ namespace Coordinates
                     }
                 }
 
-                List<(DateTime timestamp, double altitudeDiff)> violatingPoints = altitudeDerivative.Where(x => Math.Abs(x.altitudeDiff) > maxAbsVerticalVelocity).ToList();
+                List<(DateTime timestamp, double altitudeDiff)> violatingPoints = altitudeDerivative.Where(x => Math.Abs(x.altitudeDiff) > maxAbsVerticalVelocityLimit).ToList();
                 int consecutiveTrackPointsToCheck = (int)Math.Ceiling(minDurationSeconds / (double)trackPointInterval.Seconds);
                 for (int index = 0; index < violatingPoints.Count - consecutiveTrackPointsToCheck; index++)
                 {
@@ -381,7 +395,7 @@ namespace Coordinates
                 totalDuration = TimeSpan.FromSeconds(relatedCoordinates.Count * trackPointInterval.TotalSeconds);
                 if (isDangerousFlyingDetected)
                 {
-                    penaltyPoints = (int)Math.Round((Math.Max(maxVerticalVelocity, Math.Abs(minVerticalVelocity)) - maxAbsVerticalVelocity) * 250, 0, MidpointRounding.AwayFromZero);
+                    penaltyPoints = (int)Math.Round((Math.Max(maxVerticalVelocity, Math.Abs(minVerticalVelocity)) - maxAbsVerticalVelocityLimit) * 250, 0, MidpointRounding.AwayFromZero);
                 }
             }
 
@@ -420,7 +434,7 @@ namespace Coordinates
                     foreach (Coordinate coordinate in trackPointsAbove)
                     {
                         if (useGPSAltitude)
-                            tempPenaltyPoints += (CoordinateHelpers.ConvertToFeet( coordinate.AltitudeGPS - maxAllowedAltitude)) * trackPointInterval.TotalSeconds / 100.0;
+                            tempPenaltyPoints += (CoordinateHelpers.ConvertToFeet(coordinate.AltitudeGPS - maxAllowedAltitude)) * trackPointInterval.TotalSeconds / 100.0;
 
                         else
                             tempPenaltyPoints += (CoordinateHelpers.ConvertToFeet(coordinate.AltitudeBarometric - maxAllowedAltitude)) * trackPointInterval.TotalSeconds / 100.0;
@@ -450,6 +464,37 @@ namespace Coordinates
                 }
                 cleanedUpTrackPoints.Add(track.TrackPoints[index]);
             }
+        }
+
+        public static bool CheckLaunchConstraints(Track track, bool useGPSAltitude, DateTime beginOfStartPeriod, DateTime endOfStartPeriod, List<Coordinate> goals, double min2DDistanceBetweenLaunchAndGoals, double max2DDistanceBetweenLaunchAndGoals,out Coordinate launchPoint, out bool launchInStartPeriod, out List<double> distanceToGoals, out List<bool> distanceToGoalsOk)
+        {
+            launchInStartPeriod = false;
+            distanceToGoals = new List<double>();
+            distanceToGoalsOk = new List<bool>();
+            launchPoint = new Coordinate(0,0,0,0,DateTime.MinValue);
+            if (!EstimateLaunchAndLandingTime(track, useGPSAltitude, out launchPoint, out _))
+                return false;
+            if (launchPoint.TimeStamp >= beginOfStartPeriod && launchPoint.TimeStamp <= endOfStartPeriod)
+                launchInStartPeriod = true;
+            double distanceToGoal;
+            bool distanceOk = false;
+            foreach (Coordinate goal in goals)
+            {
+                distanceToGoal = CoordinateHelpers.Calculate2DDistance(launchPoint, goal);
+                distanceToGoals.Add(distanceToGoal);
+                if (!double.IsNaN(min2DDistanceBetweenLaunchAndGoals))
+                {
+                    if (distanceToGoal >= min2DDistanceBetweenLaunchAndGoals)
+                        distanceOk = true;
+                }
+                if (!double.IsNaN(max2DDistanceBetweenLaunchAndGoals))
+                {
+                    if (distanceToGoal <= max2DDistanceBetweenLaunchAndGoals)
+                        distanceOk &= true;
+                }
+                distanceToGoalsOk.Add(distanceOk);
+            }
+            return true;
         }
     }
 }

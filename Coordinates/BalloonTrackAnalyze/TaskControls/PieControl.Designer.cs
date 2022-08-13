@@ -41,26 +41,27 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.label1.Location = new System.Drawing.Point(10, 10);
+            this.label1.Location = new System.Drawing.Point(11, 13);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(119, 21);
+            this.label1.Size = new System.Drawing.Size(148, 28);
             this.label1.TabIndex = 0;
             this.label1.Text = "Pie Task Setup";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 39);
+            this.label2.Location = new System.Drawing.Point(11, 52);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(51, 15);
+            this.label2.Size = new System.Drawing.Size(63, 20);
             this.label2.TabIndex = 1;
             this.label2.Text = "Task No.";
             // 
             // btRemoveTier
             // 
-            this.btRemoveTier.Location = new System.Drawing.Point(8, 506);
+            this.btRemoveTier.Location = new System.Drawing.Point(243, 533);
+            this.btRemoveTier.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btRemoveTier.Name = "btRemoveTier";
-            this.btRemoveTier.Size = new System.Drawing.Size(196, 23);
+            this.btRemoveTier.Size = new System.Drawing.Size(224, 31);
             this.btRemoveTier.TabIndex = 5;
             this.btRemoveTier.Text = "Remove Tier";
             this.btRemoveTier.UseVisualStyleBackColor = true;
@@ -68,9 +69,10 @@
             // 
             // btCreate
             // 
-            this.btCreate.Location = new System.Drawing.Point(8, 535);
+            this.btCreate.Location = new System.Drawing.Point(14, 665);
+            this.btCreate.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.btCreate.Name = "btCreate";
-            this.btCreate.Size = new System.Drawing.Size(295, 33);
+            this.btCreate.Size = new System.Drawing.Size(344, 44);
             this.btCreate.TabIndex = 4;
             this.btCreate.Text = "Create Task";
             this.btCreate.UseVisualStyleBackColor = true;
@@ -78,33 +80,37 @@
             // 
             // tbTaskNumber
             // 
-            this.tbTaskNumber.Location = new System.Drawing.Point(124, 36);
+            this.tbTaskNumber.Location = new System.Drawing.Point(142, 48);
+            this.tbTaskNumber.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.tbTaskNumber.Name = "tbTaskNumber";
-            this.tbTaskNumber.Size = new System.Drawing.Size(84, 23);
+            this.tbTaskNumber.Size = new System.Drawing.Size(95, 27);
             this.tbTaskNumber.TabIndex = 1;
             // 
             // lbPieTiers
             // 
             this.lbPieTiers.FormattingEnabled = true;
-            this.lbPieTiers.ItemHeight = 15;
-            this.lbPieTiers.Location = new System.Drawing.Point(8, 406);
+            this.lbPieTiers.ItemHeight = 20;
+            this.lbPieTiers.Location = new System.Drawing.Point(14, 533);
+            this.lbPieTiers.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.lbPieTiers.Name = "lbPieTiers";
-            this.lbPieTiers.Size = new System.Drawing.Size(196, 94);
+            this.lbPieTiers.Size = new System.Drawing.Size(223, 124);
             this.lbPieTiers.TabIndex = 3;
             this.lbPieTiers.SelectedIndexChanged += new System.EventHandler(this.lbPieTiers_SelectedIndexChanged);
             // 
             // pieTierControl1
             // 
             this.pieTierControl1.BackColor = System.Drawing.Color.White;
-            this.pieTierControl1.Location = new System.Drawing.Point(0, 65);
+            this.pieTierControl1.Location = new System.Drawing.Point(0, 77);
+            this.pieTierControl1.Margin = new System.Windows.Forms.Padding(3, 5, 3, 5);
             this.pieTierControl1.Name = "pieTierControl1";
-            this.pieTierControl1.Size = new System.Drawing.Size(705, 335);
+            this.pieTierControl1.Size = new System.Drawing.Size(806, 447);
             this.pieTierControl1.TabIndex = 2;
             // 
             // PieControl
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.White;
             this.Controls.Add(this.pieTierControl1);
             this.Controls.Add(this.lbPieTiers);
@@ -113,8 +119,9 @@
             this.Controls.Add(this.btRemoveTier);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
+            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
             this.Name = "PieControl";
-            this.Size = new System.Drawing.Size(708, 582);
+            this.Size = new System.Drawing.Size(809, 776);
             this.ResumeLayout(false);
             this.PerformLayout();
 

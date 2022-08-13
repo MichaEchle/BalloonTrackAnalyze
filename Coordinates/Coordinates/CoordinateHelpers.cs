@@ -379,6 +379,12 @@ namespace Coordinates
            return new Coordinate(latitudeLongitude.latitude, latitudeLongitude.longitude, double.NaN, double.NaN, DateTime.MinValue);
         }
 
+        public static Coordinate ConvertUTMToLatitudeLongitudeCoordinate(string utmZone, int easting, int northing, double altitude)
+        {
+            (double latitude, double longitude) latitudeLongitude = ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
+            return new Coordinate(latitudeLongitude.latitude, latitudeLongitude.longitude, altitude, altitude, DateTime.MinValue);
+        }
+
         /// <summary>
         /// Convert a position from UTM format to lat/long format
         /// </summary>
