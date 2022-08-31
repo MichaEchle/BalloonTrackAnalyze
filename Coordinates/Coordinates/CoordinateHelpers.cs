@@ -1,7 +1,9 @@
-﻿using System;
+﻿using CoordinateSharp;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
+using static System.Math;
 
 namespace Coordinates
 {
@@ -20,6 +22,16 @@ namespace Coordinates
         /// the earths radius in meter
         /// </summary>
         public const double EARTH_RADIUS_METER = 6371.0e3;
+
+
+
+        internal static class WSG84Parameters
+        {
+
+            internal static double SEMI_MAJOR_AXIS = 6_378_137.0;
+            internal static double EARTH_FLATTENING = 1.0 / 298.257223563;
+            internal static double SEMI_MINOR_AXIS = 6_356_752.314245;
+        }
 
         /// <summary>
         /// Convert a part of coordinate from degree minute notation to decimal degree
@@ -40,14 +52,14 @@ namespace Coordinates
                 decimalDegrees += 360.0;
             while (decimalDegrees > 180.0)
                 decimalDegrees -= 360.0;
-            int degrees = (int)Math.Floor(decimalDegrees);
+            int degrees = (int)Floor(decimalDegrees);
             double minutes = (decimalDegrees - degrees) * 60.0;
-            double seconds = (minutes - Math.Floor(minutes)) * 60.0;
-            double tenths = (seconds - Math.Floor(seconds)) * 10.0;
+            double seconds = (minutes - Floor(minutes)) * 60.0;
+            double tenths = (seconds - Floor(seconds)) * 10.0;
 
-            int degreeMinutes = (int)Math.Floor(minutes);
-            int degreeSeconds = (int)Math.Floor(seconds);
-            int degreeTenthSeconds = (int)Math.Round(tenths, 0, MidpointRounding.AwayFromZero);
+            int degreeMinutes = (int)Floor(minutes);
+            int degreeSeconds = (int)Floor(seconds);
+            int degreeTenthSeconds = (int)Round(tenths, 0, MidpointRounding.AwayFromZero);
 
             return (degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds);
         }
@@ -96,17 +108,18 @@ namespace Coordinates
             }
 
 
-            double phi1 = coordinate1.Latitude * Math.PI / 180.0;
-            double phi2 = coordinate2.Latitude * Math.PI / 180.0;
-            double lambda1 = coordinate1.Longitude * Math.PI / 180.0;
-            double lambda2 = coordinate2.Longitude * Math.PI / 180.0;
+            double phi1 = coordinate1.Latitude * PI / 180.0;
+            double phi2 = coordinate2.Latitude * PI / 180.0;
+            double lambda1 = coordinate1.Longitude * PI / 180.0;
+            double lambda2 = coordinate2.Longitude * PI / 180.0;
             double deltaPhi = phi2 - phi1;
             double deltaLambda = lambda2 - lambda1;
 
-            double a = Math.Pow(Math.Sin(deltaPhi / 2.0), 2) + Math.Cos(phi1) * Math.Cos(phi2) * Math.Pow(Math.Sin(deltaLambda / 2.0), 2);
-            double distance2D = 2.0 * EARTH_RADIUS_METER * Math.Asin(Math.Sqrt(a));
+            double a = Pow(Sin(deltaPhi / 2.0), 2) + Cos(phi1) * Cos(phi2) * Pow(Sin(deltaLambda / 2.0), 2);
+            double distance2D = 2.0 * EARTH_RADIUS_METER * Asin(Sqrt(a));
             return distance2D;
         }
+
 
         /// <summary>
         /// Calculate the 3D distance [m] between the two coordinates using havercos for 2D distance and Euclid for 3D distance
@@ -137,7 +150,7 @@ namespace Coordinates
                 deltaAltitude = coordinate1.AltitudeBarometric - coordinate2.AltitudeBarometric;
             }
 
-            double distance3D = Math.Sqrt(Math.Pow(distance2D, 2) + Math.Pow(deltaAltitude, 2));
+            double distance3D = Sqrt(Pow(distance2D, 2) + Pow(deltaAltitude, 2));
             return distance3D;
         }
 
@@ -251,8 +264,8 @@ namespace Coordinates
             double b = Calculate2DDistance(coordinateA, coordinateC);
             double c = Calculate2DDistance(coordinateA, coordinateB);
 
-            double beta = Math.Acos((Math.Pow(a, 2) + Math.Pow(c, 2) - Math.Pow(b, 2)) / (2 * a * c));
-            result = beta / Math.PI * 180.0;
+            double beta = Acos((Pow(a, 2) + Pow(c, 2) - Pow(b, 2)) / (2 * a * c));
+            result = beta / PI * 180.0;
             return result;
         }
 
@@ -287,7 +300,7 @@ namespace Coordinates
 
             double halfOfCircumference = (a + b + c) / 2.0;
 
-            double area = Math.Sqrt(halfOfCircumference * (halfOfCircumference - a) * (halfOfCircumference - b) * (halfOfCircumference - c));
+            double area = Sqrt(halfOfCircumference * (halfOfCircumference - a) * (halfOfCircumference - b) * (halfOfCircumference - c));
             result = area;
 
             return result;
@@ -317,16 +330,16 @@ namespace Coordinates
                 throw new ArgumentException(nameof(bearingInDecimalDegree));
             }
 
-            double angularDistance = Math.Abs(distanceInMeters) / EARTH_RADIUS_METER;
-            double lat1 = coordinate1.Latitude * Math.PI / 180.0;
-            double long1 = coordinate1.Longitude * Math.PI / 180.0;
-            double bearing = (bearingInDecimalDegree % 360.0) * Math.PI / 180.0;
+            double angularDistance = Abs(distanceInMeters) / EARTH_RADIUS_METER;
+            double lat1 = coordinate1.Latitude * PI / 180.0;
+            double long1 = coordinate1.Longitude * PI / 180.0;
+            double bearing = (bearingInDecimalDegree % 360.0) * PI / 180.0;
 
-            double latitude = Math.Asin(Math.Sin(lat1) * Math.Cos(angularDistance) + Math.Cos(lat1) * Math.Sin(angularDistance) * Math.Cos(bearing));
-            double longitude = long1 + Math.Atan2(Math.Sin(bearing) * Math.Sin(angularDistance) * Math.Cos(lat1), Math.Cos(angularDistance) - Math.Sin(lat1) * Math.Sin(latitude));
+            double latitude = Asin(Sin(lat1) * Cos(angularDistance) + Cos(lat1) * Sin(angularDistance) * Cos(bearing));
+            double longitude = long1 + Atan2(Sin(bearing) * Sin(angularDistance) * Cos(lat1), Cos(angularDistance) - Sin(lat1) * Sin(latitude));
 
-            latitude *= 180.0 / Math.PI;
-            longitude *= 180.0 / Math.PI;
+            latitude *= 180.0 / PI;
+            longitude *= 180.0 / PI;
             Coordinate coordinate = new Coordinate(latitude, longitude, coordinate1.AltitudeGPS, coordinate1.AltitudeBarometric, DateTime.UtcNow);
 
             return coordinate;
@@ -350,16 +363,16 @@ namespace Coordinates
                 throw new ArgumentNullException(nameof(coordinate2));
             }
 
-            double phi1 = coordinate1.Latitude * Math.PI / 180.0;
-            double phi2 = coordinate2.Latitude * Math.PI / 180.0;
+            double phi1 = coordinate1.Latitude * PI / 180.0;
+            double phi2 = coordinate2.Latitude * PI / 180.0;
 
-            double lambda1 = coordinate1.Longitude * Math.PI / 180.0;
-            double lambda2 = coordinate2.Longitude * Math.PI / 180.0;
+            double lambda1 = coordinate1.Longitude * PI / 180.0;
+            double lambda2 = coordinate2.Longitude * PI / 180.0;
 
             double deltaLambda = lambda2 - lambda1;
-            double bearing = Math.Atan2(Math.Sin(deltaLambda) * Math.Cos(phi2), Math.Cos(phi1) * Math.Sin(phi2) - Math.Sin(phi1) * Math.Cos(phi2) * Math.Cos(deltaLambda));
+            double bearing = Atan2(Sin(deltaLambda) * Cos(phi2), Cos(phi1) * Sin(phi2) - Sin(phi1) * Cos(phi2) * Cos(deltaLambda));
 
-            bearing = ((bearing * 180.0 / Math.PI) + 360) % 360;
+            bearing = ((bearing * 180.0 / PI) + 360) % 360;
 
             return bearing;
 
@@ -376,7 +389,7 @@ namespace Coordinates
         public static Coordinate ConvertUTMToLatitudeLongitudeCoordinate(string utmZone, int easting, int northing)
         {
             (double latitude, double longitude) latitudeLongitude = ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
-           return new Coordinate(latitudeLongitude.latitude, latitudeLongitude.longitude, double.NaN, double.NaN, DateTime.MinValue);
+            return new Coordinate(latitudeLongitude.latitude, latitudeLongitude.longitude, double.NaN, double.NaN, DateTime.MinValue);
         }
 
         public static Coordinate ConvertUTMToLatitudeLongitudeCoordinate(string utmZone, int easting, int northing, double altitude)
@@ -418,7 +431,7 @@ namespace Coordinates
         public static (string utmZone, int easting, int northing) ConvertLatitudeLongitudeToUTM(double latitude, double longitude)
         {
             CoordinateSharp.Coordinate coordinateSharp = new CoordinateSharp.Coordinate(latitude, longitude);
-            return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", (int)(Math.Round(coordinateSharp.UTM.Easting,0,MidpointRounding.AwayFromZero)), (int)(Math.Round(coordinateSharp.UTM.Northing,0,MidpointRounding.AwayFromZero)));
+            return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", (int)(Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero)), (int)(Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero)));
         }
     }
 }

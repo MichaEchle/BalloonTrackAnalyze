@@ -1,4 +1,6 @@
-﻿using Microsoft.Win32;
+﻿using Coordinates;
+using Coordinates.Parsers;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -68,6 +70,11 @@ namespace CoordinateConverter
         {
             get; set;
         }
+
+        private List<string> IGCFileLines
+        {
+            get; set;
+        } = new List<string>();
 
 
         public MainWindow()
@@ -265,11 +272,17 @@ namespace CoordinateConverter
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Multiselect = false;
             openFileDialog.CheckFileExists = true;
-            openFileDialog.Filter = "*.igc|.igc File";
+            openFileDialog.Filter = "igc File (*.igc)|*.igc";
             if (openFileDialog.ShowDialog() ?? false)
             {
-                IGCFilePathAndName = openFileDialog.FileName;
-                BtParseLine.IsEnabled = true;
+                IGCFileLines.Clear();
+                using (StreamReader reader = new StreamReader(openFileDialog.FileName))
+                {
+                    while (!reader.EndOfStream)
+                    {
+                        IGCFileLines.Add(reader.ReadLine());
+                    }
+                }
             }
             else
                 BtParseLine.IsEnabled = false;
@@ -278,32 +291,51 @@ namespace CoordinateConverter
 
         private void BtParseLine_Click(object sender, RoutedEventArgs e)
         {
-            List<string> lines = new List<string>();
-            int lineNumber;
-            if (!int.TryParse(TbLineNumber.Text, out lineNumber))
-            {
-                MessageBox.Show("Please enter a valid line number");
-                return;
-            }
-            using (StreamReader reader = new StreamReader(IGCFilePathAndName))
-            {
-                while (!reader.EndOfStream)
-                {
-                    lines.Add(reader.ReadLine());
-                }
-                if (lines.Count < lineNumber-1)
-                {
-                    MessageBox.Show("The specified line number could not be found");
-                    return;
-                }
-            }
-            if (RbBallonLiveParser.IsChecked??false)
+            if (RbBallonLiveParser.IsChecked ?? false)
             {
 
             }
             else//FAI parser
             {
 
+            }
+        }
+
+        private void TbLineNumber_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (IGCFileLines.Count > 0)
+            {
+                int lineNumber;
+                if (!string.IsNullOrEmpty(TbLineNumber.Text))
+                {
+                    if (!int.TryParse(TbLineNumber.Text, out lineNumber))
+                    {
+                        TbLineContent.Text = string.Empty;
+                        MessageBox.Show("Please enter a valid line number");
+                        BtParseLine.IsEnabled = false;
+                        return;
+                    }
+
+                    if (lineNumber >= 0 && lineNumber <= IGCFileLines.Count - 1)
+                    {
+                        TbLineContent.Text = IGCFileLines[lineNumber];
+                        BtParseLine.IsEnabled = true;
+                    }
+                    else
+                    {
+                        MessageBox.Show($"IGC file doesn't have a line number {lineNumber}");
+                        BtParseLine.IsEnabled = false;
+                    }
+                }
+                else
+                {
+                    TbLineContent.Text = string.Empty;
+                    BtParseLine.IsEnabled = false;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Please select and .igc file first");
             }
         }
     }
