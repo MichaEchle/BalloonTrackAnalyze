@@ -1,6 +1,7 @@
 ﻿using CoordinateSharp;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Windows.Forms;
 using static System.Math;
@@ -120,238 +121,8 @@ namespace Coordinates
             return distance2D;
         }
 
-
-        /// <summary>
-        /// Calculate the 3D distance [m] between the two coordinates using havercos for 2D distance and Euclid for 3D distance
-        /// </summary>
-        /// <param name="coordinate1">the first coordinate</param>
-        /// <param name="coordinate2">the second coordinate</param>
-        /// <param name="useGPSAltitude">true: use GPS altitude; false: use barometric altitude</param>
-        /// <returns>the 3D distance in meters</returns>
-        public static double Calculate3DDistance(Coordinate coordinate1, Coordinate coordinate2, bool useGPSAltitude)
-        {
-            if (coordinate1 is null)
-            {
-                throw new ArgumentNullException(nameof(coordinate1));
-            }
-
-            if (coordinate2 is null)
-            {
-                throw new ArgumentNullException(nameof(coordinate2));
-            }
-            double distance2D = Calculate2DDistance(coordinate1, coordinate2);
-            double deltaAltitude;
-            if (useGPSAltitude)
-            {
-                deltaAltitude = coordinate1.AltitudeGPS - coordinate2.AltitudeGPS;
-            }
-            else
-            {
-                deltaAltitude = coordinate1.AltitudeBarometric - coordinate2.AltitudeBarometric;
-            }
-
-            double distance3D = Sqrt(Pow(distance2D, 2) + Pow(deltaAltitude, 2));
-            return distance3D;
-        }
-
-        /// <summary>
-        /// Accumulates the 2D distance [m] between consecutive coordinates
-        /// <para>ensure the coordinates are sorted accordingly</para>
-        /// </summary>
-        /// <param name="coordinates">the list of coordinates</param>
-        /// <returns>the accumulated 2D distance in meters</returns>
-        public static double Calculate2DDistanceBetweenPoints(List<Coordinate> coordinates)
-        {
-            double result = 0.0;
-            for (int index = 0; index < coordinates.Count - 1; index++)
-            {
-                result += Calculate2DDistance(coordinates[index], coordinates[index + 1]);
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Accumulates the 3D distance [m] between consecutive coordinates
-        /// <para>ensure the coordinates are sorted accordingly</para>
-        /// </summary>
-        /// <param name="coordinates">the list of coordinates</param>
-        /// <param name="useGPSAltitude">true: use GPS altitude; false: use barometric altitude</param>
-        /// <returns>the accumulated 3D distance in meters</returns>
-        public static double Calculate3DDistanceBetweenPoints(List<Coordinate> coordinates, bool useGPSAltitude)
-        {
-            double result = 0.0;
-            for (int index = 0; index < coordinates.Count - 1; index++)
-            {
-                result += Calculate3DDistance(coordinates[index], coordinates[index + 1], useGPSAltitude);
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// Calculates the distance [m] between two coordinates using a separation altitude to switch between 2D and 3D distance calculation
-        /// <para>if the target coordinate is below the separation altitude, the 2D distance will be calculated</para>
-        /// <para>if the target coordinate is above the separation altitude, the 3D distance between the target coordinate at separation altitude and the coordinate will be calculated</para>
-        /// </summary>
-        /// <param name="targetCoordinate">the target coordinate, will be lifted to separation altitude if coordinate is above the separation altitude</param>
-        /// <param name="targetCoordinate">the coordinate for which to calculate the distance with respect to the separation altitude</param>
-        /// <param name="separationAltitude">the separation altitude in [m]</param>
-        /// <param name="useGPSAltitude">true: use GPS altitude; false: use barometric altitude</param>
-        /// <returns>the distance in [m]</returns>
-        public static double CalculateDistanceWithSeparationAltitude(Coordinate targetCoordinate, Coordinate coordinate, double separationAltitude, bool useGPSAltitude)
-        {
-            if (targetCoordinate is null)
-            {
-                throw new ArgumentNullException(nameof(targetCoordinate));
-            }
-
-            if (coordinate is null)
-            {
-                throw new ArgumentNullException(nameof(coordinate));
-            }
-
-            if (useGPSAltitude)
-            {
-                if (coordinate.AltitudeGPS > separationAltitude)
-                {
-                    Coordinate tempCoordinate = new Coordinate(targetCoordinate.Latitude, targetCoordinate.Longitude, separationAltitude, separationAltitude, targetCoordinate.TimeStamp);
-                    return Calculate3DDistance(tempCoordinate, coordinate, true);
-                }
-                else
-                {
-                    return Calculate2DDistance(targetCoordinate, coordinate);
-                }
-            }
-            else
-            {
-                if (coordinate.AltitudeBarometric > separationAltitude)
-                {
-                    Coordinate tempCoordinate = new Coordinate(targetCoordinate.Latitude, targetCoordinate.Longitude, separationAltitude, separationAltitude, targetCoordinate.TimeStamp);
-                    return Calculate3DDistance(tempCoordinate, coordinate, false);
-                }
-                else
-                {
-                    return Calculate2DDistance(targetCoordinate, coordinate);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Calculate the interior angle at <paramref name="coordinateB"/> where the route is defined from <paramref name="coordinateA"/> to <paramref name="coordinateB"/> and <paramref name="coordinateB"/> to <paramref name="coordinateC"/>  
-        /// </summary>
-        /// <param name="coordinateA">first coordinate</param>
-        /// <param name="coordinateB">second coordinate</param>
-        /// <param name="coordinateC">third coordinate</param>
-        /// <returns>the interior angle in degrees</returns>
-        public static double CalculateInteriorAngle(Coordinate coordinateA, Coordinate coordinateB, Coordinate coordinateC)
-        {
-            if (coordinateA is null)
-            {
-                throw new ArgumentNullException(nameof(coordinateA));
-            }
-
-            if (coordinateB is null)
-            {
-                throw new ArgumentNullException(nameof(coordinateB));
-            }
-
-            if (coordinateC is null)
-            {
-                throw new ArgumentNullException(nameof(coordinateC));
-            }
-
-            double result = 0.0;
-            double a = Calculate2DDistance(coordinateB, coordinateC);
-            double b = Calculate2DDistance(coordinateA, coordinateC);
-            double c = Calculate2DDistance(coordinateA, coordinateB);
-
-            double beta = Acos((Pow(a, 2) + Pow(c, 2) - Pow(b, 2)) / (2 * a * c));
-            result = beta / PI * 180.0;
-            return result;
-        }
-
-        /// <summary>
-        /// Calculate the area of the triangle defined by <paramref name="coordinateA"/>, <paramref name="coordinateB"/> and <paramref name="coordinateC"/>
-        /// </summary>
-        /// <param name="coordinateA">first coordinate</param>
-        /// <param name="coordinateB">second coordinate</param>
-        /// <param name="coordinateC">third coordinate</param>
-        /// <returns>the area in square meters</returns>
-        public static double CalculateArea(Coordinate coordinateA, Coordinate coordinateB, Coordinate coordinateC)
-        {
-            if (coordinateA is null)
-            {
-                throw new ArgumentNullException(nameof(coordinateA));
-            }
-
-            if (coordinateB is null)
-            {
-                throw new ArgumentNullException(nameof(coordinateB));
-            }
-
-            if (coordinateC is null)
-            {
-                throw new ArgumentNullException(nameof(coordinateC));
-            }
-
-            double result = 0.0;
-            double a = Calculate2DDistance(coordinateB, coordinateC);
-            double b = Calculate2DDistance(coordinateA, coordinateC);
-            double c = Calculate2DDistance(coordinateA, coordinateB);
-
-            double halfOfCircumference = (a + b + c) / 2.0;
-
-            double area = Sqrt(halfOfCircumference * (halfOfCircumference - a) * (halfOfCircumference - b) * (halfOfCircumference - c));
-            result = area;
-
-            return result;
-        }
-
-        /// <summary>
-        /// Calculate a coordinate with given start point (<paramref name="coordinate1"/>), distance and bearing
-        /// <para>altitude will be copied for <paramref name="coordinate1"/> and time stamp set to current UTC time at time of calculation</para>
-        /// </summary>
-        /// <param name="coordinate1">a coordinate as start point</param>
-        /// <param name="distanceInMeters">the distance in meters</param>
-        /// <param name="bearingInDecimalDegree">the bearing in decimal degree</param>
-        /// <returns>a target coordinate</returns>
-        public static Coordinate CalculatePointWithDistanceAndBearing(Coordinate coordinate1, double distanceInMeters, double bearingInDecimalDegree)
-        {
-            if (coordinate1 is null)
-            {
-                throw new ArgumentNullException(nameof(coordinate1));
-            }
-            if (double.IsNaN(distanceInMeters) || double.IsInfinity(distanceInMeters))
-            {
-                throw new ArgumentException(nameof(distanceInMeters));
-            }
-
-            if (double.IsNaN(bearingInDecimalDegree) || double.IsInfinity(bearingInDecimalDegree))
-            {
-                throw new ArgumentException(nameof(bearingInDecimalDegree));
-            }
-
-            double angularDistance = Abs(distanceInMeters) / EARTH_RADIUS_METER;
-            double lat1 = coordinate1.Latitude * PI / 180.0;
-            double long1 = coordinate1.Longitude * PI / 180.0;
-            double bearing = (bearingInDecimalDegree % 360.0) * PI / 180.0;
-
-            double latitude = Asin(Sin(lat1) * Cos(angularDistance) + Cos(lat1) * Sin(angularDistance) * Cos(bearing));
-            double longitude = long1 + Atan2(Sin(bearing) * Sin(angularDistance) * Cos(lat1), Cos(angularDistance) - Sin(lat1) * Sin(latitude));
-
-            latitude *= 180.0 / PI;
-            longitude *= 180.0 / PI;
-            Coordinate coordinate = new Coordinate(latitude, longitude, coordinate1.AltitudeGPS, coordinate1.AltitudeBarometric, DateTime.UtcNow);
-
-            return coordinate;
-        }
-
-        /// <summary>
-        /// Calculate the initial bearing (forward azimuth) between the two coordinates 
-        /// </summary>
-        /// <param name="coordinate1">first coordinate</param>
-        /// <param name="coordinate2">second coordinate</param>
-        /// <returns>the initial bearing in degrees</returns>
-        public static double CalculateInitalBearing(Coordinate coordinate1, Coordinate coordinate2)
+        //ported implementation from http://www.movable-type.co.uk/scripts/latlong-vincenty.html
+        public static double Calculate2DDistanceVincentyWSG84(Coordinate coordinate1, Coordinate coordinate2)
         {
             if (coordinate1 is null)
             {
@@ -364,74 +135,403 @@ namespace Coordinates
             }
 
             double phi1 = coordinate1.Latitude * PI / 180.0;
-            double phi2 = coordinate2.Latitude * PI / 180.0;
-
             double lambda1 = coordinate1.Longitude * PI / 180.0;
+            double phi2 = coordinate2.Latitude * PI / 180;
             double lambda2 = coordinate2.Longitude * PI / 180.0;
 
-            double deltaLambda = lambda2 - lambda1;
-            double bearing = Atan2(Sin(deltaLambda) * Cos(phi2), Cos(phi1) * Sin(phi2) - Sin(phi1) * Cos(phi2) * Cos(deltaLambda));
+            double a = 6378137.0;
+            double b = 6356752.314245;
+            double f = 1.0 / 298.257223563;
 
-            bearing = ((bearing * 180.0 / PI) + 360) % 360;
+            double l = lambda2 - lambda1;
 
-            return bearing;
+
+            double tanU1 = (1.0 - f) * Tan(phi1);
+            double cosU1 = 1.0 / Sqrt((1 + tanU1 * tanU1));
+            double sinU1 = tanU1 * cosU1;
+            double tanU2 = (1.0 - f) * Tan(phi2);
+            double cosU2 = 1.0 / Sqrt((1 + tanU2 * tanU2));
+            double sinU2 = tanU2 * cosU2;
+
+            bool antipodal = (Abs(l) > (PI / 2.0)) || (Abs(phi2 - phi1) > (PI / 2.0));
+
+            double lambda = l;
+            double sinLambda;
+            double cosLambda;
+            double sigma = antipodal ? PI : 0;
+            double sinSigma = 0;
+            double cosSigma = antipodal ? -1.0 : 1.0;
+            double sinSquareSigma;
+            
+            double cos2Sigma_m = 1.0;                      // sigmaₘ = angular distance on the sphere from the equator to the midpoint of the line
+            double cosSqureAlpha = 1.0;                      // α = azimuth of the geodesic at the equator
+            double lambda_temp;
+            int iterations = 0;
+            
+            do
+            {
+                sinLambda = Sin(lambda);
+                cosLambda = Cos(lambda);
+                sinSquareSigma = Pow(cosU2 * sinLambda,2) + Pow(cosU1 * sinU2 - sinU1 * cosU2 * cosLambda,2);
+                if (Abs(sinSquareSigma) < 1e-24)
+                    break;  // co-incident/antipodal points (sigma < ≈0.006mm)
+                sinSigma = Sqrt(sinSquareSigma);
+                cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosLambda;
+                sigma = Atan2(sinSigma, cosSigma);
+                double sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma;
+                cosSqureAlpha = 1.0 - sinAlpha * sinAlpha;
+                cos2Sigma_m = (Abs(cosSqureAlpha)>double.Epsilon ) ? (cosSigma - 2 * sinU1 * sinU2 / cosSqureAlpha) : 0; // on equatorial line cos²α = 0 (§6)
+                double c = f / 16.0 * cosSqureAlpha * (4.0 + f * (4.0 - 3.0 * cosSqureAlpha));
+                lambda_temp = lambda;
+                lambda = l + (1 - c) * f * sinAlpha * (sigma + c * sinSigma * (cos2Sigma_m + c * cosSigma * (-1 + 2 * cos2Sigma_m * cos2Sigma_m)));
+                double iterationCheck = antipodal ? Abs(lambda) - PI : Abs(lambda);
+                if (iterationCheck > PI)
+                    throw new Exception("lambda > PI");
+            } while (Abs(lambda - lambda_temp) > 1e-12 && ++iterations < 1000); // TV: 'iterate until negligible change in lambda' (≈0.006mm)
+            
+            if (iterations >= 1000)
+                throw new Exception("Vincenty formula failed to converge");
+
+            double uSqaure = cosSqureAlpha * (a * a - b * b) / (b * b);
+            double upperA = 1.0 + uSqaure / 16384.0 * (4096.0 + uSqaure * (-768.0 + uSqaure * (320.0 - 175.0 * uSqaure)));
+            double upperB = uSqaure / 1024.0 * (256.0 + uSqaure * (-128.0 + uSqaure * (74.0 - 47.0 * uSqaure)));
+            double deltaSigma = upperB * sinSigma * (cos2Sigma_m + upperB / 4 * (cosSigma * (-1.0 + 2.0 * cos2Sigma_m * cos2Sigma_m) - upperB / 6.0 * cos2Sigma_m * (-3.0 + 4.0 * sinSigma * sinSigma) * (-3.0 + 4.0 * cos2Sigma_m * cos2Sigma_m)));
+
+            double distance2D = b * upperA * (sigma - deltaSigma); // s = length of the geodesic
+
+            // note special handling of exactly antipodal points where sin²sigma = 0 (due to discontinuity
+            // atan2(0, 0) = 0 but atan2(ε, 0) = PI/2 / 90°) - in which case bearing is always meridional,
+            // due north (or due south!)
+            // α = azimuths of the geodesic; α2 the direction P₁ P₂ produced
+            //double alpha1 = Abs(sinSquareSigma) < double.Epsilon ? 0 : Atan2(cosU2 * sinLambda, cosU1 * sinU2 - sinU1 * cosU2 * cosLambda);
+            //double alpha2= Abs(sinSquareSigma) < double.Epsilon ? PI : Atan2(cosU1 * sinLambda, -sinU1 * cosU2 + cosU1 * sinU2 * cosLambda);
+
+            return distance2D;
+
 
         }
 
-        /// <summary>
-        /// Convert a position from UTM format to lat/long format
-        /// <para>Please note that altitude is set to double.NaN and timestamp to DateTime.MinValue</para>
-        /// </summary>
-        /// <param name="utmZone">the UTM zone e.g. "32U"</param>
-        /// <param name="easting">the easting portion e.g. 630084</param>
-        /// <param name="northing">the northing portion e.g. 4833438</param>
-        /// <returns>a Coordinate object</returns>
-        public static Coordinate ConvertUTMToLatitudeLongitudeCoordinate(string utmZone, int easting, int northing)
+
+        public static double Calculate2DDistanceUTM(Coordinate coordinate1, Coordinate coordinate2)
         {
-            (double latitude, double longitude) latitudeLongitude = ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
-            return new Coordinate(latitudeLongitude.latitude, latitudeLongitude.longitude, double.NaN, double.NaN, DateTime.MinValue);
+            (string zone, int easting, int northing) coordinate1UTM = CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM(coordinate1);
+            (string zone, int easting, int northing) coordinate2UTM = CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM(coordinate2);
+
+            return Sqrt(Pow(coordinate1UTM.easting-coordinate2UTM.easting,2)+Pow(coordinate1UTM.northing-coordinate2UTM.northing,2));
+        }
+    
+
+    /// <summary>
+    /// Calculate the 3D distance [m] between the two coordinates using havercos for 2D distance and Euclid for 3D distance
+    /// </summary>
+    /// <param name="coordinate1">the first coordinate</param>
+    /// <param name="coordinate2">the second coordinate</param>
+    /// <param name="useGPSAltitude">true: use GPS altitude; false: use barometric altitude</param>
+    /// <returns>the 3D distance in meters</returns>
+    public static double Calculate3DDistance(Coordinate coordinate1, Coordinate coordinate2, bool useGPSAltitude)
+    {
+        if (coordinate1 is null)
+        {
+            throw new ArgumentNullException(nameof(coordinate1));
         }
 
-        public static Coordinate ConvertUTMToLatitudeLongitudeCoordinate(string utmZone, int easting, int northing, double altitude)
+        if (coordinate2 is null)
         {
-            (double latitude, double longitude) latitudeLongitude = ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
-            return new Coordinate(latitudeLongitude.latitude, latitudeLongitude.longitude, altitude, altitude, DateTime.MinValue);
+            throw new ArgumentNullException(nameof(coordinate2));
+        }
+        double distance2D = Calculate2DDistance(coordinate1, coordinate2);
+        double deltaAltitude;
+        if (useGPSAltitude)
+        {
+            deltaAltitude = coordinate1.AltitudeGPS - coordinate2.AltitudeGPS;
+        }
+        else
+        {
+            deltaAltitude = coordinate1.AltitudeBarometric - coordinate2.AltitudeBarometric;
         }
 
-        /// <summary>
-        /// Convert a position from UTM format to lat/long format
-        /// </summary>
-        /// <param name="utmZone">the UTM zone e.g. "32U"</param>
-        /// <param name="easting">the easting portion e.g. 630084</param>
-        /// <param name="northing">the northing portion e.g. 4833438</param>
-        /// <returns>the latitude and longitude pair</returns>
-        public static (double latitude, double longitude) ConvertUTMToLatitudeLongitude(string utmZone, int easting, int northing)
+        double distance3D = Sqrt(Pow(distance2D, 2) + Pow(deltaAltitude, 2));
+        return distance3D;
+    }
+
+    /// <summary>
+    /// Accumulates the 2D distance [m] between consecutive coordinates
+    /// <para>ensure the coordinates are sorted accordingly</para>
+    /// </summary>
+    /// <param name="coordinates">the list of coordinates</param>
+    /// <returns>the accumulated 2D distance in meters</returns>
+    public static double Calculate2DDistanceBetweenPoints(List<Coordinate> coordinates)
+    {
+        double result = 0.0;
+        for (int index = 0; index < coordinates.Count - 1; index++)
         {
-            CoordinateSharp.UniversalTransverseMercator utmCoordindate = new CoordinateSharp.UniversalTransverseMercator(utmZone, easting, northing);
-            CoordinateSharp.Coordinate coordinateSharp = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmCoordindate);
-            return (coordinateSharp.Latitude.DecimalDegree, coordinateSharp.Longitude.DecimalDegree);
+            result += Calculate2DDistance(coordinates[index], coordinates[index + 1]);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Accumulates the 3D distance [m] between consecutive coordinates
+    /// <para>ensure the coordinates are sorted accordingly</para>
+    /// </summary>
+    /// <param name="coordinates">the list of coordinates</param>
+    /// <param name="useGPSAltitude">true: use GPS altitude; false: use barometric altitude</param>
+    /// <returns>the accumulated 3D distance in meters</returns>
+    public static double Calculate3DDistanceBetweenPoints(List<Coordinate> coordinates, bool useGPSAltitude)
+    {
+        double result = 0.0;
+        for (int index = 0; index < coordinates.Count - 1; index++)
+        {
+            result += Calculate3DDistance(coordinates[index], coordinates[index + 1], useGPSAltitude);
+        }
+        return result;
+    }
+
+    /// <summary>
+    /// Calculates the distance [m] between two coordinates using a separation altitude to switch between 2D and 3D distance calculation
+    /// <para>if the target coordinate is below the separation altitude, the 2D distance will be calculated</para>
+    /// <para>if the target coordinate is above the separation altitude, the 3D distance between the target coordinate at separation altitude and the coordinate will be calculated</para>
+    /// </summary>
+    /// <param name="targetCoordinate">the target coordinate, will be lifted to separation altitude if coordinate is above the separation altitude</param>
+    /// <param name="targetCoordinate">the coordinate for which to calculate the distance with respect to the separation altitude</param>
+    /// <param name="separationAltitude">the separation altitude in [m]</param>
+    /// <param name="useGPSAltitude">true: use GPS altitude; false: use barometric altitude</param>
+    /// <returns>the distance in [m]</returns>
+    public static double CalculateDistanceWithSeparationAltitude(Coordinate targetCoordinate, Coordinate coordinate, double separationAltitude, bool useGPSAltitude)
+    {
+        if (targetCoordinate is null)
+        {
+            throw new ArgumentNullException(nameof(targetCoordinate));
         }
 
-        /// <summary>
-        /// Convert a Coordinate objects latitude and longitude to UTM format
-        /// </summary>
-        /// <param name="coordinate">the coordinate</param>
-        /// <returns>UTM zone, easting and northing rounded to the next integer</returns>
-        public static (string utmZone, int easting, int northing) ConvertLatitudeLongitudeCoordinateToUTM(Coordinate coordinate)
+        if (coordinate is null)
         {
-            return ConvertLatitudeLongitudeToUTM(coordinate.Latitude, coordinate.Longitude);
+            throw new ArgumentNullException(nameof(coordinate));
         }
 
-        /// <summary>
-        /// Converts latitude and longitude to UTM format
-        /// </summary>
-        /// <param name="latitude">the latitude in decimal degrees</param>
-        /// <param name="longitude">the longitude in decimal degrees</param>
-        /// <returns>UTM zone,easting and northing rounded to the next integer</returns>
-        public static (string utmZone, int easting, int northing) ConvertLatitudeLongitudeToUTM(double latitude, double longitude)
+        if (useGPSAltitude)
         {
-            CoordinateSharp.Coordinate coordinateSharp = new CoordinateSharp.Coordinate(latitude, longitude);
-            return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", (int)(Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero)), (int)(Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero)));
+            if (coordinate.AltitudeGPS > separationAltitude)
+            {
+                Coordinate tempCoordinate = new Coordinate(targetCoordinate.Latitude, targetCoordinate.Longitude, separationAltitude, separationAltitude, targetCoordinate.TimeStamp);
+                return Calculate3DDistance(tempCoordinate, coordinate, true);
+            }
+            else
+            {
+                return Calculate2DDistance(targetCoordinate, coordinate);
+            }
+        }
+        else
+        {
+            if (coordinate.AltitudeBarometric > separationAltitude)
+            {
+                Coordinate tempCoordinate = new Coordinate(targetCoordinate.Latitude, targetCoordinate.Longitude, separationAltitude, separationAltitude, targetCoordinate.TimeStamp);
+                return Calculate3DDistance(tempCoordinate, coordinate, false);
+            }
+            else
+            {
+                return Calculate2DDistance(targetCoordinate, coordinate);
+            }
         }
     }
+
+    /// <summary>
+    /// Calculate the interior angle at <paramref name="coordinateB"/> where the route is defined from <paramref name="coordinateA"/> to <paramref name="coordinateB"/> and <paramref name="coordinateB"/> to <paramref name="coordinateC"/>  
+    /// </summary>
+    /// <param name="coordinateA">first coordinate</param>
+    /// <param name="coordinateB">second coordinate</param>
+    /// <param name="coordinateC">third coordinate</param>
+    /// <returns>the interior angle in degrees</returns>
+    public static double CalculateInteriorAngle(Coordinate coordinateA, Coordinate coordinateB, Coordinate coordinateC)
+    {
+        if (coordinateA is null)
+        {
+            throw new ArgumentNullException(nameof(coordinateA));
+        }
+
+        if (coordinateB is null)
+        {
+            throw new ArgumentNullException(nameof(coordinateB));
+        }
+
+        if (coordinateC is null)
+        {
+            throw new ArgumentNullException(nameof(coordinateC));
+        }
+
+        double result = 0.0;
+        double a = Calculate2DDistance(coordinateB, coordinateC);
+        double b = Calculate2DDistance(coordinateA, coordinateC);
+        double c = Calculate2DDistance(coordinateA, coordinateB);
+
+        double beta = Acos((Pow(a, 2) + Pow(c, 2) - Pow(b, 2)) / (2 * a * c));
+        result = beta / PI * 180.0;
+        return result;
+    }
+
+    /// <summary>
+    /// Calculate the area of the triangle defined by <paramref name="coordinateA"/>, <paramref name="coordinateB"/> and <paramref name="coordinateC"/>
+    /// </summary>
+    /// <param name="coordinateA">first coordinate</param>
+    /// <param name="coordinateB">second coordinate</param>
+    /// <param name="coordinateC">third coordinate</param>
+    /// <returns>the area in square meters</returns>
+    public static double CalculateArea(Coordinate coordinateA, Coordinate coordinateB, Coordinate coordinateC)
+    {
+        if (coordinateA is null)
+        {
+            throw new ArgumentNullException(nameof(coordinateA));
+        }
+
+        if (coordinateB is null)
+        {
+            throw new ArgumentNullException(nameof(coordinateB));
+        }
+
+        if (coordinateC is null)
+        {
+            throw new ArgumentNullException(nameof(coordinateC));
+        }
+
+        double result = 0.0;
+        double a = Calculate2DDistance(coordinateB, coordinateC);
+        double b = Calculate2DDistance(coordinateA, coordinateC);
+        double c = Calculate2DDistance(coordinateA, coordinateB);
+
+        double halfOfCircumference = (a + b + c) / 2.0;
+
+        double area = Sqrt(halfOfCircumference * (halfOfCircumference - a) * (halfOfCircumference - b) * (halfOfCircumference - c));
+        result = area;
+
+        return result;
+    }
+
+    /// <summary>
+    /// Calculate a coordinate with given start point (<paramref name="coordinate1"/>), distance and bearing
+    /// <para>altitude will be copied for <paramref name="coordinate1"/> and time stamp set to current UTC time at time of calculation</para>
+    /// </summary>
+    /// <param name="coordinate1">a coordinate as start point</param>
+    /// <param name="distanceInMeters">the distance in meters</param>
+    /// <param name="bearingInDecimalDegree">the bearing in decimal degree</param>
+    /// <returns>a target coordinate</returns>
+    public static Coordinate CalculatePointWithDistanceAndBearing(Coordinate coordinate1, double distanceInMeters, double bearingInDecimalDegree)
+    {
+        if (coordinate1 is null)
+        {
+            throw new ArgumentNullException(nameof(coordinate1));
+        }
+        if (double.IsNaN(distanceInMeters) || double.IsInfinity(distanceInMeters))
+        {
+            throw new ArgumentException(nameof(distanceInMeters));
+        }
+
+        if (double.IsNaN(bearingInDecimalDegree) || double.IsInfinity(bearingInDecimalDegree))
+        {
+            throw new ArgumentException(nameof(bearingInDecimalDegree));
+        }
+
+        double angularDistance = Abs(distanceInMeters) / EARTH_RADIUS_METER;
+        double lat1 = coordinate1.Latitude * PI / 180.0;
+        double long1 = coordinate1.Longitude * PI / 180.0;
+        double bearing = (bearingInDecimalDegree % 360.0) * PI / 180.0;
+
+        double latitude = Asin(Sin(lat1) * Cos(angularDistance) + Cos(lat1) * Sin(angularDistance) * Cos(bearing));
+        double longitude = long1 + Atan2(Sin(bearing) * Sin(angularDistance) * Cos(lat1), Cos(angularDistance) - Sin(lat1) * Sin(latitude));
+
+        latitude *= 180.0 / PI;
+        longitude *= 180.0 / PI;
+        Coordinate coordinate = new Coordinate(latitude, longitude, coordinate1.AltitudeGPS, coordinate1.AltitudeBarometric, DateTime.UtcNow);
+
+        return coordinate;
+    }
+
+    /// <summary>
+    /// Calculate the initial bearing (forward azimuth) between the two coordinates 
+    /// </summary>
+    /// <param name="coordinate1">first coordinate</param>
+    /// <param name="coordinate2">second coordinate</param>
+    /// <returns>the initial bearing in degrees</returns>
+    public static double CalculateInitalBearing(Coordinate coordinate1, Coordinate coordinate2)
+    {
+        if (coordinate1 is null)
+        {
+            throw new ArgumentNullException(nameof(coordinate1));
+        }
+
+        if (coordinate2 is null)
+        {
+            throw new ArgumentNullException(nameof(coordinate2));
+        }
+
+        double phi1 = coordinate1.Latitude * PI / 180.0;
+        double phi2 = coordinate2.Latitude * PI / 180.0;
+
+        double lambda1 = coordinate1.Longitude * PI / 180.0;
+        double lambda2 = coordinate2.Longitude * PI / 180.0;
+
+        double deltaLambda = lambda2 - lambda1;
+        double bearing = Atan2(Sin(deltaLambda) * Cos(phi2), Cos(phi1) * Sin(phi2) - Sin(phi1) * Cos(phi2) * Cos(deltaLambda));
+
+        bearing = ((bearing * 180.0 / PI) + 360) % 360;
+
+        return bearing;
+
+    }
+
+    /// <summary>
+    /// Convert a position from UTM format to lat/long format
+    /// <para>Please note that altitude is set to double.NaN and timestamp to DateTime.MinValue</para>
+    /// </summary>
+    /// <param name="utmZone">the UTM zone e.g. "32U"</param>
+    /// <param name="easting">the easting portion e.g. 630084</param>
+    /// <param name="northing">the northing portion e.g. 4833438</param>
+    /// <returns>a Coordinate object</returns>
+    public static Coordinate ConvertUTMToLatitudeLongitudeCoordinate(string utmZone, int easting, int northing)
+    {
+        (double latitude, double longitude) latitudeLongitude = ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
+        return new Coordinate(latitudeLongitude.latitude, latitudeLongitude.longitude, double.NaN, double.NaN, DateTime.MinValue);
+    }
+
+    public static Coordinate ConvertUTMToLatitudeLongitudeCoordinate(string utmZone, int easting, int northing, double altitude)
+    {
+        (double latitude, double longitude) latitudeLongitude = ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
+        return new Coordinate(latitudeLongitude.latitude, latitudeLongitude.longitude, altitude, altitude, DateTime.MinValue);
+    }
+
+    /// <summary>
+    /// Convert a position from UTM format to lat/long format
+    /// </summary>
+    /// <param name="utmZone">the UTM zone e.g. "32U"</param>
+    /// <param name="easting">the easting portion e.g. 630084</param>
+    /// <param name="northing">the northing portion e.g. 4833438</param>
+    /// <returns>the latitude and longitude pair</returns>
+    public static (double latitude, double longitude) ConvertUTMToLatitudeLongitude(string utmZone, int easting, int northing)
+    {
+        CoordinateSharp.UniversalTransverseMercator utmCoordindate = new CoordinateSharp.UniversalTransverseMercator(utmZone, easting, northing);
+        CoordinateSharp.Coordinate coordinateSharp = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmCoordindate);
+        return (coordinateSharp.Latitude.DecimalDegree, coordinateSharp.Longitude.DecimalDegree);
+    }
+
+    /// <summary>
+    /// Convert a Coordinate objects latitude and longitude to UTM format
+    /// </summary>
+    /// <param name="coordinate">the coordinate</param>
+    /// <returns>UTM zone, easting and northing rounded to the next integer</returns>
+    public static (string utmZone, int easting, int northing) ConvertLatitudeLongitudeCoordinateToUTM(Coordinate coordinate)
+    {
+        return ConvertLatitudeLongitudeToUTM(coordinate.Latitude, coordinate.Longitude);
+    }
+
+    /// <summary>
+    /// Converts latitude and longitude to UTM format
+    /// </summary>
+    /// <param name="latitude">the latitude in decimal degrees</param>
+    /// <param name="longitude">the longitude in decimal degrees</param>
+    /// <returns>UTM zone,easting and northing rounded to the next integer</returns>
+    public static (string utmZone, int easting, int northing) ConvertLatitudeLongitudeToUTM(double latitude, double longitude)
+    {
+        CoordinateSharp.Coordinate coordinateSharp = new CoordinateSharp.Coordinate(latitude, longitude);
+        return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", (int)(Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero)), (int)(Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero)));
+    }
+}
 }
