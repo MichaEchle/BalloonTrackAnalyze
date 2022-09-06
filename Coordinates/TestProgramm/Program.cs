@@ -21,52 +21,53 @@ namespace TestProgramm
 
         static void Main(string[] args)
         {
-            DirectoryInfo directoryInfo = new DirectoryInfo(@"C:\temp\Donut");
-            FileInfo[] files = directoryInfo.GetFiles("*.igc");
-            Track track;
-            List<Track> tracks = new List<Track>();
-            foreach (FileInfo fileInfo in files)
-            {
-                if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out track))
-                {
-                    Console.WriteLine($"Failed to parse track '{fileInfo.FullName}'");
-                    continue;
-                }
-                tracks.Add(track);
-            }
-            tracks = tracks.OrderBy(x => x.Pilot.PilotNumber).ToList();
-            DonutTask donutTask = new DonutTask();
-            DeclarationToGoalDistanceRule declarationToGoalDistanceRule = new DeclarationToGoalDistanceRule();
-            declarationToGoalDistanceRule.SetupRule(2500, double.NaN);
-            donutTask.SetupDonut(12, 1, 3, 1000, 2000, 0, 10000, true, new List<IDeclarationValidationRules>() { declarationToGoalDistanceRule });
-
-            //using (StreamWriter writer2 = new StreamWriter(@"C:\Temp\Donut\F[3]_Task12_Results.csv"))
+            AccuracyEvaluation_GeodTest.CalculateDistances();
+            //DirectoryInfo directoryInfo = new DirectoryInfo(@"C:\temp\Donut_DM2022");
+            //FileInfo[] files = directoryInfo.GetFiles("*.igc");
+            //Track track;
+            //List<Track> tracks = new List<Track>();
+            //foreach (FileInfo fileInfo in files)
             //{
-            //    writer2.WriteLine($"PilotNumber,Distance, Reason for no result");
-            foreach (Track currentTrack in tracks)
-            {
-                double result = double.NaN;
-                if (currentTrack.Declarations.Where(x => x.GoalNumber == 1).Count() <= 3)
-                {
-                    if (!donutTask.CalculateResults(currentTrack, true, out result))
-                    {
-                        Console.WriteLine("Failed to calculate result");
-                    }
-                    //writer2.WriteLine($"{currentTrack.Pilot.PilotNumber},{result},Failed to calculate result for pilot {currentTrack.Pilot.PilotNumber}");
-                    else
-                    {
-                        Console.WriteLine($"{currentTrack.Pilot.PilotNumber},{result}");
+            //    if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out track))
+            //    {
+            //        Console.WriteLine($"Failed to parse track '{fileInfo.FullName}'");
+            //        continue;
+            //    }
+            //    tracks.Add(track);
+            //}
+            //tracks = tracks.OrderBy(x => x.Pilot.PilotNumber).ToList();
+            //DonutTask donutTask = new DonutTask();
+            //DeclarationToGoalDistanceRule declarationToGoalDistanceRule = new DeclarationToGoalDistanceRule();
+            //declarationToGoalDistanceRule.SetupRule(2500, double.NaN);
+            //donutTask.SetupDonut(12, 1, 3, 1000, 2000, 0, 10000, true, new List<IDeclarationValidationRules>() { declarationToGoalDistanceRule });
 
-                        //result umt (round to int)=5392m
-                        //result vincenty (WSG84) = 5170m
-                    }
+            ////using (StreamWriter writer2 = new StreamWriter(@"C:\Temp\Donut\F[3]_Task12_Results.csv"))
+            ////{
+            ////    writer2.WriteLine($"PilotNumber,Distance, Reason for no result");
+            //foreach (Track currentTrack in tracks)
+            //{
+            //    double result = double.NaN;
+            //    if (currentTrack.Declarations.Where(x => x.GoalNumber == 1).Count() <= 3)
+            //    {
+            //        if (!donutTask.CalculateResults(currentTrack, true, out result))
+            //        {
+            //            Console.WriteLine("Failed to calculate result");
+            //        }
+            //        //writer2.WriteLine($"{currentTrack.Pilot.PilotNumber},{result},Failed to calculate result for pilot {currentTrack.Pilot.PilotNumber}");
+            //        else
+            //        {
+            //            Console.WriteLine($"{currentTrack.Pilot.PilotNumber},{result}");
 
-                }
-                else
-                {
-                    Console.WriteLine($"{currentTrack.Pilot.PilotNumber},{result},More than 3 declarations");
-                }
-            }
+            //            //result umt (round to int)=5392m
+            //            //result vincenty (WSG84) = 5170m
+            //        }
+
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine($"{currentTrack.Pilot.PilotNumber},{result},More than 3 declarations");
+            //    }
+            //}
         //Montgolfiade_DM2022.CalculateFlight5();
         }
     

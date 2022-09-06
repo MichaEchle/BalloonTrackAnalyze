@@ -65,7 +65,7 @@ namespace Competition
             {
                 if (declaration.Equals(otherGoal))
                     continue;
-                double distanceBetweenGoals = CoordinateHelpers.Calculate2DDistance(declaration.DeclaredGoal, otherGoal.DeclaredGoal);
+                double distanceBetweenGoals = CoordinateHelpers.Calculate2DDistanceHavercos(declaration.DeclaredGoal, otherGoal.DeclaredGoal);
 
                 if (!double.IsNaN(MinimumDistance))
                     if (distanceBetweenGoals < MinimumDistance)

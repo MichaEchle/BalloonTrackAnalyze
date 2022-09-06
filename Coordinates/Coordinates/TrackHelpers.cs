@@ -16,7 +16,7 @@ namespace Coordinates
             List<double> distance2DBetweenPositionOfDeclarationsAndDeclaredGoal = new List<double>();
             foreach (Declaration declaration in declarations)
             {
-                distance2DBetweenPositionOfDeclarationsAndDeclaredGoal.Add(CoordinateHelpers.Calculate2DDistance(declaration.PositionAtDeclaration, declaration.DeclaredGoal));
+                distance2DBetweenPositionOfDeclarationsAndDeclaredGoal.Add(CoordinateHelpers.Calculate2DDistanceHavercos(declaration.PositionAtDeclaration, declaration.DeclaredGoal));
             }
             return distance2DBetweenPositionOfDeclarationsAndDeclaredGoal;
         }
@@ -44,7 +44,7 @@ namespace Coordinates
                         identifier = $"G{declarations[index].GoalNumber}_{declarations[index].DeclaredGoal.TimeStamp:HH:mm:ss}->G{declarations[iterator].GoalNumber}_{declarations[iterator].DeclaredGoal.TimeStamp:HH:mm:ss}";
                     else
                         identifier = $"G{declarations[index].GoalNumber}->G{declarations[iterator].GoalNumber}";
-                    double distance = CoordinateHelpers.Calculate2DDistance(declarations[index].DeclaredGoal, declarations[iterator].DeclaredGoal);
+                    double distance = CoordinateHelpers.Calculate2DDistanceHavercos(declarations[index].DeclaredGoal, declarations[iterator].DeclaredGoal);
                     distance2DBetweenDeclaredGoals.Add((identifier, distance));
                 }
             }
@@ -84,7 +84,7 @@ namespace Coordinates
                         identifier = $"M{markerDrops[index].MarkerNumber}_{markerDrops[index].MarkerLocation.TimeStamp:HH:mm:ss}->M{markerDrops[iterator].MarkerNumber}_{markerDrops[iterator].MarkerLocation.TimeStamp:HH:mm:ss}";
                     else
                         identifier = $"M{markerDrops[index].MarkerNumber}->M{markerDrops[iterator].MarkerNumber}";
-                    double distance = CoordinateHelpers.Calculate2DDistance(markerDrops[index].MarkerLocation, markerDrops[iterator].MarkerLocation);
+                    double distance = CoordinateHelpers.Calculate2DDistanceHavercos(markerDrops[index].MarkerLocation, markerDrops[iterator].MarkerLocation);
                     distance2DBetweenMarkers.Add((identifier, distance));
                 }
             }
@@ -119,7 +119,7 @@ namespace Coordinates
                 foreach (MarkerDrop markerDrop in markerDrops)
                 {
                     string identifier = $"G{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}->M{markerDrop.MarkerNumber}_{markerDrop.MarkerLocation.TimeStamp:HH:mm:ss}";
-                    double distance = CoordinateHelpers.Calculate2DDistance(declaration.DeclaredGoal, markerDrop.MarkerLocation);
+                    double distance = CoordinateHelpers.Calculate2DDistanceHavercos(declaration.DeclaredGoal, markerDrop.MarkerLocation);
                     distance2DBetweenMarkerAndGoals.Add((identifier, distance));
                 }
             }
@@ -147,7 +147,7 @@ namespace Coordinates
             foreach (Declaration declaration in declarations)
             {
                 string idenifier = $"TO->G{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}";
-                double distance = CoordinateHelpers.Calculate2DDistance(launchPoint, declaration.DeclaredGoal);
+                double distance = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, declaration.DeclaredGoal);
                 distance2DBetweenLaunchPointAndGoals.Add((idenifier, distance));
             }
             return distance2DBetweenLaunchPointAndGoals;
@@ -170,7 +170,7 @@ namespace Coordinates
             foreach (Declaration declaration in declarations)
             {
                 string idenifier = $"TD->Goal{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}";
-                double distance = CoordinateHelpers.Calculate2DDistance(landingPoint, declaration.DeclaredGoal);
+                double distance = CoordinateHelpers.Calculate2DDistanceHavercos(landingPoint, declaration.DeclaredGoal);
                 distance2DBetweenLandingPointAndGoals.Add((idenifier, distance));
             }
             return distance2DBetweenLandingPointAndGoals;
@@ -193,7 +193,7 @@ namespace Coordinates
             foreach ((string goalName, Coordinate goalCoordinate) judgeDeclaredGoal in judgeDeclaredGoals)
             {
                 string identifier = $"TO->Goal{judgeDeclaredGoal.goalName}";
-                double distance = CoordinateHelpers.Calculate2DDistance(launchPoint, judgeDeclaredGoal.goalCoordinate);
+                double distance = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, judgeDeclaredGoal.goalCoordinate);
                 distance2DBetweenLaunchPointAndGoals.Add((identifier, distance));
             }
             return distance2DBetweenLaunchPointAndGoals;
@@ -219,7 +219,7 @@ namespace Coordinates
                 foreach ((string goalName, Coordinate goalCoordinate) judgeDeclaredGoal in judgeDeclaredGoals)
                 {
                     string identifier = $"Goal{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}->Goal{judgeDeclaredGoal.goalName}";
-                    double distance = CoordinateHelpers.Calculate2DDistance(declaration.DeclaredGoal, judgeDeclaredGoal.goalCoordinate);
+                    double distance = CoordinateHelpers.Calculate2DDistanceHavercos(declaration.DeclaredGoal, judgeDeclaredGoal.goalCoordinate);
                     distance2DBetweenPilotAndJudgeDeclaredGoals.Add((identifier, distance));
                 }
             }
@@ -287,7 +287,7 @@ namespace Coordinates
                 int launchPointIndex = 0;
                 for (int index = firstPeak; index >= 1; index--)
                 {
-                    if ((altitudeFilteredDerivative[index].altitudeDifference <= 0) && (Math.Abs(CoordinateHelpers.Calculate2DDistance(cleanedUpTrackPoints[altitudeFilteredDerivative[index].index], cleanedUpTrackPoints[altitudeFilteredDerivative[index].index - 1])) <= 2))
+                    if ((altitudeFilteredDerivative[index].altitudeDifference <= 0) && (Math.Abs(CoordinateHelpers.Calculate2DDistanceHavercos(cleanedUpTrackPoints[altitudeFilteredDerivative[index].index], cleanedUpTrackPoints[altitudeFilteredDerivative[index].index - 1])) <= 2))
                         counter++;
                     else
                         counter = 0;
@@ -306,7 +306,7 @@ namespace Coordinates
                 int landingPointIndex = altitudeFilteredDerivative[altitudeFilteredDerivative.Count - 1].index;
                 for (int index = lastPeak; index < altitudeFilteredDerivative.Count - 2; index++)
                 {
-                    if ((altitudeFilteredDerivative[index].altitudeDifference >= 0) && (Math.Abs(CoordinateHelpers.Calculate2DDistance(cleanedUpTrackPoints[altitudeFilteredDerivative[index].index], cleanedUpTrackPoints[altitudeFilteredDerivative[index].index + 1])) >= 2))
+                    if ((altitudeFilteredDerivative[index].altitudeDifference >= 0) && (Math.Abs(CoordinateHelpers.Calculate2DDistanceHavercos(cleanedUpTrackPoints[altitudeFilteredDerivative[index].index], cleanedUpTrackPoints[altitudeFilteredDerivative[index].index + 1])) >= 2))
                         counter++;
                     else
                         counter = 0;
@@ -480,7 +480,7 @@ namespace Coordinates
             bool distanceOk = false;
             foreach (Coordinate goal in goals)
             {
-                distanceToGoal = CoordinateHelpers.Calculate2DDistance(launchPoint, goal);
+                distanceToGoal = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, goal);
                 distanceToGoals.Add(distanceToGoal);
                 if (!double.IsNaN(min2DDistanceBetweenLaunchAndGoals))
                 {

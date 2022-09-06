@@ -725,7 +725,7 @@ namespace Coordinates.Parsers
 
                     declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
                     positionAtDeclaration = new Coordinate(declarationLatitude, declarationLongitude, declarationPositionAltitudeGPS, declarationPositonAltitudeBarometric, timeStamp);
-                    double distance = CoordinateHelpers.Calculate2DDistance(declaredGoal, positionAtDeclaration);
+                    double distance = CoordinateHelpers.Calculate2DDistanceHavercos(declaredGoal, positionAtDeclaration);
                     if (distance > 70e3)
                     {
 
@@ -759,7 +759,7 @@ namespace Coordinates.Parsers
 
                     declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
                     positionAtDeclaration = new Coordinate(declarationLatitude, declarationLongitude, declarationPositionAltitudeGPS, declarationPositonAltitudeBarometric, timeStamp);
-                    double distance = CoordinateHelpers.Calculate2DDistance(declaredGoal, positionAtDeclaration);
+                    double distance = CoordinateHelpers.Calculate2DDistanceHavercos(declaredGoal, positionAtDeclaration);
                     if (distance > 70e3)
                     {
 

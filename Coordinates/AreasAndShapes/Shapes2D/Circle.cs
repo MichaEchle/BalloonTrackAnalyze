@@ -27,7 +27,7 @@ namespace Shapes
 
         public override bool IsWithin(Coordinate coordinate)
         {
-            return CoordinateHelpers.Calculate2DDistance(CenterPoint, coordinate) <= Radius;
+            return CoordinateHelpers.Calculate2DDistanceHavercos(CenterPoint, coordinate) <= Radius;
         }
     }
 }

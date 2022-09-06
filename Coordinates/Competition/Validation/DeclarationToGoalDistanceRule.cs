@@ -43,7 +43,7 @@ namespace Competition
         public bool IsComplaintToRule(Declaration declaration)
         {
             bool isConform = true;
-            double distanceBetweenPositionOfDeclarationAndDeclaredGoal = CoordinateHelpers.Calculate2DDistance(declaration.PositionAtDeclaration, declaration.DeclaredGoal);
+            double distanceBetweenPositionOfDeclarationAndDeclaredGoal = CoordinateHelpers.Calculate2DDistanceHavercos(declaration.PositionAtDeclaration, declaration.DeclaredGoal);
 
             if (!double.IsNaN(MinimumDistance))
                 if (distanceBetweenPositionOfDeclarationAndDeclaredGoal < MinimumDistance)

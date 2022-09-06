@@ -76,12 +76,12 @@ namespace TestProgramm
 
             DateTime endOfStartPeriod = new DateTime(2021, 10, 8, 16, 0, 0);
             bool launchedBeforeStartPeriod = launchPoint.TimeStamp < endOfStartPeriod;
-            double distanceT7 = CoordinateHelpers.Calculate2DDistance(launchPoint, goalTask7);
+            double distanceT7 = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, goalTask7);
             bool distanceT7Ok = distanceT7 >= 1000.0;
-            double distanceT8 = CoordinateHelpers.Calculate2DDistance(launchPoint, goalTask8);
+            double distanceT8 = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, goalTask8);
             bool distanceT8Ok = distanceT8 >= 1000.0;
             Declaration declaration = track.Declarations.FindLast(x => x.GoalNumber == 1);
-            double distanceT9 = CoordinateHelpers.Calculate2DDistance(launchPoint, declaration.DeclaredGoal);
+            double distanceT9 = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, declaration.DeclaredGoal);
             bool distanceT9OK = distanceT9 >= 1000.0;
             return $"{track.Pilot.PilotNumber},{launchPoint:HH:mm:ss},{launchedBeforeStartPeriod},{distanceT7},{distanceT7Ok},{distanceT8},{distanceT8Ok},{distanceT9},{distanceT9OK}";
         }
@@ -116,12 +116,12 @@ namespace TestProgramm
             }
             else
             {
-                double distanceM2G8 = CoordinateHelpers.Calculate2DDistance(goalTask8, marker2.MarkerLocation);
+                double distanceM2G8 = CoordinateHelpers.Calculate2DDistanceHavercos(goalTask8, marker2.MarkerLocation);
                 bool distanceM2G8Ok = distanceM2G8 >= 500.0;
-                double distanceM3G8 = CoordinateHelpers.Calculate2DDistance(goalTask8, marker3.MarkerLocation);
+                double distanceM3G8 = CoordinateHelpers.Calculate2DDistanceHavercos(goalTask8, marker3.MarkerLocation);
                 bool distanceM3G8Ok = distanceM3G8 >= 500.0;
                 double angle = CoordinateHelpers.CalculateInteriorAngle(marker2.MarkerLocation, goalTask8, marker3.MarkerLocation);
-                double distance = CoordinateHelpers.Calculate2DDistance(marker2.MarkerLocation, marker3.MarkerLocation);
+                double distance = CoordinateHelpers.Calculate2DDistanceHavercos(marker2.MarkerLocation, marker3.MarkerLocation);
                 result = Math.Round(distance, 0, MidpointRounding.AwayFromZero);
                 string angleComment;
                 if (angle < 45.0)
@@ -160,7 +160,7 @@ namespace TestProgramm
             }
             else
             {
-                double distanceDecToGoal = CoordinateHelpers.Calculate2DDistance(declaration.PositionAtDeclaration, declaration.DeclaredGoal);
+                double distanceDecToGoal = CoordinateHelpers.Calculate2DDistanceHavercos(declaration.PositionAtDeclaration, declaration.DeclaredGoal);
                 bool distanceDecToGoalOk = distanceDecToGoal >= 2000.0;
                 double infringementDec = 0.0;
                 double penaltyDec = 0.0;
@@ -170,7 +170,7 @@ namespace TestProgramm
                     penaltyDec = infringementDec / 2000.0 * 100 * 20;
                 }
 
-                double distanceG1T7 = CoordinateHelpers.Calculate2DDistance(declaration.DeclaredGoal, goalTask7);
+                double distanceG1T7 = CoordinateHelpers.Calculate2DDistanceHavercos(declaration.DeclaredGoal, goalTask7);
                 bool distanceG1T7Ok = distanceG1T7 >= 1000.0;
                 double infringementT7 = 0.0;
                 double penaltyT7 = 0.0;
@@ -179,7 +179,7 @@ namespace TestProgramm
                     infringementT7 = 1000.0 - distanceG1T7;
                     penaltyT7 = infringementT7 / 1000.0 * 100 * 20;
                 }
-                double distanceG1T8 = CoordinateHelpers.Calculate2DDistance(declaration.DeclaredGoal, goalTask8);
+                double distanceG1T8 = CoordinateHelpers.Calculate2DDistanceHavercos(declaration.DeclaredGoal, goalTask8);
                 bool distanceG1T8Ok = distanceG1T8 >= 1000.0;
                 double infringementT8 = 0.0;
                 double penaltyT8 = 0.0;

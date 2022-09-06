@@ -80,7 +80,7 @@ namespace Competition
                 }
                 else
                 {
-                    distanceBetweenMarkerAndGoal = CoordinateHelpers.Calculate2DDistance(marker.MarkerLocation, Declaration.DeclaredGoal);
+                    distanceBetweenMarkerAndGoal = CoordinateHelpers.Calculate2DDistanceHavercos(marker.MarkerLocation, Declaration.DeclaredGoal);
                 }
                 if (!double.IsNaN(MinimumDistance))
                 {

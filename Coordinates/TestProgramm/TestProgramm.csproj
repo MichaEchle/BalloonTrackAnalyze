@@ -25,4 +25,14 @@
     <ProjectReference Include="..\Coordinates\Coordinates.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="GeodTest\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="GeodTest\GeodTest.dat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

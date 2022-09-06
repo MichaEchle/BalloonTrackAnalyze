@@ -494,7 +494,7 @@ namespace BLC2021
                         double distanceDeclarationToGoal_Task3 = double.NaN;
                         foreach (Declaration declaration in declarations)
                         {
-                            double tempDistance = CoordinateHelpers.Calculate2DDistance(declaration.PositionAtDeclaration, declaration.DeclaredGoal);
+                            double tempDistance = CoordinateHelpers.Calculate2DDistanceHavercos(declaration.PositionAtDeclaration, declaration.DeclaredGoal);
                             if (tempDistance > Task3_DistanceDeclarationToGoal && declaration.PositionAtDeclaration.AltitudeGPS <= declaration.DeclaredGoal.AltitudeGPS - CoordinateHelpers.ConvertToMeter(Task3_AltitudeDifferenceFeet))
                             {
                                 isValid = true;
@@ -1055,7 +1055,7 @@ namespace BLC2021
 
             MarkerDrop markerDrop = FiddleTrack.MarkerDrops.First(x => x.MarkerNumber == Task3_MarkerNumber);
             double distanceDeclarationToGoal = CoordinateHelpers.Calculate3DDistance(fiddleDeclaration.DeclaredGoal, markerDrop.MarkerLocation, true);
-            double distanceGoalToMarker = CoordinateHelpers.Calculate2DDistance(fiddleDeclaration.PositionAtDeclaration, fiddleDeclaration.DeclaredGoal);
+            double distanceGoalToMarker = CoordinateHelpers.Calculate2DDistanceHavercos(fiddleDeclaration.PositionAtDeclaration, fiddleDeclaration.DeclaredGoal);
             double result = distanceDeclarationToGoal / (distanceGoalToMarker / 1000.0);
             Log(LogSeverityType.Info, $"Task 3 Pilot No {FiddleTrack.Pilot.PilotNumber}: Distance between declaration position and declared goal is '{Math.Round(distanceDeclarationToGoal, 3, MidpointRounding.AwayFromZero)}m' / Distance goal to marker is '{Math.Round(distanceGoalToMarker / 1000.0, 3, MidpointRounding.AwayFromZero)}km'");
             Log(LogSeverityType.Info, $"Calculated result of '{result}' at Task 3 for Pilot No {FiddleTrack.Pilot.PilotNumber}");

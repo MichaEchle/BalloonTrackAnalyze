@@ -91,7 +91,7 @@ namespace Competition
                     }
                     else
                     {
-                        distances.Add(CoordinateHelpers.Calculate2DDistance(goal, markerDrop.MarkerLocation));
+                        distances.Add(CoordinateHelpers.Calculate2DDistanceHavercos(goal, markerDrop.MarkerLocation));
                     }
                 }
 

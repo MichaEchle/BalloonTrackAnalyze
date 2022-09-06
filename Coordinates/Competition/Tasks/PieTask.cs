@@ -126,7 +126,7 @@ namespace Competition
 
                 for (int index = 0; index < coordinates.Count; index++)
                 {
-                    double distanceToGoal = CoordinateHelpers.Calculate2DDistance(coordinates[index], targetDeclaration.DeclaredGoal);//calculate distance to goal
+                    double distanceToGoal = CoordinateHelpers.Calculate2DDistanceHavercos(coordinates[index], targetDeclaration.DeclaredGoal);//calculate distance to goal
                     if (distanceToGoal <= Radius)//save all trackpoints within the radius
                         trackPointsInTier.Add((track.TrackPoints.FindIndex(x=>x==coordinates[index]), coordinates[index]));
 

@@ -112,8 +112,8 @@ namespace TestProgramm
             }
             else
             {
-                double distanceMarker2 = CoordinateHelpers.Calculate2DDistance(marker2.MarkerLocation, centerPoint);
-                double distanceMarker3 = CoordinateHelpers.Calculate2DDistance(marker3.MarkerLocation, centerPoint);
+                double distanceMarker2 = CoordinateHelpers.Calculate2DDistanceHavercos(marker2.MarkerLocation, centerPoint);
+                double distanceMarker3 = CoordinateHelpers.Calculate2DDistanceHavercos(marker3.MarkerLocation, centerPoint);
 
                 if (distanceMarker2 < 200 || distanceMarker3 < 200)
                     reasonForNoResult = "Marker 2 or Marker 3 to close to center point";
@@ -148,12 +148,12 @@ namespace TestProgramm
                             else if (marker3SliceNumber == ((marker2SliceNumber) % 8) + 1)
                                 reasonForNoResult = "Markers are in adjacent slices";
                             else
-                                distance = CoordinateHelpers.Calculate2DDistance(marker2.MarkerLocation, marker3.MarkerLocation);
+                                distance = CoordinateHelpers.Calculate2DDistanceHavercos(marker2.MarkerLocation, marker3.MarkerLocation);
                         }
                     }
                     else//angle >=90
                     {
-                        distance = CoordinateHelpers.Calculate2DDistance(marker2.MarkerLocation, marker3.MarkerLocation);
+                        distance = CoordinateHelpers.Calculate2DDistanceHavercos(marker2.MarkerLocation, marker3.MarkerLocation);
                     }
                 }
             }
@@ -231,9 +231,9 @@ namespace TestProgramm
 
                         Declaration validGoal = null;
 
-                        double distanceToILP = CoordinateHelpers.Calculate2DDistance(launchPoint, declarationToUse.DeclaredGoal);
+                        double distanceToILP = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, declarationToUse.DeclaredGoal);
                         distancesGoalToILP.Add(distanceToILP);
-                        double distanceDeclarationPositionToDeclaredGoal = CoordinateHelpers.Calculate2DDistance(declarationToUse.PositionAtDeclaration, declarationToUse.DeclaredGoal);
+                        double distanceDeclarationPositionToDeclaredGoal = CoordinateHelpers.Calculate2DDistanceHavercos(declarationToUse.PositionAtDeclaration, declarationToUse.DeclaredGoal);
                         distancesDecToGoal.Add(distanceDeclarationPositionToDeclaredGoal);
                         if (distanceToILP > 1000.0 && distanceDeclarationPositionToDeclaredGoal > 1000.0 && declarationToUse.PositionAtDeclaration.TimeStamp < launchPoint.TimeStamp)
                             validGoal = declarationToUse;
@@ -535,10 +535,10 @@ namespace TestProgramm
                 for (int index = 0; index < declarations.Count; index++)
                 {
                     bool isValid = true;
-                    distanceBetweenPositionOfDeclarationAndDeclaredGoal = CoordinateHelpers.Calculate2DDistance(declarations[index].PositionAtDeclaration, declarations[index].DeclaredGoal);
+                    distanceBetweenPositionOfDeclarationAndDeclaredGoal = CoordinateHelpers.Calculate2DDistanceHavercos(declarations[index].PositionAtDeclaration, declarations[index].DeclaredGoal);
                     for (int goalIndex = 0; goalIndex < otherGoals.Count; goalIndex++)
                     {
-                        distanceToOtherGoals.Add(CoordinateHelpers.Calculate2DDistance(declarations[index].DeclaredGoal, otherGoals[index]));
+                        distanceToOtherGoals.Add(CoordinateHelpers.Calculate2DDistanceHavercos(declarations[index].DeclaredGoal, otherGoals[index]));
                     }
 
                     if (!double.IsNaN(minDistanceToPositionOfDeclaration))

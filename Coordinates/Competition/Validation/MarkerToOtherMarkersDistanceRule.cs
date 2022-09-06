@@ -61,7 +61,7 @@ namespace Competition
             {
                 if (marker.Equals(markerDrop))
                     continue;
-                double distanceToOtherMarker = CoordinateHelpers.Calculate2DDistance(marker.MarkerLocation, markerDrop.MarkerLocation);
+                double distanceToOtherMarker = CoordinateHelpers.Calculate2DDistanceHavercos(marker.MarkerLocation, markerDrop.MarkerLocation);
                 if (!double.IsNaN(MinimumDistance))
                 {
                     if (distanceToOtherMarker < MinimumDistance)
