@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -28,6 +29,14 @@ namespace Coordinates
         public Pilot Pilot
         {
             get;set;
+        }
+
+        /// <summary>
+        /// The DirectoryInfo to the Track
+        /// </summary>
+        public FileInfo trackPath
+        {
+            get; set;
         }
 
         public Dictionary<string, string> AdditionalPropertiesFromIGCFile
