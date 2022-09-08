@@ -484,6 +484,7 @@ namespace Coordinates.Parsers
             string[] parts = line.Split(',');
             int declaredAltitude;
             double declaredAltitudeInMeter;
+            bool hasPilotDeclaredGoalAltitude = true;
             //TODO clarify with Mike
             if (parts.Length > 1)
             {
@@ -504,12 +505,14 @@ namespace Coordinates.Parsers
                 }
                 else
                 {
+                    hasPilotDeclaredGoalAltitude = false;
                     declaredAltitudeInMeter = 0.0;
                     Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
                 }
             }
             else
             {
+                hasPilotDeclaredGoalAltitude = false;
                 declaredAltitudeInMeter = 0.0;
                 Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
             }
@@ -574,7 +577,7 @@ namespace Coordinates.Parsers
             Coordinate declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
             //Coordinate positionAtDeclaration = new Coordinate(positionAtDeclaration.Latitude, positionAtDeclaration.Longitude, positionAtDeclaration.AltitudeGPS, positionAtDeclaration.AltitudeBarometric, positionAtDeclaration.TimeStamp);
 
-            declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration);
+            declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration, hasPilotDeclaredGoalAltitude);
 
             return true;
         }

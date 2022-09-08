@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LoggerComponent;
+using System;
 
 namespace Coordinates
 {
@@ -48,6 +49,18 @@ namespace Coordinates
             AltitudeGPS = altitudeGPS;
             AltitudeBarometric = altitudeBarometric;
             TimeStamp = timeStamp;
+        }
+
+        public bool SetDefaultAltitude(double defautlAltitude)
+        {
+            if (AltitudeBarometric is not 0 || AltitudeGPS is not 0)
+            {
+                Logger.Log(LogSeverityType.Error, "Setting a default altitude is not allowed as the altitudes are not zero");
+                return false;
+            }
+            AltitudeGPS= defautlAltitude;
+            AltitudeBarometric = defautlAltitude;
+            return true;
         }
 
     }

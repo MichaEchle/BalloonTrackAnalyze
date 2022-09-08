@@ -262,8 +262,8 @@ namespace TrackReportGenerator
                 wsDeclarationsAndMarkerDrops.Cells[1, 1, 1, 23].Style.Font.Bold = true;
                 List<Declaration> declarations = track.Declarations.OrderBy(x => x.GoalNumber).ToList();
 
-                List<double> distance2D = TrackHelpers.Calculate2DDistanceBetweenPositionOfDeclarationsAndDeclaredGoal(declarations);
-                List<double> distance3D = TrackHelpers.Calculate3DDistanceBetweenPositionOfDeclarationsAndDeclaredGoal(declarations, useGPSAltitude);
+                List<double> distance2D = TrackHelpers.Calculate2DDistanceBetweenPositionOfDeclarationAndDeclaredGoal(declarations);
+                List<double> distance3D = TrackHelpers.Calculate3DDistanceBetweenPositionOfDeclarationAndDeclaredGoal(declarations, useGPSAltitude);
                 int index = 2;
                 foreach (Declaration declaration in declarations)
                 {

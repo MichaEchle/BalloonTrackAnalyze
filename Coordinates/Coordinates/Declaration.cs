@@ -19,6 +19,14 @@ namespace Coordinates
         public Coordinate DeclaredGoal { get; private set; }
 
         /// <summary>
+        /// Flag to indicate whether the pilot has declared the goal with an altitude or the position only
+        /// </summary>
+        public bool HasPilotDelaredGoalAltitude
+        {
+            get; private set;
+        }
+
+        /// <summary>
         /// The position at which the goal has been declared
         /// </summary>
         public Coordinate PositionAtDeclaration { get; private set; }
@@ -29,11 +37,13 @@ namespace Coordinates
         /// <param name="goalNumber">The number of the goal</param>
         /// <param name="declaredGoal">The target or goal which has been declared</param>
         /// <param name="positionAtDeclaration">The position at which the goal has been declared</param>
-        public Declaration(int goalNumber,Coordinate declaredGoal, Coordinate positionAtDeclaration)
+        public Declaration(int goalNumber,Coordinate declaredGoal, Coordinate positionAtDeclaration, bool         hasPilotDelaredGoalAltitude
+)
         {
             GoalNumber = goalNumber;
             DeclaredGoal = declaredGoal;
             PositionAtDeclaration = positionAtDeclaration;
+            HasPilotDelaredGoalAltitude = hasPilotDelaredGoalAltitude;
         }
 
         

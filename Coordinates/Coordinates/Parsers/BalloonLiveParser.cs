@@ -660,7 +660,7 @@ namespace Coordinates.Parsers
                     return false;
                 }
 
-
+                bool hasPilotDelaredGoalAltitude = true;
                 double declaredAltitudeInMeter;
                 if (parts.Length == 2)
                 {
@@ -681,12 +681,14 @@ namespace Coordinates.Parsers
                     }
                     else
                     {
+                        hasPilotDelaredGoalAltitude = false;
                         declaredAltitudeInMeter = 0.0;
                         Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
                     }
                 }
                 else
                 {
+                    hasPilotDelaredGoalAltitude = false;
                     declaredAltitudeInMeter = 0.0;
                     Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
                 }
@@ -767,7 +769,7 @@ namespace Coordinates.Parsers
                     }
                 }
 
-                declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration);
+                declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration, hasPilotDelaredGoalAltitude);
             }
             else
             {

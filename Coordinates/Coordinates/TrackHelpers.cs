@@ -11,7 +11,12 @@ namespace Coordinates
 {
     public static class TrackHelpers
     {
-        public static List<double> Calculate2DDistanceBetweenPositionOfDeclarationsAndDeclaredGoal(List<Declaration> declarations)
+        /// <summary>
+        /// Calculates the 2D distance between position of declaration and declared goal for all given declarations
+        /// </summary>
+        /// <param name="declarations">the list of declarations</param>
+        /// <returns>a list with the 2D distances</returns>
+        public static List<double> Calculate2DDistanceBetweenPositionOfDeclarationAndDeclaredGoal(List<Declaration> declarations)
         {
             List<double> distance2DBetweenPositionOfDeclarationsAndDeclaredGoal = new List<double>();
             foreach (Declaration declaration in declarations)
@@ -21,7 +26,13 @@ namespace Coordinates
             return distance2DBetweenPositionOfDeclarationsAndDeclaredGoal;
         }
 
-        public static List<double> Calculate3DDistanceBetweenPositionOfDeclarationsAndDeclaredGoal(List<Declaration> declarations, bool useGPSAltitude)
+        /// <summary>
+        /// Calculates the 3D distance between position of declaration and declared goal for all given declarations
+        /// </summary>
+        /// <param name="declarations">the list of declarations</param>
+        /// <param name="useGPSAltitude">true:use GPS altitude; false: use barometric altitude</param>
+        /// <returns>a list with the 3D distances</returns>
+        public static List<double> Calculate3DDistanceBetweenPositionOfDeclarationAndDeclaredGoal(List<Declaration> declarations, bool useGPSAltitude)
         {
             List<double> distance3DBetweenPositionOfDeclarationsAndDeclaredGoal = new List<double>();
             foreach (Declaration declaration in declarations)
@@ -31,6 +42,11 @@ namespace Coordinates
             return distance3DBetweenPositionOfDeclarationsAndDeclaredGoal;
         }
 
+        /// <summary>
+        /// Calculates the 2D distance for all permutations of declared goals given
+        /// </summary>
+        /// <param name="declarations">the list of declarations</param>
+        /// <returns>the list of 2D distances</returns>
         public static List<(string identifier, double distance)> Calculate2DDistanceBetweenDeclaredGoals(List<Declaration> declarations)
         {
             List<(string identifier, double distance)> distance2DBetweenDeclaredGoals = new List<(string identifier, double distance)>();
@@ -51,6 +67,12 @@ namespace Coordinates
             return distance2DBetweenDeclaredGoals;
         }
 
+        /// <summary>
+        /// Calculates the 3D distance for all permutations of declared goals given
+        /// </summary>
+        /// <param name="declarations">the list of declarations</param>
+        /// <param name="useGPSAltitude">true:use GPS altitude; false: use barometric altitude</param>
+        /// <returns>the list of 3D distances</returns>
         public static List<(string identifier, double distance)> Calculate3DDistanceBetweenDeclaredGoals(List<Declaration> declarations, bool useGPSAltitude)
         {
             List<(string identifier, double distance)> distance3DBetweenDeclaredGoals = new List<(string identifier, double distance)>();
@@ -71,6 +93,11 @@ namespace Coordinates
             return distance3DBetweenDeclaredGoals;
         }
 
+        /// <summary>
+        /// Calculates the 2D distance between all permutations of given markers
+        /// </summary>
+        /// <param name="markerDrops">the list of markers</param>
+        /// <returns>the list of 2D distances</returns>
         public static List<(string identifier, double distance)> Calculate2DDistanceBetweenMarkers(List<MarkerDrop> markerDrops)
         {
             List<(string identifier, double distance)> distance2DBetweenMarkers = new List<(string identifier, double distance)>();
@@ -91,6 +118,12 @@ namespace Coordinates
             return distance2DBetweenMarkers;
         }
 
+        /// <summary>
+        /// Calculates the 2D distance between all permutations of given markers
+        /// </summary>
+        /// <param name="markerDrops">the list of markers</param>
+        /// <param name="useGPSAltitude">true:use GPS altitude; false: use barometric altitude</param>
+        /// <returns>the list of 2D distances</returns>
         public static List<(string identifier, double distance)> Calculate3DDistanceBetweenMarkers(List<MarkerDrop> markerDrops, bool useGPSAltitude)
         {
             List<(string identifier, double distance)> distance3DBetweenMarkers = new List<(string identifier, double distance)>();
