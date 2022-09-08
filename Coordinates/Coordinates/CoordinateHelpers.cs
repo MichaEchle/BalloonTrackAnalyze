@@ -18,12 +18,12 @@ namespace Coordinates
         /// <summary>
         /// the ratio of feet to meter conversion
         /// </summary>
-        public const double FEET_TO_METER_RATIO = 0.3048;
+        public const double FEET_TO_METER_RATIO = 0.304_8;
 
         /// <summary>
         /// the earths radius in meter
         /// </summary>
-        public const double EARTH_RADIUS_METER = 6371.0e3;
+        public const double EARTH_RADIUS_METER = 6_371.0e3;
 
 
 
@@ -31,8 +31,8 @@ namespace Coordinates
         {
 
             internal static double SEMI_MAJOR_AXIS = 6_378_137.0;
-            internal static double EARTH_FLATTENING = 1.0 / 298.257223563;
-            internal static double SEMI_MINOR_AXIS = 6_356_752.314245;
+            internal static double EARTH_FLATTENING = 1.0 / 298.257_223_563;
+            internal static double SEMI_MINOR_AXIS = 6_356_752.314_245;
         }
 
         /// <summary>
@@ -48,8 +48,16 @@ namespace Coordinates
             return degrees + (degreeMinutes / 60.0) + (degreeSeconds / 3600.0) + (degreeTenthseconds / 36000.0) * (isNorthingOrEasting ? 1.0 : -1.0);
         }
 
+        /// <summary>
+        /// Converts decimal degrees to full degree with minutes, seconds and tenths of seconds
+        /// </summary>
+        /// <param name="decimalDegrees">the decimal degree value to be converted</param>
+        /// <returns>degrees, minutes, seconds and tenth of seconds</returns>
         public static (int degrees, int degreeMinutes, int degreeSeconds, int degreeTenthSeconds) ConvertToDegreeMinutes(double decimalDegrees)
         {
+            if (double.IsInfinity(decimalDegrees) || double.IsNaN(decimalDegrees))
+                throw new ArgumentOutOfRangeException(nameof(decimalDegrees), "Cannot be infinity or NaN");
+
             while (decimalDegrees < -180.0)
                 decimalDegrees += 360.0;
             while (decimalDegrees > 180.0)
@@ -66,7 +74,14 @@ namespace Coordinates
             return (degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds);
         }
 
-
+        /// <summary>
+        /// Creates a beautify string for output and logging purposes
+        /// </summary>
+        /// <param name="degrees">the full degrees</param>
+        /// <param name="degreeMinutes">the degree minutes</param>
+        /// <param name="degreeSeconds">the degree seconds</param>
+        /// <param name="degreeTenthSeconds">the tenth of degree seconds</param>
+        /// <returns>beautified string using the input values</returns>
         public static string BeautifyDegreeMinutes(int degrees, int degreeMinutes, int degreeSeconds, int degreeTenthSeconds)
         {
             return $"{degrees}° {degreeMinutes}ʹ {degreeSeconds}ʺ {degreeTenthSeconds}ʺʹ";
@@ -78,6 +93,8 @@ namespace Coordinates
         /// <returns>the amount of feet in meters</returns>
         public static double ConvertToMeter(double feets)
         {
+            if (double.IsInfinity(feets) || double.IsNaN(feets))
+                throw new ArgumentOutOfRangeException(nameof(feets), "Cannot be infinity or NaN");
             return feets * FEET_TO_METER_RATIO;
         }
 
@@ -88,6 +105,8 @@ namespace Coordinates
         /// <returns>the amount of meter in feet</returns>
         public static double ConvertToFeet(double meters)
         {
+            if (double.IsInfinity(meters) || double.IsNaN(meters))
+                throw new ArgumentOutOfRangeException(nameof(meters), "Cannot be infinity or NaN");
             return meters / FEET_TO_METER_RATIO;
         }
 
@@ -100,14 +119,10 @@ namespace Coordinates
         public static double Calculate2DDistanceHavercos(Coordinate coordinate1, Coordinate coordinate2)
         {
             if (coordinate1 is null)
-            {
                 throw new ArgumentNullException(nameof(coordinate1));
-            }
 
             if (coordinate2 is null)
-            {
                 throw new ArgumentNullException(nameof(coordinate2));
-            }
 
 
             double phi1 = coordinate1.Latitude * PI / 180.0;
@@ -131,14 +146,10 @@ namespace Coordinates
         public static double Calculate2DDistanceHaversin(Coordinate coordinate1, Coordinate coordinate2)
         {
             if (coordinate1 is null)
-            {
                 throw new ArgumentNullException(nameof(coordinate1));
-            }
 
             if (coordinate2 is null)
-            {
                 throw new ArgumentNullException(nameof(coordinate2));
-            }
 
             double phi1 = coordinate1.Latitude * PI / 180.0;
             double phi2 = coordinate2.Latitude * PI / 180.0;
@@ -151,19 +162,22 @@ namespace Coordinates
             return distance2D;
         }
 
-
-        //ported implementation from http://www.movable-type.co.uk/scripts/latlong-vincenty.html
+        /// <summary>
+        /// Calculates the 2D distance between two coordinates using the more precise Vincenty algorithm on the WSG84 Ellipsoid
+        ///<para>ported implementation from http://www.movable-type.co.uk/scripts/latlong-vincenty.html</para>
+        /// </summary>
+        /// <param name="coordinate1">the first coordinate</param>
+        /// <param name="coordinate2">the second coordinate</param>
+        /// <returns>the 2D distance between the two coordinates in meters</returns>
+        /// <exception cref="ArgumentNullException">one of the coordinates is null</exception>
+        /// <exception cref="Exception">throws when lambda get greater than PI</exception>
         public static double Calculate2DDistanceVincentyWSG84(Coordinate coordinate1, Coordinate coordinate2)
         {
             if (coordinate1 is null)
-            {
                 throw new ArgumentNullException(nameof(coordinate1));
-            }
 
             if (coordinate2 is null)
-            {
                 throw new ArgumentNullException(nameof(coordinate2));
-            }
 
             double phi1 = coordinate1.Latitude * PI / 180.0;
             double lambda1 = coordinate1.Longitude * PI / 180.0;
@@ -246,18 +260,43 @@ namespace Coordinates
 
         }
 
-
+        /// <summary>
+        /// Calculates the 2D distance between two coordinates using UTM coordinates
+        /// <para>the method takes care of the UTM conversation</para>
+        /// </summary>
+        /// <param name="coordinate1">the first coordinate</param>
+        /// <param name="coordinate2">the second coordinate</param>
+        /// <returns>the 2D Distance between the two coordinates in meters</returns>
         public static double Calculate2DDistanceUTM(Coordinate coordinate1, Coordinate coordinate2)
         {
+            if (coordinate1 is null)
+                throw new ArgumentNullException(nameof(coordinate1));
+
+            if (coordinate2 is null)
+                throw new ArgumentNullException(nameof(coordinate2));
+
             (string zone, int easting, int northing) coordinate1UTM = CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM(coordinate1);
             (string zone, int easting, int northing) coordinate2UTM = CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM(coordinate2);
 
             return Sqrt(Pow(coordinate1UTM.easting - coordinate2UTM.easting, 2) + Pow(coordinate1UTM.northing - coordinate2UTM.northing, 2));
         }
 
-
+        /// <summary>
+        /// Calculates the 2D Distance between two Coordinates using precise UTM Coordinates
+        /// <para>the method takes care of the UTM conversion</para>
+        /// <para>the UTM coordinates are not limited to integers but allow for decimal places as well</para>
+        /// </summary>
+        /// <param name="coordinate1">the first coordinate</param>
+        /// <param name="coordinate2">the second coordinates</param>
+        /// <returns>the 2D distance between the two coordiantes in meters</returns>
         public static double Calculate2DDistanceUTM_Precise(Coordinate coordinate1, Coordinate coordinate2)
         {
+            if (coordinate1 is null)
+            throw new ArgumentNullException(nameof(coordinate1));
+
+            if (coordinate2 is null)
+            throw new ArgumentNullException(nameof(coordinate2));
+
             (string zone, double easting, double northing) coordinate1UTM = CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM_Precise(coordinate1);
             (string zone, double easting, double northing) coordinate2UTM = CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM_Precise(coordinate2);
 
@@ -274,14 +313,11 @@ namespace Coordinates
         public static double Calculate3DDistance(Coordinate coordinate1, Coordinate coordinate2, bool useGPSAltitude)
         {
             if (coordinate1 is null)
-            {
                 throw new ArgumentNullException(nameof(coordinate1));
-            }
 
             if (coordinate2 is null)
-            {
                 throw new ArgumentNullException(nameof(coordinate2));
-            }
+
             double distance2D = Calculate2DDistanceHavercos(coordinate1, coordinate2);
             double deltaAltitude;
             if (useGPSAltitude)
@@ -305,6 +341,9 @@ namespace Coordinates
         /// <returns>the accumulated 2D distance in meters</returns>
         public static double Calculate2DDistanceBetweenPoints(List<Coordinate> coordinates)
         {
+            if (coordinates is null)
+                throw new ArgumentNullException(nameof(coordinates));
+
             double result = 0.0;
             for (int index = 0; index < coordinates.Count - 1; index++)
             {
@@ -343,14 +382,10 @@ namespace Coordinates
         public static double CalculateDistanceWithSeparationAltitude(Coordinate targetCoordinate, Coordinate coordinate, double separationAltitude, bool useGPSAltitude)
         {
             if (targetCoordinate is null)
-            {
                 throw new ArgumentNullException(nameof(targetCoordinate));
-            }
 
             if (coordinate is null)
-            {
                 throw new ArgumentNullException(nameof(coordinate));
-            }
 
             if (useGPSAltitude)
             {
@@ -388,19 +423,13 @@ namespace Coordinates
         public static double CalculateInteriorAngle(Coordinate coordinateA, Coordinate coordinateB, Coordinate coordinateC)
         {
             if (coordinateA is null)
-            {
                 throw new ArgumentNullException(nameof(coordinateA));
-            }
 
             if (coordinateB is null)
-            {
                 throw new ArgumentNullException(nameof(coordinateB));
-            }
 
             if (coordinateC is null)
-            {
                 throw new ArgumentNullException(nameof(coordinateC));
-            }
 
             double result = 0.0;
             double a = Calculate2DDistanceHavercos(coordinateB, coordinateC);
@@ -422,19 +451,13 @@ namespace Coordinates
         public static double CalculateArea(Coordinate coordinateA, Coordinate coordinateB, Coordinate coordinateC)
         {
             if (coordinateA is null)
-            {
                 throw new ArgumentNullException(nameof(coordinateA));
-            }
 
             if (coordinateB is null)
-            {
                 throw new ArgumentNullException(nameof(coordinateB));
-            }
 
             if (coordinateC is null)
-            {
                 throw new ArgumentNullException(nameof(coordinateC));
-            }
 
             double result = 0.0;
             double a = Calculate2DDistanceHavercos(coordinateB, coordinateC);
@@ -460,18 +483,13 @@ namespace Coordinates
         public static Coordinate CalculatePointWithDistanceAndBearing(Coordinate coordinate1, double distanceInMeters, double bearingInDecimalDegree)
         {
             if (coordinate1 is null)
-            {
                 throw new ArgumentNullException(nameof(coordinate1));
-            }
+
             if (double.IsNaN(distanceInMeters) || double.IsInfinity(distanceInMeters))
-            {
                 throw new ArgumentException(nameof(distanceInMeters));
-            }
 
             if (double.IsNaN(bearingInDecimalDegree) || double.IsInfinity(bearingInDecimalDegree))
-            {
                 throw new ArgumentException(nameof(bearingInDecimalDegree));
-            }
 
             double angularDistance = Abs(distanceInMeters) / EARTH_RADIUS_METER;
             double lat1 = coordinate1.Latitude * PI / 180.0;
@@ -497,14 +515,10 @@ namespace Coordinates
         public static double CalculateInitalBearing(Coordinate coordinate1, Coordinate coordinate2)
         {
             if (coordinate1 is null)
-            {
                 throw new ArgumentNullException(nameof(coordinate1));
-            }
 
             if (coordinate2 is null)
-            {
                 throw new ArgumentNullException(nameof(coordinate2));
-            }
 
             double phi1 = coordinate1.Latitude * PI / 180.0;
             double phi2 = coordinate2.Latitude * PI / 180.0;
@@ -523,7 +537,7 @@ namespace Coordinates
 
         /// <summary>
         /// Convert a position from UTM format to lat/long format
-        /// <para>Please note that altitude is set to double.NaN and timestamp to DateTime.MinValue</para>
+        /// <para>Please note that altitude is set to double.NaN and time stamp to DateTime.MinValue</para>
         /// </summary>
         /// <param name="utmZone">the UTM zone e.g. "32U"</param>
         /// <param name="easting">the easting portion e.g. 630084</param>
@@ -535,6 +549,15 @@ namespace Coordinates
             return new Coordinate(latitudeLongitude.latitude, latitudeLongitude.longitude, double.NaN, double.NaN, DateTime.MinValue);
         }
 
+        /// <summary>
+        /// Convert a position from UTM format to lat/long format
+        /// <para>Please the time stamp to DateTime.MinValue</para>
+        /// </summary>
+        /// <param name="utmZone">the UTM zone e.g. "32U"</param>
+        /// <param name="easting">the easting portion e.g. 630084</param>
+        /// <param name="northing">the northing portion e.g. 4833438</param>
+        /// <param name="altitude">the altitude in meters</param>
+        /// <returns>a Coordinate object</returns>
         public static Coordinate ConvertUTMToLatitudeLongitudeCoordinate(string utmZone, int easting, int northing, double altitude)
         {
             (double latitude, double longitude) latitudeLongitude = ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
@@ -572,11 +595,16 @@ namespace Coordinates
         /// <returns>UTM zone and easting / northing using double</returns>
         public static (string utmZone, double easting, double northing) ConvertLatitudeLongitudeCoordinateToUTM_Precise(Coordinate coordinate)
         {
+            if (coordinate is null)
+                throw new ArgumentNullException(nameof(coordinate));
+
+
             return ConvertLatitudeLongitudeToUTM_Presice(coordinate.Latitude, coordinate.Longitude);
         }
 
         /// <summary>
         /// Converts latitude and longitude to UTM format
+        /// <para>easting and northing are not rounded to integer but are floating point numbers instead</para>
         /// </summary>
         /// <param name="latitude">the latitude in decimal degrees</param>
         /// <param name="longitude">the longitude in decimal degrees</param>
@@ -589,6 +617,7 @@ namespace Coordinates
 
         /// <summary>
         /// Converts latitude and longitude to UTM format
+        /// <para>easting and northing are not rounded to integer but are floating point numbers instead</para>
         /// </summary>
         /// <param name="latitude">the latitude in decimal degrees</param>
         /// <param name="longitude">the longitude in decimal degrees</param>
