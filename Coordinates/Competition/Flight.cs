@@ -49,7 +49,7 @@ namespace Competition
         /// <summary>
         /// private constructor for singleton pattern
         /// </summary>
-        public Flight()
+        private Flight()
         {
 
         }

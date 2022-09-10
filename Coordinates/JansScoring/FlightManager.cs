@@ -1,13 +1,18 @@
 ﻿using Coordinates;
 using Coordinates.Parsers;
 using JansScoring.flights;
+using JansScoring.flights.flight_1;
+using JansScoring.flights.flight_2;
+using JansScoring.flights.flight_3;
+using JansScoring.flights.flight_4;
 using JansScoring.pz;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Console = System.Console;
+using Task = JansScoring.flights.Task;
 
 namespace JansScoring;
 
@@ -20,7 +25,10 @@ public class FlightManager
     {
         pzManager = new PZManager();
         pzManager.registerPZs();
-        flights.Add(0, new FlightTestOne());
+        flights.Add(1, new FlightOne());
+        flights.Add(2, new FlightTwo());
+        flights.Add(3, new FlightThree());
+        flights.Add(4, new FlightFour());
     }
 
 
@@ -44,10 +52,13 @@ public class FlightManager
 
         List<Track> trackList = generateTrackList(directoryInfo);
 
+
+
         string scoringTime = DateTime.Now.ToString("MMddHHmmss");
 
+        Console.WriteLine("Start generate Flight Report");
         generateFlightReport(trackList, flight, scoringFolder, scoringTime);
-
+        Console.WriteLine("Finish generate Flight Report");
         foreach (Task task in flight.getTasks())
         {
             string resultsPath = $"{scoringFolderLink}\\f{flightNumber}_t{task.number()}_Results_{scoringTime}.csv";
@@ -82,6 +93,25 @@ public class FlightManager
     private void generateFlightReport(List<Track> tracks, Flight flight, DirectoryInfo scoringFolder,
         string scoringTime)
     {
+        Dictionary<Pilot, string> comments = new();
+
+        /*
+        Console.WriteLine($"Start Despiking {tracks.Count} Tracks");
+        foreach (Track track in tracks)
+        {
+            Console.WriteLine($"Start despike for pilot {track.Pilot.PilotNumber}");
+            int spikes = DeSpiker.despike(track, flight.useGPSAltitude());
+            if (spikes > 0)
+            {
+                comments.Add(track.Pilot, $"Removed {spikes} Spikes | ");
+            }
+            Console.WriteLine($"Despiked {spikes} fro pilot {track.Pilot.PilotNumber}");
+        }
+        Console.WriteLine($"Finish Despiking {tracks.Count} Tracks");
+         */
+        
+        
+        
         List<Coordinate> goals = new();
         foreach (Task task in flight.getTasks())
         {
@@ -91,11 +121,11 @@ public class FlightManager
             }
         }
 
-        Dictionary<Pilot, string> comments = new();
         foreach (Track track in tracks)
         {
-            string comment = "";
-
+            string comment = comments.GetValueOrDefault(track.Pilot, "");
+            comments.Remove(track.Pilot);
+            
             FileInfo trackPath = track.trackPath;
             if (trackPath != null)
             {
@@ -122,28 +152,27 @@ public class FlightManager
 
             if (!launchInStartPeriod)
             {
-                comment += "Pilot started outside the launchperiode | ";
+                TimeSpan launchPointTimeSpan = flight.getStartOfLaunchPeriode().AddMinutes(flight.launchPeriode()) -
+                                                launchPoint.TimeStamp;
+                comment += $"Pilot started outside the launchperiode [{launchPointTimeSpan.ToString(@"hh\:mm\:ss")}] | ";
             }
 
-            if (track.TrackPoints.Last().TimeStamp >= flight.getScoringPeriodeUntil())
-            {
-                TimeSpan timeOutsideScoringPeriode =
-                    flight.getScoringPeriodeUntil() - track.TrackPoints.Last().TimeStamp;
-                comment +=
-                    $"Pilots last Trackpoint was outside the scoringperiode ({timeOutsideScoringPeriode.ToString(@"hh\:mm\:ss")}) | ";
-            }
 
             if (distanceToGoalsOk.Contains(false))
             {
-                for (int index = 1; index <= distanceToGoalsOk.Count; index++)
+                if (goals.Count > 0)
                 {
-                    bool ok = distanceToGoalsOk[index];
-                    if (ok)
+                    for (int index = 1; index <= distanceToGoalsOk.Count; index++)
                     {
-                        continue;
-                    }
+                        bool ok = distanceToGoalsOk[index - 1];
+                        if (ok)
+                        {
+                            continue;
+                        }
 
-                    comment += $"Pilot started to close to goal {index} ({distanceToGoals[index]})  | ";
+                        comment +=
+                            $"Pilot started to close to goal {index} ({NumberHelper.formatDoubleToStringAndRound(distanceToGoals[index - 1])})  | ";
+                    }
                 }
             }
 

@@ -1,5 +1,6 @@
 ﻿using Coordinates;
 using Coordinates.Parsers;
+using JansScoring.calculation;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -97,7 +98,7 @@ namespace TestProgramm
             }
             else
             {
-                double distance = CoordinateHelpers.CalculateDistanceWithSeparationAltitude(goalTask7, marker.MarkerLocation, SEPARATIONALTFT, true);
+                double distance = CoordinateHelpers.CalculateDistanceWithSeparationAltitude(goalTask7, marker.MarkerLocation, SEPARATIONALTFT, true, CalculationType.Haversin);
                 result = Math.Max(50.0, Math.Round(distance, 0, MidpointRounding.AwayFromZero));
                 return $"{track.Pilot.PilotNumber},{result},{marker.MarkerLocation.TimeStamp:HH:mm:ss},{marker.MarkerLocation.TimeStamp < new DateTime(2021, 10, 8, 16, 30, 0)}";
             }
@@ -194,7 +195,7 @@ namespace TestProgramm
                 {
                     declaredGaolT9 = new Coordinates.Coordinate(declaration.DeclaredGoal.Latitude, declaration.DeclaredGoal.Longitude, CoordinateHelpers.ConvertToMeter(SEPARATIONALTFT), CoordinateHelpers.ConvertToMeter(SEPARATIONALTFT), declaration.DeclaredGoal.TimeStamp);
                 }
-                double distance = CoordinateHelpers.Calculate3DDistance(declaredGaolT9, marker.MarkerLocation, true);
+                double distance = CoordinateHelpers.Calculate3DDistance(declaredGaolT9, marker.MarkerLocation, true, CalculationType.Haversin);
                 result = Math.Round(distance, 0, MidpointRounding.AwayFromZero);
 
                 return $"{track.Pilot.PilotNumber},{result},{numberOfDeclarations},{distanceDecToGoal},{distanceDecToGoalOk},{infringementDec},{penaltyDec},{distanceG1T7},{distanceG1T7Ok},{infringementT7},{penaltyT7},{distanceG1T8},{distanceG1T8Ok},{infringementT8},{penaltyT8},{marker.MarkerLocation.TimeStamp:HH:mm:ss},{marker.MarkerLocation.TimeStamp < new DateTime(2021, 10, 8, 16, 30, 0)}";

@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using JansScoring.calculation;
 using System;
 
 namespace JansScoring.flights;
@@ -21,11 +22,6 @@ public class FlightTestOne : Flight
     }
 
 
-    public override DateTime getScoringPeriodeUntil()
-    {
-        return new DateTime(2022, 09, 06, 06, 00, 00);
-    }
-
     public override bool useGPSAltitude()
     {
         return true;
@@ -38,7 +34,7 @@ public class FlightTestOne : Flight
 
     public override string getTracksPath()
     {
-        return @"C:\balloon\comp\2022_09_Bad_Waltersdorf\flights\flight 0\tracks";
+        return @"C:\balloon\comp\2022_09_Bad_Waltersdorf\flights\training flight 2\tracks";
     }
 
     public override Task[] getTasks()
@@ -46,13 +42,27 @@ public class FlightTestOne : Flight
         return new Task[] { new Task01(this) };
     }
 
+    public override CalculationType getCalculationType()
+    {
+        return CalculationType.Haversin;
+    }
+
+    public override double getSeperationAltitudeFeet()
+    {
+        return 2000;
+    }
+
 
     private class Task01 : Task
     {
-
         public override int number()
         {
             return 1;
+        }
+
+        public override DateTime getScoringPeriodeUntil()
+        {
+            return new DateTime(2022, 09, 06, 06, 00, 00);
         }
 
         public override string[] score(Track track)

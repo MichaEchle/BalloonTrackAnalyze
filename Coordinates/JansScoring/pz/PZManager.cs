@@ -1,5 +1,6 @@
 ﻿using Competition;
 using Coordinates;
+using JansScoring.calculation;
 using System.Collections.Generic;
 using System.Linq;
 using Flight = JansScoring.flights.Flight;
@@ -30,7 +31,7 @@ public class PZManager
                             pz.height)
                         {
                             comment +=
-                                $"Pilot has a Blue-PZ infringement [{trackPoint.TimeStamp.ToString("HH:mm:ss")}]  | ";
+                                $"Pilot has a Blue-PZ infringement [{trackPoint.TimeStamp.ToString("HH:mm:ss")}] | ";
                             break;
                         }
                     }
@@ -39,37 +40,45 @@ public class PZManager
                 case PZType.RED:
                     foreach (Coordinate trackPoint in track.TrackPoints)
                     {
-                        double disctanceBetweenRedPZ = CoordinateHelpers.Calculate2DDistanceHavercos(trackPoint, pz.center);
-                        if (disctanceBetweenRedPZ <= pz.radius && (flight.useGPSAltitude() ? trackPoint.AltitudeGPS : trackPoint.AltitudeBarometric) <= pz.height)
+                        double disctanceBetweenRedPZ =
+                            CalculationHelper.Calculate2DDistance(trackPoint, pz.center, flight.getCalculationType());
+                        if (disctanceBetweenRedPZ <= pz.radius &&
+                            (flight.useGPSAltitude() ? trackPoint.AltitudeGPS : trackPoint.AltitudeBarometric) <=
+                            pz.height)
                         {
                             comment +=
                                 $"Pilot has a Red-PZ infringement (PZ: {pz.id}) [{trackPoint.TimeStamp.ToString("HH:mm:ss")}]  | ";
                             break;
                         }
                     }
-                    break;
-                    case PZType.YELLOW:
-                        Coordinate launchPoint;
-                        if (!TrackHelpers.EstimateLaunchAndLandingTime(track, flight.useGPSAltitude(), out launchPoint,
-                                out _))
-                            break;
-                        double distanceBetweenStartAndYellowPZ = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, pz.center);
-                        if (distanceBetweenStartAndYellowPZ <= pz.radius)
-                        {
-                            comment +=
-                                $"Pilot has a Yellow-PZ infringement for starting. | ";
-                        }
 
-                        double distanceBetweenLandingAndYellowPZ = CoordinateHelpers.Calculate2DDistanceHavercos(track.TrackPoints.Last(), pz.center);
-                        if (distanceBetweenLandingAndYellowPZ <= pz.radius)
-                        {
-                            comment +=
-                                $"Pilot has a Yellow-PZ infringement for landing. | ";
-                        }
+                    break;
+                case PZType.YELLOW:
+                    Coordinate launchPoint;
+                    if (!TrackHelpers.EstimateLaunchAndLandingTime(track, flight.useGPSAltitude(), out launchPoint,
+                            out _))
                         break;
+                    double distanceBetweenStartAndYellowPZ =
+                        CalculationHelper.Calculate2DDistance(launchPoint, pz.center, flight.getCalculationType());
+                    if (distanceBetweenStartAndYellowPZ <= pz.radius)
+                    {
+                        comment +=
+                            $"Pilot has a Yellow-PZ infringement for starting. | ";
+                    }
+
+                    double distanceBetweenLandingAndYellowPZ =
+                        CalculationHelper.Calculate2DDistance(track.TrackPoints.Last(), pz.center,
+                            flight.getCalculationType());
+                    if (distanceBetweenLandingAndYellowPZ <= pz.radius)
+                    {
+                        comment +=
+                            $"Pilot has a Yellow-PZ infringement for landing. | ";
+                    }
+
+                    break;
             }
         }
 
-        return (comment.Length > 0 ? comment.Substring(0, comment.Length - 3) : comment);
+        return comment;
     }
 }

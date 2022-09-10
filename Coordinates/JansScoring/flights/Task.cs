@@ -17,8 +17,8 @@ public abstract class Task
     /// Only for scoring perpurse
     /// </summary>
     protected Flight flight;
-    
-    
+
+
     public abstract int number();
 
     /// <summary>
@@ -28,10 +28,54 @@ public abstract class Task
     /// <returns>Returns the result and the comment</returns>
     public abstract string[] score(Track track);
 
-    
+
     /// <summary>
     /// All goals, need for this Task
     /// </summary>
     /// <returns></returns>
     public abstract Coordinate[] goals();
+
+    /// <summary>
+    /// The end of the scoring-periode
+    ///
+    /// Time need to be in UTC
+    /// </summary>
+    /// <returns></returns>
+    public abstract DateTime getScoringPeriodeUntil();
+
+    public bool checkScoringPeriodeForMarker(Track track, MarkerDrop markerDrop, out string comment)
+    {
+        comment = null;
+        if (markerDrop.MarkerTime == DateTime.MinValue)
+        {
+            comment += "Cant get Scoringperiode because MarkerTime is null";
+            return false;
+        }
+
+        Coordinate trackPoint = getTrackPointByTime(track, markerDrop.MarkerTime);
+        if (trackPoint.TimeStamp >= getScoringPeriodeUntil())
+        {
+            TimeSpan timeOutsideScoringPeriode =
+                getScoringPeriodeUntil() - trackPoint.TimeStamp;
+            comment +=
+                $"Pilots last Trackpoint was outside the scoringperiode of task {number()}({timeOutsideScoringPeriode.ToString(@"hh\:mm\:ss")}) | ";
+            return false;
+        }
+        
+        return true;
+    }
+
+
+    private Coordinate getTrackPointByTime(Track track, DateTime time)
+    {
+        foreach (Coordinate currentTrackPoint in track.TrackPoints)
+        {
+            if (currentTrackPoint.TimeStamp == time)
+            {
+                return currentTrackPoint;
+            }
+        }
+
+        return null;
+    }
 }

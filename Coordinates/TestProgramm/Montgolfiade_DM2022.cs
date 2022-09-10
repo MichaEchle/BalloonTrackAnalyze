@@ -1,6 +1,7 @@
 ﻿using Competition;
 using Coordinates;
 using Coordinates.Parsers;
+using JansScoring.calculation;
 using OfficeOpenXml.ConditionalFormatting;
 using System;
 using System.Collections.Generic;
@@ -252,12 +253,12 @@ namespace TestProgramm
 
                             if (validGoal.DeclaredGoal.AltitudeGPS != 0)
                             {
-                                distances.Add(CoordinateHelpers.Calculate3DDistance(validGoal.DeclaredGoal, markerUsed.MarkerLocation, true));
+                                distances.Add(CoordinateHelpers.Calculate3DDistance(validGoal.DeclaredGoal, markerUsed.MarkerLocation, true, CalculationType.Haversin));
                             }
                             else
                             {
                                 Coordinate validGoalWithHeight = new Coordinate(validGoal.DeclaredGoal.Latitude, validGoal.DeclaredGoal.Longitude, CoordinateHelpers.ConvertToMeter(1500), CoordinateHelpers.ConvertToMeter(1500), validGoal.DeclaredGoal.TimeStamp);
-                                distances.Add(CoordinateHelpers.Calculate3DDistance(validGoalWithHeight, markerUsed.MarkerLocation, true));
+                                distances.Add(CoordinateHelpers.Calculate3DDistance(validGoalWithHeight, markerUsed.MarkerLocation, true, CalculationType.Haversin));
 
                             }
                         }
@@ -265,14 +266,14 @@ namespace TestProgramm
                         {
                             if (validGoal.DeclaredGoal.AltitudeGPS != 0)
                             {
-                                distances.Add(CoordinateHelpers.Calculate3DDistance(validGoal.DeclaredGoal, currentTrack.MarkerDrops[0].MarkerLocation, true));
+                                distances.Add(CoordinateHelpers.Calculate3DDistance(validGoal.DeclaredGoal, currentTrack.MarkerDrops[0].MarkerLocation, true, CalculationType.Haversin));
                                 Console.WriteLine($"******* Attention ********\r\n Pilot {pilotNo} dropped marker but didn't used marker 1");
                                 comment += $"Pilot {pilotNo} dropped marker but didn't used marker 1";
                             }
                             else
                             {
                                 Coordinate validGoalWithHeight = new Coordinate(validGoal.DeclaredGoal.Latitude, validGoal.DeclaredGoal.Longitude, CoordinateHelpers.ConvertToMeter(1500), CoordinateHelpers.ConvertToMeter(1500), validGoal.DeclaredGoal.TimeStamp);
-                                distances.Add(CoordinateHelpers.Calculate3DDistance(validGoalWithHeight, markerUsed.MarkerLocation, true));
+                                distances.Add(CoordinateHelpers.Calculate3DDistance(validGoalWithHeight, markerUsed.MarkerLocation, true, CalculationType.Haversin));
                                 Console.WriteLine($"******* Attention ********\r\n Pilot {pilotNo} dropped marker but didn't used marker 1");
                                 comment += $"Pilot {pilotNo} dropped marker but didn't used marker 1";
                             }
@@ -446,32 +447,32 @@ namespace TestProgramm
 
         private static string CalculateTask15(Track track, Coordinate goalTask15)
         {
-            (double result, string comment) = CalculateResultToGivenGoal(track, 1, goalTask15, CoordinateHelpers.ConvertToMeter(1500),75);
+            (double result, string comment) = CalculateResultToGivenGoal(track, 1, goalTask15, CoordinateHelpers.ConvertToMeter(1500),75, CalculationType.Haversin);
             return $"{track.Pilot.PilotNumber},{result:0.0#},{comment}";
         }
 
         private static string CalculateTask16(Track track, Coordinate goalTask16)
         {
-            (double result, string comment) = CalculateResultToGivenGoal(track, 2, goalTask16, CoordinateHelpers.ConvertToMeter(1500),75);
+            (double result, string comment) = CalculateResultToGivenGoal(track, 2, goalTask16, CoordinateHelpers.ConvertToMeter(1500),75, CalculationType.Haversin);
             return $"{track.Pilot.PilotNumber},{result:0.0#},{comment}";
         }
 
         private static string CalculateTask17(Track track, Coordinate goalTask17)
         {
-            (double result, string comment) = CalculateResultToGivenGoal(track, 3, goalTask17, CoordinateHelpers.ConvertToMeter(1500),75);
+            (double result, string comment) = CalculateResultToGivenGoal(track, 3, goalTask17, CoordinateHelpers.ConvertToMeter(1500),75, CalculationType.Haversin);
             return $"{track.Pilot.PilotNumber},{result:0.0#},{comment}";
         }
 
         private static string CalculateTask18(Track track, Coordinate goalTask18)
         {
-            (double result, string comment) = CalculateResultToGivenGoal(track, 4, goalTask18, CoordinateHelpers.ConvertToMeter(1500),75);
+            (double result, string comment) = CalculateResultToGivenGoal(track, 4, goalTask18, CoordinateHelpers.ConvertToMeter(1500),75, CalculationType.Haversin);
             return $"{track.Pilot.PilotNumber},{result:0.0#},{comment}";
         }
         private static string CalculateTask19(Track track, Coordinate goalTask19A, Coordinate goalTask19B)
         {
 
-            (double result19A, string comment19A) = CalculateResultToGivenGoal(track, 5, goalTask19A, CoordinateHelpers.ConvertToMeter(1500),75);
-            (double result19B, string comment19B) = CalculateResultToGivenGoal(track, 5, goalTask19B, CoordinateHelpers.ConvertToMeter(1500),75);
+            (double result19A, string comment19A) = CalculateResultToGivenGoal(track, 5, goalTask19A, CoordinateHelpers.ConvertToMeter(1500),75, CalculationType.Haversin);
+            (double result19B, string comment19B) = CalculateResultToGivenGoal(track, 5, goalTask19B, CoordinateHelpers.ConvertToMeter(1500),75, CalculationType.Haversin);
             if (result19A < result19B)
                 return $"{track.Pilot.PilotNumber},{result19A:0.0#},{comment19A}";
             else
@@ -488,7 +489,7 @@ namespace TestProgramm
             return CalculateFlighOnResult(track, 2, 3, 7, 1000, double.NaN, goals, 1000, double.NaN);
         }
 
-        private static (double result, string comment) CalculateResultToGivenGoal(Track track, int markerNumber, Coordinate goal, double separationAltitude, double radiusMMA)
+        private static (double result, string comment) CalculateResultToGivenGoal(Track track, int markerNumber, Coordinate goal, double separationAltitude, double radiusMMA, CalculationType calculationType)
         {
 
             MarkerDrop marker = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == markerNumber);
@@ -496,7 +497,7 @@ namespace TestProgramm
             string comment = string.Empty;
             if (marker is not null)
             {
-                result = CoordinateHelpers.CalculateDistanceWithSeparationAltitude(goal, marker.MarkerLocation, separationAltitude, true);
+                result = CoordinateHelpers.CalculateDistanceWithSeparationAltitude(goal, marker.MarkerLocation, separationAltitude, true, calculationType);
                 if (!double.IsNaN(radiusMMA))
                 {
                     if (result < radiusMMA)
@@ -581,7 +582,7 @@ namespace TestProgramm
 
                     else
                     {
-                        result = CoordinateHelpers.Calculate3DDistance(validDeclaration.DeclaredGoal, markerDrop.MarkerLocation, true);
+                        result = CoordinateHelpers.Calculate3DDistance(validDeclaration.DeclaredGoal, markerDrop.MarkerLocation, true, CalculationType.Haversin);
                     }
                 }
             }

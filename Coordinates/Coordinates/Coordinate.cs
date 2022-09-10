@@ -50,5 +50,25 @@ namespace Coordinates
             TimeStamp = timeStamp;
         }
 
+        
+        public string utmZone
+        {
+            get;
+            set;
+        }
+
+        public double easting
+        {
+            get;
+            set;
+        }
+
+        public double northing
+        {
+            get;
+            set;
+        }
+
+        
     }
 }

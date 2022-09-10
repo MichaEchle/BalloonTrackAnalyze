@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using JansScoring.calculation;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -76,7 +77,7 @@ namespace Competition
                 double distanceBetweenMarkerAndGoal;
                 if (Use3DDistance)
                 {
-                    distanceBetweenMarkerAndGoal = CoordinateHelpers.Calculate3DDistance(marker.MarkerLocation, Declaration.DeclaredGoal, UseGPSAltitude);
+                    distanceBetweenMarkerAndGoal = CoordinateHelpers.Calculate3DDistance(marker.MarkerLocation, Declaration.DeclaredGoal, UseGPSAltitude, CalculationType.Haversin);
                 }
                 else
                 {

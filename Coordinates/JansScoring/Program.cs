@@ -8,9 +8,9 @@
         {
             _flightManager = new FlightManager();
             _flightManager.register();
-                
-                
-            _flightManager.scoreFlight(0);
+
+
+            _flightManager.scoreFlight(4);
         }
     }
 }

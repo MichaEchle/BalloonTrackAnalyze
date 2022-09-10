@@ -16,6 +16,14 @@ namespace Coordinates
         /// </summary>
         public Coordinate MarkerLocation { get; private set; }
 
+
+        public DateTime MarkerTime
+        {
+            get;
+            set;
+        }
+        
+        
         /// <summary>
         /// Create a marker drop
         /// </summary>

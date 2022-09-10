@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using JansScoring.calculation;
 using LoggerComponent;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,7 @@ namespace TrackReportGenerator
 
         private async void btSelectFiles_Click(object sender, EventArgs e)
         {
+            //TODO: Calculation Type to Config
             progressBar1.Value = 0;
             OpenFileDialog openFileDialog = new OpenFileDialog();
             if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.InitalDirectory))
@@ -58,7 +60,7 @@ namespace TrackReportGenerator
                 for (int index = 0; index < igcFiles.Length; index++)
                 {
                     lbStatus.Text = $"{index} of {igcFiles.Length} processed ({successful} successful / {erroneous} erroneous)";
-                    bool success = await ProcessFileAsync(igcFiles[index]);
+                    bool success = await ProcessFileAsync(igcFiles[index], CalculationType.Haversin);
                     if (success)
                         successful++;
                     else
@@ -71,7 +73,7 @@ namespace TrackReportGenerator
             }
         }
 
-        private async Task<bool> ProcessFileAsync(string igcFile)
+        private async Task<bool> ProcessFileAsync(string igcFile, CalculationType calculationType)
         {
             return await Task<bool>.Run(() =>
             {
@@ -101,7 +103,7 @@ namespace TrackReportGenerator
                 string reportFileName = Path.Combine(Path.GetDirectoryName(igcFile), Path.GetFileNameWithoutExtension(igcFile) + ".xlsx");
                 if (!File.Exists(reportFileName) || !cbSkipExistingReports.Checked)
                 {
-                    if (!ExcelTrackReportGenerator.GenerateTrackReport(reportFileName, track, SkipCoordinatesWithoutLocation, UseGPSAltitude, MaxAllowedAltitude))
+                    if (!ExcelTrackReportGenerator.GenerateTrackReport(reportFileName, track, SkipCoordinatesWithoutLocation, UseGPSAltitude, MaxAllowedAltitude, calculationType))
                         return false;
                 }
                 else

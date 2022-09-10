@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Coordinates;
+using JansScoring.calculation;
+using System;
 
 namespace JansScoring.flights;
 
@@ -6,7 +8,7 @@ public abstract class Flight
 {
     public abstract int getFlightNumber();
 
-    
+
     /// <summary>
     /// The beginning of the launch-periode
     ///  
@@ -20,14 +22,6 @@ public abstract class Flight
     /// </summary>
     /// <returns></returns>
     public abstract int launchPeriode();
-
-    /// <summary>
-    /// The end of the scoring-periode
-    ///
-    /// Time need to be in UTC
-    /// </summary>
-    /// <returns></returns>
-    public abstract DateTime getScoringPeriodeUntil();
 
     /// <summary>
     /// If GPS Altituse should be used for calculations
@@ -46,5 +40,17 @@ public abstract class Flight
     /// </summary>
     /// <returns></returns>
     public abstract string getTracksPath();
+
     public abstract Task[] getTasks();
+
+    public abstract CalculationType getCalculationType();
+
+    public abstract double getSeperationAltitudeFeet();
+
+    public double getSeperationAltitudeMeters()
+    {
+        return CoordinateHelpers.ConvertToMeter(getSeperationAltitudeFeet());
+    }
+
+   
 }

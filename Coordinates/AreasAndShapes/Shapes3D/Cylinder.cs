@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using JansScoring.calculation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,17 +12,20 @@ namespace Shapes
     {
         public Circle Circle
         {
-            get; private set;
+            get;
+            private set;
         }
 
         public double LowerBoundary
         {
-            get; private set;
+            get;
+            private set;
         }
 
         public double UpperBoundary
         {
-            get; private set;
+            get;
+            private set;
         }
 
         public Cylinder(Circle circle, double lowerBoundary, double upperBoundary)
@@ -31,14 +35,9 @@ namespace Shapes
             UpperBoundary = upperBoundary;
         }
 
-        public override bool IsWithin(Coordinate coordinate, bool useGPSAltitude)
-        {
-            if (!Circle.IsWithin(coordinate))
-                return false;
-            return IsWithinAltitudeBoundary(coordinate, useGPSAltitude);
-        }
 
-        private bool IsWithinAltitudeBoundary(Coordinate coordinate, bool useGPSAltitude)
+        private bool IsWithinAltitudeBoundary(Coordinate coordinate, bool useGPSAltitude,
+            CalculationType calculationType)
         {
             double altitude = coordinate.AltitudeGPS;
             if (!useGPSAltitude)
@@ -50,7 +49,13 @@ namespace Shapes
             if (!double.IsNaN(UpperBoundary))
                 isWithin &= altitude <= UpperBoundary;
             return isWithin;
+        }
 
+        public override bool IsWithin(Coordinate coordinate, bool useGPSAltitude, CalculationType calculationType)
+        {
+            if (!Circle.IsWithin(coordinate))
+                return false;
+            return IsWithinAltitudeBoundary(coordinate, useGPSAltitude, calculationType);
         }
     }
 }

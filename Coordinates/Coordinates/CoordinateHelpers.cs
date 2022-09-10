@@ -1,4 +1,5 @@
 ﻿using CoordinateSharp;
+using JansScoring.calculation;
 using LoggerComponent;
 using System;
 using System.Collections.Generic;
@@ -271,7 +272,7 @@ namespace Coordinates
         /// <param name="coordinate2">the second coordinate</param>
         /// <param name="useGPSAltitude">true: use GPS altitude; false: use barometric altitude</param>
         /// <returns>the 3D distance in meters</returns>
-        public static double Calculate3DDistance(Coordinate coordinate1, Coordinate coordinate2, bool useGPSAltitude)
+        public static double Calculate3DDistance(Coordinate coordinate1, Coordinate coordinate2, bool useGPSAltitude, CalculationType calculationType)
         {
             if (coordinate1 is null)
             {
@@ -282,7 +283,7 @@ namespace Coordinates
             {
                 throw new ArgumentNullException(nameof(coordinate2));
             }
-            double distance2D = Calculate2DDistanceHavercos(coordinate1, coordinate2);
+            double distance2D = CalculationHelper.Calculate2DDistance(coordinate1, coordinate2, calculationType);
             double deltaAltitude;
             if (useGPSAltitude)
             {
@@ -292,7 +293,6 @@ namespace Coordinates
             {
                 deltaAltitude = coordinate1.AltitudeBarometric - coordinate2.AltitudeBarometric;
             }
-
             double distance3D = Sqrt(Pow(distance2D, 2) + Pow(deltaAltitude, 2));
             return distance3D;
         }
@@ -320,12 +320,12 @@ namespace Coordinates
         /// <param name="coordinates">the list of coordinates</param>
         /// <param name="useGPSAltitude">true: use GPS altitude; false: use barometric altitude</param>
         /// <returns>the accumulated 3D distance in meters</returns>
-        public static double Calculate3DDistanceBetweenPoints(List<Coordinate> coordinates, bool useGPSAltitude)
+        public static double Calculate3DDistanceBetweenPoints(List<Coordinate> coordinates, bool useGPSAltitude, CalculationType calculationType)
         {
             double result = 0.0;
             for (int index = 0; index < coordinates.Count - 1; index++)
             {
-                result += Calculate3DDistance(coordinates[index], coordinates[index + 1], useGPSAltitude);
+                result += Calculate3DDistance(coordinates[index], coordinates[index + 1], useGPSAltitude,calculationType);
             }
             return result;
         }
@@ -340,7 +340,7 @@ namespace Coordinates
         /// <param name="separationAltitude">the separation altitude in [m]</param>
         /// <param name="useGPSAltitude">true: use GPS altitude; false: use barometric altitude</param>
         /// <returns>the distance in [m]</returns>
-        public static double CalculateDistanceWithSeparationAltitude(Coordinate targetCoordinate, Coordinate coordinate, double separationAltitude, bool useGPSAltitude)
+        public static double CalculateDistanceWithSeparationAltitude(Coordinate targetCoordinate, Coordinate coordinate, double separationAltitude, bool useGPSAltitude, CalculationType calculationType)
         {
             if (targetCoordinate is null)
             {
@@ -357,7 +357,7 @@ namespace Coordinates
                 if (coordinate.AltitudeGPS > separationAltitude)
                 {
                     Coordinate tempCoordinate = new Coordinate(targetCoordinate.Latitude, targetCoordinate.Longitude, separationAltitude, separationAltitude, targetCoordinate.TimeStamp);
-                    return Calculate3DDistance(tempCoordinate, coordinate, true);
+                    return Calculate3DDistance(tempCoordinate, coordinate, true, calculationType);
                 }
                 else
                 {
@@ -369,7 +369,7 @@ namespace Coordinates
                 if (coordinate.AltitudeBarometric > separationAltitude)
                 {
                     Coordinate tempCoordinate = new Coordinate(targetCoordinate.Latitude, targetCoordinate.Longitude, separationAltitude, separationAltitude, targetCoordinate.TimeStamp);
-                    return Calculate3DDistance(tempCoordinate, coordinate, false);
+                    return Calculate3DDistance(tempCoordinate, coordinate, false, calculationType);
                 }
                 else
                 {
@@ -385,7 +385,7 @@ namespace Coordinates
         /// <param name="coordinateB">second coordinate</param>
         /// <param name="coordinateC">third coordinate</param>
         /// <returns>the interior angle in degrees</returns>
-        public static double CalculateInteriorAngle(Coordinate coordinateA, Coordinate coordinateB, Coordinate coordinateC)
+        public static double CalculateInteriorAngle(Coordinate coordinateA, Coordinate coordinateB, Coordinate coordinateC, CalculationType calculationType)
         {
             if (coordinateA is null)
             {
@@ -403,9 +403,9 @@ namespace Coordinates
             }
 
             double result = 0.0;
-            double a = Calculate2DDistanceHavercos(coordinateB, coordinateC);
-            double b = Calculate2DDistanceHavercos(coordinateA, coordinateC);
-            double c = Calculate2DDistanceHavercos(coordinateA, coordinateB);
+            double a = CalculationHelper.Calculate2DDistance(coordinateB, coordinateC, calculationType);
+            double b = CalculationHelper.Calculate2DDistance(coordinateA, coordinateC, calculationType);
+            double c =CalculationHelper.Calculate2DDistance(coordinateA, coordinateB, calculationType);
 
             double beta = Acos((Pow(a, 2) + Pow(c, 2) - Pow(b, 2)) / (2 * a * c));
             result = beta / PI * 180.0;

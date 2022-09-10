@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Competition.Validation;
+using JansScoring.calculation;
 
 namespace Competition
 {
@@ -87,7 +88,7 @@ namespace Competition
                 {
                     if (Use3DDistance)
                     {
-                        distances.Add(CoordinateHelpers.Calculate3DDistance(goal, markerDrop.MarkerLocation, useGPSAltitude));
+                        distances.Add(CoordinateHelpers.Calculate3DDistance(goal, markerDrop.MarkerLocation, useGPSAltitude, CalculationType.Haversin));
                     }
                     else
                     {

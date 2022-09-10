@@ -1,4 +1,5 @@
-﻿using OfficeOpenXml.Drawing.Slicer.Style;
+﻿using JansScoring.calculation;
+using OfficeOpenXml.Drawing.Slicer.Style;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,12 +22,12 @@ namespace Coordinates
             return distance2DBetweenPositionOfDeclarationsAndDeclaredGoal;
         }
 
-        public static List<double> Calculate3DDistanceBetweenPositionOfDeclarationsAndDeclaredGoal(List<Declaration> declarations, bool useGPSAltitude)
+        public static List<double> Calculate3DDistanceBetweenPositionOfDeclarationsAndDeclaredGoal(List<Declaration> declarations, bool useGPSAltitude, CalculationType calculationType)
         {
             List<double> distance3DBetweenPositionOfDeclarationsAndDeclaredGoal = new List<double>();
             foreach (Declaration declaration in declarations)
             {
-                distance3DBetweenPositionOfDeclarationsAndDeclaredGoal.Add(CoordinateHelpers.Calculate3DDistance(declaration.PositionAtDeclaration, declaration.DeclaredGoal, useGPSAltitude));
+                distance3DBetweenPositionOfDeclarationsAndDeclaredGoal.Add(CoordinateHelpers.Calculate3DDistance(declaration.PositionAtDeclaration, declaration.DeclaredGoal, useGPSAltitude, calculationType));
             }
             return distance3DBetweenPositionOfDeclarationsAndDeclaredGoal;
         }
@@ -51,7 +52,7 @@ namespace Coordinates
             return distance2DBetweenDeclaredGoals;
         }
 
-        public static List<(string identifier, double distance)> Calculate3DDistanceBetweenDeclaredGoals(List<Declaration> declarations, bool useGPSAltitude)
+        public static List<(string identifier, double distance)> Calculate3DDistanceBetweenDeclaredGoals(List<Declaration> declarations, bool useGPSAltitude, CalculationType calculationType)
         {
             List<(string identifier, double distance)> distance3DBetweenDeclaredGoals = new List<(string identifier, double distance)>();
             for (int index = 0; index < declarations.Count; index++)
@@ -64,7 +65,7 @@ namespace Coordinates
                         identifier = $"G{declarations[index].GoalNumber}_{declarations[index].DeclaredGoal.TimeStamp:HH:mm:ss}->G{declarations[iterator].GoalNumber}_{declarations[iterator].DeclaredGoal.TimeStamp:HH:mm:ss}";
                     else
                         identifier = $"G{declarations[index].GoalNumber}->G{declarations[iterator].GoalNumber}";
-                    double distance = CoordinateHelpers.Calculate3DDistance(declarations[index].DeclaredGoal, declarations[iterator].DeclaredGoal, useGPSAltitude);
+                    double distance = CoordinateHelpers.Calculate3DDistance(declarations[index].DeclaredGoal, declarations[iterator].DeclaredGoal, useGPSAltitude, calculationType);
                     distance3DBetweenDeclaredGoals.Add((identifier, distance));
                 }
             }
@@ -91,7 +92,7 @@ namespace Coordinates
             return distance2DBetweenMarkers;
         }
 
-        public static List<(string identifier, double distance)> Calculate3DDistanceBetweenMarkers(List<MarkerDrop> markerDrops, bool useGPSAltitude)
+        public static List<(string identifier, double distance)> Calculate3DDistanceBetweenMarkers(List<MarkerDrop> markerDrops, bool useGPSAltitude, CalculationType calculationType)
         {
             List<(string identifier, double distance)> distance3DBetweenMarkers = new List<(string identifier, double distance)>();
             for (int index = 0; index < markerDrops.Count; index++)
@@ -104,7 +105,7 @@ namespace Coordinates
                         identifier = $"M{markerDrops[index].MarkerNumber}_{markerDrops[index].MarkerLocation.TimeStamp:HH:mm:ss}->M{markerDrops[index].MarkerNumber}_{markerDrops[iterator].MarkerLocation.TimeStamp:HH:mm:ss}";
                     else
                         identifier = $"M{markerDrops[index].MarkerNumber}->M{markerDrops[index].MarkerNumber}";
-                    double distance = CoordinateHelpers.Calculate3DDistance(markerDrops[index].MarkerLocation, markerDrops[iterator].MarkerLocation, useGPSAltitude);
+                    double distance = CoordinateHelpers.Calculate3DDistance(markerDrops[index].MarkerLocation, markerDrops[iterator].MarkerLocation, useGPSAltitude, calculationType);
                     distance3DBetweenMarkers.Add((identifier, distance));
                 }
             }
@@ -126,7 +127,7 @@ namespace Coordinates
             return distance2DBetweenMarkerAndGoals;
         }
 
-        public static List<(string identifier, double distance)> Calculate3DDistanceBetweenMarkerAndGoals(List<Declaration> declarations, List<MarkerDrop> markerDrops, bool useGPSAltitude)
+        public static List<(string identifier, double distance)> Calculate3DDistanceBetweenMarkerAndGoals(List<Declaration> declarations, List<MarkerDrop> markerDrops, bool useGPSAltitude, CalculationType calculationType)
         {
             List<(string identifier, double distance)> distance3DBetweenMarkerAndGoals = new List<(string identifier, double distance)>();
             foreach (Declaration declaration in declarations)
@@ -134,7 +135,7 @@ namespace Coordinates
                 foreach (MarkerDrop markerDrop in markerDrops)
                 {
                     string identifier = $"G{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}->M{markerDrop.MarkerNumber}_{markerDrop.MarkerLocation.TimeStamp:HH:mm:ss}";
-                    double distance = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, markerDrop.MarkerLocation, useGPSAltitude);
+                    double distance = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, markerDrop.MarkerLocation, useGPSAltitude, calculationType);
                     distance3DBetweenMarkerAndGoals.Add((identifier, distance));
                 }
             }
@@ -152,13 +153,13 @@ namespace Coordinates
             }
             return distance2DBetweenLaunchPointAndGoals;
         }
-        public static List<(string identifier, double distance)> Calculate3DDistanceBetweenLaunchPointAndGoals(Coordinate launchPoint, List<Declaration> declarations, bool useGPSAltitude)
+        public static List<(string identifier, double distance)> Calculate3DDistanceBetweenLaunchPointAndGoals(Coordinate launchPoint, List<Declaration> declarations, bool useGPSAltitude, CalculationType calculationType)
         {
             List<(string identifier, double distance)> distance2DBetweenLaunchPointAndGoals = new List<(string identifier, double distance)>();
             foreach (Declaration declaration in declarations)
             {
                 string idenifier = $"TO->G{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}";
-                double distance = CoordinateHelpers.Calculate3DDistance(launchPoint, declaration.DeclaredGoal, useGPSAltitude);
+                double distance = CoordinateHelpers.Calculate3DDistance(launchPoint, declaration.DeclaredGoal, useGPSAltitude, calculationType);
                 distance2DBetweenLaunchPointAndGoals.Add((idenifier, distance));
             }
             return distance2DBetweenLaunchPointAndGoals;
@@ -175,13 +176,13 @@ namespace Coordinates
             }
             return distance2DBetweenLandingPointAndGoals;
         }
-        public static List<(string identifier, double distance)> Calculate3DDistanceBetweenLandingPointAndGoals(Coordinate landingPoint, List<Declaration> declarations, bool useGPSAltitude)
+        public static List<(string identifier, double distance)> Calculate3DDistanceBetweenLandingPointAndGoals(Coordinate landingPoint, List<Declaration> declarations, bool useGPSAltitude, CalculationType calculationType)
         {
             List<(string identifier, double distance)> distance2DBetweenLandingPointAndGoals = new List<(string identifier, double distance)>();
             foreach (Declaration declaration in declarations)
             {
                 string idenifier = $"TD->Goal{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}";
-                double distance = CoordinateHelpers.Calculate3DDistance(landingPoint, declaration.DeclaredGoal, useGPSAltitude);
+                double distance = CoordinateHelpers.Calculate3DDistance(landingPoint, declaration.DeclaredGoal, useGPSAltitude, calculationType);
                 distance2DBetweenLandingPointAndGoals.Add((idenifier, distance));
             }
             return distance2DBetweenLandingPointAndGoals;
@@ -199,13 +200,13 @@ namespace Coordinates
             return distance2DBetweenLaunchPointAndGoals;
         }
 
-        public static List<(string identifier, double distance)> Calculate3DDistanceBetweenLaunchPointAndJudeDeclaredGoals(Coordinate launchPoint, List<(string goalName, Coordinate goalCoordinate)> judgeDeclaredGoals, bool useGPSAltitude)
+        public static List<(string identifier, double distance)> Calculate3DDistanceBetweenLaunchPointAndJudeDeclaredGoals(Coordinate launchPoint, List<(string goalName, Coordinate goalCoordinate)> judgeDeclaredGoals, bool useGPSAltitude, CalculationType calculationType)
         {
             List<(string identifier, double distance)> distance3DBetweenLaunchPointAndGoals = new List<(string identifier, double distance)>();
             foreach ((string goalName, Coordinate goalCoordinate) judgeDeclaredGoal in judgeDeclaredGoals)
             {
                 string identifier = $"TO->Goal{judgeDeclaredGoal.goalName}";
-                double distance = CoordinateHelpers.Calculate3DDistance(launchPoint, judgeDeclaredGoal.goalCoordinate, useGPSAltitude);
+                double distance = CoordinateHelpers.Calculate3DDistance(launchPoint, judgeDeclaredGoal.goalCoordinate, useGPSAltitude, calculationType);
                 distance3DBetweenLaunchPointAndGoals.Add((identifier, distance));
             }
             return distance3DBetweenLaunchPointAndGoals;
@@ -226,7 +227,7 @@ namespace Coordinates
             return distance2DBetweenPilotAndJudgeDeclaredGoals;
         }
 
-        public static List<(string identifier, double distance)> Calculate3DDistanceBetweenPilotAndJudgeDeclaredGoals(List<Declaration> declarations, List<(string goalName, Coordinate goalCoordinate)> judgeDeclaredGoals, bool useGPSAltitude)
+        public static List<(string identifier, double distance)> Calculate3DDistanceBetweenPilotAndJudgeDeclaredGoals(List<Declaration> declarations, List<(string goalName, Coordinate goalCoordinate)> judgeDeclaredGoals, bool useGPSAltitude, CalculationType calculationType)
         {
             List<(string identifier, double distance)> distance3DBetweenPilotAndJudgeDeclaredGoals = new List<(string identifier, double distance)>();
             foreach (Declaration declaration in declarations)
@@ -234,7 +235,7 @@ namespace Coordinates
                 foreach ((string goalName, Coordinate goalCoordinate) judgeDeclaredGoal in judgeDeclaredGoals)
                 {
                     string identifier = $"Goal{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}->Goal{judgeDeclaredGoal.goalName}";
-                    double distance = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, judgeDeclaredGoal.goalCoordinate, useGPSAltitude);
+                    double distance = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, judgeDeclaredGoal.goalCoordinate, useGPSAltitude, calculationType);
                     distance3DBetweenPilotAndJudgeDeclaredGoals.Add((identifier, distance));
                 }
             }

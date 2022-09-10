@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Coordinates;
+using JansScoring.calculation;
 using LoggerComponent;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing.Chart;
@@ -14,7 +15,7 @@ namespace TrackReportGenerator
 {
     public static class ExcelTrackReportGenerator
     {
-        public static bool GenerateTrackReport(string filename, Track track, bool skipCoordinatesWithOutLocation, bool useGPSAltitude, double maxAllowedAltitude)
+        public static bool GenerateTrackReport(string filename, Track track, bool skipCoordinatesWithOutLocation, bool useGPSAltitude, double maxAllowedAltitude, CalculationType calculationType)
         {
             string functionErrorMessage = "Failed to generate track report";
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -49,7 +50,7 @@ namespace TrackReportGenerator
                 }
 
                 ExcelWorksheet wsDeclarationsAndMarkerDrops = package.Workbook.Worksheets.Add("Decl. and Markers");
-                if (!WriteDeclaratrionsAndMarkerDrops(wsDeclarationsAndMarkerDrops, track, useGPSAltitude))
+                if (!WriteDeclaratrionsAndMarkerDrops(wsDeclarationsAndMarkerDrops, track, useGPSAltitude,calculationType))
                 {
                     Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, functionErrorMessage);
                     return false;
@@ -230,7 +231,7 @@ namespace TrackReportGenerator
 
         }
 
-        private static bool WriteDeclaratrionsAndMarkerDrops(ExcelWorksheet wsDeclarationsAndMarkerDrops, Track track, bool useGPSAltitude)
+        private static bool WriteDeclaratrionsAndMarkerDrops(ExcelWorksheet wsDeclarationsAndMarkerDrops, Track track, bool useGPSAltitude, CalculationType calculationType)
         {
             try
             {
@@ -263,7 +264,7 @@ namespace TrackReportGenerator
                 List<Declaration> declarations = track.Declarations.OrderBy(x => x.GoalNumber).ToList();
 
                 List<double> distance2D = TrackHelpers.Calculate2DDistanceBetweenPositionOfDeclarationsAndDeclaredGoal(declarations);
-                List<double> distance3D = TrackHelpers.Calculate3DDistanceBetweenPositionOfDeclarationsAndDeclaredGoal(declarations, useGPSAltitude);
+                List<double> distance3D = TrackHelpers.Calculate3DDistanceBetweenPositionOfDeclarationsAndDeclaredGoal(declarations, useGPSAltitude,calculationType);
                 int index = 2;
                 foreach (Declaration declaration in declarations)
                 {
@@ -351,7 +352,7 @@ namespace TrackReportGenerator
                 index += 3;
                 int indexDistance = index;
                 List<(string identifier, double distance)> distance2DGoals = TrackHelpers.Calculate2DDistanceBetweenDeclaredGoals(declarations);
-                List<(string identifier, double distance)> distance3DGoals = TrackHelpers.Calculate3DDistanceBetweenDeclaredGoals(declarations, useGPSAltitude);
+                List<(string identifier, double distance)> distance3DGoals = TrackHelpers.Calculate3DDistanceBetweenDeclaredGoals(declarations, useGPSAltitude, calculationType);
                 wsDeclarationsAndMarkerDrops.Cells[index, 1, index, 3].Merge = true;
                 wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Dist. Goals";
                 wsDeclarationsAndMarkerDrops.Cells[index, 1].Style.Font.Bold = true;
@@ -376,7 +377,7 @@ namespace TrackReportGenerator
 
                 index += 3;
                 List<(string identifier, double distance)> distance2DGoalsToMarkers = TrackHelpers.Calculate2DDistanceBetweenMarkerAndGoals(declarations, markerDrops);
-                List<(string identifier, double distance)> distance3DGoalsToMarkers = TrackHelpers.Calculate3DDistanceBetweenMarkerAndGoals(declarations, markerDrops, useGPSAltitude);
+                List<(string identifier, double distance)> distance3DGoalsToMarkers = TrackHelpers.Calculate3DDistanceBetweenMarkerAndGoals(declarations, markerDrops, useGPSAltitude,calculationType);
 
                 wsDeclarationsAndMarkerDrops.Cells[index, 1, index, 3].Merge = true;
                 wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Dist. Goals to Markers";
@@ -403,7 +404,7 @@ namespace TrackReportGenerator
 
                 index += 3;
                 List<(string identifier, double distance)> distance2DMarkers = TrackHelpers.Calculate2DDistanceBetweenMarkers(markerDrops);
-                List<(string identifier, double distance)> distance3DMarkers = TrackHelpers.Calculate3DDistanceBetweenMarkers(markerDrops, useGPSAltitude);
+                List<(string identifier, double distance)> distance3DMarkers = TrackHelpers.Calculate3DDistanceBetweenMarkers(markerDrops, useGPSAltitude,calculationType);
                 wsDeclarationsAndMarkerDrops.Cells[index, 1, index, 3].Merge = true;
                 wsDeclarationsAndMarkerDrops.Cells[index, 1].Value = "Dist. Markers";
                 wsDeclarationsAndMarkerDrops.Cells[index, 1].Style.Font.Bold = true;
@@ -433,7 +434,7 @@ namespace TrackReportGenerator
                 if (!TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launchPoint, out landingPoint))
                     Logger.Log(LogSeverityType.Error, "Launch or landing point not correctly calculated");
                 List<(string identifier, double distance)> distance2DLaunchToGoals = TrackHelpers.Calculate2DDistanceBetweenLaunchPointAndGoals(launchPoint, declarations);
-                List<(string identifier, double distance)> distance3DLaunchToGoals = TrackHelpers.Calculate3DDistanceBetweenLaunchPointAndGoals(launchPoint, declarations, useGPSAltitude);
+                List<(string identifier, double distance)> distance3DLaunchToGoals = TrackHelpers.Calculate3DDistanceBetweenLaunchPointAndGoals(launchPoint, declarations, useGPSAltitude,calculationType);
                 wsDeclarationsAndMarkerDrops.Cells[index, 5, index, 7].Merge = true;
                 wsDeclarationsAndMarkerDrops.Cells[index, 5].Value = "Dist. Launch to Goals";
                 wsDeclarationsAndMarkerDrops.Cells[index, 5].Style.Font.Bold = true;
@@ -458,7 +459,7 @@ namespace TrackReportGenerator
                 index += 3;
 
                 List<(string identifier, double distance)> distance2DLandingToGoals = TrackHelpers.Calculate2DDistanceBetweenLandingPointAndGoals(landingPoint, declarations);
-                List<(string identifier, double distance)> distance3DLandingToGoals = TrackHelpers.Calculate3DDistanceBetweenLandingPointAndGoals(landingPoint, declarations, useGPSAltitude);
+                List<(string identifier, double distance)> distance3DLandingToGoals = TrackHelpers.Calculate3DDistanceBetweenLandingPointAndGoals(landingPoint, declarations, useGPSAltitude,calculationType);
                 wsDeclarationsAndMarkerDrops.Cells[index, 5, index, 7].Merge = true;
                 wsDeclarationsAndMarkerDrops.Cells[index, 5].Value = "Dist. Landing to Goals";
                 wsDeclarationsAndMarkerDrops.Cells[index, 5].Style.Font.Bold = true;

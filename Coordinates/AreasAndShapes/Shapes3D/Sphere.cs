@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using JansScoring.calculation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,9 +26,10 @@ namespace Shapes
             Radius = radius;
         }
 
-        public override bool IsWithin(Coordinate coordinate, bool useGPSAltitude)
+
+        public override bool IsWithin(Coordinate coordinate, bool useGPSAltitude, CalculationType calculationType)
         {
-            return CoordinateHelpers.Calculate3DDistance(CenterPoint, coordinate, useGPSAltitude) <= Radius;
+            return CoordinateHelpers.Calculate3DDistance(CenterPoint, coordinate, useGPSAltitude, calculationType) <= Radius;
         }
     }
 }

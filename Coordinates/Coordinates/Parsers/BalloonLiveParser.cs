@@ -250,7 +250,7 @@ namespace Coordinates.Parsers
                 foreach (string markerDropLine in markerDropLines)
                 {
                     MarkerDrop markerDrop;
-                    if (!ParseMarkerDrop(markerDropLine, date, out markerDrop))
+                    if (!ParseMarkerDrop(markerDropLine, date, track,out markerDrop))
                     {
                         //Debug.WriteLine(functionErrorMessage + "Failed to parse marker drop");
                         Log(LogSeverityType.Error, functionErrorMessage + "Failed to parse marker drop");
@@ -624,39 +624,36 @@ namespace Coordinates.Parsers
                 int northingUTM = -1;
                 if (locations.Length == 2)
                 {
-                    if (!string.IsNullOrWhiteSpace(locations[0]))
+                    if (string.IsNullOrWhiteSpace(locations[0]))
                     {
-                        eastingDigits = locations[0].Length;
-                        if (!int.TryParse(locations[0], out eastingUTM))
-                        {
-                            Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse easting of declared goal in '{declarationText}'");
-                            return false;
-                        }
+                        locations[0] = "0000";
+                        Log(LogSeverityType.Warning, "By parsing the declared goal, the easting was a null value and it got replaced with 0000/");
                     }
-                    else
+                    eastingDigits = locations[0].Length;
+                    if (!int.TryParse(locations[0], out eastingUTM))
                     {
                         Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse easting of declared goal in '{declarationText}'");
                         return false;
                     }
-                    if (!string.IsNullOrWhiteSpace(locations[1]))
+
+                    if (string.IsNullOrWhiteSpace(locations[1]))
                     {
-                        northingDigits = locations[1].Length;
-                        if (!int.TryParse(locations[1], out northingUTM))
-                        {
-                            Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse northing of declared goal in '{declarationText}'");
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse northing of declared goal in '{declarationText}'");
-                        return false;
+                        locations[1] = "0000";
+                        Log(LogSeverityType.Warning, "By parsing the declared goal, the northing was a null value and it got replaced with /0000");
                     }
 
+                    northingDigits = locations[1].Length;
+                    if (!int.TryParse(locations[1], out northingUTM))
+                    {
+                        Log(LogSeverityType.Error,
+                            functionErrorMessage +
+                            $" 3 Failed to parse northing of declared goal in '{declarationText}'");
+                        return false;
+                    }
                 }
                 else
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse easting and northing of declared goal in '{declarationText}'");
+                    Log(LogSeverityType.Error, functionErrorMessage + $" 1 Failed to parse easting and northing of declared goal in '{declarationText}'");
                     return false;
                 }
 
@@ -725,6 +722,9 @@ namespace Coordinates.Parsers
 
                     declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
                     positionAtDeclaration = new Coordinate(declarationLatitude, declarationLongitude, declarationPositionAltitudeGPS, declarationPositonAltitudeBarometric, timeStamp);
+                    declaredGoal.utmZone = utmGridZone;
+                    declaredGoal.northing = northingUTM;
+                    declaredGoal.easting = eastingUTM;
                     double distance = CoordinateHelpers.Calculate2DDistanceHavercos(declaredGoal, positionAtDeclaration);
                     if (distance > 70e3)
                     {
@@ -758,6 +758,10 @@ namespace Coordinates.Parsers
                     CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
 
                     declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
+                    declaredGoal.utmZone = utmGridZone;
+                    declaredGoal.northing = northingUTM;
+                    declaredGoal.easting = eastingUTM;
+                    
                     positionAtDeclaration = new Coordinate(declarationLatitude, declarationLongitude, declarationPositionAltitudeGPS, declarationPositonAltitudeBarometric, timeStamp);
                     double distance = CoordinateHelpers.Calculate2DDistanceHavercos(declaredGoal, positionAtDeclaration);
                     if (distance > 70e3)
@@ -787,7 +791,7 @@ namespace Coordinates.Parsers
         /// <param name="date">the data form the header</param>
         /// <param name="markerDrop">output parameter. the marker drop as object</param>
         /// <returns>true:success; false: error</returns>
-        private static bool ParseMarkerDrop(string line, DateTime date, out MarkerDrop markerDrop)
+        private static bool ParseMarkerDrop(string line, DateTime date, Track track, out MarkerDrop markerDrop)
         {
             string functionErrorMessage = $"Failed to parse marker drop:";
             markerDrop = null;
@@ -861,8 +865,21 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse barometric altitude '{line[35..40]}' in '{line}'");
                 return false;
             }
+
+
+            DateTime markerTime = DateTime.MinValue;
+            if (track.TrackPoints.Count > 0)
+            {
+                markerTime = track.TrackPoints[track.TrackPoints.Count - 1].TimeStamp;
+            }
+            
             Coordinate coordinate = new Coordinate(latitude, longitude, altitudeGPS, altitudeBarometric, timeStamp);
             markerDrop = new MarkerDrop(markerNumber, coordinate);
+
+            if (markerTime != DateTime.MinValue)
+            {
+                markerDrop.MarkerTime = markerTime;
+            }
             return true;
         }
 
