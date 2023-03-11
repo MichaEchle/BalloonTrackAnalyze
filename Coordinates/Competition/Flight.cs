@@ -468,37 +468,6 @@ namespace Competition
         }
 
         /// <summary>
-        /// Sets the specified default altitude to all declaration where no altitude was declared
-        /// </summary>
-        /// <param name="defaultAltitude">the default altitude in meters</param>
-        /// <returns>a list containing the pilot and the declaration where default altitude has been set</returns>
-        public List<(Pilot pilot, Declaration declaration)> SetDefaultGoalAltitude(double defaultAltitude)
-        {
-            List<(Pilot pilot, Declaration declaration)> declarationsWithAltitude = new List<(Pilot pilot, Declaration declaration)>();
-            foreach (Track track in Tracks)
-            {
-                foreach (Declaration declaration in track.Declarations)
-                {
-                    if (!declaration.HasPilotDelaredGoalAltitude)
-                    {
-
-                        if (declaration.DeclaredGoal.SetDefaultAltitude(defaultAltitude))
-                        {
-                            declarationsWithAltitude.Add((track.Pilot, declaration));
-                            Log(LogSeverityType.Info, $"Default alitude set for Pilot {track.Pilot.PilotNumber} at declaration {declaration.GoalNumber}");
-                        }
-                        else
-                        {
-                            Log(LogSeverityType.Info, $"Default altitude could not be set for Pilot {track.Pilot.PilotNumber} at declaration {declaration.GoalNumber}");
-
-                        }
-                    }
-                }
-            }
-            return declarationsWithAltitude;
-        }
-
-        /// <summary>
         /// Log helper
         /// </summary>
         /// <param name="logSeverityType">the severity of the message</param>

@@ -46,8 +46,9 @@ namespace Coordinates.Parsers
         /// </summary>
         /// <param name="fileNameAndPath">the file path and name of the .igc file</param>
         /// <param name="track">output parameter. the parsed track from the file</param>
+        /// <param name="defaultGoalAlitude">the default declaration altitude in meters to be used when the pilot didn't declared one</param>
         /// <returns>true:success; false:error</returns>
-        public static bool ParseFile(string fileNameAndPath, out Track track)
+        public static bool ParseFile(string fileNameAndPath, out Track track, double defaultGoalAlitude=0.0)
         {
             //TODO make method async?
 
@@ -314,7 +315,10 @@ namespace Coordinates.Parsers
                 {
 
                     Declaration declaration;
-                    if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet,
+                    if (!ParseGoalDeclaration(goalDeclarationLine, 
+                        date, 
+                        declaredAltitudeIsInFeet,
+                        defaultGoalAlitude,
                         referenceCoordinate,
                         declaration_HasAdditionalLatitudeDecimals,
                         declaration_StartOfAdditionalLatitudeDecimals,
@@ -609,7 +613,7 @@ namespace Coordinates.Parsers
         /// <param name="referenceCoordinate">a reference coordinate to fill up the missing info from utm goal declaration. If the reference is null, the position of declaration will be used instead</param>
         /// <param name="declaration">output parameter. the declaration</param>
         /// <returns>true:success; false:error</returns>
-        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet,
+        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet,double defaultGoalAltitude,
             Coordinate referenceCoordinate,
             bool declaration_HasAdditionalLatitudeDecimals,
             int declaration_StartOfAdditionalLatitudeDecimals,
@@ -761,15 +765,15 @@ namespace Coordinates.Parsers
                     else
                     {
                         hasPilotDelaredGoalAltitude = false;
-                        declaredAltitudeInMeter = 0.0;
-                        Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
+                        declaredAltitudeInMeter = defaultGoalAltitude;
+                        Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Default goal altitude of '{defaultGoalAltitude}' will be assumed");
                     }
                 }
                 else
                 {
                     hasPilotDelaredGoalAltitude = false;
-                    declaredAltitudeInMeter = 0.0;
-                    Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
+                    declaredAltitudeInMeter = defaultGoalAltitude;
+                    Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Default goal altitude of '{defaultGoalAltitude}' will be assumed");
                 }
 
                 CoordinateSharp.Coordinate coordinateSharp;
@@ -848,7 +852,7 @@ namespace Coordinates.Parsers
                     }
                 }
 
-                declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration, hasPilotDelaredGoalAltitude);
+                declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration);
             }
             else
             {

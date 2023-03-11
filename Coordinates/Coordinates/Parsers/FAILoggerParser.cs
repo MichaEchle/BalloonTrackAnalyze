@@ -18,8 +18,9 @@ namespace Coordinates.Parsers
         /// </summary>
         /// <param name="fileNameAndPath">the file path and name of the .igc file</param>
         /// <param name="track">output parameter. the parsed track from the file</param>
+        /// <param name="defaultGoalAltitude">the default goal altitude in meters to be used when the pilot didn't declared one</param>
         /// <returns>true:success; false:error</returns>
-        public static bool ParseFile(string fileNameAndPath, out Track track)
+        public static bool ParseFile(string fileNameAndPath, out Track track, double defaultGoalAltitude = 0.0)
         {
             //TODO make method async?
 
@@ -30,7 +31,7 @@ namespace Coordinates.Parsers
             if (!fileInfo.Exists)
             {
                 //Debug.WriteLine(functionErrorMessage + $"The file '{fileNameAndPath}' does not exists");
-                Log(LogSeverityType.Error,functionErrorMessage + $"The file '{fileNameAndPath}' does not exists");
+                Log(LogSeverityType.Error, functionErrorMessage + $"The file '{fileNameAndPath}' does not exists");
                 return false;
             }
 
@@ -234,7 +235,14 @@ namespace Coordinates.Parsers
                     return false;
                 }
                 Declaration declaration;
-                if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, goalNortingDigits, goalEastingDigits, referenceCoordinate, positionAtDeclaration, out declaration))
+                if (!ParseGoalDeclaration(goalDeclarationLine, date,
+                    declaredAltitudeIsInFeet,
+                    defaultGoalAltitude,
+                    goalNortingDigits,
+                    goalEastingDigits,
+                    referenceCoordinate,
+                    positionAtDeclaration,
+                    out declaration))
                 {
                     //Debug.WriteLine(functionErrorMessage + "Failed to parse goal declaration");
                     Log(LogSeverityType.Error, functionErrorMessage + "Failed to parse goal declaration");
@@ -362,7 +370,7 @@ namespace Coordinates.Parsers
             //        }
             //    }
             //}
-            Pilot pilot = new Pilot(pilotNumber,  pilotIdentifier );
+            Pilot pilot = new Pilot(pilotNumber, pilotIdentifier);
             track.Pilot = pilot;
             return true;
         }
@@ -444,7 +452,7 @@ namespace Coordinates.Parsers
         /// <param name="referenceCoordinate">a reference coordinate to fill up the missing info from utm goal declaration. If the reference is null, the position of declaration will be used instead</param>
         /// <param name="declaration">output parameter. the declared goal</param>
         /// <returns>true:success; false:error</returns>
-        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, int northingDigits, int eastingDigits, Coordinate referenceCoordinate, Coordinate positionAtDeclaration, out Declaration declaration)
+        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, double defaultGoalAltiude, int northingDigits, int eastingDigits, Coordinate referenceCoordinate, Coordinate positionAtDeclaration, out Declaration declaration)
         {
             string functionErrorMessage = $"Failed to parse goal declaration:";
             declaration = null;
@@ -484,7 +492,6 @@ namespace Coordinates.Parsers
             string[] parts = line.Split(',');
             int declaredAltitude;
             double declaredAltitudeInMeter;
-            bool hasPilotDeclaredGoalAltitude = true;
             //TODO clarify with Mike
             if (parts.Length > 1)
             {
@@ -505,47 +512,17 @@ namespace Coordinates.Parsers
                 }
                 else
                 {
-                    hasPilotDeclaredGoalAltitude = false;
-                    declaredAltitudeInMeter = 0.0;
-                    Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
+
+                    declaredAltitudeInMeter = defaultGoalAltiude;
+                    Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Default gaol altitude of '{defaultGoalAltiude}' will be assumed");
                 }
             }
             else
             {
-                hasPilotDeclaredGoalAltitude = false;
-                declaredAltitudeInMeter = 0.0;
-                Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
+
+                declaredAltitudeInMeter = defaultGoalAltiude;
+                Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Default gaol altitude of '{defaultGoalAltiude}' will be assumed");
             }
-            //double declarationLatitude;
-            //if (!ParseLatitude(parts[2][0..8], out declarationLatitude))
-            //{
-            //    Debug.WriteLine(functionErrorMessage + $"Failed to parse latitude at declaration position '{parts[2][0..8]}' in '{line}'");
-            //    Debug.WriteLine(functionErrorMessage + $"Failed to parse latitude at declaration position '{parts[2][0..8]}' in '{line}'");
-            //    return false;
-            //}
-            //double declarationLongitude;
-            //if (!ParseLongitude(parts[2][8..17], out declarationLongitude))
-            //{
-            //    Debug.WriteLine(functionErrorMessage + $"Failed to parse longitude at declaration position '{parts[2][8..17]}' in '{line}'");
-            //    Debug.WriteLine(functionErrorMessage + $"Failed to parse longitude at declaration position '{parts[2][8..17]}' in '{line}'");
-            //    return false;
-            //}
-
-            //double declarationPositonAltitudeBarometric;
-            //if (!double.TryParse(parts[2][18..23], out declarationPositonAltitudeBarometric))
-            //{
-            //    Debug.WriteLine(functionErrorMessage + $"Failed to parse barometric altitude at declaration position '{parts[2][18..23]}' in '{line}'");
-            //    Debug.WriteLine(functionErrorMessage + $"Failed to parse barometric altitude at declaration position '{parts[2][18..23]}' in '{line}'");
-            //    return false;
-            //}
-
-            //double declarationPositionAltitudeGPS;
-            //if (!double.TryParse(parts[2][23..28], out declarationPositionAltitudeGPS))
-            //{
-            //    Debug.WriteLine(functionErrorMessage + $"Failed to parse GPS altitude at declaration position '{parts[2][23..28]}' in '{line}'");
-            //    Debug.WriteLine(functionErrorMessage + $"Failed to parse GPS altitude at declaration position '{parts[2][23..28]}' in '{line}'");
-            //    return false;
-            //}
 
             CoordinateSharp.Coordinate coordinateSharp;
             if (referenceCoordinate == null)
@@ -577,7 +554,7 @@ namespace Coordinates.Parsers
             Coordinate declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
             //Coordinate positionAtDeclaration = new Coordinate(positionAtDeclaration.Latitude, positionAtDeclaration.Longitude, positionAtDeclaration.AltitudeGPS, positionAtDeclaration.AltitudeBarometric, positionAtDeclaration.TimeStamp);
 
-            declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration, hasPilotDeclaredGoalAltitude);
+            declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration);
 
             return true;
         }
@@ -766,7 +743,7 @@ namespace Coordinates.Parsers
             return true;
         }
 
-        private static void Log(LogSeverityType logSeverity,string text)
+        private static void Log(LogSeverityType logSeverity, string text)
         {
             Logger.Log((object)"FAI Logger Parser", logSeverity, text);
         }
