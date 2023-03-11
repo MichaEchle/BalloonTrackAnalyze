@@ -20,13 +20,6 @@
             get; private set;
         }
 
-        /// <summary>
-        /// Flag to indicate whether the pilot has declared the goal with an altitude or the position only
-        /// </summary>
-        public bool HasPilotDelaredGoalAltitude
-        {
-            get; private set;
-        }
 
         public int OrignalEastingDeclarationUTM
         {

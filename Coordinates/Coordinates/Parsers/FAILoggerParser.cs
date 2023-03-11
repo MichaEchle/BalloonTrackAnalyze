@@ -21,8 +21,9 @@ namespace Coordinates.Parsers
         /// <param name="referenceCoordinate">provide a reference coordinate to be used complete the missing information of a goal declaration
         /// <para>a goal declaration not in the zone 6/7 format is ambiguous</para>
         /// <para>this is an optional parameter, the parse will use either marker drop 1 or the position at declaration if not reference point has been provided</para></param>
+        /// <param name="defaultGoalAltitude">the default goal altitude in meters to be used when the pilot didn't declared one</param>
         /// <returns>true:success; false:error</returns>
-        public static bool ParseFile(string fileNameAndPath, out Track track, Coordinate referenceCoordinate = null)
+        public static bool ParseFile(string fileNameAndPath, out Track track, Coordinate referenceCoordinate = null, double defaultGoalAltitude = 0.0)
         {
             track = null;
 
@@ -202,7 +203,15 @@ namespace Coordinates.Parsers
                     Logger?.LogError("Failed to parse file '{fileNameAndPath}': cannot find a trackpoint as position of declaration", fileNameAndPath);
                     return false;
                 }
-                if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, goalNortingDigits, goalEastingDigits, referenceCoordinate, positionAtDeclaration, out Declaration declaration))
+                Declaration declaration;
+                if (!ParseGoalDeclaration(goalDeclarationLine, date,
+                    declaredAltitudeIsInFeet,
+                    defaultGoalAltitude,
+                    goalNortingDigits,
+                    goalEastingDigits,
+                    referenceCoordinate,
+                    positionAtDeclaration,
+                    out declaration))
                 {
                     Logger?.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the goal declaration '{goalDeclarationLine}'", fileNameAndPath, goalDeclarationLine);
                     return false;
@@ -280,7 +289,7 @@ namespace Coordinates.Parsers
         /// <param name="referenceCoordinate">a reference coordinate to fill up the missing info from utm goal declaration. If the reference is null, the position of declaration will be used instead</param>
         /// <param name="declaration">output parameter. the declared goal</param>
         /// <returns>true:success; false:error</returns>
-        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, int northingDigits, int eastingDigits, Coordinate referenceCoordinate, Coordinate positionAtDeclaration, out Declaration declaration)
+        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, double defaultGoalAltiude, int northingDigits, int eastingDigits, Coordinate referenceCoordinate, Coordinate positionAtDeclaration, out Declaration declaration)
         {
             declaration = null;
 
@@ -330,14 +339,14 @@ namespace Coordinates.Parsers
                 else
                 {
                     hasPilotDeclaredGoalAltitude = false;
-                    declaredAltitudeInMeter = 0.0;
+                    declaredAltitudeInMeter = defaultGoalAltiude;
                     Logger?.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed", goalNumber);
                 }
             }
             else
             {
                 hasPilotDeclaredGoalAltitude = false;
-                declaredAltitudeInMeter = 0.0;
+                declaredAltitudeInMeter = defaultGoalAltiude;
                 Logger?.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed", goalNumber);
             }
 
