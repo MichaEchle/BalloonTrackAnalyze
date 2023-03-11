@@ -129,6 +129,12 @@ namespace Coordinates.Parsers
                         if (!track.AdditionalPropertiesFromIGCFile.ContainsKey("SensBoxSerialNumber"))
                             track.AdditionalPropertiesFromIGCFile.Add("SensBoxSerialNumber", sensBoxSerialNumber);
                     }
+                    if (configLine.StartsWith("LXXX loggerinterval"))
+                    {
+                        string loggerInterval = configLine.Split("=").Last();
+                        if (!track.AdditionalPropertiesFromIGCFile.ContainsKey("LoggerInterval"))
+                            track.AdditionalPropertiesFromIGCFile.Add("LoggerInterval", loggerInterval.Remove('s'));
+                    }
                 }
 
                 string iRecordLine = lines.Where(x => x.StartsWith('I')).FirstOrDefault();
