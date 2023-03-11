@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Diagnostics;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.CompilerServices;
-using System.Net.Http.Headers;
 using System.Linq;
 using System.Text.RegularExpressions;
 using LoggerComponent;
-using Windows.Security.Authentication.OnlineId;
+
 
 namespace Coordinates.Parsers
 {
