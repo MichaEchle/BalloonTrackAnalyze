@@ -67,7 +67,6 @@ namespace Coordinates.Parsers
                     Logger?.LogError("Failed to parse the file '{filePathAndName}': the file extension '{fileExtension}' is not supported", fileNameAndPath, fileInfo.Extension);
                     return false;
                 }
-                ResetProperties();
                 track = new Track();
                 int pilotNumber = -1;
                 string pilotIdentifier = "";
@@ -111,7 +110,19 @@ namespace Coordinates.Parsers
 
 
                 string[] headerLines = lines.Where(x => x.StartsWith('H')).ToArray();
-                if (!ParseHeaders(headerLines, out pilotNumber, out date))
+                bool markerDrop_HasAdditionalLatitudeDecimals;
+                int markerDrop_StartOfAdditionalLatitudeDecimals;
+                int markerDrop_EndOfAdditionalLatitudeDecimals;
+                bool markerDrop_HasAdditionalLongitudeDecimals;
+                int markerDrop_StartOfAdditionalLongitudeDecimals;
+                int markerDrop_EndOfAdditionalLongitudeDecimals;
+                bool declaration_HasAdditionalLatitudeDecimals;
+                int declaration_StartOfAdditionalLatitudeDecimals;
+                int declaration_EndOfAdditionalLatitudeDecimals;
+                bool declaration_HasAdditionalLongitudeDecimals;
+                int declaration_StartOfAdditionalLongitudeDecimals;
+                int declaration_EndOfAdditionalLongitudeDecimals;
+                if (!ParseHeaders(headerLines, out pilotNumber, out date, out markerDrop_HasAdditionalLatitudeDecimals, out markerDrop_StartOfAdditionalLatitudeDecimals, out markerDrop_EndOfAdditionalLatitudeDecimals, out markerDrop_HasAdditionalLongitudeDecimals, out markerDrop_StartOfAdditionalLongitudeDecimals, out markerDrop_EndOfAdditionalLongitudeDecimals, out declaration_HasAdditionalLatitudeDecimals, out declaration_StartOfAdditionalLatitudeDecimals, out declaration_EndOfAdditionalLatitudeDecimals, out declaration_HasAdditionalLongitudeDecimals, out declaration_StartOfAdditionalLongitudeDecimals, out declaration_EndOfAdditionalLongitudeDecimals))
                 {
                     Logger?.LogError("Failed to parse the file '{filePathAndName}': Failed to parse header lines", fileNameAndPath);
                     return false;
@@ -142,6 +153,13 @@ namespace Coordinates.Parsers
                 }
 
                 string iRecordLine = lines.Where(x => x.StartsWith('I')).FirstOrDefault();
+                int offset = 3;
+                bool trackPoint_HasAdditionalLatitudeDecimals = false;
+                int trackPoint_StartOfAdditionalLatitudeDecimals = -1;
+                int trackPoint_EndOfAdditionalLatitudeDecimals = -1;
+                bool trackPoint_HasAdditionalLongitudeDecimals = false;
+                int trackPoint_StartOfAdditionalLongitudeDecimals = -1;
+                int trackPoint_EndOfAdditionalLongitudeDecimals = -1;
                 if (!string.IsNullOrWhiteSpace(iRecordLine))
                 {
                     if (!int.TryParse(iRecordLine[1..3], out int numberOfAdditions))
@@ -150,7 +168,7 @@ namespace Coordinates.Parsers
                         Logger?.LogError("Failed to parse the file '{filePathAndName}': Failed to parse number of additions from I-record", fileNameAndPath);
                         return false;
                     }
-                    int offset = 3;
+
                     for (int index = 0; index < numberOfAdditions; index++)
                     {
                         offset = index * 7 + 3;
@@ -170,15 +188,15 @@ namespace Coordinates.Parsers
 
                         if (additionIdentifier.Equals("LAD", StringComparison.CurrentCultureIgnoreCase))
                         {
-                            TrackPoint_HasAdditionalLatitudeDecimals = true;
-                            TrackPoint_StartOfAdditionalLatitudeDecimals = startPosition - 1;//adjust to zero based index
-                            TrackPoint_EndOfAdditionalLatitudeDecimals = stopPosition;
+                            trackPoint_HasAdditionalLatitudeDecimals = true;
+                            trackPoint_StartOfAdditionalLatitudeDecimals = startPosition - 1;//adjust to zero based index
+                            trackPoint_EndOfAdditionalLatitudeDecimals = stopPosition;
                         }
                         if (additionIdentifier.Equals("LOD", StringComparison.CurrentCultureIgnoreCase))
                         {
-                            TrackPoint_HasAdditionalLongitudeDecimals = true;
-                            TrackPoint_StartOfAdditionalLongitudeDecimals = startPosition - 1;//adjust to zero based index
-                            TrackPoint_EndOfAdditionalLongitudeDecimals = stopPosition;
+                            trackPoint_HasAdditionalLongitudeDecimals = true;
+                            trackPoint_StartOfAdditionalLongitudeDecimals = startPosition - 1;//adjust to zero based index
+                            trackPoint_EndOfAdditionalLongitudeDecimals = stopPosition;
                         }
                     }
                 }
@@ -208,7 +226,14 @@ namespace Coordinates.Parsers
                 string[] trackPointLines = lines.Where(x => x.StartsWith('B')).ToArray();
                 foreach (string trackPointLine in trackPointLines)
                 {
-                    if (!ParseTrackPoint(trackPointLine, date, out Coordinate coordinate))
+                    Coordinate coordinate;
+                    if (!ParseTrackPoint(trackPointLine, date,
+                        trackPoint_HasAdditionalLatitudeDecimals,
+                        trackPoint_StartOfAdditionalLatitudeDecimals,
+                        trackPoint_EndOfAdditionalLatitudeDecimals,
+                        trackPoint_HasAdditionalLongitudeDecimals,
+                        trackPoint_StartOfAdditionalLongitudeDecimals,
+                        trackPoint_EndOfAdditionalLongitudeDecimals, out coordinate))
                     {
                         Logger?.LogError("Failed to parse the file '{filePathAndName}': Failed to parse trackpoint", fileNameAndPath);
                         return false;
@@ -219,7 +244,15 @@ namespace Coordinates.Parsers
                 string[] markerDropLines = lines.Where(x => x.StartsWith('E') && x.Contains("XX0")).ToArray();
                 foreach (string markerDropLine in markerDropLines)
                 {
-                    if (!ParseMarkerDrop(markerDropLine, date, out MarkerDrop markerDrop))
+                    MarkerDrop markerDrop;
+                    if (!ParseMarkerDrop(markerDropLine, date,
+                        markerDrop_HasAdditionalLatitudeDecimals,
+                        markerDrop_StartOfAdditionalLatitudeDecimals,
+                        markerDrop_EndOfAdditionalLatitudeDecimals,
+                        markerDrop_HasAdditionalLongitudeDecimals,
+                        markerDrop_StartOfAdditionalLongitudeDecimals,
+                        markerDrop_EndOfAdditionalLongitudeDecimals,
+                        out markerDrop))
                     {
                         Logger?.LogError("Failed to parse the file '{filePathAndName}': Failed to parse marker drop", fileNameAndPath);
                         return false;
@@ -250,7 +283,16 @@ namespace Coordinates.Parsers
                 foreach (string goalDeclarationLine in goalDeclarationLines)
                 {
 
-                    if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, referenceCoordinate, out Declaration declaration))
+                    Declaration declaration;
+                    if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet,
+                        referenceCoordinate,
+                        declaration_HasAdditionalLatitudeDecimals,
+                        declaration_StartOfAdditionalLatitudeDecimals,
+                        declaration_EndOfAdditionalLatitudeDecimals,
+                        declaration_HasAdditionalLongitudeDecimals,
+                        declaration_StartOfAdditionalLongitudeDecimals,
+                        declaration_EndOfAdditionalLongitudeDecimals,
+                        out declaration))
                     {
                         Logger?.LogError("Failed to parse the file '{filePathAndName}': Failed to parse goal declaration", fileNameAndPath);
                         return false;
@@ -274,10 +316,35 @@ namespace Coordinates.Parsers
         #endregion
 
         #region Private methods
-        private static bool ParseHeaders(string[] headerLines, out int pilotNumber, out DateTime date)
+        private static bool ParseHeaders(string[] headerLines, out int pilotNumber, out DateTime date,
+            out bool markerDrop_HasAdditionalLatitudeDecimals,
+            out int markerDrop_StartOfAdditionalLatitudeDecimals,
+            out int markerDrop_EndOfAdditionalLatitudeDecimals,
+            out bool markerDrop_HasAdditionalLongitudeDecimals,
+            out int markerDrop_StartOfAdditionalLongitudeDecimals,
+            out int markerDrop_EndOfAdditionalLongitudeDecimals, out bool declaration_HasAdditionalLatitudeDecimals,
+            out int declaration_StartOfAdditionalLatitudeDecimals,
+            out int declaration_EndOfAdditionalLatitudeDecimals,
+            out bool declaration_HasAdditionalLongitudeDecimals,
+            out int declaration_StartOfAdditionalLongitudeDecimals,
+            out int declaration_EndOfAdditionalLongitudeDecimals)
         {
             date = DateTime.MinValue;
             pilotNumber = -1;
+            string functionErrorMessage = "Failed to parse header lines: ";
+            markerDrop_HasAdditionalLatitudeDecimals = false;
+            markerDrop_StartOfAdditionalLatitudeDecimals = -1;
+            markerDrop_EndOfAdditionalLatitudeDecimals = -1;
+            markerDrop_HasAdditionalLongitudeDecimals = false;
+            markerDrop_StartOfAdditionalLongitudeDecimals = -1;
+            markerDrop_EndOfAdditionalLongitudeDecimals = -1;
+            declaration_HasAdditionalLatitudeDecimals = false;
+            declaration_StartOfAdditionalLatitudeDecimals = -1;
+            declaration_EndOfAdditionalLatitudeDecimals = -1;
+            declaration_HasAdditionalLongitudeDecimals = false;
+            declaration_StartOfAdditionalLongitudeDecimals = -1;
+            declaration_EndOfAdditionalLongitudeDecimals = -1;
+
             foreach (string headerLine in headerLines)
             {
                 if (headerLine.StartsWith("HFDTE"))
@@ -337,15 +404,15 @@ namespace Coordinates.Parsers
 
                         if (additionIdentifier.Equals("LAD", StringComparison.CurrentCultureIgnoreCase))
                         {
-                            MarkerDrop_HasAdditionalLatitudeDecimals = true;
-                            MarkerDrop_StartOfAdditionalLatitudeDecimals = startPosition - 1;//adjust to zero based index
-                            MarkerDrop_EndOfAdditionalLatitudeDecimals = stopPosition;
+                            markerDrop_HasAdditionalLatitudeDecimals = true;
+                            markerDrop_StartOfAdditionalLatitudeDecimals = startPosition - 1;//adjust to zero based index
+                            markerDrop_EndOfAdditionalLatitudeDecimals = stopPosition;
                         }
                         if (additionIdentifier.Equals("LOD", StringComparison.CurrentCultureIgnoreCase))
                         {
-                            MarkerDrop_HasAdditionalLongitudeDecimals = true;
-                            MarkerDrop_StartOfAdditionalLongitudeDecimals = startPosition - 1;//adjust to zero based index
-                            MarkerDrop_EndOfAdditionalLongitudeDecimals = stopPosition;
+                            markerDrop_HasAdditionalLongitudeDecimals = true;
+                            markerDrop_StartOfAdditionalLongitudeDecimals = startPosition - 1;//adjust to zero based index
+                            markerDrop_EndOfAdditionalLongitudeDecimals = stopPosition;
                         }
                     }
 
@@ -377,15 +444,15 @@ namespace Coordinates.Parsers
 
                         if (additionIdentifier.Equals("LAD", StringComparison.CurrentCultureIgnoreCase))
                         {
-                            Declaration_HasAdditionalLatitudeDecimals = true;
-                            Declaration_StartOfAdditionalLatitudeDecimals = startPosition - 1;//adjust to zero based index
-                            Declaration_EndOfAdditionalLatitudeDecimals = stopPosition;
+                            declaration_HasAdditionalLatitudeDecimals = true;
+                            declaration_StartOfAdditionalLatitudeDecimals = startPosition - 1;//adjust to zero based index
+                            declaration_EndOfAdditionalLatitudeDecimals = stopPosition;
                         }
                         if (additionIdentifier.Equals("LOD", StringComparison.CurrentCultureIgnoreCase))
                         {
-                            Declaration_HasAdditionalLongitudeDecimals = true;
-                            Declaration_StartOfAdditionalLongitudeDecimals = startPosition - 1;//adjust to zero based index
-                            Declaration_EndOfAdditionalLongitudeDecimals = stopPosition;
+                            declaration_HasAdditionalLongitudeDecimals = true;
+                            declaration_StartOfAdditionalLongitudeDecimals = startPosition - 1;//adjust to zero based index
+                            declaration_EndOfAdditionalLongitudeDecimals = stopPosition;
                         }
                     }
                 }
@@ -405,7 +472,14 @@ namespace Coordinates.Parsers
         /// <param name="date">the date from the header</param>
         /// <param name="coordinate">output parameter. a trackpoint as coordinate object</param>
         /// <returns>true:success; false:error</returns>
-        private static bool ParseTrackPoint(string line, DateTime date, out Coordinate coordinate)
+        private static bool ParseTrackPoint(string line, DateTime date,
+            bool trackPoint_HasAdditionalLatitudeDecimals,
+            int trackPoint_StartOfAdditionalLatitudeDecimals,
+            int trackPoint_EndOfAdditionalLatitudeDecimals,
+            bool trackPoint_HasAdditionalLongitudeDecimals,
+            int trackPoint_StartOfAdditionalLongitudeDecimals,
+            int trackPoint_EndOfAdditionalLongitudeDecimals,
+            out Coordinate coordinate)
         {
             coordinate = null;
 
@@ -416,9 +490,9 @@ namespace Coordinates.Parsers
             }
 
             double latitude;
-            if (TrackPoint_HasAdditionalLatitudeDecimals)
+            if (trackPoint_HasAdditionalLatitudeDecimals)
             {
-                if (!ParseLatitudeWithAdditionalDecimals(line[7..15], line[TrackPoint_StartOfAdditionalLatitudeDecimals..TrackPoint_EndOfAdditionalLatitudeDecimals], out latitude))
+                if (!ParseLatitudeWithAdditionalDecimals(line[7..15], line[trackPoint_StartOfAdditionalLatitudeDecimals..trackPoint_EndOfAdditionalLatitudeDecimals], out latitude))
                 {
                     Logger?.LogError("Failed to parse track point: Cannot parse latitude from portion '{portion}' and additional decimals '{additionDecimals}' in '{line}'", line[7..15], line[TrackPoint_StartOfAdditionalLatitudeDecimals..TrackPoint_EndOfAdditionalLatitudeDecimals], line);
                     return false;
@@ -433,9 +507,9 @@ namespace Coordinates.Parsers
                 }
             }
             double longitude;
-            if (TrackPoint_HasAdditionalLongitudeDecimals)
+            if (trackPoint_HasAdditionalLongitudeDecimals)
             {
-                if (!ParseLongitudeWithAdditionalDecimals(line[15..24], line[TrackPoint_StartOfAdditionalLongitudeDecimals..TrackPoint_EndOfAdditionalLongitudeDecimals], out longitude))
+                if (!ParseLongitudeWithAdditionalDecimals(line[15..24], line[trackPoint_StartOfAdditionalLongitudeDecimals..trackPoint_EndOfAdditionalLongitudeDecimals], out longitude))
                 {
                     Logger?.LogError("Failed to parse track point: Cannot parse longitude from portion '{portion}' and additional decimals '{additionDecimals}' in '{line}'", line[15..24], line[TrackPoint_StartOfAdditionalLongitudeDecimals..TrackPoint_EndOfAdditionalLongitudeDecimals], line);
                     return false;
@@ -482,7 +556,15 @@ namespace Coordinates.Parsers
         /// <param name="referenceCoordinate">a reference coordinate to fill up the missing info from utm goal declaration. If the reference is null, the position of declaration will be used instead</param>
         /// <param name="declaration">output parameter. the declaration</param>
         /// <returns>true:success; false:error</returns>
-        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, Coordinate referenceCoordinate, out Declaration declaration)
+        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet,
+            Coordinate referenceCoordinate,
+            bool declaration_HasAdditionalLatitudeDecimals,
+            int declaration_StartOfAdditionalLatitudeDecimals,
+            int declaration_EndOfAdditionalLatitudeDecimals,
+            bool declaration_HasAdditionalLongitudeDecimals,
+            int declaration_StartOfAdditionalLongitudeDecimals,
+            int declaration_EndOfAdditionalLongitudeDecimals,
+            out Declaration declaration)
         {
             declaration = null;
 
@@ -498,9 +580,9 @@ namespace Coordinates.Parsers
             }
 
             double declarationLatitude;
-            if (Declaration_HasAdditionalLatitudeDecimals)
+            if (declaration_HasAdditionalLatitudeDecimals)
             {
-                if (!ParseLatitudeWithAdditionalDecimals(line[12..20], line[Declaration_StartOfAdditionalLatitudeDecimals..Declaration_EndOfAdditionalLatitudeDecimals], out declarationLatitude))
+                if (!ParseLatitudeWithAdditionalDecimals(line[12..20], line[declaration_StartOfAdditionalLatitudeDecimals..declaration_EndOfAdditionalLatitudeDecimals], out declarationLatitude))
                 {
                     Logger?.LogError("Failed to parse goal declaration: Cannot parse latitude from portion '{portion}' and additional decimals '{additionDecimals}' in '{line}'", line[12..20], line[Declaration_StartOfAdditionalLatitudeDecimals..Declaration_EndOfAdditionalLatitudeDecimals], line);
                     return false;
@@ -515,9 +597,9 @@ namespace Coordinates.Parsers
                 }
             }
             double declarationLongitude;
-            if (Declaration_HasAdditionalLongitudeDecimals)
+            if (declaration_HasAdditionalLongitudeDecimals)
             {
-                if (!ParseLongitudeWithAdditionalDecimals(line[20..29], line[Declaration_StartOfAdditionalLongitudeDecimals..Declaration_EndOfAdditionalLongitudeDecimals], out declarationLongitude))
+                if (!ParseLongitudeWithAdditionalDecimals(line[20..29], line[declaration_StartOfAdditionalLongitudeDecimals..declaration_EndOfAdditionalLongitudeDecimals], out declarationLongitude))
                 {
                     Logger?.LogError("Failed to parse goal declaration: Cannot parse longitude from portion '{portion}' and additional decimals '{additionDecimals}' in '{line}'", line[20..29], line[Declaration_StartOfAdditionalLongitudeDecimals..Declaration_EndOfAdditionalLongitudeDecimals], line);
                     return false;
@@ -717,7 +799,14 @@ namespace Coordinates.Parsers
         /// <param name="date">the data form the header</param>
         /// <param name="markerDrop">output parameter. the marker drop as object</param>
         /// <returns>true:success; false: error</returns>
-        private static bool ParseMarkerDrop(string line, DateTime date, out MarkerDrop markerDrop)
+        private static bool ParseMarkerDrop(string line, DateTime date,
+            bool markerDrop_HasAdditionalLatitudeDecimals,
+            int markerDrop_StartOfAdditionalLatitudeDecimals,
+            int markerDrop_EndOfAdditionalLatitudeDecimals,
+            bool markerDrop_HasAdditionalLongitudeDecimals,
+            int markerDrop_StartOfAdditionalLongitudeDecimals,
+            int markerDrop_EndOfAdditionalLongitudeDecimals,
+            out MarkerDrop markerDrop)
         {
             markerDrop = null;
 
@@ -733,9 +822,9 @@ namespace Coordinates.Parsers
             }
 
             double latitude;
-            if (MarkerDrop_HasAdditionalLatitudeDecimals)
+            if (markerDrop_HasAdditionalLatitudeDecimals)
             {
-                if (!ParseLatitudeWithAdditionalDecimals(line[12..20], line[MarkerDrop_StartOfAdditionalLatitudeDecimals..MarkerDrop_EndOfAdditionalLatitudeDecimals], out latitude))
+                if (!ParseLatitudeWithAdditionalDecimals(line[12..20], line[markerDrop_StartOfAdditionalLatitudeDecimals..markerDrop_EndOfAdditionalLatitudeDecimals], out latitude))
                 {
                     Logger?.LogError("Failed to parse marker drop: Cannot parse latitude from portion '{portion}' and additional decimals '{additionDecimals}' in '{line}'", line[12..20], line[MarkerDrop_StartOfAdditionalLatitudeDecimals..MarkerDrop_EndOfAdditionalLatitudeDecimals], line);
                     return false;
@@ -750,9 +839,9 @@ namespace Coordinates.Parsers
                 }
             }
             double longitude;
-            if (MarkerDrop_HasAdditionalLongitudeDecimals)
+            if (markerDrop_HasAdditionalLongitudeDecimals)
             {
-                if (!ParseLongitudeWithAdditionalDecimals(line[20..29], line[MarkerDrop_StartOfAdditionalLongitudeDecimals..MarkerDrop_EndOfAdditionalLongitudeDecimals], out longitude))
+                if (!ParseLongitudeWithAdditionalDecimals(line[20..29], line[markerDrop_StartOfAdditionalLongitudeDecimals..markerDrop_EndOfAdditionalLongitudeDecimals], out longitude))
                 {
                     Logger?.LogError("Failed to parse marker drop: Cannot parse longitude from portion '{portion}' and additional decimals '{additionDecimals}' in '{line}'", line[20..29], line[MarkerDrop_StartOfAdditionalLongitudeDecimals..MarkerDrop_EndOfAdditionalLongitudeDecimals], line);
                     return false;
