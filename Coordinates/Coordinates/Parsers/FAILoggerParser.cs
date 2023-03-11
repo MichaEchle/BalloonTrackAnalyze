@@ -133,6 +133,12 @@ namespace Coordinates.Parsers
                         declaredAltitudeIsInFeet = false;
                     }
                 }
+                if (configLine.StartsWith("LXXX loggerinterval"))
+                {
+                    string loggerInterval = configLine.Split("=").Last();
+                    if (!track.AdditionalPropertiesFromIGCFile.ContainsKey("LoggerInterval"))
+                        track.AdditionalPropertiesFromIGCFile.Add("LoggerInterval", loggerInterval.Remove('s'));
+                }
             }
 
             string[] trackPointLines = lines.Where(x => x.StartsWith('B')).ToArray();

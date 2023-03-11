@@ -151,6 +151,12 @@ namespace Coordinates.Parsers
                             Logger?.LogWarning("Failed to add SensBoxSerialNumber '{SensBoxSerialNumber}' to the track", sensBoxSerialNumber);
                         }
                     }
+                    if (configLine.StartsWith("LXXX loggerinterval"))
+                    {
+                        string loggerInterval = configLine.Split("=").Last();
+                        if (!track.AdditionalPropertiesFromIGCFile.ContainsKey("LoggerInterval"))
+                            track.AdditionalPropertiesFromIGCFile.Add("LoggerInterval", loggerInterval.Remove('s'));
+                    }
                 }
 
                 string iRecordLine = lines.Where(x => x.StartsWith('I')).FirstOrDefault();
