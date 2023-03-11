@@ -15,30 +15,6 @@ namespace Coordinates.Parsers
 {
     public static class BalloonLiveParser
     {
-        //private static bool MarkerDrop_HasAdditionalLatitudeDecimals = false;
-        //private static int MarkerDrop_StartOfAdditionalLatitudeDecimals = -1;
-        //private static int MarkerDrop_EndOfAdditionalLatitudeDecimals = -1;
-
-        //private static bool MarkerDrop_HasAdditionalLongitudeDecimals = false;
-        //private static int MarkerDrop_StartOfAdditionalLongitudeDecimals = -1;
-        //private static int MarkerDrop_EndOfAdditionalLongitudeDecimals = -1;
-
-        //private static bool Declaration_HasAdditionalLatitudeDecimals = false;
-        //private static int Declaration_StartOfAdditionalLatitudeDecimals = -1;
-        //private static int Declaration_EndOfAdditionalLatitudeDecimals = -1;
-
-        //private static bool Declaration_HasAdditionalLongitudeDecimals = false;
-        //private static int Declaration_StartOfAdditionalLongitudeDecimals = -1;
-        //private static int Declaration_EndOfAdditionalLongitudeDecimals = -1;
-
-        //private static bool TrackPoint_HasAdditionalLatitudeDecimals = false;
-        //private static int TrackPoint_StartOfAdditionalLatitudeDecimals = -1;
-        //private static int TrackPoint_EndOfAdditionalLatitudeDecimals = -1;
-
-        //private static bool TrackPoint_HasAdditionalLongitudeDecimals = false;
-        //private static int TrackPoint_StartOfAdditionalLongitudeDecimals = -1;
-        //private static int TrackPoint_EndOfAdditionalLongitudeDecimals = -1;
-
         #region API
 
         /// <summary>
@@ -50,8 +26,6 @@ namespace Coordinates.Parsers
         /// <returns>true:success; false:error</returns>
         public static bool ParseFile(string fileNameAndPath, out Track track, double defaultGoalAlitude=0.0)
         {
-            //TODO make method async?
-
             string functionErrorMessage = $"Failed to parse file '{fileNameAndPath}':";
             track = null;
             try
@@ -141,21 +115,6 @@ namespace Coordinates.Parsers
                 string[] configLines = lines.Where(x => x.StartsWith("LXXX")).ToArray();
                 foreach (string configLine in configLines)
                 {
-                    //if (configLine.StartsWith("LXXX declaration digits"))
-                    //{
-                    //    if (!int.TryParse(configLine[^3..^2], out goalNortingDigits))
-                    //    {
-                    //        //Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration northing digits '{configLine[^3..^2]}' in '{configLine}'");
-                    //        Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration northing digits '{configLine[^3..^2]}' in '{configLine}'");
-                    //        return false;
-                    //    }
-                    //    if (!int.TryParse(configLine[^1..^0], out goalEastingDigits))
-                    //    {
-                    //        //Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration easting digits '{configLine[^1..^0]}' in '{configLine}'");
-                    //        Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration easting digits '{configLine[^1..^0]}' in '{configLine}'");
-                    //        return false;
-                    //    }
-                    //}
                     if (configLine.StartsWith("LXXX alt unit"))
                     {
                         if (configLine.Contains("feet"))
