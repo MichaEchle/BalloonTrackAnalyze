@@ -1,7 +1,6 @@
 ﻿using Competition;
 using Coordinates;
 using Coordinates.Parsers;
-using OfficeOpenXml.ConditionalFormatting;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,8 +8,6 @@ using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.Media.Playback;
-using Windows.Security.Authentication.OnlineId;
 
 namespace TestProgramm
 {

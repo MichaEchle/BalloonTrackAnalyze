@@ -1,11 +1,9 @@
-﻿using OfficeOpenXml.Drawing.Slicer.Style;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Background;
 
 namespace Coordinates
 {

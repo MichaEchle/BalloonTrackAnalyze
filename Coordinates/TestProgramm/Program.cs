@@ -5,8 +5,6 @@ using System.Diagnostics.Contracts;
 using System.Drawing.Design;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
-using Accessibility;
 using Competition;
 using Coordinates;
 using Coordinates.Parsers;
