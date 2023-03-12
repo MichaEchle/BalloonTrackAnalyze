@@ -162,7 +162,7 @@ namespace Coordinates.Parsers
                 {
                     string loggerInterval = configLine.Split("=").Last();
                     if (!track.AdditionalPropertiesFromIGCFile.ContainsKey("LoggerInterval"))
-                        track.AdditionalPropertiesFromIGCFile.Add("LoggerInterval", loggerInterval.Remove('s'));
+                        track.AdditionalPropertiesFromIGCFile.Add("LoggerInterval", loggerInterval.Replace("s",""));
                 }
             }
 
