@@ -288,6 +288,11 @@ namespace Coordinates
 
                 List<Coordinate> cleanedUpTrackPoints;
                 CleanTrackPoints(track, useGPSAltitude, 15.0, out cleanedUpTrackPoints);
+                if (cleanedUpTrackPoints.Count == 0)
+                {
+                    LoggerComponent.Logger.Log(LoggerComponent.LogSeverityType.Error, $"Failed to estimate launch or landing point: track contains no valid track points");
+                }
+
 
                 if (useGPSAltitude)
                     altitudesFiltered = cleanedUpTrackPoints.Select(x => x.AltitudeGPS).ToList();
@@ -497,12 +502,12 @@ namespace Coordinates
             }
         }
 
-        public static bool CheckLaunchConstraints(Track track, bool useGPSAltitude, DateTime beginOfStartPeriod, DateTime endOfStartPeriod, List<Coordinate> goals, double min2DDistanceBetweenLaunchAndGoals, double max2DDistanceBetweenLaunchAndGoals,out Coordinate launchPoint, out bool launchInStartPeriod, out List<double> distanceToGoals, out List<bool> distanceToGoalsOk)
+        public static bool CheckLaunchConstraints(Track track, bool useGPSAltitude, DateTime beginOfStartPeriod, DateTime endOfStartPeriod, List<Coordinate> goals, double min2DDistanceBetweenLaunchAndGoals, double max2DDistanceBetweenLaunchAndGoals, out Coordinate launchPoint, out bool launchInStartPeriod, out List<double> distanceToGoals, out List<bool> distanceToGoalsOk)
         {
             launchInStartPeriod = false;
             distanceToGoals = new List<double>();
             distanceToGoalsOk = new List<bool>();
-            launchPoint = new Coordinate(0,0,0,0,DateTime.MinValue);
+            launchPoint = new Coordinate(0, 0, 0, 0, DateTime.MinValue);
             if (!EstimateLaunchAndLandingTime(track, useGPSAltitude, out launchPoint, out _))
                 return false;
             if (launchPoint.TimeStamp >= beginOfStartPeriod && launchPoint.TimeStamp <= endOfStartPeriod)
