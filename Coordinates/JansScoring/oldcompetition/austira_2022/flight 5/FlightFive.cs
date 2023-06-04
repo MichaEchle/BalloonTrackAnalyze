@@ -4,7 +4,7 @@ using System;
 
 namespace JansScoring.flights.flight_5;
 
-public class FlightFive : Flight
+public class  FlightFive : Flight
 {
     public override int getFlightNumber()
     {

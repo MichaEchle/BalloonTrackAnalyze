@@ -25,4 +25,8 @@
     <ProjectReference Include="..\Coordinates\Coordinates.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="oldcompetition\austira_2022\" />
+  </ItemGroup>
+
 </Project>

@@ -10,7 +10,7 @@
             _flightManager.register();
 
 
-            _flightManager.scoreFlight(4);
+            //_flightManager.scoreFlight(4);
         }
     }
 }

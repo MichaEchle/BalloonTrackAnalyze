@@ -25,10 +25,7 @@ public class FlightManager
     {
         pzManager = new PZManager();
         pzManager.registerPZs();
-        flights.Add(1, new FlightOne());
-        flights.Add(2, new FlightTwo());
-        flights.Add(3, new FlightThree());
-        flights.Add(4, new FlightFour());
+        
     }
 
 
