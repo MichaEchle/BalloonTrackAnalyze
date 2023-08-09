@@ -20,10 +20,10 @@ public class DeSpiker
             Coordinate currentPoint = track.TrackPoints[i];
             Coordinate nextPoint = track.TrackPoints[i - 1];
 
-            double distance2D =
+            double distance3D =
                 CoordinateHelpers.Calculate3DDistance(currentPoint, nextPoint, useGPSAltitude,
                     CalculationType.UTMPrecise);
-            if (distance2D > 1000)
+            if (distance3D > 1000)
             {
                 Coordinate checkPoint;
                 if (i <= 1)

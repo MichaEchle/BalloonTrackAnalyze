@@ -1,4 +1,6 @@
-﻿namespace JansScoring
+﻿using System;
+
+namespace JansScoring
 {
     class Programm
     {
@@ -8,8 +10,7 @@
         {
             _flightManager = new FlightManager();
             _flightManager.register();
-
-
+            
             //_flightManager.scoreFlight(4);
         }
     }

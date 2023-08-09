@@ -1,16 +1,14 @@
 ﻿using Coordinates;
 using Coordinates.Parsers;
 using JansScoring.flights;
-using JansScoring.flights.flight_1;
-using JansScoring.flights.flight_2;
-using JansScoring.flights.flight_3;
-using JansScoring.flights.flight_4;
+using JansScoring.flights.impl._2;
+using JansScoring.flights.impl._3;
+using JansScoring.flights.impl._4;
 using JansScoring.pz;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using Console = System.Console;
 using Task = JansScoring.flights.Task;
 
@@ -25,7 +23,15 @@ public class FlightManager
     {
         pzManager = new PZManager();
         pzManager.registerPZs();
-        
+
+
+        flights.Add(1, new Flight1());
+        flights.Add(2, new Flight2());
+        flights.Add(3, new Flight3());
+        flights.Add(4, new Flight4());
+
+
+        scoreFlight(4);
     }
 
 
@@ -48,7 +54,6 @@ public class FlightManager
         }
 
         List<Track> trackList = generateTrackList(directoryInfo);
-
 
 
         string scoringTime = DateTime.Now.ToString("MMddHHmmss");
@@ -106,9 +111,8 @@ public class FlightManager
         }
         Console.WriteLine($"Finish Despiking {tracks.Count} Tracks");
          */
-        
-        
-        
+
+
         List<Coordinate> goals = new();
         foreach (Task task in flight.getTasks())
         {
@@ -122,7 +126,7 @@ public class FlightManager
         {
             string comment = comments.GetValueOrDefault(track.Pilot, "");
             comments.Remove(track.Pilot);
-            
+
             FileInfo trackPath = track.trackPath;
             if (trackPath != null)
             {
@@ -149,10 +153,13 @@ public class FlightManager
 
             if (!launchInStartPeriod)
             {
-                TimeSpan launchPointTimeSpan = flight.getStartOfLaunchPeriode().AddMinutes(flight.launchPeriode()) -
-                                                launchPoint.TimeStamp;
-                comment += $"Pilot started outside the launchperiode [{launchPointTimeSpan.ToString(@"hh\:mm\:ss")}] | ";
+                TimeSpan launchPointTimeSpan = launchPoint.TimeStamp -
+                                               flight.getStartOfLaunchPeriode().AddMinutes(flight.launchPeriode());
+
+                comment +=
+                    $"Pilot started outside the launchperiode [{launchPointTimeSpan.ToString(@"hh\:mm\:ss")}]. Started {launchPoint.TimeStamp:dd.MM.yy HH:mm:ss} | ";
             }
+            
 
 
             if (distanceToGoalsOk.Contains(false))
@@ -211,10 +218,5 @@ public class FlightManager
 
         tracks = tracks.OrderBy(x => x.Pilot.PilotNumber).ToList();
         return tracks;
-    }
-
-
-    public void scoreTask(int taskNumber)
-    {
     }
 }

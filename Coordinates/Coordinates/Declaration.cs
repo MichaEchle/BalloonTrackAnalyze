@@ -48,5 +48,11 @@ namespace Coordinates
             DeclaredGoal = declaredGoal;
             PositionAtDeclaration = positionAtDeclaration;
         }
+
+
+        public override string ToString()
+        {
+            return "Goal number: " + GoalNumber + ", Decleared Goal: " + DeclaredGoal + ", PositionAsDeclaration: " + PositionAtDeclaration;
+        }
     }
 }

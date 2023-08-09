@@ -54,7 +54,6 @@ namespace Coordinates.Parsers
             track = null;
             try
             {
-
                 FileInfo fileInfo = new FileInfo(fileNameAndPath);
                 if (!fileInfo.Exists)
                 {
@@ -66,9 +65,11 @@ namespace Coordinates.Parsers
                 if (!fileInfo.Extension.EndsWith("igc"))
                 {
                     //Debug.WriteLine(functionErrorMessage + $"The file extension '{fileInfo.Extension}' is not supported");
-                    Log(LogSeverityType.Error, functionErrorMessage + $"The file extension '{fileInfo.Extension}' is not supported");
+                    Log(LogSeverityType.Error,
+                        functionErrorMessage + $"The file extension '{fileInfo.Extension}' is not supported");
                     return false;
                 }
+
                 ResetProperties();
                 track = new Track();
                 int pilotNumber = -1;
@@ -86,6 +87,7 @@ namespace Coordinates.Parsers
                         lines.Add(line);
                     }
                 }
+
                 //string[] identifierLine = lines.Where(x => x.StartsWith("AXXX")).ToArray();
                 string[] identifierLine = lines.Where(x => x.StartsWith("AXBL")).ToArray();
                 if (identifierLine.Length == 0)
@@ -96,20 +98,24 @@ namespace Coordinates.Parsers
                         Log(LogSeverityType.Error, "Line with Pilot Identifier 'AXBL' or 'AXXX' is missing");
                         return false;
                     }
+
                     if (identifierLine.Length > 1)
                     {
                         //Debug.WriteLine("More the one line with Pilot Identifier is found. First occurrence will be used.");
-                        Log(LogSeverityType.Warning, "More the one line with Pilot Identifier ('AXXX') is found. First occurrence will be used.");
+                        Log(LogSeverityType.Warning,
+                            "More the one line with Pilot Identifier ('AXXX') is found. First occurrence will be used.");
                     }
                     else
                     {
                         pilotIdentifier = identifierLine[0].Replace("AXXX", "").Replace("BalloonLive", "");
                     }
                 }
+
                 if (identifierLine.Length > 1)
                 {
                     //Debug.WriteLine("More the one line with Pilot Identifier is found. First occurrence will be used.");
-                    Log(LogSeverityType.Warning, "More the one line with Pilot Identifier ('AXBL') is found. First occurrence will be used.");
+                    Log(LogSeverityType.Warning,
+                        "More the one line with Pilot Identifier ('AXBL') is found. First occurrence will be used.");
                 }
                 else
                 {
@@ -154,6 +160,7 @@ namespace Coordinates.Parsers
                             declaredAltitudeIsInFeet = false;
                         }
                     }
+
                     if (configLine.StartsWith("LXXX BLSSN"))
                     {
                         string sensBoxSerialNumber = configLine.Split('=').Last();
@@ -168,9 +175,11 @@ namespace Coordinates.Parsers
                     int numberOfAdditions;
                     if (!int.TryParse(iRecordLine[1..3], out numberOfAdditions))
                     {
-                        Log(LogSeverityType.Error, functionErrorMessage + " Failed to parse number of additions from I-record");
+                        Log(LogSeverityType.Error,
+                            functionErrorMessage + " Failed to parse number of additions from I-record");
                         return false;
                     }
+
                     int offset = 3;
                     for (int index = 0; index < numberOfAdditions; index++)
                     {
@@ -178,33 +187,41 @@ namespace Coordinates.Parsers
                         int startPosition;
                         if (!int.TryParse(iRecordLine[offset..(offset + 2)], out startPosition))
                         {
-                            Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse start position of addition no {index + 1}");
+                            Log(LogSeverityType.Error,
+                                functionErrorMessage + $" Failed to parse start position of addition no {index + 1}");
                             return false;
                         }
+
                         offset += 2;
                         int stopPosition;
                         if (!int.TryParse(iRecordLine[(offset)..(offset + 2)], out stopPosition))
                         {
-                            Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse stop position of addition no {index + 1}");
+                            Log(LogSeverityType.Error,
+                                functionErrorMessage + $" Failed to parse stop position of addition no {index + 1}");
                             return false;
                         }
+
                         offset += 2;
                         string additionIdentifier = iRecordLine[(offset)..(offset + 3)];
 
                         if (additionIdentifier.ToUpper() == "LAD")
                         {
                             TrackPoint_HasAdditionalLatitudeDecimals = true;
-                            TrackPoint_StartOfAdditionalLatitudeDecimals = startPosition - 1;//adjust to zero based index
+                            TrackPoint_StartOfAdditionalLatitudeDecimals =
+                                startPosition - 1; //adjust to zero based index
                             TrackPoint_EndOfAdditionalLatitudeDecimals = stopPosition;
                         }
+
                         if (additionIdentifier.ToUpper() == "LOD")
                         {
                             TrackPoint_HasAdditionalLongitudeDecimals = true;
-                            TrackPoint_StartOfAdditionalLongitudeDecimals = startPosition - 1;//adjust to zero based index
+                            TrackPoint_StartOfAdditionalLongitudeDecimals =
+                                startPosition - 1; //adjust to zero based index
                             TrackPoint_EndOfAdditionalLongitudeDecimals = stopPosition;
                         }
                     }
                 }
+
                 string[] positionSourceEvents = lines.Where(x => x.StartsWith('E') && x.Contains("XS")).ToArray();
                 bool isFirstSourceEvent = true;
                 DateTime timeStamp;
@@ -213,23 +230,28 @@ namespace Coordinates.Parsers
                 string blsSerialNumber;
                 foreach (string positionSourceEvent in positionSourceEvents)
                 {
-                    if (!ParseSourceEvent(positionSourceEvent, date, out timeStamp, out isPrimarySource, out isBallonLiveSensor, out blsSerialNumber))
+                    if (!ParseSourceEvent(positionSourceEvent, date, out timeStamp, out isPrimarySource,
+                            out isBallonLiveSensor, out blsSerialNumber))
                     {
                         Log(LogSeverityType.Error, functionErrorMessage + "Failed to parse position source event");
                         return false;
                     }
+
                     if (isFirstSourceEvent)
                     {
                         isFirstSourceEvent = false;
-                        Log(LogSeverityType.Info, $"Position source at track start is: '{(isPrimarySource ? "primary" : "fallback")}' position source '{(isBallonLiveSensor ? "Ballon Live Sensor" : "Phone Internal")}' {(isBallonLiveSensor ? $"with serial number '{blsSerialNumber}'" : "")}");
+                        Log(LogSeverityType.Info,
+                            $"Position source at track start is: '{(isPrimarySource ? "primary" : "fallback")}' position source '{(isBallonLiveSensor ? "Ballon Live Sensor" : "Phone Internal")}' {(isBallonLiveSensor ? $"with serial number '{blsSerialNumber}'" : "")}");
                     }
                     else
                     {
-                        Log(LogSeverityType.Warning, $"Caution: Change of position source detected at '{timeStamp:dd-MMM-yyyy HH\\:mm\\:ss}' :  '{(isPrimarySource ? "primary" : "fallback")}' source '{(isBallonLiveSensor ? "Ballon Live Sensor" : "Phone Internal")}' {(isBallonLiveSensor ? $"with serial number '{blsSerialNumber}'" : "")}");
+                        Log(LogSeverityType.Warning,
+                            $"Caution: Change of position source detected at '{timeStamp:dd-MMM-yyyy HH\\:mm\\:ss}' :  '{(isPrimarySource ? "primary" : "fallback")}' source '{(isBallonLiveSensor ? "Ballon Live Sensor" : "Phone Internal")}' {(isBallonLiveSensor ? $"with serial number '{blsSerialNumber}'" : "")}");
                         if (!track.AdditionalPropertiesFromIGCFile.ContainsKey("Change of position source"))
                             track.AdditionalPropertiesFromIGCFile.Add("Change of position source", "yes");
                     }
                 }
+
                 if (!track.AdditionalPropertiesFromIGCFile.ContainsKey("Change of position source"))
                     track.AdditionalPropertiesFromIGCFile.Add("Change of position source", "no");
 
@@ -243,6 +265,7 @@ namespace Coordinates.Parsers
                         Log(LogSeverityType.Error, functionErrorMessage + "Failed to parse trackpoint");
                         return false;
                     }
+
                     track.TrackPoints.Add(coordinate);
                 }
 
@@ -250,12 +273,13 @@ namespace Coordinates.Parsers
                 foreach (string markerDropLine in markerDropLines)
                 {
                     MarkerDrop markerDrop;
-                    if (!ParseMarkerDrop(markerDropLine, date, track,out markerDrop))
+                    if (!ParseMarkerDrop(markerDropLine, date, track, out markerDrop))
                     {
                         //Debug.WriteLine(functionErrorMessage + "Failed to parse marker drop");
                         Log(LogSeverityType.Error, functionErrorMessage + "Failed to parse marker drop");
                         return false;
                     }
+
                     track.MarkerDrops.Add(markerDrop);
                 }
 
@@ -269,25 +293,29 @@ namespace Coordinates.Parsers
                     {
                         referenceCoordinate = track.MarkerDrops[0].MarkerLocation;
                         //Debug.WriteLine($"No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference");
-                        Log(LogSeverityType.Warning, $"No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference");
+                        Log(LogSeverityType.Warning,
+                            $"No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference");
                     }
                 }
                 else
                 {
                     //Debug.WriteLine("No marker drops found. Position at declaration will be used as reference instead");
-                    Log(LogSeverityType.Warning, "No marker drops found. Position at declaration will be used as reference instead");
+                    Log(LogSeverityType.Warning,
+                        "No marker drops found. Position at declaration will be used as reference instead");
                 }
+
                 string[] goalDeclarationLines = lines.Where(x => x.StartsWith('E') && x.Contains("XL1")).ToArray();
                 foreach (string goalDeclarationLine in goalDeclarationLines)
                 {
-
                     Declaration declaration;
-                    if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, referenceCoordinate, out declaration))
+                    if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, referenceCoordinate,
+                            out declaration))
                     {
                         //Debug.WriteLine(functionErrorMessage + "Failed to parse goal declaration");
                         Log(LogSeverityType.Error, functionErrorMessage + "Failed to parse goal declaration");
                         return false;
                     }
+
                     if (declaration != null)
                         track.Declarations.Add(declaration);
                 }
@@ -300,6 +328,7 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, functionErrorMessage + $" {ex.Message}");
                 return false;
             }
+
             Log(LogSeverityType.Info, $"Successfully parsed file '{fileNameAndPath}'");
             return true;
         }
@@ -307,6 +336,7 @@ namespace Coordinates.Parsers
         #endregion
 
         #region Private methods
+
         private static bool ParseHeaders(string[] headerLines, out int pilotNumber, out DateTime date)
         {
             date = DateTime.MinValue;
@@ -321,44 +351,56 @@ namespace Coordinates.Parsers
                     if (!int.TryParse(line[0..2], out day))
                     {
                         //Debug.WriteLine(functionErrorMessage + $"Failed to parse day portion of date '{line[0..2]}' in '{line}'");
-                        Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse day portion of date '{line[0..2]}' in '{line}'");
+                        Log(LogSeverityType.Error,
+                            functionErrorMessage + $"Failed to parse day portion of date '{line[0..2]}' in '{line}'");
                         return false;
                     }
+
                     int month;
                     if (!int.TryParse(line[2..4], out month))
                     {
                         //Debug.WriteLine(functionErrorMessage + $"Failed to parse month portion of date '{line[2..4]}' in '{line}'");
-                        Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse month portion of date '{line[2..4]}' in '{line}'");
+                        Log(LogSeverityType.Error,
+                            functionErrorMessage + $"Failed to parse month portion of date '{line[2..4]}' in '{line}'");
                         return false;
                     }
+
                     int year;
                     if (!int.TryParse(line[4..6], out year))
                     {
                         //Debug.WriteLine(functionErrorMessage + $"Failed to parse year portion of date '{line[4..6]}' in '{line}'");
-                        Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse year portion of date '{line[4..6]}' in '{line}'");
+                        Log(LogSeverityType.Error,
+                            functionErrorMessage + $"Failed to parse year portion of date '{line[4..6]}' in '{line}'");
                         return false;
                     }
+
                     year += 2000;
                     date = new DateTime(year, month, day);
                 }
+
                 if (headerLine.StartsWith("HFPID"))
                 {
                     string pilotNumberText = headerLine.Replace("HFPID", "");
                     if (!int.TryParse(pilotNumberText, out pilotNumber))
                     {
                         //Debug.WriteLine(functionErrorMessage + $"Failed to parse the pilot number '{pilotNumberText}' in '{headerLine}'");
-                        Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse the pilot number '{pilotNumberText}' in '{headerLine}'");
+                        Log(LogSeverityType.Error,
+                            functionErrorMessage +
+                            $"Failed to parse the pilot number '{pilotNumberText}' in '{headerLine}'");
                         return false;
                     }
                 }
+
                 if (headerLine.StartsWith("HFXII:XX0:"))
                 {
                     int numberOfAdditions;
                     if (!int.TryParse(headerLine[10..12], out numberOfAdditions))
                     {
-                        Log(LogSeverityType.Error, functionErrorMessage + " Failed to parse number of additions from I-record");
+                        Log(LogSeverityType.Error,
+                            functionErrorMessage + " Failed to parse number of additions from I-record");
                         return false;
                     }
+
                     int offset = 12;
                     for (int index = 0; index < numberOfAdditions; index++)
                     {
@@ -366,42 +408,51 @@ namespace Coordinates.Parsers
                         int startPosition;
                         if (!int.TryParse(headerLine[offset..(offset + 2)], out startPosition))
                         {
-                            Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse start position of addition no {index + 1}");
+                            Log(LogSeverityType.Error,
+                                functionErrorMessage + $" Failed to parse start position of addition no {index + 1}");
                             return false;
                         }
+
                         offset += 2;
                         int stopPosition;
                         if (!int.TryParse(headerLine[(offset)..(offset + 2)], out stopPosition))
                         {
-                            Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse stop position of addition no {index + 1}");
+                            Log(LogSeverityType.Error,
+                                functionErrorMessage + $" Failed to parse stop position of addition no {index + 1}");
                             return false;
                         }
+
                         offset += 2;
                         string additionIdentifier = headerLine[(offset)..(offset + 3)];
 
                         if (additionIdentifier.ToUpper() == "LAD")
                         {
                             MarkerDrop_HasAdditionalLatitudeDecimals = true;
-                            MarkerDrop_StartOfAdditionalLatitudeDecimals = startPosition - 1;//adjust to zero based index
+                            MarkerDrop_StartOfAdditionalLatitudeDecimals =
+                                startPosition - 1; //adjust to zero based index
                             MarkerDrop_EndOfAdditionalLatitudeDecimals = stopPosition;
                         }
+
                         if (additionIdentifier.ToUpper() == "LOD")
                         {
                             MarkerDrop_HasAdditionalLongitudeDecimals = true;
-                            MarkerDrop_StartOfAdditionalLongitudeDecimals = startPosition - 1;//adjust to zero based index
+                            MarkerDrop_StartOfAdditionalLongitudeDecimals =
+                                startPosition - 1; //adjust to zero based index
                             MarkerDrop_EndOfAdditionalLongitudeDecimals = stopPosition;
                         }
                     }
-
                 }
+
                 if (headerLine.StartsWith("HFXII:XL1:"))
                 {
                     int numberOfAdditions;
                     if (!int.TryParse(headerLine[10..12], out numberOfAdditions))
                     {
-                        Log(LogSeverityType.Error, functionErrorMessage + " Failed to parse number of additions from I-record");
+                        Log(LogSeverityType.Error,
+                            functionErrorMessage + " Failed to parse number of additions from I-record");
                         return false;
                     }
+
                     int offset = 12;
                     for (int index = 0; index < numberOfAdditions; index++)
                     {
@@ -409,35 +460,42 @@ namespace Coordinates.Parsers
                         int startPosition;
                         if (!int.TryParse(headerLine[offset..(offset + 2)], out startPosition))
                         {
-                            Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse start position of addition no {index + 1}");
+                            Log(LogSeverityType.Error,
+                                functionErrorMessage + $" Failed to parse start position of addition no {index + 1}");
                             return false;
                         }
+
                         offset += 2;
                         int stopPosition;
                         if (!int.TryParse(headerLine[(offset)..(offset + 2)], out stopPosition))
                         {
-                            Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse stop position of addition no {index + 1}");
+                            Log(LogSeverityType.Error,
+                                functionErrorMessage + $" Failed to parse stop position of addition no {index + 1}");
                             return false;
                         }
+
                         offset += 2;
                         string additionIdentifier = headerLine[(offset)..(offset + 3)];
 
                         if (additionIdentifier.ToUpper() == "LAD")
                         {
                             Declaration_HasAdditionalLatitudeDecimals = true;
-                            Declaration_StartOfAdditionalLatitudeDecimals = startPosition - 1;//adjust to zero based index
+                            Declaration_StartOfAdditionalLatitudeDecimals =
+                                startPosition - 1; //adjust to zero based index
                             Declaration_EndOfAdditionalLatitudeDecimals = stopPosition;
                         }
+
                         if (additionIdentifier.ToUpper() == "LOD")
                         {
                             Declaration_HasAdditionalLongitudeDecimals = true;
-                            Declaration_StartOfAdditionalLongitudeDecimals = startPosition - 1;//adjust to zero based index
+                            Declaration_StartOfAdditionalLongitudeDecimals =
+                                startPosition - 1; //adjust to zero based index
                             Declaration_EndOfAdditionalLongitudeDecimals = stopPosition;
                         }
                     }
                 }
-
             }
+
             return true;
         }
 
@@ -468,7 +526,9 @@ namespace Coordinates.Parsers
             double latitude;
             if (TrackPoint_HasAdditionalLatitudeDecimals)
             {
-                if (!ParseLatitudeWithAdditionalDecimals(line[7..15], line[TrackPoint_StartOfAdditionalLatitudeDecimals..TrackPoint_EndOfAdditionalLatitudeDecimals], out latitude))
+                if (!ParseLatitudeWithAdditionalDecimals(line[7..15],
+                        line[TrackPoint_StartOfAdditionalLatitudeDecimals..TrackPoint_EndOfAdditionalLatitudeDecimals],
+                        out latitude))
                 {
                     Log(LogSeverityType.Error, functionErrorMessage);
                     return false;
@@ -483,10 +543,14 @@ namespace Coordinates.Parsers
                     return false;
                 }
             }
+
             double longitude;
             if (TrackPoint_HasAdditionalLongitudeDecimals)
             {
-                if (!ParseLongitudeWithAdditionalDecimals(line[15..24], line[TrackPoint_StartOfAdditionalLongitudeDecimals..TrackPoint_EndOfAdditionalLongitudeDecimals], out longitude))
+                if (!ParseLongitudeWithAdditionalDecimals(line[15..24],
+                        line[
+                            TrackPoint_StartOfAdditionalLongitudeDecimals..TrackPoint_EndOfAdditionalLongitudeDecimals],
+                        out longitude))
                 {
                     Log(LogSeverityType.Error, functionErrorMessage);
                     return false;
@@ -503,13 +567,12 @@ namespace Coordinates.Parsers
             }
 
 
-
-
             double altitudeBarometric;
             if (!double.TryParse(line[25..30], out altitudeBarometric))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse barometric altitude '{line[25..30]}' in '{line}'");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse barometric altitude '{line[25..30]}' in '{line}'");
+                Log(LogSeverityType.Error,
+                    functionErrorMessage + $"Failed to parse barometric altitude '{line[25..30]}' in '{line}'");
                 return false;
             }
 
@@ -517,9 +580,11 @@ namespace Coordinates.Parsers
             if (!double.TryParse(line[30..35], out altitudeGPS))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse barometric altitude '{line[30..35]}' in '{line}'");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse GPS altitude '{line[30..35]}' in '{line}'");
+                Log(LogSeverityType.Error,
+                    functionErrorMessage + $"Failed to parse GPS altitude '{line[30..35]}' in '{line}'");
                 return false;
             }
+
             coordinate = new Coordinate(latitude, longitude, altitudeGPS, altitudeBarometric, timeStamp);
             return true;
         }
@@ -538,7 +603,8 @@ namespace Coordinates.Parsers
         /// <param name="referenceCoordinate">a reference coordinate to fill up the missing info from utm goal declaration. If the reference is null, the position of declaration will be used instead</param>
         /// <param name="declaration">output parameter. the declaration</param>
         /// <returns>true:success; false:error</returns>
-        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, Coordinate referenceCoordinate, out Declaration declaration)
+        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet,
+            Coordinate referenceCoordinate, out Declaration declaration)
         {
             string functionErrorMessage = $"Failed to parse goal declaration:";
             declaration = null;
@@ -550,21 +616,27 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, functionErrorMessage);
                 return false;
             }
+
             int goalNumber;
             if (!int.TryParse(line[10..12], out goalNumber))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse goal number '{line[10..12]}' in '{line}'");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal number '{line[10..12]}' in '{line}'");
+                Log(LogSeverityType.Error,
+                    functionErrorMessage + $"Failed to parse goal number '{line[10..12]}' in '{line}'");
                 return false;
             }
 
             double declarationLatitude;
             if (Declaration_HasAdditionalLatitudeDecimals)
             {
-                if (!ParseLatitudeWithAdditionalDecimals(line[12..20], line[Declaration_StartOfAdditionalLatitudeDecimals..Declaration_EndOfAdditionalLatitudeDecimals], out declarationLatitude))
+                if (!ParseLatitudeWithAdditionalDecimals(line[12..20],
+                        line[
+                            Declaration_StartOfAdditionalLatitudeDecimals..Declaration_EndOfAdditionalLatitudeDecimals],
+                        out declarationLatitude))
                 {
                     //Debug.WriteLine(functionErrorMessage + $"Failed to parse latitude at declaration position '{parts[2][0..8]}' in '{line}'");
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse latitude at declaration position in '{line}'");
+                    Log(LogSeverityType.Error,
+                        functionErrorMessage + $"Failed to parse latitude at declaration position in '{line}'");
                     return false;
                 }
             }
@@ -573,17 +645,23 @@ namespace Coordinates.Parsers
                 if (!ParseLatitude(line[12..20], out declarationLatitude))
                 {
                     //Debug.WriteLine(functionErrorMessage + $"Failed to parse latitude at declaration position '{parts[2][0..8]}' in '{line}'");
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse latitude at declaration position  in '{line}'");
+                    Log(LogSeverityType.Error,
+                        functionErrorMessage + $"Failed to parse latitude at declaration position  in '{line}'");
                     return false;
                 }
             }
+
             double declarationLongitude;
             if (Declaration_HasAdditionalLongitudeDecimals)
             {
-                if (!ParseLongitudeWithAdditionalDecimals(line[20..29], line[Declaration_StartOfAdditionalLongitudeDecimals..Declaration_EndOfAdditionalLongitudeDecimals], out declarationLongitude))
+                if (!ParseLongitudeWithAdditionalDecimals(line[20..29],
+                        line[
+                            Declaration_StartOfAdditionalLongitudeDecimals..
+                                Declaration_EndOfAdditionalLongitudeDecimals], out declarationLongitude))
                 {
                     //Debug.WriteLine(functionErrorMessage + $"Failed to parse longitude at declaration position '{parts[2][8..17]}' in '{line}'");
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse longitude at declaration position  in '{line}'");
+                    Log(LogSeverityType.Error,
+                        functionErrorMessage + $"Failed to parse longitude at declaration position  in '{line}'");
                     return false;
                 }
             }
@@ -592,7 +670,8 @@ namespace Coordinates.Parsers
                 if (!ParseLongitude(line[20..29], out declarationLongitude))
                 {
                     //Debug.WriteLine(functionErrorMessage + $"Failed to parse longitude at declaration position '{parts[2][8..17]}' in '{line}'");
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse longitude at declaration position  in '{line}'");
+                    Log(LogSeverityType.Error,
+                        functionErrorMessage + $"Failed to parse longitude at declaration position  in '{line}'");
                     return false;
                 }
             }
@@ -601,7 +680,8 @@ namespace Coordinates.Parsers
             if (!double.TryParse(line[30..35], out declarationPositonAltitudeBarometric))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse barometric altitude at declaration position '{parts[2][18..23]}' in '{line}'");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse barometric altitude at declaration position in '{line}'");
+                Log(LogSeverityType.Error,
+                    functionErrorMessage + $"Failed to parse barometric altitude at declaration position in '{line}'");
                 return false;
             }
 
@@ -609,13 +689,14 @@ namespace Coordinates.Parsers
             if (!double.TryParse(line[35..40], out declarationPositionAltitudeGPS))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse GPS altitude at declaration position '{parts[2][23..28]}' in '{line}'");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse GPS altitude at declaration position in '{line}'");
+                Log(LogSeverityType.Error,
+                    functionErrorMessage + $"Failed to parse GPS altitude at declaration position in '{line}'");
                 return false;
             }
+
             string declarationText = line[43..^0];
             if (declarationText.Length > 2)
             {
-
                 string[] parts = declarationText.Split(',');
                 string[] locations = parts[0].Split('/');
                 int eastingDigits = -1;
@@ -627,19 +708,23 @@ namespace Coordinates.Parsers
                     if (string.IsNullOrWhiteSpace(locations[0]))
                     {
                         locations[0] = "0000";
-                        Log(LogSeverityType.Warning, "By parsing the declared goal, the easting was a null value and it got replaced with 0000/");
+                        Log(LogSeverityType.Warning,
+                            "By parsing the declared goal, the easting was a null value and it got replaced with 0000/");
                     }
+
                     eastingDigits = locations[0].Length;
                     if (!int.TryParse(locations[0], out eastingUTM))
                     {
-                        Log(LogSeverityType.Error, functionErrorMessage + $" Failed to parse easting of declared goal in '{declarationText}'");
+                        Log(LogSeverityType.Error,
+                            functionErrorMessage + $" Failed to parse easting of declared goal in '{declarationText}'");
                         return false;
                     }
 
                     if (string.IsNullOrWhiteSpace(locations[1]))
                     {
                         locations[1] = "0000";
-                        Log(LogSeverityType.Warning, "By parsing the declared goal, the northing was a null value and it got replaced with /0000");
+                        Log(LogSeverityType.Warning,
+                            "By parsing the declared goal, the northing was a null value and it got replaced with /0000");
                     }
 
                     northingDigits = locations[1].Length;
@@ -653,7 +738,9 @@ namespace Coordinates.Parsers
                 }
                 else
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $" 1 Failed to parse easting and northing of declared goal in '{declarationText}'");
+                    Log(LogSeverityType.Error,
+                        functionErrorMessage +
+                        $" 1 Failed to parse easting and northing of declared goal in '{declarationText}'");
                     return false;
                 }
 
@@ -668,9 +755,12 @@ namespace Coordinates.Parsers
                         if (!int.TryParse(altitudePart, out declaredAltitude))
                         {
                             //Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration altitude portion '{parts[1]}' in '{line}'");
-                            Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration altitude portion '{altitudePart}' in '{line}'");
+                            Log(LogSeverityType.Error,
+                                functionErrorMessage +
+                                $"Failed to parse goal declaration altitude portion '{altitudePart}' in '{line}'");
                             return false;
                         }
+
                         if (declaredAltitudeIsInFeet)
                             declaredAltitudeInMeter = CoordinateHelpers.ConvertToMeter((double)declaredAltitude);
                         else
@@ -679,13 +769,15 @@ namespace Coordinates.Parsers
                     else
                     {
                         declaredAltitudeInMeter = 0.0;
-                        Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
+                        Log(LogSeverityType.Warning,
+                            $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
                     }
                 }
                 else
                 {
                     declaredAltitudeInMeter = 0.0;
-                    Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
+                    Log(LogSeverityType.Warning,
+                        $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
                 }
 
                 CoordinateSharp.Coordinate coordinateSharp;
@@ -696,42 +788,53 @@ namespace Coordinates.Parsers
                 bool useDeclarationPosition = false;
                 if (referenceCoordinate != null)
                 {
-                    coordinateSharp = new CoordinateSharp.Coordinate(referenceCoordinate.Latitude, referenceCoordinate.Longitude);
+                    coordinateSharp =
+                        new CoordinateSharp.Coordinate(referenceCoordinate.Latitude, referenceCoordinate.Longitude);
 
                     string utmGridZone = coordinateSharp.UTM.LatZone + coordinateSharp.UTM.LongZone;
                     if (northingDigits < 6)
                     {
                         goalNorthingUTM = northingUTM * 10;
-                        goalNorthingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits + 1)) * Math.Pow(10, northingDigits + 1));
+                        goalNorthingUTM +=
+                            (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits + 1)) *
+                                  Math.Pow(10, northingDigits + 1));
                     }
+
                     if (northingDigits == 6)
                     {
-                        northingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) * Math.Pow(10, northingDigits));
+                        northingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) *
+                                             Math.Pow(10, northingDigits));
                     }
 
                     if (eastingDigits != 6)
                     {
                         goalEastingUTM = eastingUTM * 10;
-                        goalEastingUTM += (int)(Math.Floor(coordinateSharp.UTM.Easting / Math.Pow(10, eastingDigits + 1)) * Math.Pow(10, eastingDigits + 1));
-
+                        goalEastingUTM +=
+                            (int)(Math.Floor(coordinateSharp.UTM.Easting / Math.Pow(10, eastingDigits + 1)) *
+                                  Math.Pow(10, eastingDigits + 1));
                     }
 
-                    CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator(utmGridZone, goalEastingUTM, goalNorthingUTM);
+                    CoordinateSharp.UniversalTransverseMercator utm =
+                        new CoordinateSharp.UniversalTransverseMercator(utmGridZone, goalEastingUTM, goalNorthingUTM);
 
-                    CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
+                    CoordinateSharp.Coordinate coordinate =
+                        CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
 
-                    declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
-                    positionAtDeclaration = new Coordinate(declarationLatitude, declarationLongitude, declarationPositionAltitudeGPS, declarationPositonAltitudeBarometric, timeStamp);
+                    declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree,
+                        declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
+                    positionAtDeclaration = new Coordinate(declarationLatitude, declarationLongitude,
+                        declarationPositionAltitudeGPS, declarationPositonAltitudeBarometric, timeStamp);
                     declaredGoal.utmZone = utmGridZone;
                     declaredGoal.northing = northingUTM;
                     declaredGoal.easting = eastingUTM;
-                    double distance = CoordinateHelpers.Calculate2DDistanceHavercos(declaredGoal, positionAtDeclaration);
+                    double distance =
+                        CoordinateHelpers.Calculate2DDistanceHavercos(declaredGoal, positionAtDeclaration);
                     if (distance > 70e3)
                     {
-
                         useDeclarationPosition = true;
                     }
                 }
+
                 if (useDeclarationPosition)
                 {
                     coordinateSharp = new CoordinateSharp.Coordinate(declarationLatitude, declarationLongitude);
@@ -739,35 +842,45 @@ namespace Coordinates.Parsers
                     if (northingDigits < 6)
                     {
                         goalNorthingUTM = northingUTM * 10;
-                        goalNorthingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits + 1)) * Math.Pow(10, northingDigits + 1));
+                        goalNorthingUTM +=
+                            (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits + 1)) *
+                                  Math.Pow(10, northingDigits + 1));
                     }
+
                     if (northingDigits == 6)
                     {
-                        northingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) * Math.Pow(10, northingDigits));
+                        northingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) *
+                                             Math.Pow(10, northingDigits));
                     }
 
                     if (eastingDigits != 6)
                     {
                         goalEastingUTM = eastingUTM * 10;
-                        goalEastingUTM += (int)(Math.Floor(coordinateSharp.UTM.Easting / Math.Pow(10, eastingDigits + 1)) * Math.Pow(10, eastingDigits + 1));
-
+                        goalEastingUTM +=
+                            (int)(Math.Floor(coordinateSharp.UTM.Easting / Math.Pow(10, eastingDigits + 1)) *
+                                  Math.Pow(10, eastingDigits + 1));
                     }
 
-                    CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator(utmGridZone, goalEastingUTM, goalNorthingUTM);
+                    CoordinateSharp.UniversalTransverseMercator utm =
+                        new CoordinateSharp.UniversalTransverseMercator(utmGridZone, goalEastingUTM, goalNorthingUTM);
 
-                    CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
+                    CoordinateSharp.Coordinate coordinate =
+                        CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
 
-                    declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
+                    declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree,
+                        declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
                     declaredGoal.utmZone = utmGridZone;
                     declaredGoal.northing = northingUTM;
                     declaredGoal.easting = eastingUTM;
-                    
-                    positionAtDeclaration = new Coordinate(declarationLatitude, declarationLongitude, declarationPositionAltitudeGPS, declarationPositonAltitudeBarometric, timeStamp);
-                    double distance = CoordinateHelpers.Calculate2DDistanceHavercos(declaredGoal, positionAtDeclaration);
+
+                    positionAtDeclaration = new Coordinate(declarationLatitude, declarationLongitude,
+                        declarationPositionAltitudeGPS, declarationPositonAltitudeBarometric, timeStamp);
+                    double distance =
+                        CoordinateHelpers.Calculate2DDistanceHavercos(declaredGoal, positionAtDeclaration);
                     if (distance > 70e3)
                     {
-
-                        Log(LogSeverityType.Warning, $"Suspicious declaration of gaol {goalNumber}: {locations[0]}/{locations[1]}");
+                        Log(LogSeverityType.Warning,
+                            $"Suspicious declaration of gaol {goalNumber}: {locations[0]}/{locations[1]}");
                     }
                 }
 
@@ -775,7 +888,8 @@ namespace Coordinates.Parsers
             }
             else
             {
-                Log(LogSeverityType.Warning, "Declaration contained no coordinates and therefore has not been added to the track");
+                Log(LogSeverityType.Warning,
+                    "Declaration contained no coordinates and therefore has not been added to the track");
             }
 
             return true;
@@ -803,21 +917,26 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, functionErrorMessage);
                 return false;
             }
+
             int markerNumber;
             if (!int.TryParse(line[10..12], out markerNumber))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse marker number '{line[10..12]}' in '{line}'");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse marker number '{line[10..12]}' in '{line}'");
+                Log(LogSeverityType.Error,
+                    functionErrorMessage + $"Failed to parse marker number '{line[10..12]}' in '{line}'");
                 return false;
             }
 
             double latitude;
             if (MarkerDrop_HasAdditionalLatitudeDecimals)
             {
-                if (!ParseLatitudeWithAdditionalDecimals(line[12..20], line[MarkerDrop_StartOfAdditionalLatitudeDecimals..MarkerDrop_EndOfAdditionalLatitudeDecimals], out latitude))
+                if (!ParseLatitudeWithAdditionalDecimals(line[12..20],
+                        line[MarkerDrop_StartOfAdditionalLatitudeDecimals..MarkerDrop_EndOfAdditionalLatitudeDecimals],
+                        out latitude))
                 {
                     //Debug.WriteLine(functionErrorMessage + $"Failed to parse marker drop latitude '{line[12..20]}' in '{line}'");
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse marker drop latitude '{line[12..20]}' in '{line}'");
+                    Log(LogSeverityType.Error,
+                        functionErrorMessage + $"Failed to parse marker drop latitude '{line[12..20]}' in '{line}'");
                     return false;
                 }
             }
@@ -826,17 +945,23 @@ namespace Coordinates.Parsers
                 if (!ParseLatitude(line[12..20], out latitude))
                 {
                     //Debug.WriteLine(functionErrorMessage + $"Failed to parse marker drop latitude '{line[12..20]}' in '{line}'");
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse marker drop latitude '{line[12..20]}' in '{line}'");
+                    Log(LogSeverityType.Error,
+                        functionErrorMessage + $"Failed to parse marker drop latitude '{line[12..20]}' in '{line}'");
                     return false;
                 }
             }
+
             double longitude;
             if (MarkerDrop_HasAdditionalLongitudeDecimals)
             {
-                if (!ParseLongitudeWithAdditionalDecimals(line[20..29], line[MarkerDrop_StartOfAdditionalLongitudeDecimals..MarkerDrop_EndOfAdditionalLongitudeDecimals], out longitude))
+                if (!ParseLongitudeWithAdditionalDecimals(line[20..29],
+                        line[
+                            MarkerDrop_StartOfAdditionalLongitudeDecimals..MarkerDrop_EndOfAdditionalLongitudeDecimals],
+                        out longitude))
                 {
                     //Debug.WriteLine(functionErrorMessage + $"Failed to parse marker drop longitude '{line[20..29]}' in '{line}'");
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse marker drop longitude '{line[20..29]}' in '{line}'");
+                    Log(LogSeverityType.Error,
+                        functionErrorMessage + $"Failed to parse marker drop longitude '{line[20..29]}' in '{line}'");
                     return false;
                 }
             }
@@ -845,7 +970,8 @@ namespace Coordinates.Parsers
                 if (!ParseLongitude(line[20..29], out longitude))
                 {
                     //Debug.WriteLine(functionErrorMessage + $"Failed to parse marker drop longitude '{line[20..29]}' in '{line}'");
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse marker drop longitude '{line[20..29]}' in '{line}'");
+                    Log(LogSeverityType.Error,
+                        functionErrorMessage + $"Failed to parse marker drop longitude '{line[20..29]}' in '{line}'");
                     return false;
                 }
             }
@@ -854,7 +980,8 @@ namespace Coordinates.Parsers
             if (!double.TryParse(line[30..35], out altitudeBarometric))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse barometric altitude '{line[30..35]}' in '{line}'");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse barometric altitude '{line[30..35]}' in '{line}'");
+                Log(LogSeverityType.Error,
+                    functionErrorMessage + $"Failed to parse barometric altitude '{line[30..35]}' in '{line}'");
                 return false;
             }
 
@@ -862,7 +989,8 @@ namespace Coordinates.Parsers
             if (!double.TryParse(line[35..40], out altitudeGPS))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse barometric altitude '{line[35..40]}' in '{line}'");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse barometric altitude '{line[35..40]}' in '{line}'");
+                Log(LogSeverityType.Error,
+                    functionErrorMessage + $"Failed to parse barometric altitude '{line[35..40]}' in '{line}'");
                 return false;
             }
 
@@ -872,7 +1000,7 @@ namespace Coordinates.Parsers
             {
                 markerTime = track.TrackPoints[track.TrackPoints.Count - 1].TimeStamp;
             }
-            
+
             Coordinate coordinate = new Coordinate(latitude, longitude, altitudeGPS, altitudeBarometric, timeStamp);
             markerDrop = new MarkerDrop(markerNumber, coordinate);
 
@@ -880,6 +1008,7 @@ namespace Coordinates.Parsers
             {
                 markerDrop.MarkerTime = markerTime;
             }
+
             return true;
         }
 
@@ -904,6 +1033,7 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, $"Failed to parse latitude text. Unexpected suffix '{latitudeText[^1]}'");
                 return false;
             }
+
             double fullAngle = double.NaN;
             if (!double.TryParse(latitudeText[0..2], out fullAngle))
             {
@@ -911,6 +1041,7 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, $"Failed to parse latitude text '{latitudeText}'");
                 return false;
             }
+
             double decimalAngle = double.NaN;
             if (!double.TryParse(latitudeText[2..7], out decimalAngle))
             {
@@ -918,13 +1049,16 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, $"Failed to parse latitude text '{latitudeText}'");
                 return false;
             }
-            decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal angles
+
+            decimalAngle /=
+                60000.0; //divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal angles
 
             latitude = factor * (fullAngle + decimalAngle);
             return true;
         }
 
-        private static bool ParseLatitudeWithAdditionalDecimals(string standardLatitudeText, string additionalDecimals, out double latitude)
+        private static bool ParseLatitudeWithAdditionalDecimals(string standardLatitudeText, string additionalDecimals,
+            out double latitude)
         {
             latitude = double.NaN;
             double factor;
@@ -936,9 +1070,11 @@ namespace Coordinates.Parsers
             {
                 factor = double.NaN;
                 //Debug.WriteLine($"Failed to parse latitude text. Unexpected suffix '{latitudeText[^1]}'");
-                Log(LogSeverityType.Error, $"Failed to parse latitude text. Unexpected suffix '{standardLatitudeText[^1]}'");
+                Log(LogSeverityType.Error,
+                    $"Failed to parse latitude text. Unexpected suffix '{standardLatitudeText[^1]}'");
                 return false;
             }
+
             double fullAngle = double.NaN;
             if (!double.TryParse(standardLatitudeText[0..2], out fullAngle))
             {
@@ -946,6 +1082,7 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, $"Failed to parse latitude text '{standardLatitudeText}'");
                 return false;
             }
+
             double decimalAngle = double.NaN;
             if (!double.TryParse(standardLatitudeText[2..7] + additionalDecimals, out decimalAngle))
             {
@@ -953,12 +1090,18 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, $"Failed to parse latitude text '{standardLatitudeText}'");
                 return false;
             }
+
             if (decimalAngle > 0.0)
             {
                 //decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal angles
-                int divider = (standardLatitudeText[2..7] + additionalDecimals).Length - 2;//first two digits are integer the rest are decimal places
-                decimalAngle /= (Math.Pow(10.0, divider) * 60.0);//divide two get decimal places right and convert from minutes to degrees
+                int divider =
+                    (standardLatitudeText[2..7] + additionalDecimals).Length -
+                    2; //first two digits are integer the rest are decimal places
+                decimalAngle /=
+                    (Math.Pow(10.0, divider) *
+                     60.0); //divide two get decimal places right and convert from minutes to degrees
             }
+
             latitude = factor * (fullAngle + decimalAngle);
             return true;
         }
@@ -984,6 +1127,7 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, $"Failed to parse longitude text. Unexpected suffix '{longitudeText[^1]}'");
                 return false;
             }
+
             double fullAngle = double.NaN;
             if (!double.TryParse(longitudeText[0..3], out fullAngle))
             {
@@ -991,6 +1135,7 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, $"Failed to parse longitude text '{longitudeText}'");
                 return false;
             }
+
             double decimalAngle = double.NaN;
             if (!double.TryParse(longitudeText[3..8], out decimalAngle))
             {
@@ -998,13 +1143,16 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, $"Failed to parse longitude text '{longitudeText}'");
                 return false;
             }
-            decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal degree
+
+            decimalAngle /=
+                60000.0; //divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal degree
 
             longitude = factor * (fullAngle + decimalAngle);
             return true;
         }
 
-        private static bool ParseLongitudeWithAdditionalDecimals(string standardLongitudeText, string additinalDecimals, out double longitude)
+        private static bool ParseLongitudeWithAdditionalDecimals(string standardLongitudeText, string additinalDecimals,
+            out double longitude)
         {
             longitude = double.NaN;
             double factor;
@@ -1016,9 +1164,11 @@ namespace Coordinates.Parsers
             {
                 factor = double.NaN;
                 //Debug.WriteLine($"Failed to parse standardLongitude text. Unexpected suffix '{standardLongitudeText[^1]}'");
-                Log(LogSeverityType.Error, $"Failed to parse standardLongitude text. Unexpected suffix '{standardLongitudeText[^1]}'");
+                Log(LogSeverityType.Error,
+                    $"Failed to parse standardLongitude text. Unexpected suffix '{standardLongitudeText[^1]}'");
                 return false;
             }
+
             double fullAngle = double.NaN;
             if (!double.TryParse(standardLongitudeText[0..3], out fullAngle))
             {
@@ -1026,6 +1176,7 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, $"Failed to parse standardLongitude text '{standardLongitudeText}'");
                 return false;
             }
+
             double decimalAngle = double.NaN;
             if (!double.TryParse(standardLongitudeText[3..8] + additinalDecimals, out decimalAngle))
             {
@@ -1033,12 +1184,18 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, $"Failed to parse standardLongitude text '{standardLongitudeText}'");
                 return false;
             }
+
             //decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal angles
             if (decimalAngle > 0.0)
             {
-                int divider = (standardLongitudeText[3..8] + additinalDecimals).Length - 2;//first two digits are integer the rest are decimal places
-                decimalAngle /= (Math.Pow(10.0, divider) * 60.0);//divide two get decimal places right and convert from minutes to degrees
+                int divider =
+                    (standardLongitudeText[3..8] + additinalDecimals).Length -
+                    2; //first two digits are integer the rest are decimal places
+                decimalAngle /=
+                    (Math.Pow(10.0, divider) *
+                     60.0); //divide two get decimal places right and convert from minutes to degrees
             }
+
             longitude = factor * (fullAngle + decimalAngle);
             return true;
         }
@@ -1059,23 +1216,29 @@ namespace Coordinates.Parsers
             if (!int.TryParse(time[0..2], out hours))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse hour portion '{time[0..2]}' in '{line}'");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse hour portion '{time[0..2]}' in '{line}'");
+                Log(LogSeverityType.Error,
+                    functionErrorMessage + $"Failed to parse hour portion '{time[0..2]}' in '{line}'");
                 return false;
             }
+
             int minutes;
             if (!int.TryParse(time[2..4], out minutes))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse minute portion '{time[2..4]}' in '{line}'");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse minute portion '{time[2..4]}' in '{line}'");
+                Log(LogSeverityType.Error,
+                    functionErrorMessage + $"Failed to parse minute portion '{time[2..4]}' in '{line}'");
                 return false;
             }
+
             int seconds;
             if (!int.TryParse(time[4..6], out seconds))
             {
                 //Debug.WriteLine(functionErrorMessage + $"Failed to parse second portion '{time[4..6]}' in '{line}'");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse second portion '{time[4..6]}' in '{line}'");
+                Log(LogSeverityType.Error,
+                    functionErrorMessage + $"Failed to parse second portion '{time[4..6]}' in '{line}'");
                 return false;
             }
+
             timeStamp = date.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
             return true;
         }
@@ -1083,6 +1246,7 @@ namespace Coordinates.Parsers
         private static void Log(LogSeverityType logSeverity, string text)
         {
             Logger.Log((object)"Balloon Live Parser", logSeverity, text);
+            Console.WriteLine($"LOG: {logSeverity.ToString()} | {text}");
         }
 
         private static void ResetProperties()
@@ -1112,7 +1276,8 @@ namespace Coordinates.Parsers
             TrackPoint_EndOfAdditionalLongitudeDecimals = -1;
         }
 
-        private static bool ParseSourceEvent(string line, DateTime date, out DateTime timeStamp, out bool isPrimarySource, out bool isBallonLiveSensor, out string blsSerialNumber)
+        private static bool ParseSourceEvent(string line, DateTime date, out DateTime timeStamp,
+            out bool isPrimarySource, out bool isBallonLiveSensor, out string blsSerialNumber)
         {
             string functionErrorMessage = "Failed to parse position source event";
             timeStamp = DateTime.MinValue;
@@ -1125,6 +1290,7 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, functionErrorMessage);
                 return false;
             }
+
             if (line.Contains("XS0"))
             {
                 isPrimarySource = true;
@@ -1153,7 +1319,6 @@ namespace Coordinates.Parsers
             }
 
             return true;
-
         }
 
 
@@ -1306,7 +1471,7 @@ namespace Coordinates.Parsers
 
         //    return true;
         //}
-        #endregion
 
+        #endregion
     }
 }
