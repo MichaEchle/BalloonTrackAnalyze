@@ -27,6 +27,7 @@
 
   <ItemGroup>
     <Folder Include="oldcompetition\austira_2022\" />
+    <Folder Include="oldcompetition\burgebrach_2023\" />
   </ItemGroup>
 
 </Project>

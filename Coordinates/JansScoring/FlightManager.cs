@@ -1,6 +1,7 @@
 ﻿using Coordinates;
 using Coordinates.Parsers;
 using JansScoring.flights;
+using JansScoring.flights.impl._01;
 using JansScoring.flights.impl._2;
 using JansScoring.flights.impl._3;
 using JansScoring.flights.impl._4;
@@ -25,13 +26,11 @@ public class FlightManager
         pzManager.registerPZs();
 
 
-        flights.Add(1, new Flight1());
-        flights.Add(2, new Flight2());
-        flights.Add(3, new Flight3());
-        flights.Add(4, new Flight4());
+        flights.Add(1, new Flight01());
 
 
-        scoreFlight(4);
+
+        scoreFlight(1);
     }
 
 
