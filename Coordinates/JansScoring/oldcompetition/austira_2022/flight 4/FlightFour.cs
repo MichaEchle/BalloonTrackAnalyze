@@ -53,6 +53,11 @@ public class FlightFour : Flight
         return 2000;
     }
 
+    public override Coordinate getBackupCoordinates()
+    {
+        throw new NotImplementedException();
+    }
+
     public class Task15 : Task
     {
         public Task15(Flight flight) : base(flight)

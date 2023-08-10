@@ -2,10 +2,12 @@
 using Coordinates.Parsers;
 using JansScoring.flights;
 using JansScoring.flights.impl._01;
+using JansScoring.flights.impl._02;
 using JansScoring.flights.impl._2;
 using JansScoring.flights.impl._3;
 using JansScoring.flights.impl._4;
 using JansScoring.pz;
+using LoggerComponent;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,6 +19,7 @@ namespace JansScoring;
 
 public class FlightManager
 {
+    public static bool DEBUG = false;
     private Dictionary<int, Flight> flights = new();
     private PZManager pzManager;
 
@@ -27,10 +30,10 @@ public class FlightManager
 
 
         flights.Add(1, new Flight01());
+        flights.Add(2, new Flight02());
 
 
-
-        scoreFlight(1);
+        scoreFlight(2);
     }
 
 
@@ -142,9 +145,33 @@ public class FlightManager
                     out Coordinate launchPoint,
                     out bool launchInStartPeriod, out List<double> distanceToGoals, out List<bool> distanceToGoalsOk))
             {
-                comment += "Failed to check launch constraints";
+                comment += "Failed to check launch constraints | ";
                 comments.Add(track.Pilot, comment);
                 continue;
+            }
+
+            String decNumbers = "";
+
+            foreach (Declaration trackDeclaration in track.Declarations)
+            {
+                decNumbers += trackDeclaration.GoalNumber + ", ";
+            }
+
+            if (DEBUG)
+            {
+                comment += $"Found Declarations: {track.Declarations.Count} ({decNumbers}) | ";
+            }
+
+            String markNumbers = "";
+
+            foreach (MarkerDrop markerDrop in track.MarkerDrops)
+            {
+                markNumbers += markerDrop.MarkerNumber + ", ";
+            }
+
+            if (DEBUG)
+            {
+                comment += $"Found Markers: {track.MarkerDrops.Count} ({markNumbers}) | ";
             }
 
             comment += pzManager.checkPZ(flight, track);
@@ -158,7 +185,6 @@ public class FlightManager
                 comment +=
                     $"Pilot started outside the launchperiode [{launchPointTimeSpan.ToString(@"hh\:mm\:ss")}]. Started {launchPoint.TimeStamp:dd.MM.yy HH:mm:ss} | ";
             }
-            
 
 
             if (distanceToGoalsOk.Contains(false))
@@ -198,13 +224,21 @@ public class FlightManager
         }
     }
 
+    private static void Log(LogSeverityType logSeverity, string text)
+    {
+        Logger.Log("Flight Manager", logSeverity, text);
+        Console.WriteLine($"LOG: {logSeverity.ToString()} | {text}");
+    }
+
     private List<Track> generateTrackList(DirectoryInfo directoryInfo)
     {
         FileInfo[] files = directoryInfo.GetFiles("*.igc");
         Track track;
         List<Track> tracks = new();
+
         foreach (FileInfo fileInfo in files)
         {
+            Log(LogSeverityType.Info, $"Start loading file '{fileInfo.Name}'.");
             if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out track))
             {
                 Console.WriteLine($"Failed to parse track '{fileInfo.FullName}'");
@@ -216,6 +250,7 @@ public class FlightManager
         }
 
         tracks = tracks.OrderBy(x => x.Pilot.PilotNumber).ToList();
+        Console.WriteLine($"Loaded {tracks.Count} from {files.Length} IGC-Files");
         return tracks;
     }
 }

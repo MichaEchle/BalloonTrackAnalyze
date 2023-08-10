@@ -1,5 +1,6 @@
 ﻿using Competition;
 using Coordinates;
+using LoggerComponent;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,5 +78,11 @@ public abstract class Task
         }
 
         return null;
+    }
+    
+    public void Log(LogSeverityType logSeverity, string text)
+    {
+        Logger.Log("Task " + number(), logSeverity, text);
+        Console.WriteLine($"LOG: {logSeverity.ToString()} | {text}");
     }
 }

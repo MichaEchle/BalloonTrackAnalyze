@@ -52,6 +52,11 @@ public class FlightTwo : Flight
         return 2000;
     }
 
+    public override Coordinate getBackupCoordinates()
+    {
+        throw new NotImplementedException();
+    }
+
 
     //Fuchsjagt
     public class Task7 : Task

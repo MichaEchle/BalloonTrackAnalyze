@@ -786,6 +786,8 @@ namespace Coordinates.Parsers
                 Coordinate declaredGoal = null;
                 Coordinate positionAtDeclaration = null;
                 bool useDeclarationPosition = false;
+                
+                
                 if (referenceCoordinate != null)
                 {
                     coordinateSharp =
@@ -834,9 +836,18 @@ namespace Coordinates.Parsers
                         useDeclarationPosition = true;
                     }
                 }
+                else
+                {
+                    if (declarationLatitude != 0 && declarationLongitude != 0)
+                    {
+                        useDeclarationPosition = true;
+                        Log(LogSeverityType.Debug, "Reference coordinate was null. Trying to fix");
+                    }
+                }
 
                 if (useDeclarationPosition)
                 {
+                    Log(LogSeverityType.Info, "Used Declaration Position as Referenz");
                     coordinateSharp = new CoordinateSharp.Coordinate(declarationLatitude, declarationLongitude);
                     string utmGridZone = coordinateSharp.UTM.LatZone + coordinateSharp.UTM.LongZone;
                     if (northingDigits < 6)
@@ -880,11 +891,18 @@ namespace Coordinates.Parsers
                     if (distance > 70e3)
                     {
                         Log(LogSeverityType.Warning,
-                            $"Suspicious declaration of gaol {goalNumber}: {locations[0]}/{locations[1]}");
+                            $"Suspicious declaration of goal {goalNumber}: {locations[0]}/{locations[1]}");
                     }
                 }
 
                 declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration);
+
+                if (declaration == null || declaration.DeclaredGoal == null ||
+                    declaration.PositionAtDeclaration == null)
+                {
+                    Log(LogSeverityType.Warning,
+                        $"Suspicious declaration of goal {goalNumber}. Minimum one value not present. {declaredGoal} | {positionAtDeclaration}");
+                }
             }
             else
             {

@@ -1,4 +1,5 @@
-﻿using JansScoring.calculation;
+﻿using Coordinates;
+using JansScoring.calculation;
 using JansScoring.flights.impl._01.tasks;
 using System;
 
@@ -33,7 +34,7 @@ public class Flight01 : Flight
 
     public override string getTracksPath()
     {
-        return @"C:\Users\Jan\OneDrive\Ballonveranstaltungen\2023 HNBC\Tracks\flight_01";
+        return @"C:\Users\Jan\OneDrive\Ballonveranstaltungen\2023 HNBC\Flights\flight01\tracks";
     }
 
     public override Task[] getTasks()
@@ -49,5 +50,11 @@ public class Flight01 : Flight
     public override double getSeperationAltitudeFeet()
     {
         return 2400;
+    }
+
+    public override Coordinate getBackupCoordinates()
+    {
+        return CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 483390, 5370330,
+            CoordinateHelpers.ConvertToMeter(1453));
     }
 }

@@ -1,4 +1,5 @@
-﻿using JansScoring.calculation;
+﻿using Coordinates;
+using JansScoring.calculation;
 using JansScoring.flights.impl._2.tasks;
 using System;
 
@@ -55,5 +56,10 @@ public class Flight2 : Flight
     public override double getSeperationAltitudeFeet()
     {
         return 1800;
+    }
+
+    public override Coordinate getBackupCoordinates()
+    {
+        throw new NotImplementedException();
     }
 }

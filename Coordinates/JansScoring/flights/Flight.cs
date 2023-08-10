@@ -47,6 +47,8 @@ public abstract class Flight
 
     public abstract double getSeperationAltitudeFeet();
 
+    public abstract Coordinate getBackupCoordinates();
+
     public double getSeperationAltitudeMeters()
     {
         return CoordinateHelpers.ConvertToMeter(getSeperationAltitudeFeet());

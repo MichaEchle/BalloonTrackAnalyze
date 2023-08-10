@@ -13,6 +13,7 @@ namespace LoggerComponent
 	/// </summary>
 	public enum LogSeverityType
 	{
+        Debug = -1,
 		Info = 0,
 		Warning = 1,
 		Error=2

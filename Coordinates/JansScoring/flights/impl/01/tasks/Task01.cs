@@ -1,5 +1,6 @@
 ﻿using Coordinates;
 using JansScoring.calculation;
+using LoggerComponent;
 using System;
 using System.Collections.Generic;
 
@@ -27,37 +28,78 @@ public class Task01 : Task
         }
 
         Declaration declaration = track.Declarations.FindLast(declaration => declaration.GoalNumber == 1);
-
-        if (declaration.DeclaredGoal == null || declaration.PositionAtDeclaration == null)
+        if (declaration == null)
         {
-            return new[] { "No Result", "No valid Declaration in 1" };
+            return new[] { "No Result", "No Declaration in 1" };
         }
 
+        if (declaration.DeclaredGoal == null)
+        {
+            Log(LogSeverityType.Error, declaration.ToString());
+            return new[] { "No Result", "No valid Declaration in 1 (No Declared Position) | " };
+        }
+
+
+        Coordinate declarationPosition = declaration.PositionAtDeclaration;
+        if (declarationPosition == null)
+        {
+            comment += "No valid Declaration in 1 (No Decleration Position) | ";
+        }
+
+        if (declarationPosition == null || declarationPosition.Latitude == 0 || declarationPosition.Longitude == 0)
+        {
+            comment += "Resetting Declaration Position to Backup Point because Long or Lat was null or 0 | ";
+            declarationPosition = flight.getBackupCoordinates();
+        }
+
+        TrackHelpers.EstimateLaunchAndLandingTime(track, flight.useGPSAltitude(), out Coordinate startPoint,
+            out Coordinate landingPoint);
+        
+        
         if (!track.GetAllMarkerNumbers().Contains(1))
         {
-            return new[] { "No Result", "No Marker in 1" };
+            if (landingPoint == null)
+            {
+                return new[] { "No Result", "No Marker drops at slot 1 | " };
+            }
         }
 
         MarkerDrop markerDrop = track.MarkerDrops.FindLast(drop => drop.MarkerNumber == 1);
         if (markerDrop == null)
         {
-            return new[] { "No Result", "No Marker drops at slot 1 | " };
+            if (landingPoint == null)
+            {
+                return new[] { "No Result", "No Marker drops at slot 1 | " };
+            }
+            else
+            {
+                comment += "No Marker drops at slot 1. Using landing position | ";
+            }
         }
 
-        if (markerDrop.MarkerLocation == null)
+        if (markerDrop != null && markerDrop.MarkerLocation == null)
         {
             return new[] { "No Result", "No valid Marker in slot 1" };
         }
 
-        TrackHelpers.EstimateLaunchAndLandingTime(track, flight.useGPSAltitude(), out Coordinate startPoint,
-            out Coordinate _);
+        Coordinate markerLocation = null;
 
-        if (startPoint.TimeStamp < declaration.PositionAtDeclaration.TimeStamp)
+        if (markerDrop == null)
+        {
+            markerLocation = landingPoint;
+        }
+        else
+        {
+            markerLocation = markerDrop.MarkerLocation;
+        }
+
+
+        if (startPoint.TimeStamp < declarationPosition.TimeStamp)
         {
             comment += "Declared after takeoff | ";
         }
 
-        if (flight.getStartOfLaunchPeriode() < declaration.PositionAtDeclaration.TimeStamp)
+        if (flight.getStartOfLaunchPeriode() < declarationPosition.TimeStamp)
         {
             comment += "Declared after Green Flag | ";
         }
@@ -78,19 +120,19 @@ public class Task01 : Task
             goals.Add(trackDeclaration.DeclaredGoal);
         }
 
-        if (CalculationHelper.Calculate2DDistance(declaration.DeclaredGoal, declaration.PositionAtDeclaration,
+        if (CalculationHelper.Calculate2DDistance(declaration.DeclaredGoal, declarationPosition,
                 flight.getCalculationType()) < 3000)
         {
             comment += "Goal is to close to dec. point | ";
         }
 
-        if (CalculationHelper.Calculate2DDistance(declaration.DeclaredGoal, declaration.PositionAtDeclaration,
+        if (CalculationHelper.Calculate2DDistance(declaration.DeclaredGoal, declarationPosition,
                 flight.getCalculationType()) > 6000)
         {
             comment += "Goal is to far frm dec. point | ";
         }
 
-        result = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, markerDrop.MarkerLocation,
+        result = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, markerLocation,
             flight.useGPSAltitude(), flight.getCalculationType());
 
         return new[] { NumberHelper.formatDoubleToStringAndRound(result), comment };
