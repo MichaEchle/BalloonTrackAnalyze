@@ -718,7 +718,7 @@ namespace BLC2021
             CoordinateSharp.UniversalTransverseMercator tempUTM = new CoordinateSharp.UniversalTransverseMercator(gridZone, easting, northing);
             double[] latLong = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoSignedDegree(tempUTM);
             Coordinate coordinate = new Coordinate(latLong[0], latLong[1], altitude, altitude, DateTime.Now);
-            Declaration fiddleDeclaration = new Declaration(Task1_GoalNumber, coordinate, coordinate,true);
+            Declaration fiddleDeclaration = new Declaration(Task1_GoalNumber, coordinate, coordinate,true,-1,-1);
             FiddleTrack.Declarations.Add(fiddleDeclaration);
 
             HesitationWaltzTask task1 = new HesitationWaltzTask();
@@ -1050,7 +1050,7 @@ namespace BLC2021
             double[] latLong = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoSignedDegree(tempUTM);
             Coordinate fiddleDeclaredGoal = new Coordinate(latLong[0], latLong[1], altitude, altitude, DateTime.Now);
             Coordinate positionOfDeclaration = FiddleTrack.Declarations.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).Select(x => x.PositionAtDeclaration).ToList()[cbGoalTask3.SelectedIndex];
-            Declaration fiddleDeclaration = new Declaration(Task3_GoalNumber,  fiddleDeclaredGoal, positionOfDeclaration,true);
+            Declaration fiddleDeclaration = new Declaration(Task3_GoalNumber,  fiddleDeclaredGoal, positionOfDeclaration,true,-1,-1);
 
 
             MarkerDrop markerDrop = FiddleTrack.MarkerDrops.First(x => x.MarkerNumber == Task3_MarkerNumber);

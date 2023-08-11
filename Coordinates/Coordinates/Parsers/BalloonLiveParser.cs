@@ -45,8 +45,11 @@ namespace Coordinates.Parsers
         /// </summary>
         /// <param name="fileNameAndPath">the file path and name of the .igc file</param>
         /// <param name="track">output parameter. the parsed track from the file</param>
+        /// <param name="referenceCoordinate">provide a reference coordinate to be used complete the missing information of a goal declaration
+        /// <para>a goal declaration not in the zone 6/7 format is ambiguous</para>
+        /// <para>this is an optional parameter, the parse will use either marker drop 1 or the position at declaration if not reference point has been provided</para></param>
         /// <returns>true:success; false:error</returns>
-        public static bool ParseFile(string fileNameAndPath, out Track track)
+        public static bool ParseFile(string fileNameAndPath, out Track track, Coordinate referenceCoordinate = null)
         {
             //TODO make method async?
 
@@ -258,24 +261,27 @@ namespace Coordinates.Parsers
                     }
                     track.MarkerDrops.Add(markerDrop);
                 }
-
-                Coordinate referenceCoordinate = null;
-                if (track.MarkerDrops.Count > 0)
+                if (referenceCoordinate is null)
                 {
-                    MarkerDrop markerDrop = track.MarkerDrops.Find(x => x.MarkerNumber == 1);
-                    if (markerDrop != null)
-                        referenceCoordinate = markerDrop.MarkerLocation;
+                    if (track.MarkerDrops.Count > 0)
+                    {
+                        MarkerDrop markerDrop = track.MarkerDrops.Find(x => x.MarkerNumber == 1);
+                        if (markerDrop != null)
+                        {
+                            referenceCoordinate = markerDrop.MarkerLocation;
+                        }
+                        else
+                        {
+                            referenceCoordinate = track.MarkerDrops[0].MarkerLocation;
+                            //Debug.WriteLine($"No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference");
+                            Log(LogSeverityType.Warning, $"No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference");
+                        }
+                    }
                     else
                     {
-                        referenceCoordinate = track.MarkerDrops[0].MarkerLocation;
-                        //Debug.WriteLine($"No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference");
-                        Log(LogSeverityType.Warning, $"No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference");
+                        //Debug.WriteLine("No marker drops found. Position at declaration will be used as reference instead");
+                        Log(LogSeverityType.Warning, "No marker drops found. Position at declaration will be used as reference instead");
                     }
-                }
-                else
-                {
-                    //Debug.WriteLine("No marker drops found. Position at declaration will be used as reference instead");
-                    Log(LogSeverityType.Warning, "No marker drops found. Position at declaration will be used as reference instead");
                 }
                 string[] goalDeclarationLines = lines.Where(x => x.StartsWith('E') && x.Contains("XL1")).ToArray();
                 foreach (string goalDeclarationLine in goalDeclarationLines)
@@ -711,7 +717,7 @@ namespace Coordinates.Parsers
                     }
                     if (northingDigits == 6)
                     {
-                        northingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) * Math.Pow(10, northingDigits));
+                        goalNorthingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) * Math.Pow(10, northingDigits));
                     }
 
                     if (eastingDigits != 6)
@@ -745,7 +751,7 @@ namespace Coordinates.Parsers
                     }
                     if (northingDigits == 6)
                     {
-                        northingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) * Math.Pow(10, northingDigits));
+                        goalNorthingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) * Math.Pow(10, northingDigits));
                     }
 
                     if (eastingDigits != 6)
@@ -769,7 +775,7 @@ namespace Coordinates.Parsers
                     }
                 }
 
-                declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration, hasPilotDelaredGoalAltitude);
+                declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration, hasPilotDelaredGoalAltitude, eastingUTM, northingUTM);
             }
             else
             {
