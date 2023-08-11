@@ -13,8 +13,7 @@ namespace Coordinates
         /// </summary>
         public int GoalNumber
         {
-            get;
-            private set;
+            get; private set;
         }
 
         /// <summary>
@@ -22,8 +21,25 @@ namespace Coordinates
         /// </summary>
         public Coordinate DeclaredGoal
         {
-            get;
-            private set;
+            get; private set;
+        }
+
+        /// <summary>
+        /// Flag to indicate whether the pilot has declared the goal with an altitude or the position only
+        /// </summary>
+        public bool HasPilotDelaredGoalAltitude
+        {
+            get; private set;
+        }
+
+        public int OrignalEastingDeclarationUTM
+        {
+            get; private set;
+        }
+
+        public int OrignalNorhtingDeclarationUTM
+        {
+            get; private set;
         }
 
         /// <summary>
@@ -31,10 +47,8 @@ namespace Coordinates
         /// </summary>
         public Coordinate PositionAtDeclaration
         {
-            get;
-            private set;
+            get; private set;
         }
-        
 
         /// <summary>
         /// Creates a gaol
@@ -42,17 +56,14 @@ namespace Coordinates
         /// <param name="goalNumber">The number of the goal</param>
         /// <param name="declaredGoal">The target or goal which has been declared</param>
         /// <param name="positionAtDeclaration">The position at which the goal has been declared</param>
-        public Declaration(int goalNumber, Coordinate declaredGoal, Coordinate positionAtDeclaration)
+        public Declaration(int goalNumber, Coordinate declaredGoal, Coordinate positionAtDeclaration, bool hasPilotDelaredGoalAltitude,int orignalEastingDeclarationUTM,int orignalNorhtingDeclarationUTM)
         {
             GoalNumber = goalNumber;
             DeclaredGoal = declaredGoal;
             PositionAtDeclaration = positionAtDeclaration;
-        }
-
-
-        public override string ToString()
-        {
-            return "Goal number: " + GoalNumber + ", Decleared Goal: " + DeclaredGoal + ", PositionAsDeclaration: " + PositionAtDeclaration;
+            HasPilotDelaredGoalAltitude = hasPilotDelaredGoalAltitude;
+            OrignalEastingDeclarationUTM = orignalEastingDeclarationUTM;
+            OrignalNorhtingDeclarationUTM = orignalNorhtingDeclarationUTM;
         }
     }
 }

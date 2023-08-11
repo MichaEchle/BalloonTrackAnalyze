@@ -21,7 +21,26 @@ namespace TestProgramm
 
         static void Main(string[] args)
         {
-            AccuracyEvaluation_GeodTest.CalculateDistances();
+
+            //C:\Users\micechle\source\repos\MichaEchle\BalloonTrackAnalyze\TestTrack\5AD_f003_p002_l0.igc
+            //\..\..\..\..\..\TestTrack\5AD_f003_p002_l0.igc
+
+            FileInfo fileInfo = new FileInfo(@"..\..\..\..\..\TestTrack\Archive-E[germannationals2022]F[3]P[18]-BFUrwYGs212.igc");
+            Coordinates.Coordinate referenceCoordiante= new Coordinates.Coordinate(15,20,10,10,DateTime.Now); // define a reference coordinate (the values are random)
+            if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out Track track,referenceCoordiante)) // provide the reference coordinate to the parser
+            {
+                Console.WriteLine("Failed to parse track");
+            }
+
+            var declaration = track.Declarations.First(x => x.GoalNumber == 1); // get the declaration for goal 1
+
+            var newDeclaredGoal=CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 670000 + declaration.OrignalEastingDeclarationUTM, 59000 + declaration.OrignalNorhtingDeclarationUTM, declaration.DeclaredGoal.AltitudeGPS); // create a new coordinate using the original declarations
+
+            track.Declarations.Remove(declaration); // remove the old declaration
+            track.Declarations.Add(new Declaration(declaration.GoalNumber, newDeclaredGoal, declaration.PositionAtDeclaration, true, declaration.OrignalEastingDeclarationUTM, declaration.OrignalNorhtingDeclarationUTM)); // add a new one with correct declared goal.
+
+            Console.ReadLine();
+            //AccuracyEvaluation_GeodTest.CalculateDistances();
             //DirectoryInfo directoryInfo = new DirectoryInfo(@"C:\temp\Donut_DM2022");
             //FileInfo[] files = directoryInfo.GetFiles("*.igc");
             //Track track;
@@ -68,13 +87,13 @@ namespace TestProgramm
             //        Console.WriteLine($"{currentTrack.Pilot.PilotNumber},{result},More than 3 declarations");
             //    }
             //}
-        //Montgolfiade_DM2022.CalculateFlight5();
+            //Montgolfiade_DM2022.CalculateFlight5();
         }
-    
 
 
 
-    private static string ToProperText(CoordinateSharp.CoordinatePart part)
+
+        private static string ToProperText(CoordinateSharp.CoordinatePart part)
     {
         string text = part.Degrees + "° " + part.Minutes + "ʹ " + Math.Round(part.Seconds, 2, MidpointRounding.AwayFromZero) + "ʺ";
         return text;
