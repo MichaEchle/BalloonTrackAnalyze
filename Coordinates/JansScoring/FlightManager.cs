@@ -3,6 +3,8 @@ using Coordinates.Parsers;
 using JansScoring.flights;
 using JansScoring.flights.impl._01;
 using JansScoring.flights.impl._02;
+using JansScoring.flights.impl._03;
+using JansScoring.flights.impl._04;
 using JansScoring.flights.impl._2;
 using JansScoring.flights.impl._3;
 using JansScoring.flights.impl._4;
@@ -31,9 +33,11 @@ public class FlightManager
 
         flights.Add(1, new Flight01());
         flights.Add(2, new Flight02());
+        flights.Add(3, new Flight03());
+        flights.Add(4, new Flight04());
 
 
-        scoreFlight(2);
+        scoreFlight(4);
     }
 
 
