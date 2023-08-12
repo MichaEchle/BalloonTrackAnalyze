@@ -8,17 +8,48 @@ namespace JansScoring.pz_rework.type;
 
 public class BluePZ : PZ
 {
-
     private List<Coordinate> polygon;
 
-    private int minHeight, maxHeight;
+    private double minHeight, maxHeight;
 
-    public BluePZ(int id, String pltFilePath, int minHeight, int maxHeight) : base(id)
+
+    private double northernmost, easternmost, southernmost, westernmost;
+
+    public BluePZ(int id, String pltFilePath, double minHeight, double maxHeight) : base(id)
     {
         polygon = PLTParser.parse(pltFilePath);
         this.minHeight = minHeight;
         this.maxHeight = maxHeight;
         Console.WriteLine($"Loaded {polygon.Count} corners from PLT-File");
+
+        if (polygon.Count == 0)
+        {
+            return;
+        }
+
+        northernmost = polygon[0].Latitude;
+        easternmost = polygon[0].Longitude;
+        southernmost = polygon[0].Latitude;
+        westernmost = polygon[0].Longitude;
+        foreach (Coordinate coordinate in polygon)
+        {
+            if (northernmost < coordinate.Latitude)
+            {
+                northernmost = coordinate.Latitude;
+            }
+            if (easternmost < coordinate.Longitude)
+            {
+                easternmost = coordinate.Longitude;
+            }
+            if (southernmost > coordinate.Latitude)
+            {
+                southernmost = coordinate.Latitude;
+            }
+            if (westernmost > coordinate.Longitude)
+            {
+                westernmost = coordinate.Longitude;
+            }
+        }
     }
 
     public override bool IsInsidePz(Flight flight, Track track, Coordinate coordinate, out string comment)
@@ -28,6 +59,13 @@ public class BluePZ : PZ
         if (altitude < minHeight || altitude > maxHeight)
         {
             comment = "Out of height";
+            return false;
+        }
+
+        if (coordinate.Longitude > easternmost || coordinate.Longitude < westernmost ||
+            coordinate.Latitude > northernmost || coordinate.Latitude < southernmost)
+        {
+            comment = "Out of ´box";
             return false;
         }
 
@@ -48,6 +86,7 @@ public class BluePZ : PZ
                     oddNodes = !oddNodes;
                 }
             }
+
             j = i;
         }
 

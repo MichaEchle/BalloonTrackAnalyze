@@ -1,6 +1,7 @@
 ﻿using Coordinates;
 using JansScoring.calculation;
 using System;
+using Windows.UI.ViewManagement.Core;
 
 namespace JansScoring.flights.impl._04.tasks;
 
@@ -20,23 +21,23 @@ public class Task14 : Task
         string result = "";
         string comment = "";
 
-        MarkerDrop markerDrop3 = track.MarkerDrops.FindLast(drop => drop.MarkerNumber == 3);
-        if (markerDrop3 == null)
+        MarkerDrop markerA = track.MarkerDrops.FindLast(drop => drop.MarkerNumber == 3);
+        if (markerA == null)
         {
             return new[] { "No Result", "No Marker 3 found." };
         }
 
         (string utmZoneM5, double eastingM5, double northingM5) =
-            CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM_Precise(markerDrop3.MarkerLocation);
-        MarkerDrop markerDrop4 = track.MarkerDrops.FindLast(drop => drop.MarkerNumber == 4);
-        if (markerDrop4 == null)
+            CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM_Precise(markerA.MarkerLocation);
+        MarkerDrop markerB = track.MarkerDrops.FindLast(drop => drop.MarkerNumber == 4);
+        if (markerB == null)
         {
             return new[] { "No Result", "No Marker 4 found." };
         }
 
 
-        double distanceAB = CalculationHelper.Calculate2DDistance(markerDrop3.MarkerLocation,
-            markerDrop4.MarkerLocation, flight.getCalculationType());
+        double distanceAB = CalculationHelper.Calculate2DDistance(markerA.MarkerLocation,
+            markerB.MarkerLocation, flight.getCalculationType());
         if (distanceAB < 2000 || distanceAB > 3000)
         {
             return new[] { "No Result", $"Distance not valid. {distanceAB}m" };
@@ -44,22 +45,25 @@ public class Task14 : Task
 
 
         (string utmZoneM6, double eastingM6, double northingM6) =
-            CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM_Precise(markerDrop4.MarkerLocation);
+            CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM_Precise(markerB.MarkerLocation);
 
         double degree = 45;
 
-        double trieAngleBottom = Math.Abs(eastingM5 - eastingM6);
-        double trieAngleWall = Math.Abs(northingM5 - northingM6);
-        double alpha = Math.Atan2(trieAngleBottom, trieAngleWall) * 180 / PI;
-        double beta = degree - alpha;
-        if (beta > 180)
-        {
-            beta = (360 - degree) + alpha;
-        }
+        Coordinate A = markerA.MarkerLocation;
+        Coordinate B = markerB.MarkerLocation;
+        Coordinate C = new Coordinate(markerA.MarkerLocation.Latitude, markerB.MarkerLocation.Longitude, 0, 0,
+            new DateTime());
+        double a = CalculationHelper.Calculate2DDistance(B, C, flight.getCalculationType());
+        double b = CalculationHelper.Calculate2DDistance(C, A, flight.getCalculationType());
+        double c = CalculationHelper.Calculate2DDistance(A, C, flight.getCalculationType());
 
-        comment +=
-            $"Angle Bottom: {NumberHelper.formatDoubleToStringAndRound(trieAngleBottom)} | Angle Wall {NumberHelper.formatDoubleToStringAndRound(trieAngleWall)} | Alpha: {NumberHelper.formatDoubleToStringAndRound(alpha)} | Beta: {NumberHelper.formatDoubleToStringAndRound(beta)} | ";
-        result = NumberHelper.formatDoubleToStringAndRound(Math.Abs(beta));
+
+        double alpha = (Math.Sqrt(b) + Math.Sqrt(c) - Math.Sqrt(a)) / (2 * c * b);
+        double divergence = Math.Max(degree - alpha, alpha - degree);
+
+
+        comment += $"Angle: {NumberHelper.formatDoubleToStringAndRound(alpha)}°";
+        result = NumberHelper.formatDoubleToStringAndRound(divergence);
         return new[] { result, comment };
     }
 

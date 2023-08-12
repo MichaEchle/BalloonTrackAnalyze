@@ -8,10 +8,10 @@ namespace JansScoring.pz_rework.type;
 public class RedPZ : PZ
 {
     private Coordinate centerCoordinate;
-    private int height;
+    private double height;
     private int radius;
 
-    public RedPZ(int id, Coordinate centerCoordinate, int height, int radius) : base(id)
+    public RedPZ(int id, Coordinate centerCoordinate, double height, int radius) : base(id)
     {
         this.centerCoordinate = centerCoordinate;
         this.height = height;
