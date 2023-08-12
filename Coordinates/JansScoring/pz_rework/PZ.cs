@@ -1,4 +1,7 @@
 ﻿using Coordinates;
+using JansScoring.flights;
+using System;
+using System.IO;
 
 namespace JansScoring.pz_rework;
 
@@ -17,5 +20,5 @@ public abstract class PZ
         this.id = id;
     }
 
-    public abstract bool IsInsidePz(Coordinate coordinate);
+    public abstract bool IsInsidePz(Flight flight, Track track, Coordinate coordinate, out String comment);
 }

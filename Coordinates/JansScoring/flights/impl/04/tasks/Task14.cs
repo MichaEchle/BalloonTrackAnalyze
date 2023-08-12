@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using JansScoring.calculation;
 using System;
 
 namespace JansScoring.flights.impl._04.tasks;
@@ -33,6 +34,13 @@ public class Task14 : Task
             return new[] { "No Result", "No Marker 4 found." };
         }
 
+
+        double distanceAB = CalculationHelper.Calculate2DDistance(markerDrop3.MarkerLocation,
+            markerDrop4.MarkerLocation, flight.getCalculationType());
+        if (distanceAB < 2000 || distanceAB > 3000)
+        {
+            return new[] { "No Result", $"Distance not valid. {distanceAB}m" };
+        }
 
 
         (string utmZoneM6, double eastingM6, double northingM6) =
