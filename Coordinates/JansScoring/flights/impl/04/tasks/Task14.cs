@@ -57,13 +57,17 @@ public class Task14 : Task
         double b = CalculationHelper.Calculate2DDistance(C, A, flight.getCalculationType());
         double c = CalculationHelper.Calculate2DDistance(A, C, flight.getCalculationType());
 
+        double tanGamma = Math.Atan(b / a) * (180 / PI);
+        double alpha = 180 - (180 - 90 - tanGamma);
 
-        double alpha = (Math.Sqrt(b) + Math.Sqrt(c) - Math.Sqrt(a)) / (2 * c * b);
-        double divergence = Math.Max(degree - alpha, alpha - degree);
+        if (A.Longitude > B.Longitude)
+        {
+            alpha += 180;
+        }
 
-
-        comment += $"Angle: {NumberHelper.formatDoubleToStringAndRound(alpha)}°";
-        result = NumberHelper.formatDoubleToStringAndRound(divergence);
+        double angle = Math.Abs(degree - alpha);
+        comment += $"Angle: {NumberHelper.formatDoubleToStringAndRound(alpha)} ";
+        result = NumberHelper.formatDoubleToStringAndRound(angle);
         return new[] { result, comment };
     }
 
