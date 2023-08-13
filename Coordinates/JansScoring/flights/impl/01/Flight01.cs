@@ -39,7 +39,7 @@ public class Flight01 : Flight
 
     public override Task[] getTasks()
     {
-        return new Task[] { new Task01(this),new Task02(this) };
+        return new Task[] { new Task01(this), new Task02(this) };
     }
 
     public override CalculationType getCalculationType()

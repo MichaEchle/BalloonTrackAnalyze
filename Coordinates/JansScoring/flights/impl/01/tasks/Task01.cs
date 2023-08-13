@@ -54,8 +54,8 @@ public class Task01 : Task
 
         TrackHelpers.EstimateLaunchAndLandingTime(track, flight.useGPSAltitude(), out Coordinate startPoint,
             out Coordinate landingPoint);
-        
-        
+
+
         if (!track.GetAllMarkerNumbers().Contains(1))
         {
             if (landingPoint == null)

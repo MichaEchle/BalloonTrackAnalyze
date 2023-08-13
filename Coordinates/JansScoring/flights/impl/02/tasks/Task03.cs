@@ -19,7 +19,7 @@ public class Task03 : Task
 
     public override string[] score(Track track)
     {
-         string comment = "";
+        string comment = "";
         List<int> allMarkerNumbers = track.GetAllMarkerNumbers();
         if (allMarkerNumbers == null || !allMarkerNumbers.Any())
         {
@@ -42,7 +42,8 @@ public class Task03 : Task
             for (int index = 0; index < goals1.Length; index++)
             {
                 Coordinate coordinate = goals1[index];
-                coordinates[index] = new Coordinate(coordinate.Latitude,coordinate.Longitude, flight.getSeperationAltitudeMeters(),flight.getSeperationAltitudeMeters(),coordinate.TimeStamp);
+                coordinates[index] = new Coordinate(coordinate.Latitude, coordinate.Longitude,
+                    flight.getSeperationAltitudeMeters(), flight.getSeperationAltitudeMeters(), coordinate.TimeStamp);
             }
 
             distances = CalculationHelper.calculate3DDistanceToAllGoals(markerDrop.MarkerLocation, coordinates,
@@ -76,7 +77,7 @@ public class Task03 : Task
 
         if (result == Double.MaxValue)
             return new[] { "No Result", "There was no distances to goals calculated  | " };
-        
+
         return new[] { NumberHelper.formatDoubleToStringAndRound(result), comment };
     }
 

@@ -53,6 +53,4 @@ public abstract class Flight
     {
         return CoordinateHelpers.ConvertToMeter(getSeperationAltitudeFeet());
     }
-
-   
 }

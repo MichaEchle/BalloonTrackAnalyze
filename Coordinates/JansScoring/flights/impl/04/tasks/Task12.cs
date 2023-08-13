@@ -42,7 +42,8 @@ public class Task12 : Task
             for (int index = 0; index < goals1.Length; index++)
             {
                 Coordinate coordinate = goals1[index];
-                coordinates[index] = new Coordinate(coordinate.Latitude,coordinate.Longitude, flight.getSeperationAltitudeMeters(),flight.getSeperationAltitudeMeters(),coordinate.TimeStamp);
+                coordinates[index] = new Coordinate(coordinate.Latitude, coordinate.Longitude,
+                    flight.getSeperationAltitudeMeters(), flight.getSeperationAltitudeMeters(), coordinate.TimeStamp);
             }
 
             distances = CalculationHelper.calculate3DDistanceToAllGoals(markerDrop.MarkerLocation, coordinates,

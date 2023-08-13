@@ -62,7 +62,7 @@ public abstract class Task
                 $"Pilots last Trackpoint was outside the scoringperiode of task {number()}({timeOutsideScoringPeriode.ToString(@"hh\:mm\:ss")}) | ";
             return false;
         }
-        
+
         return true;
     }
 
@@ -79,7 +79,7 @@ public abstract class Task
 
         return null;
     }
-    
+
     public void Log(LogSeverityType logSeverity, string text)
     {
         Logger.Log("Task " + number(), logSeverity, text);

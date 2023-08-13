@@ -19,7 +19,12 @@ public class PZManager
         pzs.Add(new RedPZ(3, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 471780 , 5357200, 3000),CoordinateHelpers.ConvertToMeter(3000d), 500));
         pzs.Add(new RedPZ(4, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 485750 , 5358850, 3000),CoordinateHelpers.ConvertToMeter(3000d), 500));
 
-        pzs.Add(new BluePZ(21, , CoordinateHelpers.ConvertToMeter(9000), Double.MaxValue));
+        pzs.Add(new BluePZ(21, CoordinateHelpers.ConvertToMeter(9000), Double.MaxValue));
+
+        pzs.Add(new BluePZ(22, @"C:\Users\Jan M\OneDrive\Ballonveranstaltungen\2023 HNBC\PZ\PZ 22 7000ft.plt",CoordinateHelpers.ConvertToMeter(7000), Double.MaxValue));
+        pzs.Add(new BluePZ(23, @"C:\Users\Jan M\OneDrive\Ballonveranstaltungen\2023 HNBC\PZ\PZ 23 5000ft.plt",CoordinateHelpers.ConvertToMeter(5000), Double.MaxValue));
+        pzs.Add(new BluePZ(24, @"C:\Users\Jan M\OneDrive\Ballonveranstaltungen\2023 HNBC\PZ\PZ 24 4000ft.plt",CoordinateHelpers.ConvertToMeter(4000), Double.MaxValue));
+        pzs.Add(new BluePZ(25, @"C:\Users\Jan M\OneDrive\Ballonveranstaltungen\2023 HNBC\PZ\PZ 25 3000ft.plt",CoordinateHelpers.ConvertToMeter(3000), Double.MaxValue));
     }
 
     public string checkPZ(Flight flight, Track track)

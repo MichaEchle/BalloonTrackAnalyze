@@ -37,19 +37,39 @@ public class BluePZ : PZ
             {
                 northernmost = coordinate.Latitude;
             }
+
             if (easternmost < coordinate.Longitude)
             {
                 easternmost = coordinate.Longitude;
             }
+
             if (southernmost > coordinate.Latitude)
             {
                 southernmost = coordinate.Latitude;
             }
+
             if (westernmost > coordinate.Longitude)
             {
                 westernmost = coordinate.Longitude;
             }
         }
+    }
+
+    public BluePZ(int ID, double minHeight, double maxHeight) : base(ID)
+    {
+        polygon = new List<Coordinate>();
+        polygon.Add(new Coordinate(-90, -180, 0, 0, DateTime.MinValue));
+        polygon.Add(new Coordinate(-90, 180, 0, 0, DateTime.MinValue));
+        polygon.Add(new Coordinate(90, -180, 0, 0, DateTime.MinValue));
+        polygon.Add(new Coordinate(90, 180, 0, 0, DateTime.MinValue));
+
+        northernmost = 90;
+        easternmost = 180;
+        southernmost = -90;
+        westernmost = -180;
+
+        this.minHeight = minHeight;
+        this.maxHeight = maxHeight;
     }
 
     public override bool IsInsidePz(Flight flight, Track track, Coordinate coordinate, out string comment)

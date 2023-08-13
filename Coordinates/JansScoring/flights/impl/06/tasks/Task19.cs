@@ -4,17 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace JansScoring.flights.impl._04.tasks;
+namespace JansScoring.flights.impl._06.tasks;
 
-public class Task13 : Task
+public class Task19 : Task
 {
-    public Task13(Flight flight) : base(flight)
+    public Task19(Flight flight) : base(flight)
     {
     }
 
     public override int number()
     {
-        return 13;
+        return 19;
     }
 
     public override string[] score(Track track)
@@ -26,11 +26,11 @@ public class Task13 : Task
             return new[] { "No Result", "No Marker drops | " };
         }
 
-        MarkerDrop markerDrop = track.MarkerDrops.FindLast(drop => drop.MarkerNumber == 2);
+        MarkerDrop markerDrop = track.MarkerDrops.FindLast(drop => drop.MarkerNumber == 1);
 
         if (markerDrop == null)
         {
-            return new[] { "No Result", "No Marker drops at slot 2 | " };
+            return new[] { "No Result", "No Marker drops at slot 1 | " };
         }
 
         List<double> distances = null;
@@ -68,11 +68,12 @@ public class Task13 : Task
         }
 
 
-        if (result < 50)
+        int MMA = 75;
+        if (result < MMA)
         {
             comment +=
-                $"The distance is less than the MMA, the result must be 50m ({NumberHelper.formatDoubleToStringAndRound(result)})  | ";
-            result = 50;
+                $"The distance is less than the MMA, the result must be {MMA}m ({NumberHelper.formatDoubleToStringAndRound(result)})  | ";
+            result = MMA;
         }
 
         if (result == Double.MaxValue)
@@ -85,15 +86,13 @@ public class Task13 : Task
     {
         return new[]
         {
-            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 0476001, 5367440,
-                CoordinateHelpers.ConvertToMeter(1759)),
-            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 0475872, 5367551,
-                CoordinateHelpers.ConvertToMeter(1789)),
+            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 474998, 5364104,
+                CoordinateHelpers.ConvertToMeter(1284)),
         };
     }
 
     public override DateTime getScoringPeriodeUntil()
     {
-        return new DateTime(2023, 08, 11, 08, 15, 00);
+        throw new NotImplementedException();
     }
 }

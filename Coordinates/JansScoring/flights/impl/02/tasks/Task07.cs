@@ -41,15 +41,17 @@ public class Task07 : Task
 
         if (a.MarkerTime > getScoringPeriodeUntil())
         {
-            comment +=  "Markerdrop A outside SP | ";
+            comment += "Markerdrop A outside SP | ";
         }
+
         if (b.MarkerTime > getScoringPeriodeUntil())
         {
-            comment +=  "Markerdrop B outside SP | ";
+            comment += "Markerdrop B outside SP | ";
         }
+
         if (c.MarkerTime > getScoringPeriodeUntil())
         {
-            comment +=  "Markerdrop C outside SP | ";
+            comment += "Markerdrop C outside SP | ";
         }
 
         if (a.MarkerTime > b.MarkerTime || a.MarkerTime > c.MarkerTime || b.MarkerTime > c.MarkerTime)

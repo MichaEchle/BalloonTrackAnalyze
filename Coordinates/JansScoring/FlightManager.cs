@@ -5,10 +5,10 @@ using JansScoring.flights.impl._01;
 using JansScoring.flights.impl._02;
 using JansScoring.flights.impl._03;
 using JansScoring.flights.impl._04;
-using JansScoring.flights.impl._2;
-using JansScoring.flights.impl._3;
-using JansScoring.flights.impl._4;
-using JansScoring.pz;
+using JansScoring.flights.impl._05;
+using JansScoring.flights.impl._06;
+using JansScoring.flights.impl._07;
+using JansScoring.pz_rework;
 using LoggerComponent;
 using System;
 using System.Collections.Generic;
@@ -28,13 +28,14 @@ public class FlightManager
     public void register()
     {
         pzManager = new PZManager();
-        pzManager.registerPZs();
-
 
         flights.Add(1, new Flight01());
         flights.Add(2, new Flight02());
         flights.Add(3, new Flight03());
         flights.Add(4, new Flight04());
+        flights.Add(5, new Flight05());
+        flights.Add(6, new Flight06());
+        flights.Add(7, new Flight07());
 
 
         scoreFlight(4);
@@ -59,7 +60,7 @@ public class FlightManager
             scoringFolder.Create();
         }
 
-        List<Track> trackList = generateTrackList(directoryInfo);
+        List<Track> trackList = generateTrackList(directoryInfo, flight);
 
 
         string scoringTime = DateTime.Now.ToString("MMddHHmmss");
@@ -234,7 +235,7 @@ public class FlightManager
         Console.WriteLine($"LOG: {logSeverity.ToString()} | {text}");
     }
 
-    private List<Track> generateTrackList(DirectoryInfo directoryInfo)
+    private List<Track> generateTrackList(DirectoryInfo directoryInfo, Flight flight)
     {
         FileInfo[] files = directoryInfo.GetFiles("*.igc");
         Track track;
@@ -243,7 +244,7 @@ public class FlightManager
         foreach (FileInfo fileInfo in files)
         {
             Log(LogSeverityType.Info, $"Start loading file '{fileInfo.Name}'.");
-            if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out track))
+            if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out track, flight.getBackupCoordinates()))
             {
                 Console.WriteLine($"Failed to parse track '{fileInfo.FullName}'");
                 continue;

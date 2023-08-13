@@ -1,21 +1,19 @@
 ﻿using Coordinates;
 using JansScoring.calculation;
-using JansScoring.flights.impl._02.tasks;
-using JansScoring.flights.impl._03.tasks;
 using System;
 
-namespace JansScoring.flights.impl._03;
+namespace JansScoring.flights.impl._07;
 
-public class Flight03 : Flight
+public class Flight07 : Flight
 {
     public override int getFlightNumber()
     {
-        return 3;
+        return 7;
     }
 
     public override DateTime getStartOfLaunchPeriode()
     {
-        return new DateTime(2023, 08, 10, 17, 35, 00);
+        return new DateTime(2023, 08, 10, 17, 15, 00);
     }
 
     public override int launchPeriode()
@@ -30,17 +28,17 @@ public class Flight03 : Flight
 
     public override int distanceToAllGoals()
     {
-        return 1000;
+        return 750;
     }
 
     public override string getTracksPath()
     {
-        return @"C:\Users\Jan\OneDrive\Ballonveranstaltungen\2023 HNBC\Flights\flight03\tracks";
+        return @"C:\Users\Jan\OneDrive\Ballonveranstaltungen\2023 HNBC\Flights\flight07\tracks";
     }
 
     public override Task[] getTasks()
     {
-        return new Task[] { new Task09(this), new Task10(this), new Task11(this), };
+        return new Task[] { };
     }
 
     public override CalculationType getCalculationType()
@@ -55,7 +53,7 @@ public class Flight03 : Flight
 
     public override Coordinate getBackupCoordinates()
     {
-        return CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 496140, 5376850,
-            CoordinateHelpers.ConvertToMeter(1453));
+        return CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 483641, 5370325,
+            CoordinateHelpers.ConvertToMeter(1640));
     }
 }
