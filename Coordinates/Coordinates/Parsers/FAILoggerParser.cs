@@ -18,8 +18,11 @@ namespace Coordinates.Parsers
         /// </summary>
         /// <param name="fileNameAndPath">the file path and name of the .igc file</param>
         /// <param name="track">output parameter. the parsed track from the file</param>
+        /// <param name="referenceCoordinate">provide a reference coordinate to be used complete the missing information of a goal declaration
+        /// <para>a goal declaration not in the zone 6/7 format is ambiguous</para>
+        /// <para>this is an optional parameter, the parse will use either marker drop 1 or the position at declaration if not reference point has been provided</para></param>
         /// <returns>true:success; false:error</returns>
-        public static bool ParseFile(string fileNameAndPath, out Track track)
+        public static bool ParseFile(string fileNameAndPath, out Track track, Coordinate referenceCoordinate = null)
         {
 
             string functionErrorMessage = $"Failed to parse file '{fileNameAndPath}':";
@@ -28,8 +31,8 @@ namespace Coordinates.Parsers
             FileInfo fileInfo = new FileInfo($@"{fileNameAndPath}");
             if (!fileInfo.Exists)
             {
-                
-                Log(LogSeverityType.Error,functionErrorMessage + $"The file '{fileNameAndPath}' does not exists");
+                //Debug.WriteLine(functionErrorMessage + $"The file '{fileNameAndPath}' does not exists");
+                Log(LogSeverityType.Error, functionErrorMessage + $"The file '{fileNameAndPath}' does not exists");
                 return false;
             }
 
@@ -171,23 +174,25 @@ namespace Coordinates.Parsers
                 track.MarkerDrops.Add(markerDrop);
             }
 
-            Coordinate referenceCoordinate = null;
-            if (track.MarkerDrops.Count > 0)
+            if (referenceCoordinate is null)
             {
-                MarkerDrop markerDrop = track.MarkerDrops.Find(x => x.MarkerNumber == 1);
-                if (markerDrop != null)
-                    referenceCoordinate = markerDrop.MarkerLocation;
+                if (track.MarkerDrops.Count > 0)
+                {
+                    MarkerDrop markerDrop = track.MarkerDrops.Find(x => x.MarkerNumber == 1);
+                    if (markerDrop != null)
+                        referenceCoordinate = markerDrop.MarkerLocation;
+                    else
+                    {
+                        referenceCoordinate = track.MarkerDrops[0].MarkerLocation;
+                        //Debug.WriteLine($"No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference");
+                        Log(LogSeverityType.Warning, $"No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference");
+                    }
+                }
                 else
                 {
-                    referenceCoordinate = track.MarkerDrops[0].MarkerLocation;
-                    
-                    Log(LogSeverityType.Warning, $"No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference");
+                    //Debug.WriteLine("No marker drops found. Position at declaration will be used as reference instead");
+                    Log(LogSeverityType.Warning, "No marker drops found. Position at declaration will be used as reference instead");
                 }
-            }
-            else
-            {
-                
-                Log(LogSeverityType.Warning, "No marker drops found. Position at declaration will be used as reference instead");
             }
             string[] goalDeclarationLines = lines.Where(x => x.StartsWith('E') && x.Contains("XX1")).ToArray();
             foreach (string goalDeclarationLine in goalDeclarationLines)
@@ -227,8 +232,127 @@ namespace Coordinates.Parsers
                 }
                 track.Declarations.Add(declaration);
             }
-            
-            Pilot pilot = new Pilot(pilotNumber,  pilotIdentifier );
+            //using (StreamReader reader = new StreamReader(fileNameAndPath))
+            //{
+            //    while (!reader.EndOfStream)
+            //    {
+            //        string line = reader.ReadLine();
+            //        if (string.IsNullOrEmpty(line))
+            //            continue;
+            //        char lineIdenticator = line[0];
+            //        switch (lineIdenticator)
+            //        {
+            //            case 'A':
+            //                pilotIdentifier = line.Replace("AXXX", "").Replace("BalloonLive", "");
+            //                break;
+            //            case 'H':
+            //                if (line.StartsWith("HFDTE"))
+            //                {
+            //                    line = line.Replace("HFDTE", "");
+            //                    int day;
+            //                    if (!int.TryParse(line[0..2], out day))
+            //                    {
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse day portion of date '{line[0..2]}' in '{line}'");
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse day portion of date '{line[0..2]}' in '{line}'");
+            //                        return false;
+            //                    }
+            //                    int month;
+            //                    if (!int.TryParse(line[2..4], out month))
+            //                    {
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse month portion of date '{line[2..4]}' in '{line}'");
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse month portion of date '{line[2..4]}' in '{line}'");
+            //                        return false;
+            //                    }
+            //                    int year;
+            //                    if (!int.TryParse(line[4..6], out year))
+            //                    {
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse year portion of date '{line[4..6]}' in '{line}'");
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse year portion of date '{line[4..6]}' in '{line}'");
+            //                        return false;
+            //                    }
+            //                    year += 2000;
+            //                    date = new DateTime(year, month, day);
+            //                }
+            //                if (line.StartsWith("HFPID"))
+            //                {
+            //                    string pilotNumberText = line.Replace("HFPID", "");
+            //                    if (!int.TryParse(pilotNumberText, out pilotNumber))
+            //                    {
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse the pilot number '{pilotNumberText}' in '{line}'");
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse the pilot number '{pilotNumberText}' in '{line}'");
+            //                        return false;
+            //                    }
+            //                }
+            //                break;
+            //            case 'L':
+            //                if (line.StartsWith("LXXX declaration digits"))
+            //                {
+            //                    if (!int.TryParse(line[^3..^2], out goalNortingDigits))
+            //                    {
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration northing digits '{line[^3..^2]}' in '{line}'");
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration northing digits '{line[^3..^2]}' in '{line}'");
+            //                        return false;
+            //                    }
+            //                    if (!int.TryParse(line[^1..^0], out goalEastingDigits))
+            //                    {
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration easting digits '{line[^1..^0]}' in '{line}'");
+            //                        Debug.WriteLine(functionErrorMessage + $"Failed to parse goal declaration easting digits '{line[^1..^0]}' in '{line}'");
+            //                        return false;
+            //                    }
+            //                }
+            //                if (line.StartsWith("LXXX alt unit"))
+            //                {
+            //                    if (line.Contains("feet"))
+            //                    {
+            //                        declaredAltitudeIsInFeet = true;
+            //                    }
+            //                    else
+            //                    {
+            //                        declaredAltitudeIsInFeet = false;
+            //                    }
+            //                }
+
+            //                break;
+            //            case 'B':
+            //                Coordinate coordinate;
+            //                if (!ParseTrackPoint(line, date, out coordinate))
+            //                {
+            //                    Debug.WriteLine(functionErrorMessage + "Failed to parse trackpoint");
+            //                    Debug.WriteLine(functionErrorMessage + "Failed to parse trackpoint");
+            //                    return false;
+            //                }
+            //                track.TrackPoints.Add(coordinate);
+            //                break;
+            //            case 'E':
+            //                if (line.Contains("XL1"))
+            //                {
+            //                    DeclaredGoal declaredGoal;
+            //                    if (!ParseGoalDeclaration(line, date,declaredAltitudeIsInFeet, goalNortingDigits, goalEastingDigits, out declaredGoal))
+            //                    {
+            //                        Debug.WriteLine(functionErrorMessage + "Failed to parse goal declaration");
+            //                        Debug.WriteLine(functionErrorMessage + "Failed to parse goal declaration");
+            //                        return false;
+            //                    }
+            //                    track.DeclaredGoals.Add(declaredGoal);
+            //                }
+            //                if (line.Contains("XX0"))
+            //                {
+            //                    MarkerDrop markerDrop;
+            //                    if (!ParseMarkerDrop(line, date, out markerDrop))
+            //                    {
+            //                        Debug.WriteLine(functionErrorMessage + "Failed to parse marker drop");
+            //                        Debug.WriteLine(functionErrorMessage + "Failed to parse marker drop");
+            //                        return false;
+            //                    }
+            //                    track.MarkerDrops.Add(markerDrop);
+            //                }
+            //                break;
+            //            default:
+            //                break;
+            //        }
+            //    }
+            //}
+            Pilot pilot = new Pilot(pilotNumber, pilotIdentifier);
             track.Pilot = pilot;
             return true;
         }
@@ -323,16 +447,18 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal number '{line[10..12]}' in '{line}'");
                 return false;
             }
-            int eastingUTM;
+            int originalEastingDeclarationUTM;
+            //int eastingStartCharacter = northingStartCharacter + northingDigits + 1;
             int eastingStartCharacter = 12;
-            if (!int.TryParse(line[eastingStartCharacter..(eastingStartCharacter + eastingDigits)], out eastingUTM))
+            if (!int.TryParse(line[eastingStartCharacter..(eastingStartCharacter + eastingDigits)], out originalEastingDeclarationUTM))
             {
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration easting portion '{line[eastingStartCharacter..(eastingStartCharacter + eastingDigits)]}' in '{line}'");
                 return false;
             }
-            int northingUTM;
+            int originalNorthingDeclarationUTM;
+            //int northingStartCharacter = 12;
             int northingStartCharacter = eastingStartCharacter + eastingDigits + 1;
-            if (!int.TryParse(line[northingStartCharacter..(northingStartCharacter + northingDigits)], out northingUTM))
+            if (!int.TryParse(line[northingStartCharacter..(northingStartCharacter + northingDigits)], out originalNorthingDeclarationUTM))
             {
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration northing portion '{line[northingStartCharacter..(northingStartCharacter + northingDigits)]}' in '{line}'");
                 return false;
@@ -379,6 +505,8 @@ namespace Coordinates.Parsers
                 coordinateSharp = new CoordinateSharp.Coordinate(referenceCoordinate.Latitude, referenceCoordinate.Longitude);
 
             string utmGridZone = coordinateSharp.UTM.LatZone + coordinateSharp.UTM.LongZone;
+            int northingUTM = originalNorthingDeclarationUTM;
+            int eastingUTM = originalEastingDeclarationUTM;
             if (northingDigits < 6)
             {
                 northingUTM *= 10;
@@ -395,13 +523,13 @@ namespace Coordinates.Parsers
                 eastingUTM += (int)(Math.Floor(coordinateSharp.UTM.Easting / Math.Pow(10, eastingDigits + 1)) * Math.Pow(10, eastingDigits + 1));
             }
 
-            CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator(utmGridZone, eastingUTM, northingUTM);
+            CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator(utmGridZone, originalEastingDeclarationUTM, originalNorthingDeclarationUTM);
 
             CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
 
             Coordinate declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
 
-            declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration, hasPilotDeclaredGoalAltitude);
+            declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration, hasPilotDeclaredGoalAltitude, originalEastingDeclarationUTM, originalNorthingDeclarationUTM);
 
             return true;
         }
@@ -575,7 +703,7 @@ namespace Coordinates.Parsers
             return true;
         }
 
-        private static void Log(LogSeverityType logSeverity,string text)
+        private static void Log(LogSeverityType logSeverity, string text)
         {
             Logger.Log((object)"FAI Logger Parser", logSeverity, text);
         }
