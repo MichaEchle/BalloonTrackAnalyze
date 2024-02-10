@@ -72,7 +72,7 @@ namespace BalloonTrackAnalyze.TaskControls
                 tbRadius.Text = Math.Round(Tier.Radius, 3, MidpointRounding.AwayFromZero).ToString();
                 rbRadiusMeter.Checked = true;
                 //rbInnerRadiusFeet.Checked = false;
-                cbIsReetranceAllowed.Checked = Tier.IsReentranceAllowed;
+                cbIsReetranceAllowed.Checked = Tier.IsReEntranceAllowed;
                 tbMultiplier.Text = Tier.Multiplier.ToString();
 
                 if (!double.IsNaN(Tier.LowerBoundary))

@@ -1,17 +1,17 @@
 ﻿using Competition.Validation;
 using Coordinates;
-using LoggerComponent;
-using System;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Competition
 {
     public class LandRunTask : ICompetitionTask
     {
         #region Properties
-
+        [JsonIgnore()]
+        private readonly ILogger<LandRunTask> Logger;
         /// <summary>
         /// The task number
         /// <para>mandatory</para>
@@ -70,63 +70,23 @@ namespace Competition
         /// <returns>true:success;false:error</returns>
         public bool CalculateResults(Track track, bool useGPSAltitude, out double result)
         {
-            string functionErrorMessage = $"Failed to calculate result for {this} and Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName)?$"({track.Pilot.FirstName},{track.Pilot.LastName})":"")}': ";
             result = 0.0;
-            //MarkerDrop firstMarker = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == FirstMarkerNumber);
-            //if (firstMarker == null)
-            //{
-            //    //Console.WriteLine($"No Marker '{FirstMarkerNumber}' found");
-            //    Log(LogSeverityType.Error, functionErrorMessage + $"No Marker '{FirstMarkerNumber}' found");
-            //    return false;
-            //}
-            //if (!ValidationHelper.IsMarkerValid(firstMarker, MarkerValidationRules))
-            //{
-            //    //Console.WriteLine($"Marker '{FirstMarkerNumber}' is not valid");
-            //    Log(LogSeverityType.Error, functionErrorMessage + $"Marker '{FirstMarkerNumber}' is invalid");
-            //    return false;
-            //}
+
             if (!ValidationHelper.IsMarkerValid(track, FirstMarkerNumber, MarkerValidationRules))
             {
-                //Console.WriteLine($"Marker '{FirstMarkerNumber}' is not valid");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Marker '{FirstMarkerNumber}' is invalid or doesn't exists");
+                Logger.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), FirstMarkerNumber);
                 return false;
             }
-            //MarkerDrop secondMarker = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == SecondMarkerNumber);
-            //if (secondMarker == null)
-            //{
-            //    //Console.WriteLine($"No Marker '{SecondMarkerNumber}' found");
-            //    Log(LogSeverityType.Error, functionErrorMessage + $"No Marker '{SecondMarkerNumber}' found");
-            //    return false;
-            //}
-            //if (!ValidationHelper.IsMarkerValid(secondMarker, MarkerValidationRules))
-            //{
-            //    //Console.WriteLine($"Marker '{SecondMarkerNumber}' is not valid");
-            //    Log(LogSeverityType.Error, functionErrorMessage + $"Marker '{SecondMarkerNumber}' is invalid");
-            //    return false;
-            //}
+
             if (!ValidationHelper.IsMarkerValid(track, SecondMarkerNumber, MarkerValidationRules))
             {
-                //Console.WriteLine($"Marker '{SecondMarkerNumber}' is not valid");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Marker '{SecondMarkerNumber}' is invalid or doesn't exists");
+                Logger.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), SecondMarkerNumber);
                 return false;
             }
-            //MarkerDrop thirdMarker = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == ThirdMarkerNumber);
-            //if (thirdMarker == null)
-            //{
-            //    //Console.WriteLine($"No Marker '{ThirdMarkerNumber}' found");
-            //    Log(LogSeverityType.Error, functionErrorMessage + $"No Marker '{ThirdMarkerNumber}' found");
-            //    return false;
-            //}
-            //if (!ValidationHelper.IsMarkerValid(thirdMarker, MarkerValidationRules))
-            //{
-            //    //Console.WriteLine($"Marker '{ThirdMarkerNumber}' is not valid");
-            //    Log(LogSeverityType.Error, functionErrorMessage + $"Marker '{ThirdMarkerNumber}' is invalid");
-            //    return false;
-            //}
+
             if (!ValidationHelper.IsMarkerValid(track, ThirdMarkerNumber, MarkerValidationRules))
             {
-                //Console.WriteLine($"Marker '{ThirdMarkerNumber}' is not valid");
-                Log(LogSeverityType.Error, functionErrorMessage + $"Marker '{ThirdMarkerNumber}' is invalid or doesn't exists");
+                Logger.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), ThirdMarkerNumber);
                 return false;
             }
             MarkerDrop firstMarker = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == FirstMarkerNumber);
@@ -160,10 +120,6 @@ namespace Competition
         #endregion
 
         #region Private methods
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
-        }
         #endregion
     }
 }

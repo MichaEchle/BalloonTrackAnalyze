@@ -1,10 +1,12 @@
-﻿using LoggerComponent;
+﻿using Microsoft.Extensions.Logging;
 using System;
 
 namespace Coordinates
 {
     public class Coordinate
     {
+
+        private ILogger<Coordinate> Logger;
 
         /// <summary>
         /// The latitude or northing in decimal degrees
@@ -55,7 +57,7 @@ namespace Coordinates
         {
             if (AltitudeBarometric is not 0 || AltitudeGPS is not 0)
             {
-                Logger.Log(LogSeverityType.Error, "Setting a default altitude is not allowed as the altitudes are not zero");
+                Logger.LogError("Setting a default altitude is not allowed as the altitudes are not zero");
                 return false;
             }
             AltitudeGPS= defautlAltitude;

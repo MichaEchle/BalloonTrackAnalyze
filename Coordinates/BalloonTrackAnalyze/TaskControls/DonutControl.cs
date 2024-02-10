@@ -103,7 +103,7 @@ namespace BalloonTrackAnalyze.TaskControls
                 tbOuterRadius.Text = Math.Round(Donut.OuterRadius, 3, MidpointRounding.AwayFromZero).ToString();
                 rbOuterRadiusMeter.Checked = true;
                 //rbOuterRadiusFeet.Checked = false;
-                cbIsReetranceAllowed.Checked = Donut.IsReentranceAllowed;
+                cbIsReetranceAllowed.Checked = Donut.IsReEntranceAllowed;
                 
                 if (!double.IsNaN(Donut.LowerBoundary))
                 {

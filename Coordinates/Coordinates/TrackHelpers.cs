@@ -1,16 +1,25 @@
-﻿using OfficeOpenXml.Drawing.Slicer.Style;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.ApplicationModel.Background;
 
 namespace Coordinates
 {
     public static class TrackHelpers
     {
+
+        private static ILoggerFactory LoggerFactory
+        {
+            get; set;
+        }
+
+        private static ILogger Logger
+        {
+            get
+            {
+                return LoggerFactory.CreateLogger(nameof(TrackHelpers));
+            }
+        }
         /// <summary>
         /// Calculates the 2D distance between position of declaration and declared goal for all given declarations
         /// </summary>
@@ -354,7 +363,7 @@ namespace Coordinates
             }
             catch (Exception ex)
             {
-                LoggerComponent.Logger.Log(LoggerComponent.LogSeverityType.Error, $"Failed to estimate launch or landing point: '{ex.Message}'");
+                Logger.LogError(ex, "Failed to estimate launch or landing point");
                 return false;
             }
             return true;
@@ -499,12 +508,12 @@ namespace Coordinates
             }
         }
 
-        public static bool CheckLaunchConstraints(Track track, bool useGPSAltitude, DateTime beginOfStartPeriod, DateTime endOfStartPeriod, List<Coordinate> goals, double min2DDistanceBetweenLaunchAndGoals, double max2DDistanceBetweenLaunchAndGoals,out Coordinate launchPoint, out bool launchInStartPeriod, out List<double> distanceToGoals, out List<bool> distanceToGoalsOk)
+        public static bool CheckLaunchConstraints(Track track, bool useGPSAltitude, DateTime beginOfStartPeriod, DateTime endOfStartPeriod, List<Coordinate> goals, double min2DDistanceBetweenLaunchAndGoals, double max2DDistanceBetweenLaunchAndGoals, out Coordinate launchPoint, out bool launchInStartPeriod, out List<double> distanceToGoals, out List<bool> distanceToGoalsOk)
         {
             launchInStartPeriod = false;
             distanceToGoals = new List<double>();
             distanceToGoalsOk = new List<bool>();
-            launchPoint = new Coordinate(0,0,0,0,DateTime.MinValue);
+            launchPoint = new Coordinate(0, 0, 0, 0, DateTime.MinValue);
             if (!EstimateLaunchAndLandingTime(track, useGPSAltitude, out launchPoint, out _))
                 return false;
             if (launchPoint.TimeStamp >= beginOfStartPeriod && launchPoint.TimeStamp <= endOfStartPeriod)

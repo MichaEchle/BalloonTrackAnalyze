@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Graphics.Display;
 
 namespace TestProgramm
 {
@@ -168,33 +164,33 @@ namespace TestProgramm
                 //using (StreamWriter writer = new StreamWriter(@"C:\Temp\DistAlgoAcc.txt"))
                 //{
                 //    writer.WriteLine("Lat1\tLong1\tLat2\tLong2\tRef Dist\t Dist Havercos\t Error Havercos\t Error Havercos rel\t Dist Haversin\tError Haversin\tError Haversin rel\tDist Vincenty\tError Vincenty\tError Vincenty rel\tDist UTM\tError UTM\tError UTM rel\tDist UTM prec.\tError UTM prec.\tError UTM prec. rel");
-                    for (int index = 0; index < 10000; index++)
-                    {
-                        GeodTestRecord record = geodTestRecords[index];
-                        Coordinates.Coordinate coordinate1 = new Coordinates.Coordinate(record.Latitude1, record.Longitude1, 0, 0, DateTime.MinValue);
-                        Coordinates.Coordinate coordinate2 = new Coordinates.Coordinate(record.Latitude2, record.Longitude2, 0, 0, DateTime.MinValue);
+                for (int index = 0; index < 10000; index++)
+                {
+                    GeodTestRecord record = geodTestRecords[index];
+                    Coordinates.Coordinate coordinate1 = new Coordinates.Coordinate(record.Latitude1, record.Longitude1, 0, 0, DateTime.MinValue);
+                    Coordinates.Coordinate coordinate2 = new Coordinates.Coordinate(record.Latitude2, record.Longitude2, 0, 0, DateTime.MinValue);
 
-                        //double distance_havercos = Math.Round(Coordinates.CoordinateHelpers.Calculate2DDistanceHavercos(coordinate1, coordinate2), 3, MidpointRounding.AwayFromZero);
-                        //double error_havercos = Math.Round(record.Geodesic_Distance - distance_havercos, 3, MidpointRounding.AwayFromZero);
-                        //double error_havercos_rel = Math.Round(error_havercos / record.Geodesic_Distance * 100, 2, MidpointRounding.AwayFromZero);
-                        //double distance_haversin = Math.Round(Coordinates.CoordinateHelpers.Calculate2DDistanceHaversin(coordinate1, coordinate2), 3, MidpointRounding.AwayFromZero);
-                        //double error_haversin = Math.Round(record.Geodesic_Distance - distance_haversin, 3, MidpointRounding.AwayFromZero);
-                        //double error_haversin_rel = Math.Round(error_haversin / record.Geodesic_Distance * 100, 2, MidpointRounding.AwayFromZero);
-                        //double distance_vincenty = Math.Round(Coordinates.CoordinateHelpers.Calculate2DDistanceVincentyWSG84(coordinate1, coordinate2), 3, MidpointRounding.AwayFromZero);
-                        //double error_vincenty = Math.Round(record.Geodesic_Distance - distance_vincenty, 3, MidpointRounding.AwayFromZero);
-                        //double error_vincenty_rel = Math.Round(error_vincenty / record.Geodesic_Distance * 100, 2, MidpointRounding.AwayFromZero);
-                        //double distance_UTM = Math.Round(Coordinates.CoordinateHelpers.Calculate2DDistanceUTM(coordinate1, coordinate2), 3, MidpointRounding.AwayFromZero);
-                        //double error_UTM = Math.Round(record.Geodesic_Distance - distance_UTM, 3, MidpointRounding.AwayFromZero);
-                        //double error_UTM_rel = Math.Round(error_UTM / record.Geodesic_Distance * 100, 2, MidpointRounding.AwayFromZero);
-                        double distance_UTM_precise = Math.Round(Coordinates.CoordinateHelpers.Calculate2DDistanceUTM_Precise(coordinate1, coordinate2), 3, MidpointRounding.AwayFromZero);
-                        //double error_UTM_precise = Math.Round(record.Geodesic_Distance - distance_UTM_precise, 3, MidpointRounding.AwayFromZero);
-                        //double error_UTM_precise_rel = Math.Round(error_UTM_precise / record.Geodesic_Distance * 100, 2, MidpointRounding.AwayFromZero);
+                    //double distance_havercos = Math.Round(Coordinates.CoordinateHelpers.Calculate2DDistanceHavercos(coordinate1, coordinate2), 3, MidpointRounding.AwayFromZero);
+                    //double error_havercos = Math.Round(record.Geodesic_Distance - distance_havercos, 3, MidpointRounding.AwayFromZero);
+                    //double error_havercos_rel = Math.Round(error_havercos / record.Geodesic_Distance * 100, 2, MidpointRounding.AwayFromZero);
+                    //double distance_haversin = Math.Round(Coordinates.CoordinateHelpers.Calculate2DDistanceHaversin(coordinate1, coordinate2), 3, MidpointRounding.AwayFromZero);
+                    //double error_haversin = Math.Round(record.Geodesic_Distance - distance_haversin, 3, MidpointRounding.AwayFromZero);
+                    //double error_haversin_rel = Math.Round(error_haversin / record.Geodesic_Distance * 100, 2, MidpointRounding.AwayFromZero);
+                    //double distance_vincenty = Math.Round(Coordinates.CoordinateHelpers.Calculate2DDistanceVincentyWSG84(coordinate1, coordinate2), 3, MidpointRounding.AwayFromZero);
+                    //double error_vincenty = Math.Round(record.Geodesic_Distance - distance_vincenty, 3, MidpointRounding.AwayFromZero);
+                    //double error_vincenty_rel = Math.Round(error_vincenty / record.Geodesic_Distance * 100, 2, MidpointRounding.AwayFromZero);
+                    //double distance_UTM = Math.Round(Coordinates.CoordinateHelpers.Calculate2DDistanceUTM(coordinate1, coordinate2), 3, MidpointRounding.AwayFromZero);
+                    //double error_UTM = Math.Round(record.Geodesic_Distance - distance_UTM, 3, MidpointRounding.AwayFromZero);
+                    //double error_UTM_rel = Math.Round(error_UTM / record.Geodesic_Distance * 100, 2, MidpointRounding.AwayFromZero);
+                    double distance_UTM_precise = Math.Round(Coordinates.CoordinateHelpers.Calculate2DDistanceUTM_Precise(coordinate1, coordinate2), 3, MidpointRounding.AwayFromZero);
+                    //double error_UTM_precise = Math.Round(record.Geodesic_Distance - distance_UTM_precise, 3, MidpointRounding.AwayFromZero);
+                    //double error_UTM_precise_rel = Math.Round(error_UTM_precise / record.Geodesic_Distance * 100, 2, MidpointRounding.AwayFromZero);
 
-                        //writer.WriteLine($"{record.Latitude1}\t{record.Longitude1}\t{record.Latitude2}\t{record.Longitude2}\t{Math.Round(record.Geodesic_Distance, 3, MidpointRounding.AwayFromZero)}\t{distance_havercos}\t{error_havercos}\t{error_havercos_rel}\t{distance_haversin}\t{error_haversin}\t{error_haversin_rel}\t{distance_vincenty}\t{error_vincenty}\t{error_vincenty_rel}\t{distance_UTM}\t{error_UTM}\t{error_UTM_rel}\t{distance_UTM_precise}\t{error_UTM_precise}\t{error_UTM_precise_rel}");
+                    //writer.WriteLine($"{record.Latitude1}\t{record.Longitude1}\t{record.Latitude2}\t{record.Longitude2}\t{Math.Round(record.Geodesic_Distance, 3, MidpointRounding.AwayFromZero)}\t{distance_havercos}\t{error_havercos}\t{error_havercos_rel}\t{distance_haversin}\t{error_haversin}\t{error_haversin_rel}\t{distance_vincenty}\t{error_vincenty}\t{error_vincenty_rel}\t{distance_UTM}\t{error_UTM}\t{error_UTM_rel}\t{distance_UTM_precise}\t{error_UTM_precise}\t{error_UTM_precise_rel}");
 
-                        //Console.WriteLine($"ref distance {Math.Round(record.Geodesic_Distance, 6, MidpointRounding.AwayFromZero)}\t\t  havercos {Math.Round(distance_havercos, 6, MidpointRounding.AwayFromZero)} (error {Math.Round(record.Geodesic_Distance - distance_havercos, 6, MidpointRounding.AwayFromZero)}) \t\t vincenty {Math.Round(distance_vincenty, 6, MidpointRounding.AwayFromZero)} (error {Math.Round(record.Geodesic_Distance - distance_vincenty, 6, MidpointRounding.AwayFromZero)})");
-                    }
-                    stopwatch.Stop();
+                    //Console.WriteLine($"ref distance {Math.Round(record.Geodesic_Distance, 6, MidpointRounding.AwayFromZero)}\t\t  havercos {Math.Round(distance_havercos, 6, MidpointRounding.AwayFromZero)} (error {Math.Round(record.Geodesic_Distance - distance_havercos, 6, MidpointRounding.AwayFromZero)}) \t\t vincenty {Math.Round(distance_vincenty, 6, MidpointRounding.AwayFromZero)} (error {Math.Round(record.Geodesic_Distance - distance_vincenty, 6, MidpointRounding.AwayFromZero)})");
+                }
+                stopwatch.Stop();
                 Console.WriteLine($"Haversin: {stopwatch.Elapsed:mm\\:ss\\.fff}");
                 //}
             }

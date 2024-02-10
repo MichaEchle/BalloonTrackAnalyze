@@ -1,26 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <UseWindowsForms>true</UseWindowsForms>
-    <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
     <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>bin\Debug\</OutputPath>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
-  </ItemGroup>
-
   <ItemGroup>
     <Resource Include="Icons\Copy_16x.png" />
     <Resource Include="Icons\OpenFile_16x.png" />
@@ -29,7 +21,6 @@
     <Resource Include="Icons\StatusWarning_exp_16x.png" />
     <Resource Include="Icons\WrapPanel_16x.png" />
   </ItemGroup>
-
   <ItemGroup>
     <Compile Update="LogFileViewer.cs">
       <SubType>Form</SubType>
@@ -43,12 +34,13 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
+  <ItemGroup>
+    <PackageReference Include="System.Resources.Extensions" Version="8.0.0" />
+  </ItemGroup>
 </Project>

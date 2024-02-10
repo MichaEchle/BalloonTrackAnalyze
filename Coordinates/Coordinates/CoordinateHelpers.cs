@@ -1,10 +1,6 @@
-﻿using CoordinateSharp;
-using LoggerComponent;
+﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Text;
-using System.Windows.Forms;
 using static System.Math;
 
 namespace Coordinates
@@ -15,6 +11,20 @@ namespace Coordinates
     /// </summary>
     public static class CoordinateHelpers
     {
+
+        private static ILoggerFactory LoggerFactory
+        {
+            get; set;
+        }
+
+        private static ILogger Logger
+        {
+            get
+            {
+                return LoggerFactory.CreateLogger(nameof(CoordinateHelpers));
+            }
+        }
+
         /// <summary>
         /// the ratio of feet to meter conversion
         /// </summary>
@@ -238,7 +248,7 @@ namespace Coordinates
 
             if (iterations >= 1000)
             {
-                Logger.Log(LogSeverityType.Warning, "Vincenty did not converge in 1000 iterations, the calculated distance may not be accurate");
+                Logger.LogWarning("Vincenty did not converge in 1000 iterations, the calculated distance may not be accurate");
             }
 
             double uSqaure = cosSqureAlpha * (a * a - b * b) / (b * b);
@@ -292,10 +302,10 @@ namespace Coordinates
         public static double Calculate2DDistanceUTM_Precise(Coordinate coordinate1, Coordinate coordinate2)
         {
             if (coordinate1 is null)
-            throw new ArgumentNullException(nameof(coordinate1));
+                throw new ArgumentNullException(nameof(coordinate1));
 
             if (coordinate2 is null)
-            throw new ArgumentNullException(nameof(coordinate2));
+                throw new ArgumentNullException(nameof(coordinate2));
 
             (string zone, double easting, double northing) coordinate1UTM = CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM_Precise(coordinate1);
             (string zone, double easting, double northing) coordinate2UTM = CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM_Precise(coordinate2);

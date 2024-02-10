@@ -1,14 +1,13 @@
 ﻿using Coordinates;
-using LoggerComponent;
-using System;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Competition
 {
     public class MarkerToOtherMarkersDistanceRule : IMarkerValidationRules
     {
         #region Properties
+        private readonly ILogger<MarkerToOtherMarkersDistanceRule> Logger;
 
         /// <summary>
         /// Minimum distance to other markers in meter
@@ -43,7 +42,7 @@ namespace Competition
         /// <para>optional; use empty list to consider all markers</para>
         /// </summary>
         public List<int> MarkerNumbers { get; set; } = new List<int>();
-        
+
 
         #endregion
 
@@ -94,11 +93,9 @@ namespace Competition
             return "Marker to other Markers Distance Rule";
         }
         #endregion
+
         #region Private methods
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
-        }
+
         #endregion
     }
 }

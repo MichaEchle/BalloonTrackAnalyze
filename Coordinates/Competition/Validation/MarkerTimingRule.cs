@@ -1,8 +1,6 @@
 ﻿using Coordinates;
-using LoggerComponent;
-using System;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Competition
 {
@@ -10,6 +8,7 @@ namespace Competition
     {
         #region Properties
 
+        private readonly ILogger<MarkerTimingRule> Logger;
         /// <summary>
         /// The list of timing definitions
         /// <para>each entry consists of two values</para>
@@ -76,10 +75,6 @@ namespace Competition
         #endregion
 
         #region Private methods
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
-        }
         #endregion
     }
 }

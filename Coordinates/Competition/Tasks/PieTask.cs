@@ -1,11 +1,9 @@
 ﻿using Competition.Validation;
 using Coordinates;
-using LoggerComponent;
-using System;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 
 namespace Competition
 {
@@ -16,6 +14,8 @@ namespace Competition
         public class PieTier
         {
             #region Properties
+            [JsonIgnore()]
+            private readonly ILogger<PieTier> Logger;
 
             /// <summary>
             /// The target goal number
@@ -30,7 +30,7 @@ namespace Competition
             /// Specify whether or not re-entrance in the donut is allowed
             /// <para>mandatory</para>
             /// </summary>
-            public bool IsReentranceAllowed
+            public bool IsReEntranceAllowed
             {
                 get; set;
             } = true;
@@ -104,8 +104,7 @@ namespace Competition
                 Declaration targetDeclaration = ValidationHelper.GetValidDeclaration(track, GoalNumber, DeclarationValidationRules);
                 if (targetDeclaration == null)
                 {
-                    //Debug.WriteLine("No valid goal found");
-                    Log(LogSeverityType.Error, functionErrorMessage + $"No valid goal found for goal '#{GoalNumber}'");
+                    Logger.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No valid goal found for goal '#{goalNumber}'", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), GoalNumber);
                     return false;
                 }
                 List<Coordinate> coordinates = track.TrackPoints;
@@ -128,7 +127,7 @@ namespace Competition
                 {
                     double distanceToGoal = CoordinateHelpers.Calculate2DDistanceHavercos(coordinates[index], targetDeclaration.DeclaredGoal);//calculate distance to goal
                     if (distanceToGoal <= Radius)//save all trackpoints within the radius
-                        trackPointsInTier.Add((track.TrackPoints.FindIndex(x=>x==coordinates[index]), coordinates[index]));
+                        trackPointsInTier.Add((track.TrackPoints.FindIndex(x => x == coordinates[index]), coordinates[index]));
 
                 }
                 List<List<Coordinate>> chunksInTier = new List<List<Coordinate>>();
@@ -155,7 +154,7 @@ namespace Competition
                     }
                 }
 
-                if (!IsReentranceAllowed)//evaluate first chunk only
+                if (!IsReEntranceAllowed)//evaluate first chunk only
                 {
                     if (chunksInTier[0].Count >= 2)
                     {
@@ -193,13 +192,13 @@ namespace Competition
             /// <param name="radius">The radius of the pie tier in meter (mandatory)</param>
             /// <param name="lowerBoundary">Lower boundary of the donut in meter (optional; use double.NaN to omit)</param>
             /// <param name="upperBoundary">Upper boundary of the donut in meter (optional; use double.NaN to omit)</param>
-            /// <param name="isReentranceAllowed">Specify whether or not re-entrance in the donut is allowed (mandatory)</param>
+            /// <param name="isReEntranceAllowed">Specify whether or not re-entrance in the donut is allowed (mandatory)</param>
             /// <param name="declarationValidationRules">List of rules for declaration validation (optional; leave list empty to omit)</param>
-            public void SetupPieTier(int goalNumber, double radius, bool isReentranceAllowed, double multiplier, double lowerBoundary, double upperBoundary, List<IDeclarationValidationRules> declarationValidationRules)
+            public void SetupPieTier(int goalNumber, double radius, bool isReEntranceAllowed, double multiplier, double lowerBoundary, double upperBoundary, List<IDeclarationValidationRules> declarationValidationRules)
             {
                 GoalNumber = goalNumber;
                 Radius = radius;
-                IsReentranceAllowed = isReentranceAllowed;
+                IsReEntranceAllowed = isReEntranceAllowed;
                 Multiplier = multiplier;
                 LowerBoundary = lowerBoundary;
                 UpperBoundary = upperBoundary;
@@ -213,16 +212,14 @@ namespace Competition
             #endregion
 
             #region Private methods
-            private void Log(LogSeverityType logSeverity, string text)
-            {
-                Logger.Log(this, logSeverity, text);
-            }
+
             #endregion
         }
         #endregion
 
         #region Properties
 
+        private readonly ILogger<PieTask> Logger;
         /// <summary>
         /// The task number
         /// <para>mandatory</para>
@@ -258,14 +255,13 @@ namespace Competition
         /// <returns>true:success;false:error</returns>
         public bool CalculateResults(Track track, bool useGPSAltitude, out double result)
         {
-            string functionErrorMessage = $"Failed to calculate result for {this} and Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}': ";
             result = 0.0;
             foreach (PieTier tier in Tiers)
             {
                 double tempResult;
                 if (!tier.CalculateTierResult(track, useGPSAltitude, out tempResult))
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + "Failed to calculate tier result");
+                    Logger.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Failed to calculate tier result", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
                     return false;
                 }
                 result += tempResult;
@@ -290,10 +286,6 @@ namespace Competition
         #endregion
 
         #region Private methods
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
-        }
         #endregion
     }
 

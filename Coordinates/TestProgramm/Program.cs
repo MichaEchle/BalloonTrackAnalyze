@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.Contracts;
-using System.Drawing.Design;
+﻿using Coordinates;
+using Coordinates.Parsers;
+using System;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
-using Accessibility;
-using Competition;
-using Coordinates;
-using Coordinates.Parsers;
-using CoordinateSharp;
-using OfficeOpenXml.FormulaParsing.Excel.Functions;
 
 namespace TestProgramm
 {
@@ -26,15 +17,15 @@ namespace TestProgramm
             //\..\..\..\..\..\TestTrack\5AD_f003_p002_l0.igc
 
             FileInfo fileInfo = new FileInfo(@"..\..\..\..\..\TestTrack\Archive-E[germannationals2022]F[3]P[18]-BFUrwYGs212.igc");
-            Coordinates.Coordinate referenceCoordiante= new Coordinates.Coordinate(15,20,10,10,DateTime.Now); // define a reference coordinate (the values are random)
-            if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out Track track,referenceCoordiante)) // provide the reference coordinate to the parser
+            Coordinates.Coordinate referenceCoordiante = new Coordinates.Coordinate(15, 20, 10, 10, DateTime.Now); // define a reference coordinate (the values are random)
+            if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out Track track, referenceCoordiante)) // provide the reference coordinate to the parser
             {
                 Console.WriteLine("Failed to parse track");
             }
 
             var declaration = track.Declarations.First(x => x.GoalNumber == 1); // get the declaration for goal 1
 
-            var newDeclaredGoal=CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 670000 + declaration.OrignalEastingDeclarationUTM, 59000 + declaration.OrignalNorhtingDeclarationUTM, declaration.DeclaredGoal.AltitudeGPS); // create a new coordinate using the original declarations
+            var newDeclaredGoal = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 670000 + declaration.OrignalEastingDeclarationUTM, 59000 + declaration.OrignalNorhtingDeclarationUTM, declaration.DeclaredGoal.AltitudeGPS); // create a new coordinate using the original declarations
 
             track.Declarations.Remove(declaration); // remove the old declaration
             track.Declarations.Add(new Declaration(declaration.GoalNumber, newDeclaredGoal, declaration.PositionAtDeclaration, true, declaration.OrignalEastingDeclarationUTM, declaration.OrignalNorhtingDeclarationUTM)); // add a new one with correct declared goal.
@@ -94,10 +85,10 @@ namespace TestProgramm
 
 
         private static string ToProperText(CoordinateSharp.CoordinatePart part)
-    {
-        string text = part.Degrees + "° " + part.Minutes + "ʹ " + Math.Round(part.Seconds, 2, MidpointRounding.AwayFromZero) + "ʺ";
-        return text;
-    }
+        {
+            string text = part.Degrees + "° " + part.Minutes + "ʹ " + Math.Round(part.Seconds, 2, MidpointRounding.AwayFromZero) + "ʺ";
+            return text;
+        }
 
-}
+    }
 }

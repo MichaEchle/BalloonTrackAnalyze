@@ -1,14 +1,25 @@
 ﻿using Coordinates;
-using LoggerComponent;
-using System;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Competition.Validation
 {
     public static class ValidationHelper
     {
+        private static ILoggerFactory LoggerFactory
+        {
+            get; set;
+        }
+
+        private static ILogger Logger
+        {
+            get
+            {
+                return LoggerFactory.CreateLogger(nameof(ValidationHelper));
+            }
+        }
+
         /// <summary>
         /// Applies all specified declaration rules for goals of the specified goal number and return the latest valid declaration
         /// </summary>
@@ -22,7 +33,7 @@ namespace Competition.Validation
             List<Declaration> validDeclarations = new List<Declaration>();
             if (declarations.Count == 0)
             {
-                Logger.Log(LogSeverityType.Warning, $"No declaration found for goal number '{goalNumber}'");
+                Logger.LogWarning("No declaration found for goal number '{goalNumber}'",goalNumber);
                 return null;
             }
             else
@@ -46,7 +57,7 @@ namespace Competition.Validation
                 }
                 if (validDeclarations.Count == 0)
                 {
-                    Logger.Log(LogSeverityType.Warning, $"No declaration of goal number '{goalNumber}' is conform to specified rules");
+                    Logger.LogWarning("No declaration of goal number '{goalNumber}' is conform to specified rules", goalNumber);    
                     return null;
                 }
                 else if (validDeclarations.Count == 1)
@@ -86,7 +97,7 @@ namespace Competition.Validation
             if (markerDrop == null)
             {
                 //Console.WriteLine($"No Marker '{FirstMarkerNumber}' found");
-                Logger.Log(LogSeverityType.Warning, $"No Marker '{markerNumber}' found");
+                Logger.LogWarning("No Marker '{markerNumber}' found", markerNumber);
                 isValid = false;
             }
             else
@@ -100,7 +111,7 @@ namespace Competition.Validation
                 }
                 if (!isValid)
                 {
-                    Logger.Log(LogSeverityType.Warning, $"Marker '{markerNumber}' is not conform to specified rules");
+                    Logger.LogWarning("Marker '{markerNumber}' is not conform to specified rules", markerNumber);
                 }
             }
             return isValid;

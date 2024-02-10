@@ -1,16 +1,10 @@
 ﻿using Competition;
 using Coordinates;
 using Coordinates.Parsers;
-using OfficeOpenXml.ConditionalFormatting;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
-using System.Text;
-using System.Threading.Tasks;
-using Windows.Media.Playback;
-using Windows.Security.Authentication.OnlineId;
 
 namespace TestProgramm
 {
@@ -446,32 +440,32 @@ namespace TestProgramm
 
         private static string CalculateTask15(Track track, Coordinate goalTask15)
         {
-            (double result, string comment) = CalculateResultToGivenGoal(track, 1, goalTask15, CoordinateHelpers.ConvertToMeter(1500),75);
+            (double result, string comment) = CalculateResultToGivenGoal(track, 1, goalTask15, CoordinateHelpers.ConvertToMeter(1500), 75);
             return $"{track.Pilot.PilotNumber},{result:0.0#},{comment}";
         }
 
         private static string CalculateTask16(Track track, Coordinate goalTask16)
         {
-            (double result, string comment) = CalculateResultToGivenGoal(track, 2, goalTask16, CoordinateHelpers.ConvertToMeter(1500),75);
+            (double result, string comment) = CalculateResultToGivenGoal(track, 2, goalTask16, CoordinateHelpers.ConvertToMeter(1500), 75);
             return $"{track.Pilot.PilotNumber},{result:0.0#},{comment}";
         }
 
         private static string CalculateTask17(Track track, Coordinate goalTask17)
         {
-            (double result, string comment) = CalculateResultToGivenGoal(track, 3, goalTask17, CoordinateHelpers.ConvertToMeter(1500),75);
+            (double result, string comment) = CalculateResultToGivenGoal(track, 3, goalTask17, CoordinateHelpers.ConvertToMeter(1500), 75);
             return $"{track.Pilot.PilotNumber},{result:0.0#},{comment}";
         }
 
         private static string CalculateTask18(Track track, Coordinate goalTask18)
         {
-            (double result, string comment) = CalculateResultToGivenGoal(track, 4, goalTask18, CoordinateHelpers.ConvertToMeter(1500),75);
+            (double result, string comment) = CalculateResultToGivenGoal(track, 4, goalTask18, CoordinateHelpers.ConvertToMeter(1500), 75);
             return $"{track.Pilot.PilotNumber},{result:0.0#},{comment}";
         }
         private static string CalculateTask19(Track track, Coordinate goalTask19A, Coordinate goalTask19B)
         {
 
-            (double result19A, string comment19A) = CalculateResultToGivenGoal(track, 5, goalTask19A, CoordinateHelpers.ConvertToMeter(1500),75);
-            (double result19B, string comment19B) = CalculateResultToGivenGoal(track, 5, goalTask19B, CoordinateHelpers.ConvertToMeter(1500),75);
+            (double result19A, string comment19A) = CalculateResultToGivenGoal(track, 5, goalTask19A, CoordinateHelpers.ConvertToMeter(1500), 75);
+            (double result19B, string comment19B) = CalculateResultToGivenGoal(track, 5, goalTask19B, CoordinateHelpers.ConvertToMeter(1500), 75);
             if (result19A < result19B)
                 return $"{track.Pilot.PilotNumber},{result19A:0.0#},{comment19A}";
             else

@@ -1,22 +1,19 @@
 ﻿using Competition.Validation;
 using Coordinates;
 using Coordinates.Parsers;
-using LoggerComponent;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Competition
 {
     public class Flight
     {
         #region Properties
+
+        private readonly ILogger<Flight> Logger;
 
         /// <summary>
         /// The number of the flight
@@ -64,8 +61,7 @@ namespace Competition
         {
             lock (lockObject)
             {
-                if (flight == null)
-                    flight = new Flight();
+                flight ??= new Flight();
                 return flight;
             }
         }
@@ -77,10 +73,11 @@ namespace Competition
         /// <returns>true: success; false: error</returns>
         public bool ParseTrackFiles(string path, bool useBalloonLiveParse)
         {
-            string functionErrorMessage = "Failed to parse track files: ";
             DirectoryInfo directoryInfo = new DirectoryInfo($@"{path}");
             if (!directoryInfo.Exists)
-                Log(LogSeverityType.Error, functionErrorMessage + $"Directory '{path}' does not exists");
+            {
+                Logger.LogError("Failed to parse track files: Directory '{path}' does not exists", path);
+            }
             FileInfo[] trackFiles = directoryInfo.GetFiles("*.igc");
             flight.Tracks.Clear();
             foreach (FileInfo trackFile in trackFiles)
@@ -91,7 +88,7 @@ namespace Competition
                 {
                     if (!BalloonLiveParser.ParseFile(trackFile.FullName, out track))
                     {
-                        Log(LogSeverityType.Error, functionErrorMessage + $"Track from '{trackFile.FullName}' won't be used for further processing");
+                        Logger.LogError("Failed to parse track file '{trackFile}' and won't be used for further processing", trackFile.FullName);
                         trackIsValid = false;
                     }
                 }
@@ -99,7 +96,7 @@ namespace Competition
                 {
                     if (!FAILoggerParser.ParseFile(trackFile.FullName, out track))
                     {
-                        Log(LogSeverityType.Error, functionErrorMessage + $"Track from '{trackFile.FullName}' won't be used for further processing");
+                        Logger.LogError("Failed to parse track file '{trackFile}' and won't be used for further processing", trackFile.FullName);
                         trackIsValid = false;
                     }
                 }
@@ -119,16 +116,15 @@ namespace Competition
         /// <returns>true:success; false:error</returns>
         public bool MapPilotNamesToTracks(string mappingFile)
         {
-            string functionErrorMessage = "Failed to map pilot names to tracks";
             FileInfo fileInfo = new FileInfo($@"{mappingFile}");
             if (!fileInfo.Exists)
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"The file '{mappingFile}' does not exists");
+                Logger.LogError("Failed to map pilot names to tracks: The file '{mappingFile}' does not exists", mappingFile);
                 return false;
             }
             if (!fileInfo.Extension.Contains("csv"))
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"The file extension '{fileInfo.Extension}' is not supported");
+                Logger.LogError("Failed to map pilot names to tracks: The file extension '{fileExtension}' is not supported", fileInfo.Extension);
                 return false;
             }
 
@@ -143,7 +139,7 @@ namespace Competition
                     int pilotNumber;
                     if (!int.TryParse(parts[0], out pilotNumber))
                     {
-                        Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse pilot number '{parts[0]}' as integer");
+                        Logger.LogError("Failed to map pilot names to tracks: Failed to parse pilot number '{pilotNumber}' as integer", parts[0]);
                         return false;
                     }
                     string firstName = parts[1];
@@ -158,21 +154,24 @@ namespace Competition
                             track.Pilot.LastName = lastName;
                             if (track.Pilot.PilotNumber != pilotNumber)
                             {
-                                Log(LogSeverityType.Warning, $"Identifier of track matched with identifiers of {firstName},{lastName}, but pilot numbers didn't match (Track Pilot No.'{track.Pilot.PilotNumber}'/ File Pilot No.'{pilotNumber}'");
+                                Logger.LogWarning("Identifier of track matched with identifiers of '{firstName},{lastName}', but pilot numbers didn't match (Track Pilot No.'{pilotNumber}'/ File Pilot No.'{pilotNumber}'", firstName, lastName, track.Pilot.PilotNumber, pilotNumber);
                             }
                             found = true;
                             break;
                         }
                     }
                     if (!found)
-                        Log(LogSeverityType.Warning, $"No track match found for {firstName},{lastName}");
+                    {
+                        Logger.LogWarning("No track match found for '{firstName},{lastName}'", firstName, lastName);
+                    }
+
                 }
             }
             foreach (Track track in Tracks)
             {
                 if (string.IsNullOrWhiteSpace(track.Pilot.FirstName))
                 {
-                    Log(LogSeverityType.Warning, $"No match found for track from Pilot No.{track.Pilot.PilotNumber} with identifier '{track.Pilot.PilotIdentifier}'");
+                    Logger.LogWarning("No match found for track from Pilot No. '{pilotNumber}' with identifier '{pilotIdentifier}'", track.Pilot.PilotNumber, track.Pilot.PilotIdentifier);
                 }
             }
 
@@ -186,10 +185,9 @@ namespace Competition
         /// <param name="track">teh track to be pre-processed</param>
         /// <returns>true:success; false:error</returns>
         /// <exception cref="ArgumentNullException">track cannot be null</exception>
-        public bool PreprocessTrack(Track track)
+        public bool PreProcessTrack(Track track)
         {
-            if (track is null)
-                throw new ArgumentNullException(nameof(track));
+            ArgumentNullException.ThrowIfNull(track);
 
             List<Declaration> validDeclarations = new List<Declaration>();
             List<MarkerDrop> validMarkers = new List<MarkerDrop>();
@@ -269,7 +267,9 @@ namespace Competition
                                         foreach (int goalNumber in goalToOtherGoalsDistanceRule.GoalNumbers)
                                         {
                                             if (!allGoalNumbers.Contains(goalNumber))
-                                                Log(LogSeverityType.Warning, $"No goal number '{goalNumber}' declared in track of Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}'");
+                                            {
+                                                Logger.LogWarning("No goal number '{goalNumber}' declared in track of Pilot '#{pilotNumber}{pilotName}'", goalNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+                                            }
                                             else
                                             {
                                                 if (validDeclarations.Select(x => x.GoalNumber).Contains(goalNumber))
@@ -317,7 +317,9 @@ namespace Competition
                                             foreach (int goalNumber in goalToOtherGoalsDistanceRule.GoalNumbers)
                                             {
                                                 if (!allGoalNumbers.Contains(goalNumber))
-                                                    Log(LogSeverityType.Warning, $"No goal number '{goalNumber}' declared in track of Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}'");
+                                                {
+                                                    Logger.LogWarning("No goal number '{goalNumber}' declared in track of Pilot '#{pilotNumber}{pilotName}'", goalNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+                                                }
                                                 else
                                                 {
                                                     if (validDeclarations.Select(x => x.GoalNumber).Contains(goalNumber))
@@ -345,7 +347,9 @@ namespace Competition
                                     MarkerToGoalDistanceRule markerToGoalDistanceRule = rule as MarkerToGoalDistanceRule;
                                     markerToGoalDistanceRule.Declaration = null;
                                     if (!allGoalNumbers.Contains(markerToGoalDistanceRule.GoalNumber))
-                                        Log(LogSeverityType.Warning, $"No goal number '{markerToGoalDistanceRule.GoalNumber}' declared in track of Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}'");
+                                    {
+                                        Logger.LogWarning("No goal number '{goalNumber}' declared in track of Pilot '#{pilotNumber}{pilotName}'", markerToGoalDistanceRule.GoalNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+                                    }
                                     else
                                     {
                                         if (validDeclarations.Select(x => x.GoalNumber).Contains(markerToGoalDistanceRule.GoalNumber))
@@ -371,7 +375,9 @@ namespace Competition
                                         foreach (int markerNumber in markerToOtherMarkersDistanceRule.MarkerNumbers)
                                         {
                                             if (!allMarkerNubmers.Contains(markerNumber))
-                                                Log(LogSeverityType.Warning, $"No marker '{markerNumber}' dropped in track of Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}'");
+                                            {
+                                                Logger.LogWarning("No marker '{markerNumber}' dropped in track of Pilot '#{pilotNumber}{pilotName}'", markerNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+                                            }
                                             else
                                             {
                                                 markerToOtherMarkersDistanceRule.MarkerDrops.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == markerNumber));
@@ -391,7 +397,9 @@ namespace Competition
                                     MarkerToGoalDistanceRule markerToGoalDistanceRule = rule as MarkerToGoalDistanceRule;
                                     markerToGoalDistanceRule.Declaration = null;
                                     if (!allGoalNumbers.Contains(markerToGoalDistanceRule.GoalNumber))
-                                        Log(LogSeverityType.Warning, $"No goal number '{markerToGoalDistanceRule.GoalNumber}' declared in track of Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}'");
+                                        {
+                                        Logger.LogWarning("No goal number '{goalNumber}' declared in track of Pilot '#{pilotNumber}{pilotName}'", markerToGoalDistanceRule.GoalNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+                                    }
                                     else
                                     {
                                         if (validDeclarations.Select(x => x.GoalNumber).Contains(markerToGoalDistanceRule.GoalNumber))
@@ -417,7 +425,9 @@ namespace Competition
                                         foreach (int markerNumber in markerToOtherMarkersDistanceRule.MarkerNumbers)
                                         {
                                             if (!allMarkerNubmers.Contains(markerNumber))
-                                                Log(LogSeverityType.Warning, $"No marker '{markerNumber}' dropped in track of Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}'");
+                                            {
+                                                Logger.LogWarning("No marker '{markerNumber}' dropped in track of Pilot '#{pilotNumber}{pilotName}'", markerNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+                                            }
                                             else
                                             {
                                                 markerToOtherMarkersDistanceRule.MarkerDrops.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == markerNumber));
@@ -452,7 +462,7 @@ namespace Competition
 
                 foreach (Track track in Tracks)
                 {
-                    PreprocessTrack(track);
+                    PreProcessTrack(track);
                     string[] results = new string[Tasks.Count];
                     for (int index = 0; index < Tasks.Count; index++)
                     {
@@ -485,29 +495,17 @@ namespace Competition
                         if (declaration.DeclaredGoal.SetDefaultAltitude(defaultAltitude))
                         {
                             declarationsWithAltitude.Add((track.Pilot, declaration));
-                            Log(LogSeverityType.Info, $"Default alitude set for Pilot {track.Pilot.PilotNumber} at declaration {declaration.GoalNumber}");
+                            Logger.LogInformation("Default altitude set for Pilot {pilotNumber} at declaration {goalNumber}",track.Pilot.PilotNumber,declaration.GoalNumber);
                         }
                         else
                         {
-                            Log(LogSeverityType.Info, $"Default altitude could not be set for Pilot {track.Pilot.PilotNumber} at declaration {declaration.GoalNumber}");
-
+                            Logger.LogInformation("Default altitude could not be set for Pilot {pilotNumber} at declaration {goalNumber}", track.Pilot.PilotNumber, declaration.GoalNumber);
                         }
                     }
                 }
             }
             return declarationsWithAltitude;
         }
-
-        /// <summary>
-        /// Log helper
-        /// </summary>
-        /// <param name="logSeverityType">the severity of the message</param>
-        /// <param name="text">the log message</param>
-        private void Log(LogSeverityType logSeverityType, string text)
-        {
-            Logger.Log(this, logSeverityType, text);
-        }
-
 
         public override string ToString()
         {
