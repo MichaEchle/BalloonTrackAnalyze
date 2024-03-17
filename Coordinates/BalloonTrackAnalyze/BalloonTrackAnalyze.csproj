@@ -16,11 +16,14 @@
   <ItemGroup>
     <PackageReference Include="CoordinateSharp" Version="2.21.1.1" />
     <PackageReference Include="EPPlus" Version="7.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Competition\Competition.csproj" />
     <ProjectReference Include="..\LoggerComponent\LoggerComponent.csproj" />
+    <ProjectReference Include="..\UILoggingProvider\UILoggingProvider.csproj" />
+    <ProjectReference Include="..\WinFormsLoggerControl\WinFormsLoggerControl.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">

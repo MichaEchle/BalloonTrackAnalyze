@@ -1,9 +1,4 @@
 ﻿using Coordinates;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shapes
 {
@@ -11,12 +6,12 @@ namespace Shapes
     {
         public Coordinate CenterPoint
         {
-            get;private set;
+            get; private set;
         }
 
         public double Radius
         {
-            get;private set;
+            get; private set;
         }
 
         public Circle(Coordinate centerPoint, double radius)

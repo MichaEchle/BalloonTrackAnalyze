@@ -1,8 +1,11 @@
+using Competition.Configuration;
+using Coordinates.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using UILoggingProvider;
 
 namespace BLC2021
 {
@@ -17,7 +20,26 @@ namespace BLC2021
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new BLC2021Launch());
+            var uiLoggerProvider = new UILoggerProvider();
+            var builder = Host.CreateDefaultBuilder()
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddProvider(uiLoggerProvider);
+                })
+                .ConfigureServices((_, services) =>
+                {
+                    services.AddLogging();
+                    services.AddCoordinateServices();
+                    services.AddCompetitionServices();
+                    services.AddSingleton<BLC2021Launch>();
+                    services.AddSingleton<PilotMapping>();
+                });
+
+            var host = builder.Build();
+            _ = host.Services.GetRequiredService<CoordinatesLoggingConnector>();
+            _ = host.Services.GetRequiredService<CompetitionLoggingConnector>();
+            Application.Run(host.Services.GetRequiredService<BLC2021Launch>());
         }
     }
 }

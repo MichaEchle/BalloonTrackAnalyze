@@ -1,6 +1,6 @@
 ﻿namespace BalloonTrackAnalyze.ValidationControls
 {
-    partial class DeclarationToGoalHeigthRuleControl
+    partial class DeclarationToGoalHeightRuleControl
     {
         /// <summary> 
         /// Required designer variable.
@@ -224,7 +224,7 @@
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Name = "DeclarationToGoalHeigthRuleControl";
+            this.Name = "DeclarationToGoalHeightRuleControl";
             this.Size = new System.Drawing.Size(360, 160);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

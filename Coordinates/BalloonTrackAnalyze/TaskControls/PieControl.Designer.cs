@@ -1,4 +1,7 @@
-﻿namespace BalloonTrackAnalyze.TaskControls
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
+namespace BalloonTrackAnalyze.TaskControls
 {
     partial class PieControl
     {
@@ -34,7 +37,7 @@
             this.btCreate = new System.Windows.Forms.Button();
             this.tbTaskNumber = new System.Windows.Forms.TextBox();
             this.lbPieTiers = new System.Windows.Forms.ListBox();
-            this.pieTierControl1 = new BalloonTrackAnalyze.TaskControls.PieTierControl();
+            this.pieTierControl1 = new BalloonTrackAnalyze.TaskControls.PieTierControl(ServiceProvider.GetRequiredService<ILogger<PieTierControl>>(), ServiceProvider);
             this.SuspendLayout();
             // 
             // label1

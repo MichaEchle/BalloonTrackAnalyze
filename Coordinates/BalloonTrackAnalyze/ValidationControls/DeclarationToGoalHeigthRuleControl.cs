@@ -1,24 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
-using Competition;
-using LoggerComponent;
+﻿using Competition;
 using Coordinates;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Windows.Forms;
 
 namespace BalloonTrackAnalyze.ValidationControls
 {
-    public partial class DeclarationToGoalHeigthRuleControl : UserControl
+    public partial class DeclarationToGoalHeightRuleControl : UserControl
     {
         #region Properties
+
+        private readonly ILogger<DeclarationToGoalHeightRuleControl> Logger;
 
         /// <summary>
         /// The rule to be created or modified with this control
         /// </summary>
-        public DeclarationToGoalHeightRule DeclarationToGoalHeightRule { get; private set; }
+        public DeclarationToGoalHeightRule DeclarationToGoalHeightRule
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// Delegate for the DataValid event
@@ -36,22 +36,24 @@ namespace BalloonTrackAnalyze.ValidationControls
         /// <summary>
         /// Default constructor
         /// </summary>
-        public DeclarationToGoalHeigthRuleControl()
+        public DeclarationToGoalHeightRuleControl(ILogger<DeclarationToGoalHeightRuleControl> logger)
         {
             InitializeComponent();
             btCreate.Text = "Create rule";
+            Logger = logger;
         }
 
         /// <summary>
         /// Constructor which pre-fills control from existing rule
         /// </summary>
         /// <param name="declarationToGoalHeightRule">the existing declaration to goal height rule</param>
-        public DeclarationToGoalHeigthRuleControl(DeclarationToGoalHeightRule declarationToGoalHeightRule)
+        public DeclarationToGoalHeightRuleControl(DeclarationToGoalHeightRule declarationToGoalHeightRule, ILogger<DeclarationToGoalHeightRuleControl> logger)
         {
             DeclarationToGoalHeightRule = declarationToGoalHeightRule;
             InitializeComponent();
             Prefill();
             btCreate.Text = "Modify rule";
+            Logger = logger;
         }
         #endregion
 
@@ -77,12 +79,12 @@ namespace BalloonTrackAnalyze.ValidationControls
             {
                 if (!double.IsNaN(DeclarationToGoalHeightRule.MinimumHeightDifference))
                 {
-                    tbMinimumHeightDifference.Text = Math.Round(DeclarationToGoalHeightRule.MinimumHeightDifference,3,MidpointRounding.AwayFromZero).ToString();
+                    tbMinimumHeightDifference.Text = Math.Round(DeclarationToGoalHeightRule.MinimumHeightDifference, 3, MidpointRounding.AwayFromZero).ToString();
                     rbMinimumHeightDifferenceMeter.Checked = true;
                 }
                 if (!double.IsNaN(DeclarationToGoalHeightRule.MaximumHeightDifference))
                 {
-                    tbMaximumHeightDifference.Text =Math.Round( DeclarationToGoalHeightRule.MaximumHeightDifference,3,MidpointRounding.AwayFromZero).ToString();
+                    tbMaximumHeightDifference.Text = Math.Round(DeclarationToGoalHeightRule.MaximumHeightDifference, 3, MidpointRounding.AwayFromZero).ToString();
                     rbMaximumHeightDifferenceMeter.Checked = true;
                 }
                 rbGPS.Checked = DeclarationToGoalHeightRule.UseGPSAltitude;
@@ -97,18 +99,17 @@ namespace BalloonTrackAnalyze.ValidationControls
         private void btCreate_Click(object sender, EventArgs e)
         {
             bool isDataValid = true;
-            string functionErrorMessage = "Failed to create/modify declaration to goal height rule: ";
             double minimumHeightDifference = double.NaN;
             if (!string.IsNullOrWhiteSpace(tbMinimumHeightDifference.Text))
             {
                 if (!double.TryParse(tbMinimumHeightDifference.Text, out minimumHeightDifference))
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Min. Height Diff. '{tbMinimumHeightDifference.Text}' as double");
+                    Logger?.LogError("Failed to create/modify declaration to goal height rule: failed to parse Min. Height Diff. '{minimumHeightDifference}' as double", tbMinimumHeightDifference.Text);
                     isDataValid = false;
                 }
                 if (minimumHeightDifference < 0)
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Min. Height Diff. '{minimumHeightDifference}' must be greater than zero");
+                    Logger?.LogError("Failed to create/modify declaration to goal height rule: Min. Height Diff. must be greater than zero");
                     isDataValid = false;
                 }
 
@@ -121,12 +122,12 @@ namespace BalloonTrackAnalyze.ValidationControls
             {
                 if (!double.TryParse(tbMaximumHeightDifference.Text, out maximumHeightDifference))
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Max. Height Diff. '{tbMaximumHeightDifference.Text}' as double");
+                    Logger?.LogError("Failed to create/modify declaration to goal height rule: failed to parse Max. Height Diff. '{tbMaximumHeightDifference.Text}' as double", tbMaximumHeightDifference.Text);
                     isDataValid = false;
                 }
                 if (maximumHeightDifference < 0)
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Max. Height Diff. '{maximumHeightDifference}' must be greater than zero");
+                    Logger?.LogError("Failed to create/modify declaration to goal height rule: Max. Height Diff. must be greater than zero");
                     isDataValid = false;
                 }
 
@@ -138,7 +139,7 @@ namespace BalloonTrackAnalyze.ValidationControls
             {
                 if (minimumHeightDifference >= maximumHeightDifference)
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Min. Height Diff. '{minimumHeightDifference}[m]' must be smaller than Max. Height Diff. '{maximumHeightDifference}[m]'");
+                    Logger?.LogError("Failed to create/modify declaration to goal height rule: Min. Height Diff. '{minimumHeightDifference}[m]' must be smaller than Max. Height Diff. '{maximumHeightDifference}[m]'", minimumHeightDifference, maximumHeightDifference);
                     isDataValid = false;
                 }
             }
@@ -147,7 +148,7 @@ namespace BalloonTrackAnalyze.ValidationControls
             if (isDataValid)
             {
                 DeclarationToGoalHeightRule ??= new DeclarationToGoalHeightRule();
-                DeclarationToGoalHeightRule.SetupRule(minimumHeightDifference,maximumHeightDifference,DeclarationToGoalHeightRule.HeightDifferenceType.AbsoluteDifference,useGPSAltitude);
+                DeclarationToGoalHeightRule.SetupRule(minimumHeightDifference, maximumHeightDifference, DeclarationToGoalHeightRule.HeightDifferenceType.AbsoluteDifference, useGPSAltitude);
                 tbMinimumHeightDifference.Text = "";
                 tbMaximumHeightDifference.Text = "";
                 OnDataValid();
@@ -160,16 +161,6 @@ namespace BalloonTrackAnalyze.ValidationControls
         protected virtual void OnDataValid()
         {
             DataValid?.Invoke();
-        }
-
-        /// <summary>
-        /// Logs a user message
-        /// </summary>
-        /// <param name="logSeverity">the severity of the message</param>
-        /// <param name="text">the message text</param>
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
         }
         #endregion
     }

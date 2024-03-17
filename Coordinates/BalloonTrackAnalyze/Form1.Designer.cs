@@ -28,395 +28,390 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.logListView1 = new LoggerComponent.LogListView();
-            this.cbTaskList = new System.Windows.Forms.ComboBox();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.plUserControl = new System.Windows.Forms.Panel();
-            this.btCalculateResults = new System.Windows.Forms.Button();
-            this.btDeleteTask = new System.Windows.Forms.Button();
-            this.btImportTask = new System.Windows.Forms.Button();
-            this.lbTaskList = new System.Windows.Forms.ListBox();
-            this.tbFlightNumber = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.label5 = new System.Windows.Forms.Label();
-            this.panel2 = new System.Windows.Forms.Panel();
-            this.rbBarometricAltitude = new System.Windows.Forms.RadioButton();
-            this.rbGPSAltitude = new System.Windows.Forms.RadioButton();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.rbFAILogger = new System.Windows.Forms.RadioButton();
-            this.rbBalloonLive = new System.Windows.Forms.RadioButton();
-            this.label4 = new System.Windows.Forms.Label();
-            this.btSaveCompetitionSettings = new System.Windows.Forms.Button();
-            this.btSelectPilotMappingFile = new System.Windows.Forms.Button();
-            this.btSelectCompetitionFolder = new System.Windows.Forms.Button();
-            this.tbPilotMappingFile = new System.Windows.Forms.TextBox();
-            this.tbCompetitionFolder = new System.Windows.Forms.TextBox();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
-            this.panel2.SuspendLayout();
-            this.panel1.SuspendLayout();
-            this.SuspendLayout();
-            // 
-            // logListView1
-            // 
-            this.logListView1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.logListView1.Location = new System.Drawing.Point(0, 651);
-            this.logListView1.Margin = new System.Windows.Forms.Padding(5, 4, 5, 4);
-            this.logListView1.Name = "logListView1";
-            this.logListView1.Size = new System.Drawing.Size(1319, 193);
-            this.logListView1.TabIndex = 0;
+            cbTaskList = new System.Windows.Forms.ComboBox();
+            tabControl1 = new System.Windows.Forms.TabControl();
+            tabPage1 = new System.Windows.Forms.TabPage();
+            plUserControl = new System.Windows.Forms.Panel();
+            btCalculateResults = new System.Windows.Forms.Button();
+            btDeleteTask = new System.Windows.Forms.Button();
+            btImportTask = new System.Windows.Forms.Button();
+            lbTaskList = new System.Windows.Forms.ListBox();
+            tbFlightNumber = new System.Windows.Forms.TextBox();
+            label3 = new System.Windows.Forms.Label();
+            tabPage2 = new System.Windows.Forms.TabPage();
+            label5 = new System.Windows.Forms.Label();
+            panel2 = new System.Windows.Forms.Panel();
+            rbBarometricAltitude = new System.Windows.Forms.RadioButton();
+            rbGPSAltitude = new System.Windows.Forms.RadioButton();
+            panel1 = new System.Windows.Forms.Panel();
+            rbFAILogger = new System.Windows.Forms.RadioButton();
+            rbBalloonLive = new System.Windows.Forms.RadioButton();
+            label4 = new System.Windows.Forms.Label();
+            btSaveCompetitionSettings = new System.Windows.Forms.Button();
+            btSelectPilotMappingFile = new System.Windows.Forms.Button();
+            btSelectCompetitionFolder = new System.Windows.Forms.Button();
+            tbPilotMappingFile = new System.Windows.Forms.TextBox();
+            tbCompetitionFolder = new System.Windows.Forms.TextBox();
+            label2 = new System.Windows.Forms.Label();
+            label1 = new System.Windows.Forms.Label();
+            folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
+            openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            winFormsLogList1 = new WinFormsLoggerControl.WinFormsLogList();
+            tabControl1.SuspendLayout();
+            tabPage1.SuspendLayout();
+            tabPage2.SuspendLayout();
+            panel2.SuspendLayout();
+            panel1.SuspendLayout();
+            SuspendLayout();
             // 
             // cbTaskList
             // 
-            this.cbTaskList.BackColor = System.Drawing.SystemColors.Control;
-            this.cbTaskList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbTaskList.FormattingEnabled = true;
-            this.cbTaskList.Items.AddRange(new object[] {
-            "",
-            "Donut",
-            "Pie",
-            "Landrun",
-            "Elbow"});
-            this.cbTaskList.Location = new System.Drawing.Point(11, 195);
-            this.cbTaskList.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.cbTaskList.Name = "cbTaskList";
-            this.cbTaskList.Size = new System.Drawing.Size(175, 28);
-            this.cbTaskList.TabIndex = 2;
-            this.cbTaskList.SelectedIndexChanged += new System.EventHandler(this.cbTaskList_SelectedIndexChanged);
+            cbTaskList.BackColor = System.Drawing.SystemColors.Control;
+            cbTaskList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            cbTaskList.FormattingEnabled = true;
+            cbTaskList.Items.AddRange(new object[] { "", "Donut", "Pie", "Landrun", "Elbow" });
+            cbTaskList.Location = new System.Drawing.Point(14, 244);
+            cbTaskList.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            cbTaskList.Name = "cbTaskList";
+            cbTaskList.Size = new System.Drawing.Size(218, 33);
+            cbTaskList.TabIndex = 2;
+            cbTaskList.SelectedIndexChanged += cbTaskList_SelectedIndexChanged;
             // 
             // tabControl1
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabControl1.Location = new System.Drawing.Point(0, 0);
-            this.tabControl1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(1319, 651);
-            this.tabControl1.TabIndex = 2;
+            tabControl1.Controls.Add(tabPage1);
+            tabControl1.Controls.Add(tabPage2);
+            tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            tabControl1.Location = new System.Drawing.Point(0, 0);
+            tabControl1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            tabControl1.Name = "tabControl1";
+            tabControl1.SelectedIndex = 0;
+            tabControl1.Size = new System.Drawing.Size(1649, 1055);
+            tabControl1.TabIndex = 2;
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.plUserControl);
-            this.tabPage1.Controls.Add(this.btCalculateResults);
-            this.tabPage1.Controls.Add(this.btDeleteTask);
-            this.tabPage1.Controls.Add(this.btImportTask);
-            this.tabPage1.Controls.Add(this.lbTaskList);
-            this.tabPage1.Controls.Add(this.tbFlightNumber);
-            this.tabPage1.Controls.Add(this.label3);
-            this.tabPage1.Controls.Add(this.cbTaskList);
-            this.tabPage1.Location = new System.Drawing.Point(4, 29);
-            this.tabPage1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.tabPage1.Size = new System.Drawing.Size(1311, 618);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Flight";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            tabPage1.Controls.Add(plUserControl);
+            tabPage1.Controls.Add(btCalculateResults);
+            tabPage1.Controls.Add(btDeleteTask);
+            tabPage1.Controls.Add(btImportTask);
+            tabPage1.Controls.Add(lbTaskList);
+            tabPage1.Controls.Add(tbFlightNumber);
+            tabPage1.Controls.Add(label3);
+            tabPage1.Controls.Add(cbTaskList);
+            tabPage1.Location = new System.Drawing.Point(4, 34);
+            tabPage1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            tabPage1.Name = "tabPage1";
+            tabPage1.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            tabPage1.Size = new System.Drawing.Size(1641, 1017);
+            tabPage1.TabIndex = 0;
+            tabPage1.Text = "Flight";
+            tabPage1.UseVisualStyleBackColor = true;
             // 
             // plUserControl
             // 
-            this.plUserControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.plUserControl.AutoScroll = true;
-            this.plUserControl.Location = new System.Drawing.Point(0, 233);
-            this.plUserControl.Name = "plUserControl";
-            this.plUserControl.Size = new System.Drawing.Size(1315, 379);
-            this.plUserControl.TabIndex = 7;
+            plUserControl.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            plUserControl.AutoScroll = true;
+            plUserControl.Location = new System.Drawing.Point(0, 291);
+            plUserControl.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            plUserControl.Name = "plUserControl";
+            plUserControl.Size = new System.Drawing.Size(1644, 715);
+            plUserControl.TabIndex = 7;
             // 
             // btCalculateResults
             // 
-            this.btCalculateResults.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.btCalculateResults.Location = new System.Drawing.Point(829, 9);
-            this.btCalculateResults.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.btCalculateResults.Name = "btCalculateResults";
-            this.btCalculateResults.Size = new System.Drawing.Size(163, 51);
-            this.btCalculateResults.TabIndex = 6;
-            this.btCalculateResults.Text = "Calculate Results";
-            this.btCalculateResults.UseVisualStyleBackColor = true;
-            this.btCalculateResults.Click += new System.EventHandler(this.btCalculateResults_Click);
+            btCalculateResults.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Bold);
+            btCalculateResults.Location = new System.Drawing.Point(1036, 11);
+            btCalculateResults.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            btCalculateResults.Name = "btCalculateResults";
+            btCalculateResults.Size = new System.Drawing.Size(204, 64);
+            btCalculateResults.TabIndex = 6;
+            btCalculateResults.Text = "Calculate Results";
+            btCalculateResults.UseVisualStyleBackColor = true;
+            btCalculateResults.Click += btCalculateResults_Click;
             // 
             // btDeleteTask
             // 
-            this.btDeleteTask.Location = new System.Drawing.Point(315, 195);
-            this.btDeleteTask.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.btDeleteTask.Name = "btDeleteTask";
-            this.btDeleteTask.Size = new System.Drawing.Size(114, 31);
-            this.btDeleteTask.TabIndex = 5;
-            this.btDeleteTask.Text = "Delete Task";
-            this.btDeleteTask.UseVisualStyleBackColor = true;
-            this.btDeleteTask.Click += new System.EventHandler(this.btDeleteTask_Click);
+            btDeleteTask.Location = new System.Drawing.Point(394, 244);
+            btDeleteTask.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            btDeleteTask.Name = "btDeleteTask";
+            btDeleteTask.Size = new System.Drawing.Size(142, 39);
+            btDeleteTask.TabIndex = 5;
+            btDeleteTask.Text = "Delete Task";
+            btDeleteTask.UseVisualStyleBackColor = true;
+            btDeleteTask.Click += btDeleteTask_Click;
             // 
             // btImportTask
             // 
-            this.btImportTask.Location = new System.Drawing.Point(194, 195);
-            this.btImportTask.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.btImportTask.Name = "btImportTask";
-            this.btImportTask.Size = new System.Drawing.Size(114, 31);
-            this.btImportTask.TabIndex = 4;
-            this.btImportTask.Text = "Import Task";
-            this.btImportTask.UseVisualStyleBackColor = true;
-            this.btImportTask.Click += new System.EventHandler(this.btImportTask_Click);
+            btImportTask.Location = new System.Drawing.Point(242, 244);
+            btImportTask.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            btImportTask.Name = "btImportTask";
+            btImportTask.Size = new System.Drawing.Size(142, 39);
+            btImportTask.TabIndex = 4;
+            btImportTask.Text = "Import Task";
+            btImportTask.UseVisualStyleBackColor = true;
+            btImportTask.Click += btImportTask_Click;
             // 
             // lbTaskList
             // 
-            this.lbTaskList.FormattingEnabled = true;
-            this.lbTaskList.ItemHeight = 20;
-            this.lbTaskList.Location = new System.Drawing.Point(11, 61);
-            this.lbTaskList.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.lbTaskList.Name = "lbTaskList";
-            this.lbTaskList.Size = new System.Drawing.Size(418, 124);
-            this.lbTaskList.TabIndex = 3;
-            this.lbTaskList.SelectedIndexChanged += new System.EventHandler(this.lbTaskList_SelectedIndexChanged);
+            lbTaskList.FormattingEnabled = true;
+            lbTaskList.ItemHeight = 25;
+            lbTaskList.Location = new System.Drawing.Point(14, 76);
+            lbTaskList.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            lbTaskList.Name = "lbTaskList";
+            lbTaskList.Size = new System.Drawing.Size(522, 154);
+            lbTaskList.TabIndex = 3;
+            lbTaskList.SelectedIndexChanged += lbTaskList_SelectedIndexChanged;
             // 
             // tbFlightNumber
             // 
-            this.tbFlightNumber.Location = new System.Drawing.Point(86, 23);
-            this.tbFlightNumber.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.tbFlightNumber.Name = "tbFlightNumber";
-            this.tbFlightNumber.Size = new System.Drawing.Size(95, 27);
-            this.tbFlightNumber.TabIndex = 1;
-            this.tbFlightNumber.Leave += new System.EventHandler(this.tbFlightNumber_Leave);
+            tbFlightNumber.Location = new System.Drawing.Point(108, 29);
+            tbFlightNumber.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            tbFlightNumber.Name = "tbFlightNumber";
+            tbFlightNumber.Size = new System.Drawing.Size(118, 31);
+            tbFlightNumber.TabIndex = 1;
+            tbFlightNumber.Leave += tbFlightNumber_Leave;
             // 
             // label3
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(11, 27);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(73, 20);
-            this.label3.TabIndex = 2;
-            this.label3.Text = "Flight No.";
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(14, 34);
+            label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(89, 25);
+            label3.TabIndex = 2;
+            label3.Text = "Flight No.";
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.label5);
-            this.tabPage2.Controls.Add(this.panel2);
-            this.tabPage2.Controls.Add(this.panel1);
-            this.tabPage2.Controls.Add(this.label4);
-            this.tabPage2.Controls.Add(this.btSaveCompetitionSettings);
-            this.tabPage2.Controls.Add(this.btSelectPilotMappingFile);
-            this.tabPage2.Controls.Add(this.btSelectCompetitionFolder);
-            this.tabPage2.Controls.Add(this.tbPilotMappingFile);
-            this.tabPage2.Controls.Add(this.tbCompetitionFolder);
-            this.tabPage2.Controls.Add(this.label2);
-            this.tabPage2.Controls.Add(this.label1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 29);
-            this.tabPage2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.tabPage2.Size = new System.Drawing.Size(1311, 618);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Competition";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            tabPage2.Controls.Add(label5);
+            tabPage2.Controls.Add(panel2);
+            tabPage2.Controls.Add(panel1);
+            tabPage2.Controls.Add(label4);
+            tabPage2.Controls.Add(btSaveCompetitionSettings);
+            tabPage2.Controls.Add(btSelectPilotMappingFile);
+            tabPage2.Controls.Add(btSelectCompetitionFolder);
+            tabPage2.Controls.Add(tbPilotMappingFile);
+            tabPage2.Controls.Add(tbCompetitionFolder);
+            tabPage2.Controls.Add(label2);
+            tabPage2.Controls.Add(label1);
+            tabPage2.Location = new System.Drawing.Point(4, 34);
+            tabPage2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            tabPage2.Name = "tabPage2";
+            tabPage2.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            tabPage2.Size = new System.Drawing.Size(1641, 776);
+            tabPage2.TabIndex = 1;
+            tabPage2.Text = "Competition";
+            tabPage2.UseVisualStyleBackColor = true;
             // 
             // label5
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(11, 143);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(103, 20);
-            this.label5.TabIndex = 0;
-            this.label5.Text = "Height Source";
+            label5.AutoSize = true;
+            label5.Location = new System.Drawing.Point(14, 179);
+            label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label5.Name = "label5";
+            label5.Size = new System.Drawing.Size(124, 25);
+            label5.TabIndex = 0;
+            label5.Text = "Height Source";
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.rbBarometricAltitude);
-            this.panel2.Controls.Add(this.rbGPSAltitude);
-            this.panel2.Location = new System.Drawing.Point(153, 137);
-            this.panel2.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(221, 29);
-            this.panel2.TabIndex = 6;
+            panel2.Controls.Add(rbBarometricAltitude);
+            panel2.Controls.Add(rbGPSAltitude);
+            panel2.Location = new System.Drawing.Point(191, 171);
+            panel2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            panel2.Name = "panel2";
+            panel2.Size = new System.Drawing.Size(276, 36);
+            panel2.TabIndex = 6;
             // 
             // rbBarometricAltitude
             // 
-            this.rbBarometricAltitude.AutoSize = true;
-            this.rbBarometricAltitude.Location = new System.Drawing.Point(59, 0);
-            this.rbBarometricAltitude.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.rbBarometricAltitude.Name = "rbBarometricAltitude";
-            this.rbBarometricAltitude.Size = new System.Drawing.Size(103, 24);
-            this.rbBarometricAltitude.TabIndex = 7;
-            this.rbBarometricAltitude.TabStop = true;
-            this.rbBarometricAltitude.Text = "Barometric";
-            this.rbBarometricAltitude.UseVisualStyleBackColor = true;
+            rbBarometricAltitude.AutoSize = true;
+            rbBarometricAltitude.Location = new System.Drawing.Point(74, 0);
+            rbBarometricAltitude.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            rbBarometricAltitude.Name = "rbBarometricAltitude";
+            rbBarometricAltitude.Size = new System.Drawing.Size(122, 29);
+            rbBarometricAltitude.TabIndex = 7;
+            rbBarometricAltitude.TabStop = true;
+            rbBarometricAltitude.Text = "Barometric";
+            rbBarometricAltitude.UseVisualStyleBackColor = true;
             // 
             // rbGPSAltitude
             // 
-            this.rbGPSAltitude.AutoSize = true;
-            this.rbGPSAltitude.Checked = true;
-            this.rbGPSAltitude.Location = new System.Drawing.Point(0, 0);
-            this.rbGPSAltitude.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.rbGPSAltitude.Name = "rbGPSAltitude";
-            this.rbGPSAltitude.Size = new System.Drawing.Size(56, 24);
-            this.rbGPSAltitude.TabIndex = 0;
-            this.rbGPSAltitude.TabStop = true;
-            this.rbGPSAltitude.Text = "GPS";
-            this.rbGPSAltitude.UseVisualStyleBackColor = true;
+            rbGPSAltitude.AutoSize = true;
+            rbGPSAltitude.Checked = true;
+            rbGPSAltitude.Location = new System.Drawing.Point(0, 0);
+            rbGPSAltitude.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            rbGPSAltitude.Name = "rbGPSAltitude";
+            rbGPSAltitude.Size = new System.Drawing.Size(69, 29);
+            rbGPSAltitude.TabIndex = 0;
+            rbGPSAltitude.TabStop = true;
+            rbGPSAltitude.Text = "GPS";
+            rbGPSAltitude.UseVisualStyleBackColor = true;
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.rbFAILogger);
-            this.panel1.Controls.Add(this.rbBalloonLive);
-            this.panel1.Location = new System.Drawing.Point(152, 100);
-            this.panel1.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(222, 29);
-            this.panel1.TabIndex = 5;
+            panel1.Controls.Add(rbFAILogger);
+            panel1.Controls.Add(rbBalloonLive);
+            panel1.Location = new System.Drawing.Point(190, 125);
+            panel1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            panel1.Name = "panel1";
+            panel1.Size = new System.Drawing.Size(278, 36);
+            panel1.TabIndex = 5;
             // 
             // rbFAILogger
             // 
-            this.rbFAILogger.AutoSize = true;
-            this.rbFAILogger.Location = new System.Drawing.Point(109, 0);
-            this.rbFAILogger.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.rbFAILogger.Name = "rbFAILogger";
-            this.rbFAILogger.Size = new System.Drawing.Size(101, 24);
-            this.rbFAILogger.TabIndex = 1;
-            this.rbFAILogger.TabStop = true;
-            this.rbFAILogger.Text = "FAI Logger";
-            this.rbFAILogger.UseVisualStyleBackColor = true;
+            rbFAILogger.AutoSize = true;
+            rbFAILogger.Location = new System.Drawing.Point(136, 0);
+            rbFAILogger.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            rbFAILogger.Name = "rbFAILogger";
+            rbFAILogger.Size = new System.Drawing.Size(123, 29);
+            rbFAILogger.TabIndex = 1;
+            rbFAILogger.TabStop = true;
+            rbFAILogger.Text = "FAI Logger";
+            rbFAILogger.UseVisualStyleBackColor = true;
             // 
             // rbBalloonLive
             // 
-            this.rbBalloonLive.AutoSize = true;
-            this.rbBalloonLive.Checked = true;
-            this.rbBalloonLive.Location = new System.Drawing.Point(0, 0);
-            this.rbBalloonLive.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.rbBalloonLive.Name = "rbBalloonLive";
-            this.rbBalloonLive.Size = new System.Drawing.Size(111, 24);
-            this.rbBalloonLive.TabIndex = 0;
-            this.rbBalloonLive.TabStop = true;
-            this.rbBalloonLive.Text = "Balloon Live";
-            this.rbBalloonLive.UseVisualStyleBackColor = true;
+            rbBalloonLive.AutoSize = true;
+            rbBalloonLive.Checked = true;
+            rbBalloonLive.Location = new System.Drawing.Point(0, 0);
+            rbBalloonLive.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            rbBalloonLive.Name = "rbBalloonLive";
+            rbBalloonLive.Size = new System.Drawing.Size(131, 29);
+            rbBalloonLive.TabIndex = 0;
+            rbBalloonLive.TabStop = true;
+            rbBalloonLive.Text = "Balloon Live";
+            rbBalloonLive.UseVisualStyleBackColor = true;
             // 
             // label4
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(11, 103);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(92, 20);
-            this.label4.TabIndex = 0;
-            this.label4.Text = "Track Source";
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(14, 129);
+            label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(110, 25);
+            label4.TabIndex = 0;
+            label4.Text = "Track Source";
             // 
             // btSaveCompetitionSettings
             // 
-            this.btSaveCompetitionSettings.Location = new System.Drawing.Point(11, 175);
-            this.btSaveCompetitionSettings.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.btSaveCompetitionSettings.Name = "btSaveCompetitionSettings";
-            this.btSaveCompetitionSettings.Size = new System.Drawing.Size(232, 43);
-            this.btSaveCompetitionSettings.TabIndex = 7;
-            this.btSaveCompetitionSettings.Text = "Save Competition Settings";
-            this.btSaveCompetitionSettings.UseVisualStyleBackColor = true;
-            this.btSaveCompetitionSettings.Click += new System.EventHandler(this.btSaveCompetitionSettings_Click);
+            btSaveCompetitionSettings.Location = new System.Drawing.Point(14, 219);
+            btSaveCompetitionSettings.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            btSaveCompetitionSettings.Name = "btSaveCompetitionSettings";
+            btSaveCompetitionSettings.Size = new System.Drawing.Size(290, 54);
+            btSaveCompetitionSettings.TabIndex = 7;
+            btSaveCompetitionSettings.Text = "Save Competition Settings";
+            btSaveCompetitionSettings.UseVisualStyleBackColor = true;
+            btSaveCompetitionSettings.Click += btSaveCompetitionSettings_Click;
             // 
             // btSelectPilotMappingFile
             // 
-            this.btSelectPilotMappingFile.Location = new System.Drawing.Point(1186, 60);
-            this.btSelectPilotMappingFile.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.btSelectPilotMappingFile.Name = "btSelectPilotMappingFile";
-            this.btSelectPilotMappingFile.Size = new System.Drawing.Size(101, 31);
-            this.btSelectPilotMappingFile.TabIndex = 4;
-            this.btSelectPilotMappingFile.Text = "Select File";
-            this.btSelectPilotMappingFile.UseVisualStyleBackColor = true;
-            this.btSelectPilotMappingFile.Click += new System.EventHandler(this.btSelectPilotMappingFile_Click);
+            btSelectPilotMappingFile.Location = new System.Drawing.Point(1482, 75);
+            btSelectPilotMappingFile.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            btSelectPilotMappingFile.Name = "btSelectPilotMappingFile";
+            btSelectPilotMappingFile.Size = new System.Drawing.Size(126, 39);
+            btSelectPilotMappingFile.TabIndex = 4;
+            btSelectPilotMappingFile.Text = "Select File";
+            btSelectPilotMappingFile.UseVisualStyleBackColor = true;
+            btSelectPilotMappingFile.Click += btSelectPilotMappingFile_Click;
             // 
             // btSelectCompetitionFolder
             // 
-            this.btSelectCompetitionFolder.Location = new System.Drawing.Point(1186, 21);
-            this.btSelectCompetitionFolder.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.btSelectCompetitionFolder.Name = "btSelectCompetitionFolder";
-            this.btSelectCompetitionFolder.Size = new System.Drawing.Size(101, 31);
-            this.btSelectCompetitionFolder.TabIndex = 2;
-            this.btSelectCompetitionFolder.Text = "Select Folder";
-            this.btSelectCompetitionFolder.UseVisualStyleBackColor = true;
-            this.btSelectCompetitionFolder.Click += new System.EventHandler(this.btSelectCompetitionFolder_Click);
+            btSelectCompetitionFolder.Location = new System.Drawing.Point(1482, 26);
+            btSelectCompetitionFolder.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            btSelectCompetitionFolder.Name = "btSelectCompetitionFolder";
+            btSelectCompetitionFolder.Size = new System.Drawing.Size(126, 39);
+            btSelectCompetitionFolder.TabIndex = 2;
+            btSelectCompetitionFolder.Text = "Select Folder";
+            btSelectCompetitionFolder.UseVisualStyleBackColor = true;
+            btSelectCompetitionFolder.Click += btSelectCompetitionFolder_Click;
             // 
             // tbPilotMappingFile
             // 
-            this.tbPilotMappingFile.Location = new System.Drawing.Point(164, 61);
-            this.tbPilotMappingFile.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.tbPilotMappingFile.Name = "tbPilotMappingFile";
-            this.tbPilotMappingFile.PlaceholderText = "Select a the mapping file. Expected format PilotNo, First Name, Last Name, Pilot " +
-    "identifier (, and ; supported as separator)";
-            this.tbPilotMappingFile.Size = new System.Drawing.Size(1015, 27);
-            this.tbPilotMappingFile.TabIndex = 3;
+            tbPilotMappingFile.Location = new System.Drawing.Point(205, 76);
+            tbPilotMappingFile.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            tbPilotMappingFile.Name = "tbPilotMappingFile";
+            tbPilotMappingFile.PlaceholderText = "Select a the mapping file. Expected format PilotNo, First Name, Last Name, Pilot identifier (, and ; supported as separator)";
+            tbPilotMappingFile.Size = new System.Drawing.Size(1268, 31);
+            tbPilotMappingFile.TabIndex = 3;
             // 
             // tbCompetitionFolder
             // 
-            this.tbCompetitionFolder.Location = new System.Drawing.Point(164, 23);
-            this.tbCompetitionFolder.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.tbCompetitionFolder.Name = "tbCompetitionFolder";
-            this.tbCompetitionFolder.PlaceholderText = "Select the folder in which the tool with search for tracks and saves results";
-            this.tbCompetitionFolder.Size = new System.Drawing.Size(1015, 27);
-            this.tbCompetitionFolder.TabIndex = 1;
+            tbCompetitionFolder.Location = new System.Drawing.Point(205, 29);
+            tbCompetitionFolder.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            tbCompetitionFolder.Name = "tbCompetitionFolder";
+            tbCompetitionFolder.PlaceholderText = "Select the folder in which the tool with search for tracks and saves results";
+            tbCompetitionFolder.Size = new System.Drawing.Size(1268, 31);
+            tbCompetitionFolder.TabIndex = 1;
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(11, 65);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(147, 20);
-            this.label2.TabIndex = 0;
-            this.label2.Text = "Pilot Name Mapping";
+            label2.AutoSize = true;
+            label2.Location = new System.Drawing.Point(14, 81);
+            label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label2.Name = "label2";
+            label2.Size = new System.Drawing.Size(176, 25);
+            label2.TabIndex = 0;
+            label2.Text = "Pilot Name Mapping";
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(11, 27);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(138, 20);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Competition Folder";
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(14, 34);
+            label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(166, 25);
+            label1.TabIndex = 0;
+            label1.Text = "Competition Folder";
             // 
             // folderBrowserDialog1
             // 
-            this.folderBrowserDialog1.Description = "Select Competition Folder";
+            folderBrowserDialog1.Description = "Select Competition Folder";
             // 
             // openFileDialog1
             // 
-            this.openFileDialog1.DefaultExt = "csv";
-            this.openFileDialog1.FileName = "openFileDialog1";
-            this.openFileDialog1.Filter = "csv files (*.csv)|*.csv";
-            this.openFileDialog1.RestoreDirectory = true;
-            this.openFileDialog1.Title = "Select Pilot Name Mapping File";
+            openFileDialog1.DefaultExt = "csv";
+            openFileDialog1.FileName = "openFileDialog1";
+            openFileDialog1.Filter = "csv files (*.csv)|*.csv";
+            openFileDialog1.RestoreDirectory = true;
+            openFileDialog1.Title = "Select Pilot Name Mapping File";
+            // 
+            // winFormsLogList1
+            // 
+            winFormsLogList1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            winFormsLogList1.Location = new System.Drawing.Point(0, 855);
+            winFormsLogList1.Name = "winFormsLogList1";
+            winFormsLogList1.Size = new System.Drawing.Size(1649, 200);
+            winFormsLogList1.TabIndex = 3;
             // 
             // Form1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1319, 844);
-            this.Controls.Add(this.tabControl1);
-            this.Controls.Add(this.logListView1);
-            this.Margin = new System.Windows.Forms.Padding(3, 4, 3, 4);
-            this.Name = "Form1";
-            this.Text = "Form1";
-            this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Load += new System.EventHandler(this.Form1_Load);
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
-            this.panel2.ResumeLayout(false);
-            this.panel2.PerformLayout();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            BackColor = System.Drawing.Color.White;
+            ClientSize = new System.Drawing.Size(1649, 1055);
+            Controls.Add(winFormsLogList1);
+            Controls.Add(tabControl1);
+            Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            Name = "Form1";
+            Text = "Form1";
+            WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            Load += Form1_Load;
+            tabControl1.ResumeLayout(false);
+            tabPage1.ResumeLayout(false);
+            tabPage1.PerformLayout();
+            tabPage2.ResumeLayout(false);
+            tabPage2.PerformLayout();
+            panel2.ResumeLayout(false);
+            panel2.PerformLayout();
+            panel1.ResumeLayout(false);
+            panel1.PerformLayout();
+            ResumeLayout(false);
         }
 
         #endregion
 
-        private LoggerComponent.LogListView logListView1;
         private System.Windows.Forms.ComboBox cbTaskList;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
@@ -445,5 +440,6 @@
         private System.Windows.Forms.RadioButton rbBarometricAltitude;
         private System.Windows.Forms.RadioButton rbGPSAltitude;
         private System.Windows.Forms.Panel plUserControl;
+        private WinFormsLoggerControl.WinFormsLogList winFormsLogList1;
     }
 }

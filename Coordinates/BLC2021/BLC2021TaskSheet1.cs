@@ -1,15 +1,13 @@
 ﻿using Competition;
 using Coordinates;
-using LoggerComponent;
+using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -18,6 +16,10 @@ namespace BLC2021
     public partial class BLC2021TaskSheet1 : Form
     {
         #region Properties
+
+        private readonly ILogger<BLC2021TaskSheet1> Logger;
+
+        private readonly PilotMapping PilotMapping;
 
         private bool BatchMode
         {
@@ -79,7 +81,7 @@ namespace BLC2021
             get; set;
         } = 1000;
 
-        private readonly string ResultsFileNameInternal= "BLC2021TaskSheet1_Results_Internal.xlsx";
+        private readonly string ResultsFileNameInternal = "BLC2021TaskSheet1_Results_Internal.xlsx";
         private readonly string ResultsFileNameProvisional = "BLC2021TaskSheet1_Results_Provisional.xlsx";
         #endregion
 
@@ -91,7 +93,7 @@ namespace BLC2021
             BatchMode = batchMode;
 
             Text = ToString();
-            
+
         }
 
         #endregion
@@ -102,7 +104,6 @@ namespace BLC2021
 
         private void BLC2021TaskSheet1_Load(object sender, EventArgs e)
         {
-            logListView1.StartLogging();
             if (BatchMode)
                 ConfigureForBatchMode();
             else
@@ -136,7 +137,7 @@ namespace BLC2021
                     }
                     else
                     {
-                        Log(LogSeverityType.Error, "No output directory has been defined, an output directory must be configured to continue");
+                        Logger?.LogError("No output directory has been defined, an output directory must be configured to continue");
                         btSelectIGCFiles.Enabled = false;
                     }
                 }
@@ -295,11 +296,6 @@ namespace BLC2021
                 return $"BLC 2021 Task Sheet 1 (Fiddle Mode) v{typeof(BLC2021TaskSheet1).Assembly.GetName().Version}";
         }
 
-        private void Log(LogSeverityType logSeverity, string logMessage)
-        {
-            Logger.Log(this, logSeverity, logMessage);
-        }
-
         private async void btSelectIGCFiles_Click(object sender, EventArgs e)
         {
             if (BatchMode)
@@ -325,11 +321,11 @@ namespace BLC2021
                     bool success = await ParseFilesAndCalculateResultsAsync(igcFiles, task1, task2);
                     if (success)
                     {
-                        Log(LogSeverityType.Info, "Parsing and result calculation completed");
+                        Logger?.LogInformation("Parsing and result calculation completed");
                     }
                     else
                     {
-                        Log(LogSeverityType.Error, "Failed to parse and calculate results");
+                        Logger?.LogError("Parsing and result calculation failed");
                     }
                 }
                 UseWaitCursor = false;
@@ -347,7 +343,7 @@ namespace BLC2021
                     Track track;
                     if (!Coordinates.Parsers.BalloonLiveParser.ParseFile(openFileDialog.FileName, out track))
                     {
-                        Log(LogSeverityType.Error, $"Failed to parse '{openFileDialog.FileName.Split("\\").Last()}'");
+                        Logger?.LogError("Failed to parse '{fileName}'", Path.GetFileName(openFileDialog.FileName));
                         return;
                     }
                     string changeOfPositionSource;
@@ -364,7 +360,7 @@ namespace BLC2021
                     cbSecondMarkerNumber.Items.Clear();
                     cbThirdMarkerNumber.Items.Clear();
                     cbMarkerTask3.Items.Clear();
-                    foreach (MarkerDrop markerDrop in track.MarkerDrops.OrderBy(x=>x.MarkerNumber))
+                    foreach (MarkerDrop markerDrop in track.MarkerDrops.OrderBy(x => x.MarkerNumber))
                     {
                         cbMarkerTask1.Items.Add(markerDrop.MarkerNumber);
                         cbFristMarkerNumber.Items.Add(markerDrop.MarkerNumber);
@@ -374,7 +370,7 @@ namespace BLC2021
                     }
                     cbGoalTask1.Items.Clear();
                     cbGoalTask3.Items.Clear();
-                    foreach (Declaration declaration in track.Declarations.OrderBy(x => x.GoalNumber).ThenByDescending(x=>x.PositionAtDeclaration.TimeStamp))
+                    foreach (Declaration declaration in track.Declarations.OrderBy(x => x.GoalNumber).ThenByDescending(x => x.PositionAtDeclaration.TimeStamp))
                     {
                         CoordinateSharp.Coordinate tempCoordinate = new CoordinateSharp.Coordinate(declaration.DeclaredGoal.Latitude, declaration.DeclaredGoal.Longitude);
                         cbGoalTask1.Items.Add($"No.{declaration.GoalNumber} {Math.Round(tempCoordinate.UTM.Easting, 0, MidpointRounding.AwayFromZero)} , {Math.Round(tempCoordinate.UTM.Northing, 0, MidpointRounding.AwayFromZero)} / {declaration.DeclaredGoal.AltitudeGPS}");
@@ -411,7 +407,7 @@ namespace BLC2021
             double eastingEast = Math.Round(easting + distanceFromDeclaredGoal, 0, MidpointRounding.AwayFromZero);
             double eastingWest = Math.Round(easting - distanceFromDeclaredGoal, 0, MidpointRounding.AwayFromZero);
 
-            
+
 
             CoordinateSharp.UniversalTransverseMercator utmGoalNorth = new CoordinateSharp.UniversalTransverseMercator($"{latZone}{longZone}", easting, northingNorth);
             CoordinateSharp.Coordinate tempGoal = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmGoalNorth);
@@ -453,7 +449,7 @@ namespace BLC2021
                     {
                         if (!Coordinates.Parsers.BalloonLiveParser.ParseFile(igcFile, out track))
                         {
-                            Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse '{igcFile}'");
+                            Logger?.LogError("Failed to parse files and calculate results: cannot parse '{igcFile}'", igcFile);
                             continue;
                         }
                         string changeOfPositionSource;
@@ -468,23 +464,23 @@ namespace BLC2021
                         double result_Task1;
                         if (!task1.CalculateResults(track, true, out result_Task1))
                         {
-                            Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result at Task 1 for Pilot No {track.Pilot.PilotNumber}");
+                            Logger?.LogError("Failed to parse files and calculate results: cannot calculate result at Task 1 for Pilot No '{pilotNumber}'", track.Pilot.PilotNumber);
                             result_Task1 = double.NaN;
                         }
                         else
                         {
-                            Log(LogSeverityType.Info, $"Calculated result of '{Math.Round(result_Task1,3,MidpointRounding.AwayFromZero)}m' at Task 1 for Pilot No {track.Pilot.PilotNumber}");
+                            Logger?.LogInformation("Calculated result of '{result_Task1}m' at Task 1 for Pilot No '{pilotNumber}'", Math.Round(result_Task1, 3, MidpointRounding.AwayFromZero), track.Pilot.PilotNumber);
                         }
                         task1.Goals.Clear();
                         double result_Task2;
                         if (!task2.CalculateResults(track, true, out result_Task2))
                         {
-                            Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result at Task 2 for Pilot No {track.Pilot.PilotNumber}");
+                            Logger?.LogError("Failed to parse files and calculate results: cannot calculate result at Task 2 for Pilot No '{pilotNumber}'", track.Pilot.PilotNumber);
                             result_Task2 = double.NaN;
                         }
                         else
                         {
-                            Log(LogSeverityType.Info, $"Calculated result of '{Math.Round(result_Task2/1.0e6,3,MidpointRounding.AwayFromZero)}km²' at Task 2 for Pilot No {track.Pilot.PilotNumber}");
+                            Logger?.LogInformation("Calculated result of '{result_Task2}km²' at Task 2 for Pilot No '{pilotNumber}'", Math.Round(result_Task2 / 1.0e6, 3, MidpointRounding.AwayFromZero), track.Pilot.PilotNumber);
                         }
 
                         double result_Task3;
@@ -505,7 +501,7 @@ namespace BLC2021
                         }
                         if (!isValid)
                         {
-                            Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result at Task 3 for Pilot No {track.Pilot.PilotNumber} as no declaration is valid");
+                            Logger?.LogError("Failed to parse files and calculate results: cannot calculate result at Task 3 for Pilot No '{pilotNumber}' as no declaration is valid", track.Pilot.PilotNumber);
                             result_Task3 = double.NaN;
                         }
                         else
@@ -513,15 +509,16 @@ namespace BLC2021
                             MarkerDrop markerDrop = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == Task3_MarkerNumber);
                             if (markerDrop == default)
                             {
-                                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result at Task 3 for Pilot No {track.Pilot.PilotNumber} as no Marker with Maker Number '{Task3_MarkerNumber}' exists");
+                                Logger?.LogError("Failed to parse files and calculate results: cannot calculate result at Task 3 for Pilot No '{pilotNumber}' as no Marker with Maker Number '{Task3_MarkerNumber}' exists", track.Pilot.PilotNumber, Task3_MarkerNumber);
                                 result_Task3 = double.NaN;
                             }
                             else
                             {
                                 double distanceGoalToMarker_Task3 = CoordinateHelpers.Calculate3DDistance(selectedDeclaration.DeclaredGoal, markerDrop.MarkerLocation, true);
-                                result_Task3 =distanceGoalToMarker_Task3 / (distanceDeclarationToGoal_Task3 / 1000.0);
-                                Log(LogSeverityType.Info, $"Task 3 Pilot No {track.Pilot.PilotNumber}: Distance between declaration position and declared goal is '{Math.Round(distanceDeclarationToGoal_Task3, 3, MidpointRounding.AwayFromZero)}m' / Distance goal to marker is '{Math.Round(distanceGoalToMarker_Task3 / 1000.0, 3, MidpointRounding.AwayFromZero)}km'");
-                                Log(LogSeverityType.Info, $"Calculated result of '{Math.Round(result_Task3,6,MidpointRounding.AwayFromZero)}m/km' at Task 3 for Pilot No {track.Pilot.PilotNumber}");
+                                result_Task3 = distanceGoalToMarker_Task3 / (distanceDeclarationToGoal_Task3 / 1000.0);
+
+                                Logger?.LogInformation("Task 3 Pilot No {pilotNumber}: Distance between declaration position and declared goal is '{distanceDeclarationToGoal_Task3}m' / Distance goal to marker is '{distanceGoalToMarker_Task3}km'", track.Pilot.PilotNumber, Math.Round(distanceDeclarationToGoal_Task3, 3, MidpointRounding.AwayFromZero), Math.Round(distanceGoalToMarker_Task3 / 1000.0, 3, MidpointRounding.AwayFromZero));
+                                Logger?.LogInformation("Calculated result of '{result_Task3}m/km' at Task 3 for Pilot No '{pilotNumber}'", Math.Round(result_Task3, 6, MidpointRounding.AwayFromZero), track.Pilot.PilotNumber);
                             }
                         }
 
@@ -560,8 +557,8 @@ namespace BLC2021
                         wsResults.Cells.AutoFitColumns();
                         package.Save();
                     }
-                    Log(LogSeverityType.Info, $"Successfully created or modified internal results file '{resultsFileInternal.Name}'");
-                    FileInfo resultsFileProvisional = new FileInfo(Path.Combine(OutputDirectory.FullName,ResultsFileNameProvisional));
+                    Logger?.LogInformation("Successfully created or modified internal results file '{resultsFile}'", resultsFileInternal.Name);
+                    FileInfo resultsFileProvisional = new FileInfo(Path.Combine(OutputDirectory.FullName, ResultsFileNameProvisional));
                     using (ExcelPackage package = new ExcelPackage(resultsFileProvisional))
                     {
                         ExcelWorksheet wsResults = package.Workbook.Worksheets.FirstOrDefault(x => x.Name == "Results");
@@ -582,9 +579,9 @@ namespace BLC2021
                         {
                             wsResults.Cells[result.pilotNumber + 1, 1].Value = result.pilotIdentifier;
                             wsResults.Cells[result.pilotNumber + 1, 2].Value = result.pilotNumber;
-                            if (!PilotMapping.Instance.GetPilotName(result.pilotNumber, out lastName, out firstName))
+                            if (!PilotMapping.GetPilotName(result.pilotNumber, out lastName, out firstName))
                             {
-                                Log(LogSeverityType.Warning, "Last name and first name of pilot will be omitted");
+                                Logger?.LogWarning("Last name and first name of pilot No '{pilotNumber}' will be omitted", result.pilotNumber);
                             }
                             else
                             {
@@ -602,11 +599,11 @@ namespace BLC2021
                         wsResults.Cells.AutoFitColumns();
                         package.Save();
                     }
-                    Log(LogSeverityType.Info, $"Successfully created or modified provisional results file '{resultsFileProvisional.Name}'");
+                    Logger?.LogInformation("Successfully created or modified provisional results file '{resultsFileProvisional}'",resultsFileProvisional.Name);
                 }
                 catch (Exception ex)
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"{ex.Message}");
+                    Logger?.LogError(ex, "Failed to parse files and calculate results");
                     return false;
                 }
                 return true;
@@ -620,7 +617,7 @@ namespace BLC2021
 
         private void cbGoalTask1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Declaration selectedDeclaration = FiddleTrack.Declarations.OrderBy(x=>x.GoalNumber).ThenByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[cbGoalTask1.SelectedIndex];
+            Declaration selectedDeclaration = FiddleTrack.Declarations.OrderBy(x => x.GoalNumber).ThenByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[cbGoalTask1.SelectedIndex];
             CoordinateSharp.Coordinate tempCoordinate = new CoordinateSharp.Coordinate(selectedDeclaration.DeclaredGoal.Latitude, selectedDeclaration.DeclaredGoal.Longitude);
             tbZoneTask1.Text = $"{tempCoordinate.UTM.LongZone}{tempCoordinate.UTM.LatZone}";
             tbEastingTask1.Text = ((int)(Math.Round(tempCoordinate.UTM.Easting, 0, MidpointRounding.AwayFromZero))).ToString("D6");
@@ -710,7 +707,7 @@ namespace BLC2021
             {
                 foreach (string message in messages)
                 {
-                    Log(LogSeverityType.Error, "Cannot calculate Task 1: " + message);
+                    Logger?.LogError("Cannot calculate Task 1: {message}", message);
                 }
                 MessageBox.Show(string.Join("\r\n", messages));
                 return;
@@ -718,7 +715,7 @@ namespace BLC2021
             CoordinateSharp.UniversalTransverseMercator tempUTM = new CoordinateSharp.UniversalTransverseMercator(gridZone, easting, northing);
             double[] latLong = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoSignedDegree(tempUTM);
             Coordinate coordinate = new Coordinate(latLong[0], latLong[1], altitude, altitude, DateTime.Now);
-            Declaration fiddleDeclaration = new Declaration(Task1_GoalNumber, coordinate, coordinate,true,-1,-1);
+            Declaration fiddleDeclaration = new Declaration(Task1_GoalNumber, coordinate, coordinate, true, -1, -1);
             FiddleTrack.Declarations.Add(fiddleDeclaration);
 
             HesitationWaltzTask task1 = new HesitationWaltzTask();
@@ -727,12 +724,12 @@ namespace BLC2021
             double result;
             if (!task1.CalculateResults(FiddleTrack, true, out result))
             {
-                Log(LogSeverityType.Error, $"Failed to calculate result at Task 1 for Pilot No {FiddleTrack.Pilot.PilotNumber}");
+                Logger?.LogError("Failed to calculate result at Task 1 for Pilot No '{pilotNumber}'", FiddleTrack.Pilot.PilotNumber);
                 return;
             }
             else
             {
-                Log(LogSeverityType.Info, $"Calculated result of '{Math.Round(result,3,MidpointRounding.AwayFromZero)}m' at Task 1 for Pilot No {FiddleTrack.Pilot.PilotNumber}");
+                Logger?.LogError("Calculated result of '{result}m' at Task 1 for Pilot No '{pilotNumber}'", Math.Round(result, 3, MidpointRounding.AwayFromZero), FiddleTrack.Pilot.PilotNumber);
             }
             try
             {
@@ -766,7 +763,7 @@ namespace BLC2021
                     wsResults.Cells.AutoFitColumns();
                     package.Save();
                 }
-                Log(LogSeverityType.Info, $"Successfully created or modified internal results file '{resultsFileInternal.Name}'");
+                Logger?.LogInformation("Successfully created or modified internal results file '{resultsFileInternal}'", resultsFileInternal.Name);
                 FileInfo resultsFileProvisional = new FileInfo(Path.Combine(OutputDirectory.FullName, ResultsFileNameProvisional));
                 using (ExcelPackage package = new ExcelPackage(resultsFileProvisional))
                 {
@@ -786,9 +783,9 @@ namespace BLC2021
                     string lastName;
                     wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 1].Value = FiddleTrack.Pilot.PilotIdentifier;
                     wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 2].Value = FiddleTrack.Pilot.PilotNumber;
-                    if (!PilotMapping.Instance.GetPilotName(FiddleTrack.Pilot.PilotNumber, out lastName, out firstName))
+                    if (!PilotMapping.GetPilotName(FiddleTrack.Pilot.PilotNumber, out lastName, out firstName))
                     {
-                        Log(LogSeverityType.Warning, "Last name and first name of pilot will be omitted");
+                        Logger?.LogWarning("Last name and first name of pilot will be omitted");
                     }
                     else
                     {
@@ -801,11 +798,11 @@ namespace BLC2021
                     wsResults.Cells.AutoFitColumns();
                     package.Save();
                 }
-                Log(LogSeverityType.Info, $"Successfully created or modified provisional results file '{resultsFileProvisional.Name}'");
+                Logger?.LogInformation("Successfully created or modified provisional results file '{resultsFileProvisional}'", resultsFileProvisional.Name);
             }
             catch (Exception ex)
             {
-                Log(LogSeverityType.Error, $"Failed to create or modified results file: {ex.Message}");
+                Logger?.LogError(ex, "Failed to create or modified results file");
                 return;
             }
         }
@@ -845,7 +842,7 @@ namespace BLC2021
             {
                 foreach (string message in messages)
                 {
-                    Log(LogSeverityType.Error, "Cannot calculate Task 2: " + message);
+                    Logger?.LogError("Cannot calculate Task 2: {message}", message);
                 }
                 MessageBox.Show(string.Join("\r\n", messages));
                 return;
@@ -856,17 +853,17 @@ namespace BLC2021
             double result;
             if (!task2.CalculateResults(FiddleTrack, true, out result))
             {
-                Log(LogSeverityType.Error, $"Failed to calculate result at Task 2 for Pilot No {FiddleTrack.Pilot.PilotNumber}");
+                Logger?.LogError("Failed to calculate result at Task 2 for Pilot No '{pilotNumber}'", FiddleTrack.Pilot.PilotNumber);
                 return;
             }
             else
             {
-                Log(LogSeverityType.Info, $"Calculated result of '{Math.Round(result/1.0e6,3,MidpointRounding.AwayFromZero)}km²' at Task 2 for Pilot No {FiddleTrack.Pilot.PilotNumber}");
+                Logger?.LogInformation("Calculated result of '{result}km²' at Task 2 for Pilot No '{pilotNumber}'", Math.Round(result / 1.0e6, 3, MidpointRounding.AwayFromZero), FiddleTrack.Pilot.PilotNumber);
             }
             try
             {
 
-                ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 FileInfo resultsFileInternal = new FileInfo(Path.Combine(OutputDirectory.FullName, ResultsFileNameInternal));
                 using (ExcelPackage package = new ExcelPackage(resultsFileInternal))
                 {
@@ -895,7 +892,7 @@ namespace BLC2021
                     wsResults.Cells.AutoFitColumns();
                     package.Save();
                 }
-                Log(LogSeverityType.Info, $"Successfully created or modified internal results file '{resultsFileInternal.Name}'");
+                Logger?.LogInformation("Successfully created or modified internal results file '{resultsFileInternal}'", resultsFileInternal.Name);
                 FileInfo resultsFileProvisional = new FileInfo(Path.Combine(OutputDirectory.FullName, ResultsFileNameProvisional));
                 using (ExcelPackage package = new ExcelPackage(resultsFileProvisional))
                 {
@@ -915,9 +912,9 @@ namespace BLC2021
                     string lastName;
                     wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 1].Value = FiddleTrack.Pilot.PilotIdentifier;
                     wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 2].Value = FiddleTrack.Pilot.PilotNumber;
-                    if (!PilotMapping.Instance.GetPilotName(FiddleTrack.Pilot.PilotNumber, out lastName, out firstName))
+                    if (!PilotMapping.GetPilotName(FiddleTrack.Pilot.PilotNumber, out lastName, out firstName))
                     {
-                        Log(LogSeverityType.Warning, "Last name and first name of pilot will be omitted");
+                        Logger?.LogWarning("Last name and first name of pilot will be omitted");
                     }
                     else
                     {
@@ -930,11 +927,11 @@ namespace BLC2021
                     wsResults.Cells.AutoFitColumns();
                     package.Save();
                 }
-                Log(LogSeverityType.Info, $"Successfully created or modified provisional results file '{resultsFileProvisional.Name}'");
+                Logger?.LogInformation("Successfully created or modified provisional results file '{resultsFileProvisional}'", resultsFileProvisional.Name);
             }
             catch (Exception ex)
             {
-                Log(LogSeverityType.Error, $"Failed to create or modified results file: {ex.Message}");
+                Logger?.LogError(ex, "Failed to create or modified results file");
                 return;
             }
         }
@@ -1041,7 +1038,7 @@ namespace BLC2021
             {
                 foreach (string message in messages)
                 {
-                    Log(LogSeverityType.Error, "Cannot calculate Task 3: " + message);
+                    Logger?.LogError("Cannot calculate Task 3: {message}", message);
                 }
                 MessageBox.Show(string.Join("\r\n", messages));
                 return;
@@ -1050,20 +1047,20 @@ namespace BLC2021
             double[] latLong = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoSignedDegree(tempUTM);
             Coordinate fiddleDeclaredGoal = new Coordinate(latLong[0], latLong[1], altitude, altitude, DateTime.Now);
             Coordinate positionOfDeclaration = FiddleTrack.Declarations.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).Select(x => x.PositionAtDeclaration).ToList()[cbGoalTask3.SelectedIndex];
-            Declaration fiddleDeclaration = new Declaration(Task3_GoalNumber,  fiddleDeclaredGoal, positionOfDeclaration,true,-1,-1);
+            Declaration fiddleDeclaration = new Declaration(Task3_GoalNumber, fiddleDeclaredGoal, positionOfDeclaration, true, -1, -1);
 
 
             MarkerDrop markerDrop = FiddleTrack.MarkerDrops.First(x => x.MarkerNumber == Task3_MarkerNumber);
             double distanceDeclarationToGoal = CoordinateHelpers.Calculate3DDistance(fiddleDeclaration.DeclaredGoal, markerDrop.MarkerLocation, true);
             double distanceGoalToMarker = CoordinateHelpers.Calculate2DDistanceHavercos(fiddleDeclaration.PositionAtDeclaration, fiddleDeclaration.DeclaredGoal);
             double result = distanceDeclarationToGoal / (distanceGoalToMarker / 1000.0);
-            Log(LogSeverityType.Info, $"Task 3 Pilot No {FiddleTrack.Pilot.PilotNumber}: Distance between declaration position and declared goal is '{Math.Round(distanceDeclarationToGoal, 3, MidpointRounding.AwayFromZero)}m' / Distance goal to marker is '{Math.Round(distanceGoalToMarker / 1000.0, 3, MidpointRounding.AwayFromZero)}km'");
-            Log(LogSeverityType.Info, $"Calculated result of '{result}' at Task 3 for Pilot No {FiddleTrack.Pilot.PilotNumber}");
+            Logger?.LogInformation("Task 3 Pilot No {pilotNumber}: Distance between declaration position and declared goal is '{distanceDeclarationToGoal}m' / Distance goal to marker is '{distanceGoalToMarker}km'", FiddleTrack.Pilot.PilotNumber, Math.Round(distanceDeclarationToGoal, 3, MidpointRounding.AwayFromZero), Math.Round(distanceGoalToMarker / 1000.0, 3, MidpointRounding.AwayFromZero));      
+            Logger?.LogInformation("Calculated result of '{result}m/km' at Task 3 for Pilot No '{pilotNumber}'", Math.Round(result, 3, MidpointRounding.AwayFromZero), FiddleTrack.Pilot.PilotNumber);
             try
             {
 
-                ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-                FileInfo resultsFileInternal = new FileInfo(Path.Combine(OutputDirectory.FullName,ResultsFileNameInternal));
+                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+                FileInfo resultsFileInternal = new FileInfo(Path.Combine(OutputDirectory.FullName, ResultsFileNameInternal));
                 using (ExcelPackage package = new ExcelPackage(resultsFileInternal))
                 {
                     ExcelWorksheet wsResults = package.Workbook.Worksheets.FirstOrDefault(x => x.Name == "Results");
@@ -1091,7 +1088,7 @@ namespace BLC2021
                     wsResults.Cells.AutoFitColumns();
                     package.Save();
                 }
-                Log(LogSeverityType.Info, $"Successfully created or modified results file '{resultsFileInternal.Name}'");
+                Logger?.LogInformation("Successfully created or modified internal results file '{resultsFileInternal}'", resultsFileInternal.Name);
                 FileInfo resultsFileProvisional = new FileInfo(Path.Combine(OutputDirectory.FullName, ResultsFileNameProvisional));
                 using (ExcelPackage package = new ExcelPackage(resultsFileProvisional))
                 {
@@ -1111,9 +1108,9 @@ namespace BLC2021
                     string lastName;
                     wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 1].Value = FiddleTrack.Pilot.PilotIdentifier;
                     wsResults.Cells[FiddleTrack.Pilot.PilotNumber + 1, 2].Value = FiddleTrack.Pilot.PilotNumber;
-                    if (!PilotMapping.Instance.GetPilotName(FiddleTrack.Pilot.PilotNumber, out lastName, out firstName))
+                    if (!PilotMapping.GetPilotName(FiddleTrack.Pilot.PilotNumber, out lastName, out firstName))
                     {
-                        Log(LogSeverityType.Warning, "Last name and first name of pilot will be omitted");
+                        Logger?.LogWarning("Last name and first name of pilot will be omitted");
                     }
                     else
                     {
@@ -1126,11 +1123,11 @@ namespace BLC2021
                     wsResults.Cells.AutoFitColumns();
                     package.Save();
                 }
-                Log(LogSeverityType.Info, $"Successfully created or modified provisional results file '{resultsFileProvisional.Name}'");
+                Logger?.LogInformation("Successfully created or modified provisional results file '{resultsFileProvisional}'", resultsFileProvisional.Name);
             }
             catch (Exception ex)
             {
-                Log(LogSeverityType.Error, $"Failed to create or modified results file: {ex.Message}");
+                Logger?.LogError(ex, "Failed to create or modified results file");
                 return;
             }
         }

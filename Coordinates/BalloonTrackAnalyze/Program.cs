@@ -1,8 +1,13 @@
+using BalloonTrackAnalyze.TaskControls;
+using Competition.Configuration;
+using Coordinates.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Security.Cryptography.X509Certificates;
 using System.Windows.Forms;
+using UILoggingProvider;
 
 namespace BalloonTrackAnalyze
 {
@@ -17,7 +22,25 @@ namespace BalloonTrackAnalyze
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+            var uiLoggerProvider = new UILoggerProvider();
+            var builder = Host.CreateDefaultBuilder()
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddProvider(uiLoggerProvider);
+                })
+                .ConfigureServices((_, services) =>
+                {
+                    services.AddLogging();
+                    services.AddCoordinateServices();
+                    services.AddCompetitionServices();
+                    services.AddSingleton<Form1>();
+                });
+
+            var host = builder.Build();
+            _ = host.Services.GetRequiredService<CoordinatesLoggingConnector>();
+            _ = host.Services.GetRequiredService<CompetitionLoggingConnector>();
+            Application.Run(host.Services.GetRequiredService<Form1>());
         }
     }
 }

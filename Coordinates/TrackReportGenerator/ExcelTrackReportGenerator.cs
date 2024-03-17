@@ -1,28 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Coordinates;
-using LoggerComponent;
+﻿using Coordinates;
+using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing.Chart;
 using OfficeOpenXml.Table;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace TrackReportGenerator
 {
-    public static class ExcelTrackReportGenerator
+    public class ExcelTrackReportGenerator
     {
-        public static bool GenerateTrackReport(string filename, Track track, bool skipCoordinatesWithOutLocation, bool useGPSAltitude, double maxAllowedAltitude)
+        private readonly ILogger<ExcelTrackReportGenerator> Logger;
+
+        public ExcelTrackReportGenerator(ILogger<ExcelTrackReportGenerator> logger)
         {
-            string functionErrorMessage = "Failed to generate track report";
+            Logger = logger;
+        }
+
+        public bool GenerateTrackReport(string filename, Track track, bool skipCoordinatesWithOutLocation, bool useGPSAltitude, double maxAllowedAltitude)
+        {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             int iterator = 0;
             FileInfo fileInfo = new FileInfo(filename);
             if (fileInfo.Exists)
             {
-                Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Info, $"File '{fileInfo.Name}' already exists, a new file name will be generated");
+                Logger?.LogInformation("File '{filename}' already exists, a new file name will be generated", fileInfo.Name);
             }
             bool logNewName = false;
             while (fileInfo.Exists)
@@ -33,25 +37,25 @@ namespace TrackReportGenerator
             }
             if (logNewName)
             {
-                Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Info, $"New file name created by adding '_{iterator}' to create unique file name '{fileInfo.Name}'");
+                Logger?.LogInformation("New file name created by adding '_{iterator}' to create unique file name '{fileInfo.Name}'", iterator, fileInfo.Name);
             }
             using (ExcelPackage package = new ExcelPackage(fileInfo))
             {
 
-                Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Info, $"Start generating track report, the process may require some seconds. Report will be saved in '{fileInfo.Name}'.");
+                Logger?.LogInformation("Start generating track report, the process may require some seconds. Report will be saved in '{fileInfo.Name}'.", fileInfo.Name);
                 ExcelWorksheet wsTrackpoints = package.Workbook.Worksheets.Add("Trackpoints");
                 List<(int easting, int norting)> trackChartPoints;
                 List<(DateTime timestamp, double altitude)> altitudeChartPoints;
                 if (!WriteTrackPoints(wsTrackpoints, track, skipCoordinatesWithOutLocation, useGPSAltitude, out trackChartPoints, out altitudeChartPoints))
                 {
-                    Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, functionErrorMessage);
+                    Logger?.LogError("Failed to generate track report");
                     return false;
                 }
 
                 ExcelWorksheet wsDeclarationsAndMarkerDrops = package.Workbook.Worksheets.Add("Decl. and Markers");
                 if (!WriteDeclaratrionsAndMarkerDrops(wsDeclarationsAndMarkerDrops, track, useGPSAltitude))
                 {
-                    Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, functionErrorMessage);
+                    Logger?.LogError("Failed to generate track report");
                     return false;
                 }
 
@@ -59,14 +63,14 @@ namespace TrackReportGenerator
                 ExcelWorksheet wsCharts = package.Workbook.Worksheets.Add("Charts");
                 if (!CreateCharts(wsCharts, trackChartPoints, altitudeChartPoints))
                 {
-                    Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, functionErrorMessage);
+                    Logger?.LogError("Failed to generate track report");
                     return false;
                 }
 
                 ExcelWorksheet wsIncidents = package.Workbook.Worksheets.Add("Incidents");
                 if (!WriteIncidentsInOrder(wsIncidents, track))
                 {
-                    Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, functionErrorMessage);
+                    Logger?.LogError("Failed to generate track report");
                     return false;
 
                 }
@@ -74,25 +78,25 @@ namespace TrackReportGenerator
                 ExcelWorksheet wsViolations = package.Workbook.Worksheets.Add("Violations");
                 if (!WriteViolations(wsViolations, track, useGPSAltitude, maxAllowedAltitude))
                 {
-                    Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, functionErrorMessage);
+                    Logger?.LogError("Failed to generate track report");
                     return false;
                 }
 
                 package.Save();
-                Logger.Log("TrackReportGenerator", LogSeverityType.Info, $"Successfully generated and saved report at '{fileInfo.FullName}'");
+                Logger?.LogInformation("Successfully generated and saved report at '{fileInfo.FullName}'", fileInfo.FullName);
             }
 
             return true;
         }
 
 
-        private static bool WriteTrackPoints(ExcelWorksheet wsTrackpoints, Track track, bool skipCoordinatesWithOutLocation, bool useGPSAltitude, out List<(int easting, int norting)> trackChartPoints, out List<(DateTime timestamp, double altitude)> altitudeChartPoints)
+        private bool WriteTrackPoints(ExcelWorksheet wsTrackpoints, Track track, bool skipCoordinatesWithOutLocation, bool useGPSAltitude, out List<(int easting, int norting)> trackChartPoints, out List<(DateTime timestamp, double altitude)> altitudeChartPoints)
         {
             trackChartPoints = new List<(int easting, int norting)>();
             altitudeChartPoints = new List<(DateTime timestamp, double altitude)>();
             try
             {
-                Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Info, "Writing track points ...");
+                Logger?.LogInformation("Writing track points ...");
                 wsTrackpoints.Cells[1, 1].Value = "Pilot Number";
                 wsTrackpoints.Cells[1, 2].Value = track.Pilot?.PilotNumber;
                 wsTrackpoints.Cells[2, 1].Value = "Pilot Identifier";
@@ -106,7 +110,9 @@ namespace TrackReportGenerator
                 Coordinate launchPoint;
                 Coordinate landingPoint;
                 if (!TrackHelpers.EstimateLaunchAndLandingTime(track, useGPSAltitude, out launchPoint, out landingPoint))
-                    Logger.Log(LogSeverityType.Error, "Launch or landing point not correctly calculated");
+                {
+                    Logger?.LogError("Launch or landing point not correctly calculated");
+                }
                 wsTrackpoints.Cells[1, 5].Value = "Timestamp";
                 wsTrackpoints.Cells[1, 6].Value = "Long";
                 wsTrackpoints.Cells[1, 7].Value = "Lat";
@@ -222,7 +228,7 @@ namespace TrackReportGenerator
             }
             catch (Exception ex)
             {
-                Logger.Log("TrackReportGenerator", LogSeverityType.Error, $"Failed to write track points: {ex.Message}");
+                Logger.LogError(ex, "Failed to write track points");
                 return false;
             }
 
@@ -230,11 +236,11 @@ namespace TrackReportGenerator
 
         }
 
-        private static bool WriteDeclaratrionsAndMarkerDrops(ExcelWorksheet wsDeclarationsAndMarkerDrops, Track track, bool useGPSAltitude)
+        private bool WriteDeclaratrionsAndMarkerDrops(ExcelWorksheet wsDeclarationsAndMarkerDrops, Track track, bool useGPSAltitude)
         {
             try
             {
-                Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Info, "Writing declarations and marker drops ...");
+                Logger?.LogInformation("Writing declarations and marker drops ...");
                 wsDeclarationsAndMarkerDrops.Cells[1, 1].Value = "Goal No";
                 wsDeclarationsAndMarkerDrops.Cells[1, 2].Value = "Timestamp";
                 wsDeclarationsAndMarkerDrops.Cells[1, 3].Value = "Decl. Long";
@@ -431,7 +437,9 @@ namespace TrackReportGenerator
                 Coordinate launchPoint;
                 Coordinate landingPoint;
                 if (!TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launchPoint, out landingPoint))
-                    Logger.Log(LogSeverityType.Error, "Launch or landing point not correctly calculated");
+                {
+                    Logger?.LogError("Launch or landing point not correctly calculated");
+                }
                 List<(string identifier, double distance)> distance2DLaunchToGoals = TrackHelpers.Calculate2DDistanceBetweenLaunchPointAndGoals(launchPoint, declarations);
                 List<(string identifier, double distance)> distance3DLaunchToGoals = TrackHelpers.Calculate3DDistanceBetweenLaunchPointAndGoals(launchPoint, declarations, useGPSAltitude);
                 wsDeclarationsAndMarkerDrops.Cells[index, 5, index, 7].Merge = true;
@@ -485,18 +493,18 @@ namespace TrackReportGenerator
             }
             catch (Exception ex)
             {
-                Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, $"Failed to write declarations and marker drops: {ex.Message}");
+                Logger?.LogError(ex, "Failed to write declarations and marker drops");
                 return false;
             }
             return true;
         }
 
-        private static bool CreateCharts(ExcelWorksheet wsCharts, List<(int easting, int norting)> trackChartPoints,
+        private bool CreateCharts(ExcelWorksheet wsCharts, List<(int easting, int norting)> trackChartPoints,
         List<(DateTime timestamp, double altitude)> altitudeChartPoints)
         {
             try
             {
-                Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Info, "Create track charts ...");
+                Logger?.LogInformation("Create track charts ...");
                 wsCharts.Cells[1, 1].Value = "Easting";
                 wsCharts.Cells[1, 2].Value = "Northing";
                 wsCharts.Cells[1, 3].Value = "Time";
@@ -530,27 +538,29 @@ namespace TrackReportGenerator
                 }
                 else
                 {
-                    Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, $"Failed to generate charts: track and altitude chart are expected to have the same number of points");
+                    Logger?.LogError("Failed to generate charts: track and altitude chart are expected to have the same number of points");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, $"Failed to generate charts: {ex.Message}");
+                Logger?.LogError(ex, "Failed to generate charts");
                 return false;
             }
             return true;
         }
 
-        private static bool WriteIncidentsInOrder(ExcelWorksheet wsIncidients, Track track)
+        private bool WriteIncidentsInOrder(ExcelWorksheet wsIncidients, Track track)
         {
             try
             {
-                Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Info, "Write incidents in order of occurrence ...");
+                Logger?.LogInformation("Write incidents in order of occurrence ...");
                 Coordinate launchPoint;
                 Coordinate landingPoint;
                 if (!TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launchPoint, out landingPoint))
-                    Logger.Log(LogSeverityType.Error, "Launch or landing point not correctly calculated");
+                {
+                    Logger?.LogError("Launch or landing point not correctly calculated");
+                }
                 List<(DateTime timeStamp, string incident)> incidents = new List<(DateTime timeStamp, string incidient)>();
                 incidents.Add((launchPoint.TimeStamp, "Take Off"));
                 incidents.Add((landingPoint.TimeStamp, "Touch Down"));
@@ -585,17 +595,17 @@ namespace TrackReportGenerator
             }
             catch (Exception ex)
             {
-                Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, $"Failed to write events in order :{ex.Message}");
+                Logger?.LogError(ex, "Failed to write events in order");
                 return false;
             }
             return true;
         }
 
-        private static bool WriteViolations(ExcelWorksheet wsViolations, Track track, bool useGPSAltitude, double maxAllowedAltitude)
+        private bool WriteViolations(ExcelWorksheet wsViolations, Track track, bool useGPSAltitude, double maxAllowedAltitude)
         {
             try
             {
-                Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Info, "List violations ...");
+                Logger?.LogInformation("List violations ...");
                 bool isDangerousFlyingDetected;
                 List<Coordinate> relatedCoordinates;
                 double maxDropRate;
@@ -732,7 +742,7 @@ namespace TrackReportGenerator
             }
             catch (Exception ex)
             {
-                Logger.Log("ExcelTrackReportGenerator", LogSeverityType.Error, $"Failed to list violations :{ex.Message}");
+                Logger?.LogError(ex, "Failed to list violations");
                 return false;
             }
             return true;

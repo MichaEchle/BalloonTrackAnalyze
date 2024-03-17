@@ -1,9 +1,6 @@
 ﻿using Coordinates;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shapes
 {
@@ -19,7 +16,7 @@ namespace Shapes
             int count = 0;
             for (int index = 0; index < track.TrackPoints.Count; index++)
             {
-                if (IsWithin(track.TrackPoints[index],useGPSAltitude))
+                if (IsWithin(track.TrackPoints[index], useGPSAltitude))
                 {
                     count++;
                     pointsWithIn.Last().Add(track.TrackPoints[index]);
@@ -37,12 +34,12 @@ namespace Shapes
                 }
             }
             if (!isReentranceAllowed)
-                distance = CoordinateHelpers.Calculate3DDistanceBetweenPoints(pointsWithIn[0],useGPSAltitude);
+                distance = CoordinateHelpers.Calculate3DDistanceBetweenPoints(pointsWithIn[0], useGPSAltitude);
             else
             {
                 for (int index = 0; index < pointsWithIn.Count; index++)
                 {
-                    distance += CoordinateHelpers.Calculate3DDistanceBetweenPoints(pointsWithIn[index],useGPSAltitude);
+                    distance += CoordinateHelpers.Calculate3DDistanceBetweenPoints(pointsWithIn[index], useGPSAltitude);
                 }
             }
 

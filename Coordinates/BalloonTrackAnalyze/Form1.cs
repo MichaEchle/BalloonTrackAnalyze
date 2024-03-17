@@ -1,21 +1,22 @@
 ﻿using BalloonTrackAnalyze.TaskControls;
 using Competition;
 using Coordinates;
-using LoggerComponent;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.IO;
-using System.Text;
 using System.Windows.Forms;
 
 namespace BalloonTrackAnalyze
 {
     public partial class Form1 : Form
     {
+        private readonly ILogger<Form1> Logger;
+
+        private readonly IServiceProvider ServiceProvider;
+
         private Point TaskControlLocation { get; set; } = new Point(0, 0);
 
         private Flight flight
@@ -23,32 +24,33 @@ namespace BalloonTrackAnalyze
             get; set;
         }
 
-        public Form1()
+        public Form1(IServiceProvider serviceProvider)
         {
             InitializeComponent();
+            ServiceProvider = serviceProvider;
+            Logger = serviceProvider.GetRequiredService<ILogger<Form1>>();
         }
 
 
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            logListView1.StartLogging(@".\logfile.txt", 5);
             if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.CompetitionFolder))
             {
                 tbCompetitionFolder.Text = Properties.Settings.Default.CompetitionFolder;
-                Log(LogSeverityType.Info, $"Loaded Competition Folder '{tbCompetitionFolder.Text}' from settings");
+                Logger?.LogInformation("Loaded Competition Folder '{competitionFolder}' from settings", tbCompetitionFolder.Text);
             }
             if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.PilotNameMappingFile))
             {
                 tbPilotMappingFile.Text = Properties.Settings.Default.PilotNameMappingFile;
-                Log(LogSeverityType.Info, $"Loaded Pilot Name Mapping File '{tbPilotMappingFile.Text}' from settings");
+                Logger?.LogInformation("Loaded Pilot Name Mapping File '{pilotNameMappingFile}' from settings", tbPilotMappingFile.Text);
             }
             rbBalloonLive.Checked = Properties.Settings.Default.UseBalloonLiveParser;
             rbFAILogger.Checked = !Properties.Settings.Default.UseBalloonLiveParser;
-            Log(LogSeverityType.Info, $"Loaded Track Source '{(Properties.Settings.Default.UseBalloonLiveParser ? "Balloon Live" : "FAI Logger")}' from settings");
+            Logger?.LogInformation("Loaded Track Source '{trackSource}' from settings", (Properties.Settings.Default.UseBalloonLiveParser ? "Balloon Live" : "FAI Logger"));
             rbGPSAltitude.Checked = Properties.Settings.Default.UseGPSAltitude;
             rbBarometricAltitude.Checked = !Properties.Settings.Default.UseGPSAltitude;
-            Log(LogSeverityType.Info, $"Loaded Height Source '{(Properties.Settings.Default.UseGPSAltitude ? "GPS" : "Barometric")}' from settings");
+            Logger?.LogInformation("Loaded Height Source '{heightSource}' from settings", (Properties.Settings.Default.UseGPSAltitude ? "GPS" : "Barometric"));
         }
 
         private void cbTaskList_SelectedIndexChanged(object sender, EventArgs e)
@@ -57,7 +59,7 @@ namespace BalloonTrackAnalyze
             {
                 case "Donut":
                     {
-                        DonutControl donutControl = new DonutControl();
+                        DonutControl donutControl = new DonutControl(ServiceProvider.GetRequiredService<ILogger<DonutControl>>(), ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         donutControl.Location = TaskControlLocation;
@@ -69,7 +71,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case "Pie":
                     {
-                        PieControl pieControl = new PieControl();
+                        PieControl pieControl = new PieControl(ServiceProvider.GetRequiredService<ILogger<PieControl>>(),ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         pieControl.Location = TaskControlLocation;
@@ -81,7 +83,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case "Elbow":
                     {
-                        ElbowControl elbowControl = new ElbowControl();
+                        ElbowControl elbowControl = new ElbowControl(ServiceProvider.GetRequiredService<ILogger<ElbowControl>>(), ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         elbowControl.Location = TaskControlLocation;
@@ -93,7 +95,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case "Landrun":
                     {
-                        LandRunControl landrunControl = new LandRunControl();
+                        LandRunControl landrunControl = new LandRunControl(ServiceProvider.GetRequiredService<ILogger<LandRunControl>>(), ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         landrunControl.Location = TaskControlLocation;
@@ -111,11 +113,6 @@ namespace BalloonTrackAnalyze
             }
         }
 
-        private void Log(LogSeverityType logSeverityType, string text)
-        {
-            Logger.Log(this, logSeverityType, text);
-        }
-
         private void LandrunControl_DataValid()
         {
             if (plUserControl.Controls["taskControl"] is LandRunControl landRunControl)
@@ -125,20 +122,20 @@ namespace BalloonTrackAnalyze
                 {
                     if (DoesTaskNumberAlreadyExists(landRun.TaskNumber))
                     {
-                        Log(LogSeverityType.Error, $"Failed to create {landRun}: A task with the number '{landRun.TaskNumber}' already exists");
+                        Logger?.LogError("Failed to create {landRun}: A task with the number '{landRun.TaskNumber}' already exists");
                     }
                     else
                     {
                         if (!lbTaskList.Items.Contains(landRun))
                         {
                             lbTaskList.Items.Add(landRun);
-                            Log(LogSeverityType.Info, $"{landRun} created successfully");
+                            Logger?.LogInformation("{landRun} created successfully", landRun);
                         }
                     }
                 }
                 else
                 {
-                    Log(LogSeverityType.Info, $"{landRun} modified successfully");
+                    Logger?.LogInformation("{landRun} modified successfully", landRun);
                 }
             }
         }
@@ -152,20 +149,20 @@ namespace BalloonTrackAnalyze
                 {
                     if (DoesTaskNumberAlreadyExists(elbow.TaskNumber))
                     {
-                        Log(LogSeverityType.Error, $"Failed to create {elbow}: A task with the number '{elbow.TaskNumber}' already exists");
+                        Logger?.LogError("Failed to create {elbow}: A task with the number '{elbow.TaskNumber}' already exists", elbow, elbow.TaskNumber);
                     }
                     else
                     {
                         if (!lbTaskList.Items.Contains(elbow))
                         {
                             lbTaskList.Items.Add(elbow);
-                            Log(LogSeverityType.Info, $"{elbow} created successfully");
+                            Logger?.LogInformation("{elbow} created successfully", elbow);
                         }
                     }
                 }
                 else
                 {
-                    Log(LogSeverityType.Info, $"{elbow} modified successfully");
+                    Logger?.LogInformation("{elbow} modified successfully", elbow);
                 }
             }
         }
@@ -179,20 +176,20 @@ namespace BalloonTrackAnalyze
                 {
                     if (DoesTaskNumberAlreadyExists(pie.TaskNumber))
                     {
-                        Log(LogSeverityType.Error, $"Failed to create {pie}: A task with the number '{pie.TaskNumber}' already exists");
+                        Logger?.LogError("Failed to create {pie}: A task with the number '{pie.TaskNumber}' already exists", pie, pie.TaskNumber);
                     }
                     else
                     {
                         if (!lbTaskList.Items.Contains(pie))
                         {
                             lbTaskList.Items.Add(pie);
-                            Log(LogSeverityType.Info, $"{pie} created successfully");
+                            Logger?.LogInformation("{pie} created successfully", pie);
                         }
                     }
                 }
                 else
                 {
-                    Log(LogSeverityType.Info, $"{pie} modified successfully");
+                    Logger?.LogInformation("{pie} modified successfully", pie);
                 }
             }
         }
@@ -207,19 +204,21 @@ namespace BalloonTrackAnalyze
                 {
                     if (DoesTaskNumberAlreadyExists(donut.TaskNumber))
                     {
-                        Log(LogSeverityType.Error, $"Failed to create {donut}: A task with the number '{donut.TaskNumber}' already exists");
+                        Logger?.LogError("Failed to create {donut}: A task with the number '{donut.TaskNumber}' already exists", donut, donut.TaskNumber);
                     }
                     else
                     {
                         if (!lbTaskList.Items.Contains(donut))
                         {
                             lbTaskList.Items.Add(donut);
-                            Log(LogSeverityType.Info, $"{donut} created successfully");
+                            Logger?.LogInformation("{donut} created successfully", donut);
                         }
                     }
                 }
                 else
-                    Log(LogSeverityType.Info, $"{donut} modified successfully");
+                {
+                    Logger?.LogInformation("{donut} modified successfully", donut);
+                }
             }
         }
 
@@ -247,7 +246,7 @@ namespace BalloonTrackAnalyze
             Properties.Settings.Default.UseBalloonLiveParser = rbBalloonLive.Checked;
             Properties.Settings.Default.UseGPSAltitude = rbGPSAltitude.Checked;
             Properties.Settings.Default.Save();
-            Log(LogSeverityType.Info, "Saved competition settings");
+            Logger?.LogInformation("Saved competition settings");
         }
 
         private void btDeleteTask_Click(object sender, EventArgs e)
@@ -277,7 +276,7 @@ namespace BalloonTrackAnalyze
             {
                 case DonutTask donut:
                     {
-                        DonutControl donutControl = new DonutControl(donut);
+                        DonutControl donutControl = new DonutControl(donut, ServiceProvider.GetRequiredService<ILogger<DonutControl>>(), ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         donutControl.Location = TaskControlLocation;
@@ -289,7 +288,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case PieTask pie:
                     {
-                        PieControl pieControl = new PieControl(pie);
+                        PieControl pieControl = new PieControl(pie,ServiceProvider.GetRequiredService<ILogger<PieControl>>());
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         pieControl.Location = TaskControlLocation;
@@ -301,7 +300,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case ElbowTask elbow:
                     {
-                        ElbowControl elbowControl = new ElbowControl(elbow);
+                        ElbowControl elbowControl = new ElbowControl(elbow, ServiceProvider.GetRequiredService<ILogger<ElbowControl>>(), ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         elbowControl.Location = TaskControlLocation;
@@ -313,7 +312,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case LandRunTask landRun:
                     {
-                        LandRunControl landrunControl = new LandRunControl(landRun);
+                        LandRunControl landrunControl = new LandRunControl(landRun, ServiceProvider.GetRequiredService<ILogger<LandRunControl>>(), ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         landrunControl.Location = TaskControlLocation;
@@ -328,16 +327,15 @@ namespace BalloonTrackAnalyze
 
         private void btCalculateResults_Click(object sender, EventArgs e)
         {
-            string functionErrorMessage = "Failed to calculate Results :";
             if (string.IsNullOrWhiteSpace(tbFlightNumber.Text))
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Please enter a Flight No first");
+                Logger?.LogError("Failed to calculate Results: Please enter a Flight No first");
                 return;
             }
             int flightNumber;
             if (!int.TryParse(tbFlightNumber.Text, out flightNumber))
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Flight No '{tbFlightNumber.Text}' as integer");
+                Logger?.LogError("Failed to calculate Results: Failed to parse Flight No '{flightNumber}' as integer", tbFlightNumber.Text);
                 return;
             }
             CreateFolderStructure(flightNumber);
@@ -361,7 +359,7 @@ namespace BalloonTrackAnalyze
                     }
                     catch (Exception ex)
                     {
-                        Log(LogSeverityType.Warning, $"Failed to serialize task '{item}': {ex.Message} ");
+                        Logger?.LogWarning("Failed to serialize task '{item}': {ex.Message} ", item, ex.Message);
                     }
                 }
             }
@@ -369,47 +367,47 @@ namespace BalloonTrackAnalyze
             {
                 if (!flight.ParseTrackFiles(Path.Combine(tbCompetitionFolder.Text, "Scoring", $"Flight{flightNumber:D2}", "Tracks"), rbBalloonLive.Checked))
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage);
+                    Logger?.LogError("Failed to calculate Results");
                     return;
                 }
-                Log(LogSeverityType.Info, $"{flight.Tracks.Count} Track files parsed successfully");
+                Logger?.LogInformation("{flight.Tracks.Count} Track files parsed successfully", flight.Tracks.Count);
             }
             catch (Exception ex)
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse track files: {ex.Message}");
+                Logger?.LogError(ex,"Failed to calculate Results");
                 return;
             }
             try
             {
                 if (!flight.MapPilotNamesToTracks(tbPilotMappingFile.Text))
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage);
+                    Logger?.LogError("Failed to calculate Results");
                     return;
                 }
-                Log(LogSeverityType.Info, "Successfully mapped pilot names to tracks");
+                Logger?.LogInformation("Successfully mapped pilot names to tracks");
             }
             catch (Exception ex)
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to map pilot names to tracks: {ex.Message}");
+                Logger?.LogError(ex, "Failed to calculate Results: failed to map pilot names to tracks");
                 return;
             }
             try
             {
                 CreateMarkerAndDeclarationFiles(flightNumber);
-                Log(LogSeverityType.Info, "Successfully created file with markers and declarations for each pilot");
+                Logger?.LogInformation("Successfully created file with markers and declarations for each pilot");
             }
             catch (Exception ex)
             {
-                Log(LogSeverityType.Warning, functionErrorMessage + $"Failed to create marker and declaration files: {ex.Message}");
+                Logger?.LogError(ex, "Failed to calculate Results: failed to create marker and declaration files");
             }
             try
             {
                 flight.CalculateResults(rbGPSAltitude.Checked, Path.Combine(tbCompetitionFolder.Text, "Scoring", $"Flight{flightNumber:D2}"));
-                Log(LogSeverityType.Info, "Successfully calculated results of all pilots for each task");
+                Logger.LogInformation("Successfully calculated results of all pilots for each task");
             }
             catch (Exception ex)
             {
-                Log(LogSeverityType.Warning, functionErrorMessage + $"Failed to calculate results: {ex.Message}");
+                Logger?.LogError(ex, "Failed to calculate Results: failed to calculate results of all pilots for each task");
             }
         }
 
@@ -492,7 +490,7 @@ namespace BalloonTrackAnalyze
                         string jsonString = File.ReadAllText(openFileDialog.FileName);
                         //DonutTask donut = JsonSerializer.Deserialize<DonutTask>(jsonString);
                         DonutTask donut = JsonConvert.DeserializeObject<DonutTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
-                        DonutControl donutControl = new DonutControl(donut);
+                        DonutControl donutControl = new DonutControl(donut, ServiceProvider.GetRequiredService<ILogger<DonutControl>>(),ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         donutControl.Location = TaskControlLocation;
@@ -506,7 +504,7 @@ namespace BalloonTrackAnalyze
                         string jsonString = File.ReadAllText(openFileDialog.FileName);
                         //PieTask pie = JsonSerializer.Deserialize<PieTask>(jsonString);
                         PieTask pie = JsonConvert.DeserializeObject<PieTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
-                        PieControl pieControl = new PieControl(pie);
+                        PieControl pieControl = new PieControl(pie, ServiceProvider.GetRequiredService<ILogger<PieControl>>());
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         pieControl.Location = TaskControlLocation;
@@ -520,7 +518,7 @@ namespace BalloonTrackAnalyze
                         string jsonString = File.ReadAllText(openFileDialog.FileName);
                         //ElbowTask elbow = JsonSerializer.Deserialize<ElbowTask>(jsonString);
                         ElbowTask elbow = JsonConvert.DeserializeObject<ElbowTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
-                        ElbowControl elbowControl = new ElbowControl(elbow);
+                        ElbowControl elbowControl = new ElbowControl(elbow,ServiceProvider.GetRequiredService<ILogger<ElbowControl>>(), ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         elbowControl.Location = TaskControlLocation;
@@ -534,7 +532,7 @@ namespace BalloonTrackAnalyze
                         string jsonString = File.ReadAllText(openFileDialog.FileName);
                         //LandRunTask landRun = JsonSerializer.Deserialize<LandRunTask>(jsonString);
                         LandRunTask landRun = JsonConvert.DeserializeObject<LandRunTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
-                        LandRunControl landrunControl = new LandRunControl(landRun);
+                        LandRunControl landrunControl = new LandRunControl(landRun, ServiceProvider.GetRequiredService<ILogger<LandRunControl>>(), ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         landrunControl.Location = TaskControlLocation;
@@ -545,14 +543,14 @@ namespace BalloonTrackAnalyze
                     }
                     else
                     {
-                        Log(LogSeverityType.Error, "Failed import task: Unkown task type");
+                        Logger?.LogError("Failed import task: Unkown task type");
                         return;
                     }
                 }
                 catch (Exception ex)
                 {
 
-                    Log(LogSeverityType.Error, $"Failed to import task: {ex.Message}");
+                    Logger?.LogError(ex, "Failed to import task");
                     return;
                 }
             }
@@ -564,13 +562,13 @@ namespace BalloonTrackAnalyze
             {
                 if (string.IsNullOrWhiteSpace(tbFlightNumber.Text))
                 {
-                    Log(LogSeverityType.Error, "Please enter a Flight No first");
+                    Logger?.LogError("Failed to create default folder structure: Please enter a Flight No first");
                     return;
                 }
                 int flightNumber;
                 if (!int.TryParse(tbFlightNumber.Text, out flightNumber))
                 {
-                    Log(LogSeverityType.Error, $"Failed to parse Flight No '{tbFlightNumber.Text}' as integer");
+                    Logger?.LogError("Failed to create default folder structure: Failed to parse Flight No '{flightNumber}' as integer", tbFlightNumber.Text);
                     return;
                 }
                 CreateFolderStructure(flightNumber);

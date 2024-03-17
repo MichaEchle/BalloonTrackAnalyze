@@ -1,24 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
-using Competition;
-using LoggerComponent;
+﻿using Competition;
 using Coordinates;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace BalloonTrackAnalyze.ValidationControls
 {
     public partial class GoalToOtherGoalsDistanceRuleControl : UserControl
     {
         #region Properties
+
+        private readonly ILogger<GoalToOtherGoalsDistanceRuleControl> Logger;
         /// <summary>
         /// The rule to be created or modified with this control
         /// </summary>
-        public GoalToOtherGoalsDistanceRule GoalToOtherGoalsDistanceRule { get; private set; }
+        public GoalToOtherGoalsDistanceRule GoalToOtherGoalsDistanceRule
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// Delegate for the DataValid event
@@ -36,22 +37,24 @@ namespace BalloonTrackAnalyze.ValidationControls
         /// <summary>
         /// Default constructor
         /// </summary>
-        public GoalToOtherGoalsDistanceRuleControl()
+        public GoalToOtherGoalsDistanceRuleControl(ILogger<GoalToOtherGoalsDistanceRuleControl> logger)
         {
             InitializeComponent();
             btCreate.Text = "Create rule";
+            Logger = logger;
         }
 
         /// <summary>
         /// Constructor which pre-fills control from existing rule
         /// </summary>
         /// <param name="goalToOtherGoalsDistanceRule">the existing goal to other goals distance rule</param>
-        public GoalToOtherGoalsDistanceRuleControl(GoalToOtherGoalsDistanceRule goalToOtherGoalsDistanceRule)
+        public GoalToOtherGoalsDistanceRuleControl(GoalToOtherGoalsDistanceRule goalToOtherGoalsDistanceRule, ILogger<GoalToOtherGoalsDistanceRuleControl> logger)
         {
             GoalToOtherGoalsDistanceRule = goalToOtherGoalsDistanceRule;
             InitializeComponent();
             Prefill();
             btCreate.Text = "Create rule";
+            Logger = logger;
         }
         #endregion
 
@@ -102,12 +105,12 @@ namespace BalloonTrackAnalyze.ValidationControls
             {
                 if (!double.TryParse(tbMinimumDistance.Text, out minimumDistance))
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Min. Distance '{tbMinimumDistance.Text}' as double");
+                    Logger?.LogError("Failed to create/modify goal to other goals distance rule: failed to parse Min. Distance '{minimumDistance}' as double", tbMinimumDistance.Text);
                     isDataValid = false;
                 }
                 if (minimumDistance < 0)
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Min. Distance '{minimumDistance}' must be greater than zero");
+                    Logger?.LogError("Failed to create/modify goal to other goals distance rule: Min. Distance must be greater than zero");
                     isDataValid = false;
                 }
 
@@ -120,12 +123,12 @@ namespace BalloonTrackAnalyze.ValidationControls
             {
                 if (!double.TryParse(tbMaximumDistance.Text, out maximumDistance))
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Max. Distance '{tbMinimumDistance.Text}' as double");
+                    Logger?.LogError("Failed to create/modify goal to other goals distance rule: failed to parse Max. Distance '{tbMinimumDistance.Text}' as double", tbMinimumDistance.Text);
                     isDataValid = false;
                 }
                 if (maximumDistance < 0)
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Max. Distance '{maximumDistance}' must be greater than zero");
+                    Logger?.LogError("Failed to create/modify goal to other goals distance rule: Max. Distance must be greater than zero");
                     isDataValid = false;
                 }
 
@@ -137,7 +140,7 @@ namespace BalloonTrackAnalyze.ValidationControls
             {
                 if (minimumDistance >= maximumDistance)
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Min. Distance '{minimumDistance}[m]' must be smaller than Max. Distance '{maximumDistance}[m]'");
+                    Logger?.LogError("Failed to create/modify goal to other goals distance rule: Min. Distance '{minimumDistance}[m]' must be smaller than Max. Distance '{maximumDistance}[m]'", minimumDistance, maximumDistance);
                     isDataValid = false;
                 }
             }
@@ -166,16 +169,6 @@ namespace BalloonTrackAnalyze.ValidationControls
         protected virtual void OnDataValid()
         {
             DataValid?.Invoke();
-        }
-
-        /// <summary>
-        /// Logs a user message
-        /// </summary>
-        /// <param name="logSeverity">the severity of the message</param>
-        /// <param name="text">the message text</param>
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
         }
         #endregion
     }

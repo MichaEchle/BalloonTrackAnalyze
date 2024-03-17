@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Coordinates.Configuration;
+using Coordinates.Parsers;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,16 +10,11 @@ namespace Coordinates
     public static class TrackHelpers
     {
 
-        private static ILoggerFactory LoggerFactory
-        {
-            get; set;
-        }
-
         private static ILogger Logger
         {
             get
             {
-                return LoggerFactory.CreateLogger(nameof(TrackHelpers));
+                return CoordinatesLoggingConnector.LoggerFactory.CreateLogger(nameof(TrackHelpers));
             }
         }
         /// <summary>
@@ -363,7 +360,7 @@ namespace Coordinates
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex, "Failed to estimate launch or landing point");
+                Logger?.LogError(ex, "Failed to estimate launch or landing point");
                 return false;
             }
             return true;

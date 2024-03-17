@@ -1,13 +1,7 @@
 ﻿using Coordinates;
-using LoggerComponent;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -16,9 +10,12 @@ namespace TrackReportGenerator
     public partial class TrackReportGeneratorForm : Form
     {
         #region Properties
-        private bool UseGPSAltitude=true;
-        private double MaxAllowedAltitude=CoordinateHelpers.ConvertToMeter(10000);
-        private bool SkipCoordinatesWithoutLocation=true;
+        private readonly ILogger<TrackReportGeneratorForm> Logger;
+
+        private readonly ExcelTrackReportGenerator ExcelTrackReportGenerator;
+        private bool UseGPSAltitude = true;
+        private double MaxAllowedAltitude = CoordinateHelpers.ConvertToMeter(10000);
+        private bool SkipCoordinatesWithoutLocation = true;
         #endregion Properties
 
         #region Constructor
@@ -26,7 +23,7 @@ namespace TrackReportGenerator
         {
             InitializeComponent();
             Text += typeof(TrackReportGeneratorForm).Assembly.GetName().Version;
-            logListView1.StartLogging(@".\Logfile.txt");
+            //logListView1.StartLogging(@".\Logfile.txt");
         }
 
         #endregion Constructor
@@ -93,8 +90,8 @@ namespace TrackReportGenerator
                     {
                         if (changeOfPositionSource.ToLower() == "yes")
                         {
-                            Logger.Log(LogSeverityType.Warning, "Caution: change of position source has been detected, refer the log for more details");
-                         //   MessageBox.Show("Caution: change of position source has been detected, refer the log for more details");
+                            Logger?.LogWarning("Caution: change of position source has been detected, refer the log for more details");
+                            //   MessageBox.Show("Caution: change of position source has been detected, refer the log for more details");
                         }
                     }
                 }
@@ -106,7 +103,7 @@ namespace TrackReportGenerator
                 }
                 else
                 {
-                    Logger.Log(LogSeverityType.Info, $"File '{Path.GetFileName(igcFile)}' skipped");
+                    Logger?.LogInformation("File '{fileName}' skipped", Path.GetFileName(igcFile));
                 }
 
                 return true;
@@ -118,7 +115,7 @@ namespace TrackReportGenerator
             UseGPSAltitude = rbGPSAltitude.Checked;
         }
 
-        
+
 
         private void rbMeter_CheckedChanged(object sender, EventArgs e)
         {
@@ -128,7 +125,7 @@ namespace TrackReportGenerator
             }
             else
             {
-                tbMaxAltitude.Text = $"{Math.Round(CoordinateHelpers.ConvertToFeet(MaxAllowedAltitude),0,MidpointRounding.AwayFromZero)}";
+                tbMaxAltitude.Text = $"{Math.Round(CoordinateHelpers.ConvertToFeet(MaxAllowedAltitude), 0, MidpointRounding.AwayFromZero)}";
             }
         }
 
@@ -163,7 +160,7 @@ namespace TrackReportGenerator
             double tempMaxAltitude;
             if (!double.TryParse(tbMaxAltitude.Text, out tempMaxAltitude))
             {
-                Logger.Log(LogSeverityType.Error, $"Failed to parse '{tbMaxAltitude.Text}' as double. Please enter a number");
+                Logger?.LogError("Failed to parse '{maxAltitude}' as double. Please enter a number",tbMaxAltitude.Text);
                 return;
             }
             if (rbMeter.Checked)

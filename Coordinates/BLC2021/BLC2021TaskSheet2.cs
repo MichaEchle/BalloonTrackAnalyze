@@ -1,16 +1,12 @@
 ﻿using Competition;
 using Competition.Validation;
 using Coordinates;
-using LoggerComponent;
+using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -20,6 +16,11 @@ namespace BLC2021
     {
 
         #region Properties
+
+        private readonly ILogger<BLC2021TaskSheet2> Logger;
+
+        private readonly PilotMapping PilotMapping;
+
         private bool BatchMode
         {
             get; set;
@@ -93,7 +94,6 @@ namespace BLC2021
 
         private void BLC2021TaskSheet2_Load(object sender, EventArgs e)
         {
-            logListView1.StartLogging();
             if (BatchMode)
                 ConfigureForBatchMode();
             else
@@ -127,7 +127,7 @@ namespace BLC2021
                     }
                     else
                     {
-                        Log(LogSeverityType.Error, "No output directory has been defined, an output directory must be configured to continue");
+                        Logger?.LogError("No output directory has been defined, an output directory must be configured to continue");
                         btSelectIGCFiles.Enabled = false;
                     }
                 }
@@ -198,10 +198,6 @@ namespace BLC2021
         }
 
 
-        private void Log(LogSeverityType logSeverity, string logMessage)
-        {
-            Logger.Log(this, logSeverity, logMessage);
-        }
         private async void btSelectIGCFiles_Click(object sender, EventArgs e)
         {
             if (BatchMode)
@@ -244,11 +240,11 @@ namespace BLC2021
                     bool success = await ParseFilesAndCalculateResultsAsync(igcFiles, task4_1, task4_2, task4_3, task5);
                     if (success)
                     {
-                        Log(LogSeverityType.Info, "Parsing and result calculation completed");
+                        Logger?.LogError("Parsing and result calculation completed");
                     }
                     else
                     {
-                        Log(LogSeverityType.Error, "Failed to parse and calculate results");
+                        Logger?.LogError("Failed to parse and calculate results");
                     }
                 }
                 UseWaitCursor = false;
@@ -364,7 +360,7 @@ namespace BLC2021
                     {
                         if (!Coordinates.Parsers.BalloonLiveParser.ParseFile(igcFile, out track))
                         {
-                            Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse '{igcFile}'");
+                            Logger?.LogError("Failed to parse files and calculate results: Failed to parse '{igcFile}'", igcFile);
                             continue;
                         }
                         double result_Task4;
@@ -373,7 +369,7 @@ namespace BLC2021
                             double result_Task4_1;
                             if (!task4_1.CalculateResults(track, true, out result_Task4_1))
                             {
-                                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result at Task 4 for Pilot No {track.Pilot.PilotNumber}");
+                                Logger?.LogError("Failed to parse files and calculate results: Failed to calculate result at Task 4 for Pilot No '{pilotNumber}'", track.Pilot.PilotNumber);
                                 result_Task4_1 = double.NaN;
                             }
                             task4_1.Goals.Clear();
@@ -381,7 +377,7 @@ namespace BLC2021
                             double result_Task4_2;
                             if (!task4_2.CalculateResults(track, true, out result_Task4_2))
                             {
-                                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result at Task 4 for Pilot No {track.Pilot.PilotNumber}");
+                                Logger?.LogError("Failed to parse files and calculate results: Failed to calculate result at Task 4 for Pilot No '{pilotNumber}'", track.Pilot.PilotNumber);
                                 result_Task4_2 = double.NaN;
                             }
                             task4_2.Goals.Clear();
@@ -389,7 +385,7 @@ namespace BLC2021
                             double result_Task4_3;
                             if (!task4_3.CalculateResults(track, true, out result_Task4_3))
                             {
-                                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result at Task 4 for Pilot No {track.Pilot.PilotNumber}");
+                                Logger?.LogError("Failed to parse files and calculate results: Failed to calculate result at Task 4 for Pilot No '{pilotNumber}'", track.Pilot.PilotNumber);
                                 result_Task4_3 = double.NaN;
                             }
                             task4_3.Goals.Clear();
@@ -397,7 +393,7 @@ namespace BLC2021
                             if (!double.IsNaN(result_Task4_1) && !double.IsNaN(result_Task4_2) && !double.IsNaN(result_Task4_3))
                             {
                                 result_Task4 = result_Task4_1 + result_Task4_2 + result_Task4_3;
-                                Log(LogSeverityType.Info, $"Calculated result of '{Math.Round(result_Task4, 0, MidpointRounding.AwayFromZero)}m' ({result_Task4_1:0.#}+{result_Task4_2:0.#}+{result_Task4_3:0.#}) at Task 4 for Pilot No {track.Pilot.PilotNumber}");
+                                Logger?.LogInformation("Calculated result of '{result_Task4}m' ({result_Task4_1} + {result_Task4_2} + {result_Task4_3}) at Task 4 for Pilot No '{pilotNumber}'", Math.Round(result_Task4, 0, MidpointRounding.AwayFromZero), $"{result_Task4_1: 0.#}", $"{result_Task4_2: 0.#}",$"{result_Task4_3:0.#}", track.Pilot.PilotNumber);
                             }
                             else
                             {
@@ -416,12 +412,12 @@ namespace BLC2021
                             task5.MarkerValidationRules.OfType<MarkerToGoalDistanceRule>().First().Declaration = declaration;
                             if (!task5.CalculateResults(track, true, out result_Task5))
                             {
-                                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to calculate result at Task 5 for Pilot No {track.Pilot.PilotNumber}");
+                                Logger?.LogError("Failed to parse files and calculate results: Failed to calculate result at Task 5 for Pilot No '{pilotNumber}'", track.Pilot.PilotNumber);
                                 result_Task5 = double.NaN;
                             }
                             else
                             {
-                                Log(LogSeverityType.Info, $"Calculated result of '{Math.Round(result_Task5, 3, MidpointRounding.AwayFromZero)}m' at Task 5 for Pilot No {track.Pilot.PilotNumber}");
+                                Logger?.LogInformation("Calculated result of '{result_Task5}m' at Task 5 for Pilot No '{pilotNumber}'", Math.Round(result_Task5, 0, MidpointRounding.AwayFromZero), track.Pilot.PilotNumber);
                             }
                             task5.Goals.Clear();
                         }
@@ -432,7 +428,7 @@ namespace BLC2021
                         results.Add((track.Pilot.PilotIdentifier, track.Pilot.PilotNumber, result_Task4, result_Task5));
                     }
 
-                    ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+                    ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                     FileInfo resultsFileInternal = new FileInfo(Path.Combine(OutputDirectory.FullName, ResultsFileNameInternal));
                     using (ExcelPackage package = new ExcelPackage(resultsFileInternal))
                     {
@@ -446,22 +442,22 @@ namespace BLC2021
                             wsResults.Cells[1, 4].Value = "Task 5 CRT [m]";
                             wsResults.Cells[1, 5].Value = "Task 4 Comment";
                             wsResults.Cells[1, 6].Value = "Task 5 Comment";
-                            
+
                         }
                         foreach ((string pilotIdentifier, int pilotNumber, double result_T4, double result_T5) result in results)
                         {
                             wsResults.Cells[result.pilotNumber + 1, 1].Value = result.pilotIdentifier;
                             wsResults.Cells[result.pilotNumber + 1, 2].Value = result.pilotNumber;
                             wsResults.Cells[result.pilotNumber + 1, 3].Value = Math.Round(result.result_T4, 0, MidpointRounding.AwayFromZero);
-                            wsResults.Cells[result.pilotNumber + 1, 4].Value = Math.Round(result.result_T5 , 0, MidpointRounding.AwayFromZero);
-                            
+                            wsResults.Cells[result.pilotNumber + 1, 4].Value = Math.Round(result.result_T5, 0, MidpointRounding.AwayFromZero);
+
                             wsResults.Cells[result.pilotNumber + 1, 3].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.None;
                             wsResults.Cells[result.pilotNumber + 1, 4].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.None;
                         }
                         wsResults.Cells.AutoFitColumns();
                         package.Save();
                     }
-                    Log(LogSeverityType.Info, $"Successfully created or modified internal results file '{resultsFileInternal.Name}'");
+                    Logger?.LogInformation("Successfully created or modified internal results file '{resultsFileInternal.Name}'",resultsFileInternal.Name);
                     FileInfo resultsFileProvisional = new FileInfo(Path.Combine(OutputDirectory.FullName, ResultsFileNameProvisional));
                     using (ExcelPackage package = new ExcelPackage(resultsFileProvisional))
                     {
@@ -475,7 +471,7 @@ namespace BLC2021
                             wsResults.Cells[1, 4].Value = "Pilot First Name";
                             wsResults.Cells[1, 5].Value = "Task 4 PDG [m]";
                             wsResults.Cells[1, 6].Value = "Task 5 CRT [m]";
-                            
+
                         }
                         string firstName;
                         string lastName;
@@ -483,9 +479,9 @@ namespace BLC2021
                         {
                             wsResults.Cells[result.pilotNumber + 1, 1].Value = result.pilotIdentifier;
                             wsResults.Cells[result.pilotNumber + 1, 2].Value = result.pilotNumber;
-                            if (!PilotMapping.Instance.GetPilotName(result.pilotNumber, out lastName, out firstName))
+                            if (!PilotMapping.GetPilotName(result.pilotNumber, out lastName, out firstName))
                             {
-                                Log(LogSeverityType.Warning, "Last name and first name of pilot will be omitted");
+                                Logger?.LogWarning("Last name and first name of pilot will be omitted");
                             }
                             else
                             {
@@ -493,8 +489,8 @@ namespace BLC2021
                                 wsResults.Cells[result.pilotNumber + 1, 4].Value = firstName;
                             }
                             wsResults.Cells[result.pilotNumber + 1, 5].Value = Math.Round(result.result_T4, 0, MidpointRounding.AwayFromZero);
-                            wsResults.Cells[result.pilotNumber + 1, 6].Value = Math.Round(result.result_T5 , 0, MidpointRounding.AwayFromZero);
-                            
+                            wsResults.Cells[result.pilotNumber + 1, 6].Value = Math.Round(result.result_T5, 0, MidpointRounding.AwayFromZero);
+
 
                             wsResults.Cells[result.pilotNumber + 1, 5].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.None;
                             wsResults.Cells[result.pilotNumber + 1, 6].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.None;
@@ -502,11 +498,11 @@ namespace BLC2021
                         wsResults.Cells.AutoFitColumns();
                         package.Save();
                     }
-                    Log(LogSeverityType.Info, $"Successfully created or modified provisional results file '{resultsFileProvisional.Name}'");
+                    Logger?.LogInformation("Successfully created or modified provisional results file '{resultsFileProvisional.Name}'", resultsFileProvisional.Name);
                 }
                 catch (Exception ex)
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"{ex.Message}");
+                    Logger?.LogError(ex, functionErrorMessage);
                     return false;
                 }
 

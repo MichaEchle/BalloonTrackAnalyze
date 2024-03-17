@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Coordinates
+﻿namespace Coordinates
 {
     public class Declaration
 
@@ -56,7 +52,7 @@ namespace Coordinates
         /// <param name="goalNumber">The number of the goal</param>
         /// <param name="declaredGoal">The target or goal which has been declared</param>
         /// <param name="positionAtDeclaration">The position at which the goal has been declared</param>
-        public Declaration(int goalNumber, Coordinate declaredGoal, Coordinate positionAtDeclaration, bool hasPilotDelaredGoalAltitude,int orignalEastingDeclarationUTM,int orignalNorhtingDeclarationUTM)
+        public Declaration(int goalNumber, Coordinate declaredGoal, Coordinate positionAtDeclaration, bool hasPilotDelaredGoalAltitude, int orignalEastingDeclarationUTM, int orignalNorhtingDeclarationUTM)
         {
             GoalNumber = goalNumber;
             DeclaredGoal = declaredGoal;

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
+﻿using BalloonTrackAnalyze.ValidationControls;
 using Competition;
-using LoggerComponent;
-using BalloonTrackAnalyze.ValidationControls;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace BalloonTrackAnalyze.TaskControls
 {
@@ -15,6 +13,10 @@ namespace BalloonTrackAnalyze.TaskControls
     {
 
         #region Properties
+
+        private readonly ILogger<ElbowControl> Logger;
+
+        private readonly IServiceProvider ServiceProvider;
 
         /// <summary>
         /// The elbow task to be created or modified by this control
@@ -50,24 +52,29 @@ namespace BalloonTrackAnalyze.TaskControls
         /// <summary>
         /// Default constructor
         /// </summary>
-        public ElbowControl()
+        public ElbowControl(ILogger<ElbowControl> logger, IServiceProvider serviceProvider)
         {
             InitializeComponent();
             btCreate.Text = "Create task";
             IsNewTask = true;
+            Logger = logger;
+            ServiceProvider = serviceProvider;
         }
 
         /// <summary>
         /// Constructor which pre-fills controls from existing elbow task
         /// </summary>
         /// <param name="elbow">the existing elbow task</param>
-        public ElbowControl(ElbowTask elbow)
+        public ElbowControl(ElbowTask elbow, ILogger<ElbowControl> logger, IServiceProvider serviceProvider)
         {
             Elbow = elbow;
             InitializeComponent();
             btCreate.Text = "Modify task";
             IsNewTask = false;
             Prefill();
+            Logger = logger;
+            ServiceProvider = serviceProvider;
+            
         }
         #endregion
 
@@ -114,47 +121,47 @@ namespace BalloonTrackAnalyze.TaskControls
             int taskNumber;
             if (!int.TryParse(tbTaskNumber.Text, out taskNumber))
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Task No. '{tbTaskNumber.Text}' as integer");
+                Logger?.LogError("Failed to create/modify elbow task: failed to parse Task No. '{taskNumber}' as integer", tbTaskNumber.Text);
                 isDataValid = false;
             }
             if (taskNumber <= 0)
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Task No. must be greater than 0");
+                Logger?.LogError("Failed to create/modify elbow task: Task No. must be greater than 0");
                 isDataValid = false;
             }
             int firstMarkerNumber;
             if (!int.TryParse(tbFirstMarkerNumber.Text, out firstMarkerNumber))
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed ot parse 1st Marker No '{tbFirstMarkerNumber.Text}' as integer");
+                Logger?.LogError("Failed to create/modify elbow task: failed to parse 1st Marker No '{firstMarkerNumber}' as integer", tbFirstMarkerNumber.Text);
                 isDataValid = false;
             }
             if (firstMarkerNumber <= 0)
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"1st Marker No. must be greater than 0");
+                Logger?.LogError("Failed to create/modify elbow task: 1st Marker No. must be greater than 0");
                 isDataValid = false;
             }
 
             int secondMarkerNumber;
             if (!int.TryParse(tbSecondMarkerNumber.Text, out secondMarkerNumber))
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed ot parse 2nd Marker No '{tbSecondMarkerNumber.Text}' as integer");
+                Logger?.LogError("Failed to create/modify elbow task: failed to parse 2nd Marker No '{secondMarkerNumber}' as integer", tbSecondMarkerNumber.Text);
                 isDataValid = false;
             }
             if (secondMarkerNumber <= 0)
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"2nd Marker No. must be greater than 0");
+                Logger?.LogError("Failed to create/modify elbow task: 2nd Marker No. must be greater than 0");
                 isDataValid = false;
             }
 
             int thirdMarkerNumber;
             if (!int.TryParse(tbThirdMarkerNumber.Text, out thirdMarkerNumber))
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed ot parse 3rd Marker No '{tbThirdMarkerNumber.Text}' as integer");
+                Logger?.LogError("Failed to create/modify elbow task: failed to parse 3rd Marker No '{thirdMarkerNumber}' as integer", tbThirdMarkerNumber.Text);
                 isDataValid = false;
             }
             if (thirdMarkerNumber <= 0)
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"3rd Marker No. must be greater than 0");
+                Logger?.LogError("Failed to create/modify elbow task: 3rd Marker No. must be greater than 0");
                 isDataValid = false;
             }
 
@@ -165,7 +172,7 @@ namespace BalloonTrackAnalyze.TaskControls
                 foreach (object item in lbRules.Items)
                 {
                     if (item is IMarkerValidationRules markerValidationRule)
-                            markerValidaitonRules.Add(markerValidationRule);
+                        markerValidaitonRules.Add(markerValidationRule);
                 }
                 Elbow.SetupElbow(taskNumber, firstMarkerNumber, secondMarkerNumber, thirdMarkerNumber, markerValidaitonRules);
                 tbTaskNumber.Text = "";
@@ -185,17 +192,6 @@ namespace BalloonTrackAnalyze.TaskControls
             DataValid?.Invoke();
         }
 
-
-        /// <summary>
-        /// Logs a user messages
-        /// </summary>
-        /// <param name="logSeverity">the severity of the message</param>
-        /// <param name="text">the message text</param>
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
-        }
-
         /// <summary>
         /// Displays the pre-filled user control of the selected rule
         /// </summary>
@@ -207,7 +203,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 case MarkerTimingRule markerTimingRule:
                     {
-                        MarkerTimingRuleControl markerTimingRuleControl = new MarkerTimingRuleControl(markerTimingRule);
+                        MarkerTimingRuleControl markerTimingRuleControl = new MarkerTimingRuleControl(markerTimingRule,ServiceProvider.GetRequiredService<ILogger<MarkerTimingRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerTimingRuleControl.Location = RuleControlLocation;
@@ -220,7 +216,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case MarkerToOtherMarkersDistanceRule markerToOtherMarkersDistanceRule:
                     {
-                        MarkerToOtherMarkersDistanceRuleControl markerToOtherMarkerDistanceRuleControl = new MarkerToOtherMarkersDistanceRuleControl(markerToOtherMarkersDistanceRule);
+                        MarkerToOtherMarkersDistanceRuleControl markerToOtherMarkerDistanceRuleControl = new MarkerToOtherMarkersDistanceRuleControl(markerToOtherMarkersDistanceRule,ServiceProvider.GetRequiredService<ILogger<MarkerToOtherMarkersDistanceRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerToOtherMarkerDistanceRuleControl.Location = RuleControlLocation;
@@ -233,7 +229,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case MarkerToGoalDistanceRule markerToGoalDistanceRule:
                     {
-                        MarkerToGoalDistanceRuleControl markerToGoalDistanceRuleControl = new MarkerToGoalDistanceRuleControl(markerToGoalDistanceRule);
+                        MarkerToGoalDistanceRuleControl markerToGoalDistanceRuleControl = new MarkerToGoalDistanceRuleControl(markerToGoalDistanceRule, ServiceProvider.GetRequiredService<ILogger<MarkerToGoalDistanceRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerToGoalDistanceRuleControl.Location = RuleControlLocation;
@@ -258,7 +254,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 case "Marker Timing":
                     {
-                        MarkerTimingRuleControl markerTimingRuleControl = new MarkerTimingRuleControl();
+                        MarkerTimingRuleControl markerTimingRuleControl = new MarkerTimingRuleControl(ServiceProvider.GetRequiredService<ILogger<MarkerTimingRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerTimingRuleControl.Location = RuleControlLocation;
@@ -271,7 +267,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case "Marker to other Markers Distance":
                     {
-                        MarkerToOtherMarkersDistanceRuleControl markerToOtherMarkerDistanceRuleControl = new MarkerToOtherMarkersDistanceRuleControl();
+                        MarkerToOtherMarkersDistanceRuleControl markerToOtherMarkerDistanceRuleControl = new MarkerToOtherMarkersDistanceRuleControl( ServiceProvider.GetRequiredService<ILogger<MarkerToOtherMarkersDistanceRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerToOtherMarkerDistanceRuleControl.Location = RuleControlLocation;
@@ -284,7 +280,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case "Marker to Goal Distance":
                     {
-                        MarkerToGoalDistanceRuleControl markerToGoalDistanceRuleControl = new MarkerToGoalDistanceRuleControl();
+                        MarkerToGoalDistanceRuleControl markerToGoalDistanceRuleControl = new MarkerToGoalDistanceRuleControl( ServiceProvider.GetRequiredService<ILogger<MarkerToGoalDistanceRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerToGoalDistanceRuleControl.Location = RuleControlLocation;
@@ -306,7 +302,7 @@ namespace BalloonTrackAnalyze.TaskControls
             MarkerToGoalDistanceRule markerToGoalDistanceRule = (plRuleControl.Controls["ruleControl"] as MarkerToGoalDistanceRuleControl).MarkerToGoalDistanceRule;
             if (!lbRules.Items.Contains(markerToGoalDistanceRule))
                 lbRules.Items.Add(markerToGoalDistanceRule);
-            Log(LogSeverityType.Info, $"{markerToGoalDistanceRule} created/modified");
+            Logger?.LogInformation("'{markerToGoalDistanceRule}' created/modified",markerToGoalDistanceRule);
         }
 
         /// <summary>
@@ -317,7 +313,7 @@ namespace BalloonTrackAnalyze.TaskControls
             MarkerToOtherMarkersDistanceRule markerToOtherMarkersDistanceRule = (plRuleControl.Controls["ruleControl"] as MarkerToOtherMarkersDistanceRuleControl).MarkerToOtherMarkersDistanceRule;
             if (!lbRules.Items.Contains(markerToOtherMarkersDistanceRule))
                 lbRules.Items.Add(markerToOtherMarkersDistanceRule);
-            Log(LogSeverityType.Info, $"{markerToOtherMarkersDistanceRule} created/modified");
+            Logger?.LogInformation("'{markerToOtherMarkersDistanceRule}' created/modified", markerToOtherMarkersDistanceRule);
         }
 
         /// <summary>
@@ -328,7 +324,7 @@ namespace BalloonTrackAnalyze.TaskControls
             MarkerTimingRule markerTimingRule = (plRuleControl.Controls["ruleControl"] as MarkerTimingRuleControl).MarkerTimingRule;
             if (!lbRules.Items.Contains(markerTimingRule))
                 lbRules.Items.Add(markerTimingRule);
-            Log(LogSeverityType.Info, $"{markerTimingRule} created/modified");
+            Logger?.LogInformation("'{markerTimingRule}' created/modified", markerTimingRule);
         }
 
         /// <summary>

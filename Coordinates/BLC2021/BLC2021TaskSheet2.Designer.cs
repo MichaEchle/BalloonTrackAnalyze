@@ -29,7 +29,6 @@ namespace BLC2021
         /// </summary>
         private void InitializeComponent()
         {
-            this.logListView1 = new LoggerComponent.LogListView();
             this.btSelectIGCFiles = new System.Windows.Forms.Button();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -64,15 +63,6 @@ namespace BLC2021
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // logListView1
-            // 
-            this.logListView1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.logListView1.Location = new System.Drawing.Point(0, 350);
-            this.logListView1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.logListView1.Name = "logListView1";
-            this.logListView1.Size = new System.Drawing.Size(1007, 200);
-            this.logListView1.TabIndex = 0;
             // 
             // btSelectIGCFiles
             // 
@@ -399,7 +389,6 @@ namespace BLC2021
             this.ClientSize = new System.Drawing.Size(1007, 550);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.btSelectIGCFiles);
-            this.Controls.Add(this.logListView1);
             this.Name = "BLC2021TaskSheet2";
             this.Text = "BLC2021TaskSheet2";
             this.Load += new System.EventHandler(this.BLC2021TaskSheet2_Load);
@@ -407,12 +396,10 @@ namespace BLC2021
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.ResumeLayout(false);
-
         }
 
         #endregion
 
-        private LoggerComponent.LogListView logListView1;
         private System.Windows.Forms.Button btSelectIGCFiles;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;

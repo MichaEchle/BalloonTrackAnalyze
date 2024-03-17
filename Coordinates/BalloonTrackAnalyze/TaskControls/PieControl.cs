@@ -1,12 +1,8 @@
-﻿using System;
+﻿using Competition;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
-using Competition;
-using LoggerComponent;
 
 namespace BalloonTrackAnalyze.TaskControls
 {
@@ -14,6 +10,9 @@ namespace BalloonTrackAnalyze.TaskControls
     {
         #region Properties
 
+        private readonly ILogger<PieControl> Logger;
+
+        private readonly IServiceProvider ServiceProvider;
         /// <summary>
         /// The pie task to be created or modified by this control
         /// </summary>
@@ -42,8 +41,10 @@ namespace BalloonTrackAnalyze.TaskControls
         /// <summary>
         /// Default constructor
         /// </summary>
-        public PieControl()
+        public PieControl(ILogger<PieControl> logger,IServiceProvider serviceProvider)
         {
+            Logger = logger;
+            ServiceProvider = serviceProvider;
             InitializeComponent();
             IsNewTask = true;
             btCreate.Text = "Create task";
@@ -54,7 +55,7 @@ namespace BalloonTrackAnalyze.TaskControls
         /// Constructor which pre-fills controls from existing pie task
         /// </summary>
         /// <param name="pieTask">the existing pie task</param>
-        public PieControl(PieTask pieTask)
+        public PieControl(PieTask pieTask, ILogger<PieControl> logger)
         {
             PieTask = pieTask;
             InitializeComponent();
@@ -62,6 +63,7 @@ namespace BalloonTrackAnalyze.TaskControls
             btCreate.Text = "Modify task";
             Prefill();
             pieTierControl1.DataValid += PieTierControl1_DataValid;
+            Logger = logger;
         }
         #endregion
 
@@ -104,11 +106,11 @@ namespace BalloonTrackAnalyze.TaskControls
                 {
                     if (!lbPieTiers.Items.Contains(tier))
                         lbPieTiers.Items.Add(tier);
-                    Log(LogSeverityType.Info, $"{tier} created successfully");
+                    Logger?.LogInformation("'{tier}' created successfully",tier);
                 }
                 else
                 {
-                    Log(LogSeverityType.Info, $"{tier} modified successfully");
+                    Logger?.LogInformation("'{tier}' modified successfully",tier);
                 }
             }
         }
@@ -133,16 +135,6 @@ namespace BalloonTrackAnalyze.TaskControls
         }
 
         /// <summary>
-        /// Logs a user messages
-        /// </summary>
-        /// <param name="logSeverity">the severity of the message</param>
-        /// <param name="text">the message text</param>
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
-        }
-
-        /// <summary>
         /// Validates user input and creates a new pie task / modifies the existing pie task
         /// </summary>
         /// <param name="sender">sender of the event</param>
@@ -154,12 +146,12 @@ namespace BalloonTrackAnalyze.TaskControls
             int taskNumber;
             if (!int.TryParse(tbTaskNumber.Text, out taskNumber))
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Task No. '{tbTaskNumber.Text}' as integer");
+                Logger?.LogError("Failed to create/modify donut task: failed to parse Task No. '{taskNumber}' as integer", tbTaskNumber.Text);
                 isDataValid = false;
             }
             if (taskNumber <= 0)
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Task No. must be greater than 0");
+                Logger?.LogError("Failed to create/modify donut task: Task No. must be greater than 0");
                 isDataValid = false;
             }
             if (isDataValid)
@@ -169,7 +161,7 @@ namespace BalloonTrackAnalyze.TaskControls
                 foreach (object item in lbPieTiers.Items)
                 {
                     if (item is PieTask.PieTier)
-                            tiers.Add(item as PieTask.PieTier);
+                        tiers.Add(item as PieTask.PieTier);
                 }
                 PieTask.SetupPie(taskNumber, tiers);
                 tbTaskNumber.Text = "";
@@ -197,7 +189,7 @@ namespace BalloonTrackAnalyze.TaskControls
             }
         }
 
-        
+
         #endregion
     }
 }

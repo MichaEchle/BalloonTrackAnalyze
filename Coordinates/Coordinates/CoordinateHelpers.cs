@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Coordinates.Configuration;
+using Coordinates.Parsers;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using static System.Math;
@@ -12,16 +14,11 @@ namespace Coordinates
     public static class CoordinateHelpers
     {
 
-        private static ILoggerFactory LoggerFactory
-        {
-            get; set;
-        }
-
         private static ILogger Logger
         {
             get
             {
-                return LoggerFactory.CreateLogger(nameof(CoordinateHelpers));
+                return CoordinatesLoggingConnector.LoggerFactory.CreateLogger(nameof(CoordinateHelpers));
             }
         }
 
@@ -248,7 +245,7 @@ namespace Coordinates
 
             if (iterations >= 1000)
             {
-                Logger.LogWarning("Vincenty did not converge in 1000 iterations, the calculated distance may not be accurate");
+                Logger?.LogWarning("Vincenty did not converge in 1000 iterations, the calculated distance may not be accurate");
             }
 
             double uSqaure = cosSqureAlpha * (a * a - b * b) / (b * b);

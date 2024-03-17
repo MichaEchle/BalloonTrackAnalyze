@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Coordinates
 {
@@ -27,7 +25,7 @@ namespace Coordinates
         /// </summary>
         public Pilot Pilot
         {
-            get;set;
+            get; set;
         }
 
         public Dictionary<string, string> AdditionalPropertiesFromIGCFile
@@ -40,7 +38,7 @@ namespace Coordinates
 
         }
 
-        public Declaration GetLatestDeclaration( int goalNumber)
+        public Declaration GetLatestDeclaration(int goalNumber)
         {
             List<Declaration> declarations = Declarations.Where(x => x.GoalNumber == goalNumber).ToList();
             if (declarations.Count == 0)

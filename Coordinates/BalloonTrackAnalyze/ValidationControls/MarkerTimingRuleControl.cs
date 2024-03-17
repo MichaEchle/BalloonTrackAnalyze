@@ -1,5 +1,5 @@
 ﻿using Competition;
-using LoggerComponent;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Windows.Forms;
 
@@ -8,10 +8,14 @@ namespace BalloonTrackAnalyze.ValidationControls
     public partial class MarkerTimingRuleControl : UserControl
     {
         #region Properties
+        private readonly ILogger<MarkerTimingRuleControl> Logger;
         /// <summary>
         /// The rule to be created or modified with this control
         /// </summary>
-        public MarkerTimingRule MarkerTimingRule { get; private set; }
+        public MarkerTimingRule MarkerTimingRule
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// Delegate for the DataValid event
@@ -28,22 +32,24 @@ namespace BalloonTrackAnalyze.ValidationControls
         /// <summary>
         /// Default constructor
         /// </summary>
-        public MarkerTimingRuleControl()
+        public MarkerTimingRuleControl(ILogger<MarkerTimingRuleControl> logger)
         {
             InitializeComponent();
             btCreate.Text = "Create rule";
+            Logger = logger;
         }
 
         /// <summary>
         /// Constructor which pre-fills control from existing rule
         /// </summary>
         /// <param name="markerTimingRule">the existing marker timing rule</param>
-        public MarkerTimingRuleControl(MarkerTimingRule markerTimingRule)
+        public MarkerTimingRuleControl(MarkerTimingRule markerTimingRule, ILogger<MarkerTimingRuleControl> logger)
         {
             MarkerTimingRule = markerTimingRule;
             InitializeComponent();
             Prefill();
             btCreate.Text = "Create rule";
+            Logger = logger;
         }
         #endregion
 
@@ -85,33 +91,33 @@ namespace BalloonTrackAnalyze.ValidationControls
             int openAtMinute;
             if (!int.TryParse(tbOpenAtMinute.Text, out openAtMinute))
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Open at Minute '{tbOpenAtMinute.Text}' as integer");
+                Logger?.LogError("Failed to create/modify marker timing rule: failed to parse Open at Minute '{openAtMinute}' as integer",tbOpenAtMinute.Text);
                 isDataValid = false;
             }
             if (openAtMinute < 0)
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Open at Minute '{openAtMinute}' must be greater than zero");
+                Logger?.LogError("Open at Minute '{openAtMinute}' must be greater than zero", openAtMinute);
                 isDataValid = false;
             }
             if (openAtMinute > 59)
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Open at Minute '{openAtMinute}' must be less than 59");
+                Logger?.LogError("Open at Minute '{openAtMinute}' must be less than 59", openAtMinute);
                 isDataValid = false;
             }
             int closeAtMinute;
             if (!int.TryParse(tbCloseAtMinute.Text, out closeAtMinute))
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Close at Minute '{tbCloseAtMinute.Text}' as integer");
+                Logger?.LogError("Failed to parse Close at Minute '{tbCloseAtMinute}' as integer", tbCloseAtMinute.Text);
                 isDataValid = false;
             }
             if (closeAtMinute < 0)
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Close at Minute '{closeAtMinute}' must be greater than zero");
+                Logger?.LogError("Close at Minute '{closeAtMinute}' must be greater than zero", closeAtMinute);
                 isDataValid = false;
             }
             if (closeAtMinute > 59)
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Close at Minute '{closeAtMinute}' must be less than 59");
+                Logger?.LogError("Close at Minute '{closeAtMinute}' must be less than 59", closeAtMinute);
                 isDataValid = false;
             }
 
@@ -132,16 +138,6 @@ namespace BalloonTrackAnalyze.ValidationControls
         protected virtual void OnDataValid()
         {
             DataValid?.Invoke();
-        }
-
-        /// <summary>
-        /// Logs a user message
-        /// </summary>
-        /// <param name="logSeverity">the severity of the message</param>
-        /// <param name="text">the message text</param>
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
         }
         #endregion
     }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Coordinates.Configuration;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,16 +9,11 @@ namespace Coordinates.Parsers
 {
     public static class FAILoggerParser
     {
-        private static ILoggerFactory LoggerFactory
-        {
-            get; set;
-        }
-
         private static ILogger Logger
         {
             get
             {
-                return LoggerFactory.CreateLogger(nameof(FAILoggerParser));
+                return CoordinatesLoggingConnector.LoggerFactory.CreateLogger(nameof(FAILoggerParser));
             }
         }
 
@@ -39,13 +35,13 @@ namespace Coordinates.Parsers
             FileInfo fileInfo = new($@"{fileNameAndPath}");
             if (!fileInfo.Exists)
             {
-                Logger.LogError("Failed to parse file '{fileNameAndPath}': the file does not exists", fileNameAndPath);
+                Logger?.LogError("Failed to parse file '{fileNameAndPath}': the file does not exists", fileNameAndPath);
                 return false;
             }
 
             if (!fileInfo.Extension.EndsWith("igc"))
             {
-                Logger.LogError("Failed to parse file '{fileNameAndPath}': the file extension '{fileInfo.Extension}' is not supported", fileNameAndPath, fileInfo.Extension);
+                Logger?.LogError("Failed to parse file '{fileNameAndPath}': the file extension '{fileInfo.Extension}' is not supported", fileNameAndPath, fileInfo.Extension);
                 return false;
             }
 
@@ -68,12 +64,12 @@ namespace Coordinates.Parsers
             string[] identifierLine = lines.Where(x => x.StartsWith("AXXX")).ToArray();
             if (identifierLine.Length == 0)
             {
-                Logger.LogError("Line with Pilot Identifier 'AXXX' is missing");
+                Logger?.LogError("Line with Pilot Identifier 'AXXX' is missing");
                 return false;
             }
             if (identifierLine.Length > 1)
             {
-                Logger.LogError("More the one line with Pilot Identifier were found. First occurrence will be used");
+                Logger?.LogError("More the one line with Pilot Identifier were found. First occurrence will be used");
             }
             pilotIdentifier = identifierLine[0].Replace("AXXX", "").Replace("Balloon Competition Logger", "");
 
@@ -86,19 +82,19 @@ namespace Coordinates.Parsers
                     int day;
                     if (!int.TryParse(line[0..2], out day))
                     {
-                        Logger.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the day portion for date form '{portion}' in line '{line}'", fileNameAndPath, line[0..2], line);
+                        Logger?.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the day portion for date form '{portion}' in line '{line}'", fileNameAndPath, line[0..2], line);
                         return false;
                     }
                     int month;
                     if (!int.TryParse(line[2..4], out month))
                     {
-                        Logger.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the month portion for date form '{portion}' in line '{line}'", fileNameAndPath, line[2..4], line);
+                        Logger?.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the month portion for date form '{portion}' in line '{line}'", fileNameAndPath, line[2..4], line);
                         return false;
                     }
                     int year;
                     if (!int.TryParse(line[4..6], out year))
                     {
-                        Logger.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the year portion for date form '{portion}' in line '{line}'", fileNameAndPath, line[4..6], line);
+                        Logger?.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the year portion for date form '{portion}' in line '{line}'", fileNameAndPath, line[4..6], line);
                         return false;
                     }
                     year += 2000;
@@ -109,7 +105,7 @@ namespace Coordinates.Parsers
                     string pilotNumberText = headerLine.Replace("HFPID", "");
                     if (!int.TryParse(pilotNumberText, out pilotNumber))
                     {
-                        Logger.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the pilot number '{pilotNumberText}' in line '{headerLine}'", fileNameAndPath, pilotNumberText, headerLine);
+                        Logger?.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the pilot number '{pilotNumberText}' in line '{headerLine}'", fileNameAndPath, pilotNumberText, headerLine);
                         return false;
                     }
                 }
@@ -124,7 +120,7 @@ namespace Coordinates.Parsers
                     if (!int.TryParse(configLine[^1..^0], out digits))
                     {
 
-                        Logger.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the number of declaration digits '{declarationDigits}' in line '{configLine}'", fileNameAndPath, configLine[^1..^0], configLine);
+                        Logger?.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the number of declaration digits '{declarationDigits}' in line '{configLine}'", fileNameAndPath, configLine[^1..^0], configLine);
                         return false;
                     }
 
@@ -154,7 +150,7 @@ namespace Coordinates.Parsers
                 Coordinate coordinate;
                 if (!ParseTrackPoint(trackPointLine, date, out coordinate))
                 {
-                    Logger.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the trackpoint '{trackPointLine}'", fileNameAndPath, trackPointLine);
+                    Logger?.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the trackpoint '{trackPointLine}'", fileNameAndPath, trackPointLine);
                     return false;
                 }
                 track.TrackPoints.Add(coordinate);
@@ -166,7 +162,7 @@ namespace Coordinates.Parsers
                 MarkerDrop markerDrop;
                 if (!ParseMarkerDrop(markerDropLine, date, out markerDrop))
                 {
-                    Logger.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the marker drop '{markerDropLine}'", fileNameAndPath, markerDropLine);
+                    Logger?.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the marker drop '{markerDropLine}'", fileNameAndPath, markerDropLine);
                     return false;
                 }
                 track.MarkerDrops.Add(markerDrop);
@@ -182,12 +178,12 @@ namespace Coordinates.Parsers
                     else
                     {
                         referenceCoordinate = track.MarkerDrops[0].MarkerLocation;
-                        Logger.LogWarning("No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference", track.MarkerDrops[0].MarkerNumber);
+                        Logger?.LogWarning("No marker 1 dropped. Marker '{track.MarkerDrops[0].MarkerNumber}' will be used as goal declaration reference", track.MarkerDrops[0].MarkerNumber);
                     }
                 }
                 else
                 {
-                    Logger.LogWarning("No marker drops found. Position at declaration will be used as reference instead");
+                    Logger?.LogWarning("No marker drops found. Position at declaration will be used as reference instead");
                 }
             }
             string[] goalDeclarationLines = lines.Where(x => x.StartsWith('E') && x.Contains("XX1")).ToArray();
@@ -204,7 +200,7 @@ namespace Coordinates.Parsers
                         {
                             if (!ParseTrackPoint(lines[index], date, out positionAtDeclaration))
                             {
-                                Logger.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the trackpoint as position of declaration '{lines[index]}'", fileNameAndPath, lines[index]);
+                                Logger?.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the trackpoint as position of declaration '{lines[index]}'", fileNameAndPath, lines[index]);
                                 return false;
                             }
                             index = 0;
@@ -215,13 +211,13 @@ namespace Coordinates.Parsers
                 }
                 if (positionAtDeclaration is null)
                 {
-                    Logger.LogError("Failed to parse file '{fileNameAndPath}': cannot find a trackpoint as position of declaration", fileNameAndPath);
+                    Logger?.LogError("Failed to parse file '{fileNameAndPath}': cannot find a trackpoint as position of declaration", fileNameAndPath);
                     return false;
                 }
                 Declaration declaration;
                 if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, goalNortingDigits, goalEastingDigits, referenceCoordinate, positionAtDeclaration, out declaration))
                 {
-                    Logger.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the goal declaration '{goalDeclarationLine}'", fileNameAndPath, goalDeclarationLine);
+                    Logger?.LogError("Failed to parse file '{fileNameAndPath}': cannot parse the goal declaration '{goalDeclarationLine}'", fileNameAndPath, goalDeclarationLine);
                     return false;
                 }
                 track.Declarations.Add(declaration);
@@ -252,20 +248,20 @@ namespace Coordinates.Parsers
             DateTime timeStamp;
             if (!ParseTimeStamp(line, date, out timeStamp))
             {
-                Logger.LogError("Failed to parse track point: cannot parse the time stamp in line '{line}'", line);
+                Logger?.LogError("Failed to parse track point: cannot parse the time stamp in line '{line}'", line);
                 return false;
             }
 
             double latitude;
             if (!ParseLatitude(line[7..15], out latitude))
             {
-                Logger.LogError("Failed to parse track point: cannot parse the latitude portion '{portion}' in line '{line}'", line[7..15], line);
+                Logger?.LogError("Failed to parse track point: cannot parse the latitude portion '{portion}' in line '{line}'", line[7..15], line);
                 return false;
             }
             double longitude;
             if (!ParseLongitude(line[15..24], out longitude))
             {
-                Logger.LogError("Failed to parse track point: cannot parse the longitude portion '{portion}' in line '{line}'", line[15..24], line);
+                Logger?.LogError("Failed to parse track point: cannot parse the longitude portion '{portion}' in line '{line}'", line[15..24], line);
                 return false;
             }
 
@@ -273,14 +269,14 @@ namespace Coordinates.Parsers
             double altitudeBarometric;
             if (!double.TryParse(line[25..30], out altitudeBarometric))
             {
-                Logger.LogError("Failed to parse track point: cannot parse the barometric altitude portion '{portion}' in line '{line}'", line[25..30], line);
+                Logger?.LogError("Failed to parse track point: cannot parse the barometric altitude portion '{portion}' in line '{line}'", line[25..30], line);
                 return false;
             }
 
             double altitudeGPS;
             if (!double.TryParse(line[30..35], out altitudeGPS))
             {
-                Logger.LogError("Failed to parse track point: cannot parse the GPS altitude portion '{portion}' in line '{line}'", line[30..35], line);
+                Logger?.LogError("Failed to parse track point: cannot parse the GPS altitude portion '{portion}' in line '{line}'", line[30..35], line);
                 return false;
             }
             coordinate = new Coordinate(latitude, longitude, altitudeGPS, altitudeBarometric, timeStamp);
@@ -309,13 +305,13 @@ namespace Coordinates.Parsers
             DateTime timeStamp;
             if (!ParseTimeStamp(line, date, out timeStamp))
             {
-                Logger.LogError("Failed to parse goal declaration: cannot parse the time stamp in line '{line}'", line);
+                Logger?.LogError("Failed to parse goal declaration: cannot parse the time stamp in line '{line}'", line);
                 return false;
             }
             int goalNumber;
             if (!int.TryParse(line[10..12], out goalNumber))
             {
-                Logger.LogError("Failed to parse goal declaration: cannot parse the goal number portion '{portion}' in line '{line}'", line[10..12], line);
+                Logger?.LogError("Failed to parse goal declaration: cannot parse the goal number portion '{portion}' in line '{line}'", line[10..12], line);
                 return false;
             }
             int originalEastingDeclarationUTM;
@@ -323,7 +319,7 @@ namespace Coordinates.Parsers
             int eastingStartCharacter = 12;
             if (!int.TryParse(line[eastingStartCharacter..(eastingStartCharacter + eastingDigits)], out originalEastingDeclarationUTM))
             {
-                Logger.LogError("Failed to parse goal declaration: cannot parse the easting portion '{portion}' in line '{line}'", line[eastingStartCharacter..(eastingStartCharacter + eastingDigits)], line);
+                Logger?.LogError("Failed to parse goal declaration: cannot parse the easting portion '{portion}' in line '{line}'", line[eastingStartCharacter..(eastingStartCharacter + eastingDigits)], line);
                 return false;
             }
             int originalNorthingDeclarationUTM;
@@ -331,7 +327,7 @@ namespace Coordinates.Parsers
             int northingStartCharacter = eastingStartCharacter + eastingDigits + 1;
             if (!int.TryParse(line[northingStartCharacter..(northingStartCharacter + northingDigits)], out originalNorthingDeclarationUTM))
             {
-                Logger.LogError("Failed to parse goal declaration: cannot parse the northing portion '{portion}' in line '{line}'", line[northingStartCharacter..(northingStartCharacter + northingDigits)], line);
+                Logger?.LogError("Failed to parse goal declaration: cannot parse the northing portion '{portion}' in line '{line}'", line[northingStartCharacter..(northingStartCharacter + northingDigits)], line);
                 return false;
             }
             string[] parts = line.Split(',');
@@ -346,7 +342,7 @@ namespace Coordinates.Parsers
 
                     if (!int.TryParse(parts[1], out declaredAltitude))
                     {
-                        Logger.LogError("Failed to parse goal declaration: cannot parse the altitude portion '{portion}' in line '{line}'", parts[1], line);
+                        Logger?.LogError("Failed to parse goal declaration: cannot parse the altitude portion '{portion}' in line '{line}'", parts[1], line);
                         return false;
                     }
                     if (declaredAltitudeIsInFeet)
@@ -358,14 +354,14 @@ namespace Coordinates.Parsers
                 {
                     hasPilotDeclaredGoalAltitude = false;
                     declaredAltitudeInMeter = 0.0;
-                    Logger.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed", goalNumber);
+                    Logger?.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed", goalNumber);
                 }
             }
             else
             {
                 hasPilotDeclaredGoalAltitude = false;
                 declaredAltitudeInMeter = 0.0;
-                Logger.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed", goalNumber);
+                Logger?.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed", goalNumber);
             }
 
 
@@ -422,40 +418,40 @@ namespace Coordinates.Parsers
             DateTime timeStamp;
             if (!ParseTimeStamp(line, date, out timeStamp))
             {
-                Logger.LogError("Failed to parse marker drop: cannot parse the time stamp in line '{line}'", line);
+                Logger?.LogError("Failed to parse marker drop: cannot parse the time stamp in line '{line}'", line);
                 return false;
             }
             int markerNumber;
             if (!int.TryParse(line[10..12], out markerNumber))
             {
-                Logger.LogError("Failed to parse marker drop: cannot parse the marker number portion '{portion}' in line '{line}'", line[10..12], line);
+                Logger?.LogError("Failed to parse marker drop: cannot parse the marker number portion '{portion}' in line '{line}'", line[10..12], line);
                 return false;
             }
 
             double latitude;
             if (!ParseLatitude(line[12..20], out latitude))
             {
-                Logger.LogError("Failed to parse marker drop: cannot parse the latitude portion '{portion}' in line '{line}'", line[12..20], line);
+                Logger?.LogError("Failed to parse marker drop: cannot parse the latitude portion '{portion}' in line '{line}'", line[12..20], line);
                 return false;
             }
             double longitude;
             if (!ParseLongitude(line[20..29], out longitude))
             {
-                Logger.LogError("Failed to parse marker drop: cannot parse the longitude portion '{portion}' in line '{line}'", line[20..29], line);
+                Logger?.LogError("Failed to parse marker drop: cannot parse the longitude portion '{portion}' in line '{line}'", line[20..29], line);
                 return false;
             }
 
             double altitudeBarometric;
             if (!double.TryParse(line[30..35], out altitudeBarometric))
             {
-                Logger.LogError("Failed to parse marker drop: cannot parse the barometric altitude portion '{portion}' in line '{line}'", line[30..35], line);
+                Logger?.LogError("Failed to parse marker drop: cannot parse the barometric altitude portion '{portion}' in line '{line}'", line[30..35], line);
                 return false;
             }
 
             double altitudeGPS;
             if (!double.TryParse(line[35..40], out altitudeGPS))
             {
-                Logger.LogError("Failed to parse marker drop: cannot parse the GPS altitude portion '{portion}' in line '{line}'", line[35..40], line);
+                Logger?.LogError("Failed to parse marker drop: cannot parse the GPS altitude portion '{portion}' in line '{line}'", line[35..40], line);
                 return false;
             }
             Coordinate coordinate = new(latitude, longitude, altitudeGPS, altitudeBarometric, timeStamp);
@@ -480,19 +476,19 @@ namespace Coordinates.Parsers
             else
             {
                 factor = double.NaN;
-                Logger.LogError("Failed to parse latitude text. Unexpected suffix '{latitudeText[^1]}'", latitudeText[^1]);
+                Logger?.LogError("Failed to parse latitude text. Unexpected suffix '{latitudeText[^1]}'", latitudeText[^1]);
                 return false;
             }
             double fullAngle = double.NaN;
             if (!double.TryParse(latitudeText[0..2], out fullAngle))
             {
-                Logger.LogError("Failed to parse latitude full angle portion '{portion}' from '{latitudeText}'", latitudeText[0..2], latitudeText);
+                Logger?.LogError("Failed to parse latitude full angle portion '{portion}' from '{latitudeText}'", latitudeText[0..2], latitudeText);
                 return false;
             }
             double decimalAngle = double.NaN;
             if (!double.TryParse(latitudeText[2..7], out decimalAngle))
             {
-                Logger.LogError("Failed to parse latitude decimal angle portion '{portion}' from '{latitudeText}'", latitudeText[2..7], latitudeText);
+                Logger?.LogError("Failed to parse latitude decimal angle portion '{portion}' from '{latitudeText}'", latitudeText[2..7], latitudeText);
                 return false;
             }
             decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal angles
@@ -518,19 +514,19 @@ namespace Coordinates.Parsers
             else
             {
                 factor = double.NaN;
-                Logger.LogError("Failed to parse longitude text. Unexpected suffix '{longitudeText[^1]}'", longitudeText[^1]);
+                Logger?.LogError("Failed to parse longitude text. Unexpected suffix '{longitudeText[^1]}'", longitudeText[^1]);
                 return false;
             }
             double fullAngle = double.NaN;
             if (!double.TryParse(longitudeText[0..3], out fullAngle))
             {
-                Logger.LogError("Failed to parse longitude full angle portion '{portion}' from '{longitudeText}'", longitudeText[0..3], longitudeText);
+                Logger?.LogError("Failed to parse longitude full angle portion '{portion}' from '{longitudeText}'", longitudeText[0..3], longitudeText);
                 return false;
             }
             double decimalAngle = double.NaN;
             if (!double.TryParse(longitudeText[3..8], out decimalAngle))
             {
-                Logger.LogError("Failed to parse longitude decimal angle portion '{portion}' from '{longitudeText}'", longitudeText[3..8], longitudeText);
+                Logger?.LogError("Failed to parse longitude decimal angle portion '{portion}' from '{longitudeText}'", longitudeText[3..8], longitudeText);
                 return false;
             }
             decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal angles
@@ -553,19 +549,19 @@ namespace Coordinates.Parsers
             timeStamp = date;
             if (!int.TryParse(time[0..2], out hours))
             {
-                Logger.LogError("Failed to parse hour portion '{portion}' in line '{line}'", time[0..2], line);
+                Logger?.LogError("Failed to parse hour portion '{portion}' in line '{line}'", time[0..2], line);
                 return false;
             }
             int minutes;
             if (!int.TryParse(time[2..4], out minutes))
             {
-                Logger.LogError("Failed to parse minute portion '{portion}' in line '{line}'", time[2..4], line);
+                Logger?.LogError("Failed to parse minute portion '{portion}' in line '{line}'", time[2..4], line);
                 return false;
             }
             int seconds;
             if (!int.TryParse(time[4..6], out seconds))
             {
-                Logger.LogError("Failed to parse second portion '{portion}' in line '{line}'", time[4..6], line);
+                Logger?.LogError("Failed to parse second portion '{portion}' in line '{line}'", time[4..6], line);
                 return false;
             }
             timeStamp = date.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
