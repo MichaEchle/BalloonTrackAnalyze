@@ -99,7 +99,6 @@ namespace BalloonTrackAnalyze.ValidationControls
         private void btCreate_Click(object sender, EventArgs e)
         {
             bool isDataValid = true;
-            string functionErrorMessage = "Failed to create/modify goal to other goals distance rule: ";
             double minimumDistance = double.NaN;
             if (!string.IsNullOrWhiteSpace(tbMinimumDistance.Text))
             {
@@ -145,10 +144,10 @@ namespace BalloonTrackAnalyze.ValidationControls
                 }
             }
 
-            List<int> goalNumbers = new List<int>();
+            List<int> goalNumbers = [];
             if (!string.IsNullOrWhiteSpace(tbGoalNumbers.Text))
-                if (tbGoalNumbers.Text.ToLowerInvariant() != "all")
-                    goalNumbers = Array.ConvertAll(tbGoalNumbers.Text.Split(','), int.Parse).ToList();
+                if (!tbGoalNumbers.Text.Equals("all", StringComparison.InvariantCultureIgnoreCase))
+                    goalNumbers = [.. Array.ConvertAll(tbGoalNumbers.Text.Split(','), int.Parse)];
 
 
 

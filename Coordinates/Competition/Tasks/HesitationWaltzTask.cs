@@ -23,7 +23,7 @@ namespace Competition
         public List<Coordinate> Goals
         {
             get; set;
-        } = new List<Coordinate>();
+        } = [];
 
         public int MarkerNumber
         {
@@ -57,14 +57,14 @@ namespace Competition
             result = double.NaN;
             if (!ValidationHelper.IsMarkerValid(track, MarkerNumber, MarkerValidationRules))
             {
-                Logger.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), MarkerNumber);
+                Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), MarkerNumber);
                 return false;
             }
 
             MarkerDrop markerDrop = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == MarkerNumber);
             if (markerDrop != null)
             {
-                List<double> distances = new List<double>();
+                List<double> distances = [];
                 result = 0.0;
 
                 if (Goals.Count == 0 && CalculateGoals != null)
@@ -74,13 +74,13 @@ namespace Competition
                         Goals = CalculateGoals(track);
                         if (Goals.Count == 0)
                         {
-                            Logger.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No goals could be calculated", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+                            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No goals could be calculated", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
                             return false;
                         }
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError(ex,"Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}'", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+                        Logger?.LogError(ex,"Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}'", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
                         return false;
                     }
                 }

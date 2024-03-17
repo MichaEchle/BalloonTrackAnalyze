@@ -87,11 +87,9 @@ namespace BalloonTrackAnalyze.ValidationControls
         private void btCreate_Click(object sender, EventArgs e)
         {
             bool isDataValid = true;
-            string functionErrorMessage = "Failed to create/modify marker timing rule: ";
-            int openAtMinute;
-            if (!int.TryParse(tbOpenAtMinute.Text, out openAtMinute))
+            if (!int.TryParse(tbOpenAtMinute.Text, out int openAtMinute))
             {
-                Logger?.LogError("Failed to create/modify marker timing rule: failed to parse Open at Minute '{openAtMinute}' as integer",tbOpenAtMinute.Text);
+                Logger?.LogError("Failed to create/modify marker timing rule: failed to parse Open at Minute '{openAtMinute}' as integer", tbOpenAtMinute.Text);
                 isDataValid = false;
             }
             if (openAtMinute < 0)
@@ -104,8 +102,7 @@ namespace BalloonTrackAnalyze.ValidationControls
                 Logger?.LogError("Open at Minute '{openAtMinute}' must be less than 59", openAtMinute);
                 isDataValid = false;
             }
-            int closeAtMinute;
-            if (!int.TryParse(tbCloseAtMinute.Text, out closeAtMinute))
+            if (!int.TryParse(tbCloseAtMinute.Text, out int closeAtMinute))
             {
                 Logger?.LogError("Failed to parse Close at Minute '{tbCloseAtMinute}' as integer", tbCloseAtMinute.Text);
                 isDataValid = false;

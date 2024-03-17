@@ -15,23 +15,22 @@ namespace TestProgramm
 
         public static void CalcFlight3()
         {
-            DirectoryInfo directoryInfo = new DirectoryInfo(@"\\esdmob1\TGS2021\Tracks\E[DM2021]F[3]");
+            DirectoryInfo directoryInfo = new(@"\\esdmob1\TGS2021\Tracks\E[DM2021]F[3]");
             FileInfo[] files = directoryInfo.GetFiles("*.igc");
-            Track track;
             Coordinates.Coordinate goalTask7 = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32T", 705906, 5295258);
             Coordinates.Coordinate goalTask8 = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32T", 704000, 5295000);
-            List<Track> tracks = new List<Track>();
+            List<Track> tracks = [];
             foreach (FileInfo fileInfo in files)
             {
-                if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out track))
+                if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out Track track))
                 {
                     Console.WriteLine($"Failed to parse track '{fileInfo.FullName}'");
                     continue;
                 }
                 tracks.Add(track);
             }
-            tracks = tracks.OrderBy(x => x.Pilot.PilotNumber).ToList();
-            using (StreamWriter writer = new StreamWriter(@"C:\Temp\F[3]_ILPChecks.csv"))
+            tracks = [.. tracks.OrderBy(x => x.Pilot.PilotNumber)];
+            using (StreamWriter writer = new(@"C:\Temp\F[3]_ILPChecks.csv"))
             {
                 writer.WriteLine("PilotNumber,LaunchPoint,TOBeforeEoSP,Dist T7,Dist T7 Ok,Dist T8,Dist T8 OK,Dist T9,Dist T9 OK");
                 foreach (Track currentTrack in tracks)
@@ -39,7 +38,7 @@ namespace TestProgramm
                     writer.WriteLine(CheckILP(currentTrack, goalTask7, goalTask8));
                 }
             }
-            using (StreamWriter writer = new StreamWriter(@"C:\Temp\F[3]_ResultsT7.csv"))
+            using (StreamWriter writer = new(@"C:\Temp\F[3]_ResultsT7.csv"))
             {
                 writer.WriteLine("PilotNumber,Result,MarkerTime,InScoringPeriod");
                 foreach (Track currentTrack in tracks)
@@ -47,7 +46,7 @@ namespace TestProgramm
                     writer.WriteLine(CalculateResultsTask7(currentTrack, goalTask7));
                 }
             }
-            using (StreamWriter writer = new StreamWriter(@"C:\Temp\F[3]_ResultsT8.csv"))
+            using (StreamWriter writer = new(@"C:\Temp\F[3]_ResultsT8.csv"))
             {
                 writer.WriteLine("PilotNumber,Result,Dist M2 G8,Dist M2 G8 Ok,Dist M3 G8,Dist M3 G8 ok,Angle,Angle comment,Marker2Time,Marker3Time,InScoringPeriod");
                 foreach (Track currentTrack in tracks)
@@ -56,7 +55,7 @@ namespace TestProgramm
                 }
 
             }
-            using (StreamWriter writer = new StreamWriter(@"C:\Temp\F[3]_ResultsT9.csv"))
+            using (StreamWriter writer = new(@"C:\Temp\F[3]_ResultsT9.csv"))
             {
                 writer.WriteLine("PilotNumber,Result,No Dec, Dist Dec To G1, Dist Dec to G1 Ok,Dec to G1 infring,Dec to G1 penalty,Dist G1 to T7,Dist G1 to T7 Ok, G1 to T7 infring,G1 to T7 penalty,Dist G1 to T8,Dist G1 to T8 Ok, G1 to T8 infring,G1 to T8 penalty,Marker Time,In Scoring Period");
                 foreach (Track currentTrack in tracks)
@@ -70,11 +69,10 @@ namespace TestProgramm
 
         private static string CheckILP(Track track, Coordinates.Coordinate goalTask7, Coordinates.Coordinate goalTask8)
         {
-            Coordinates.Coordinate launchPoint;
             //Coordinate landingPoint;
-            TrackHelpers.EstimateLaunchAndLandingTime(track, true, out launchPoint, out _);
+            TrackHelpers.EstimateLaunchAndLandingTime(track, true, out Coordinate launchPoint, out _);
 
-            DateTime endOfStartPeriod = new DateTime(2021, 10, 8, 16, 0, 0);
+            DateTime endOfStartPeriod = new(2021, 10, 8, 16, 0, 0);
             bool launchedBeforeStartPeriod = launchPoint.TimeStamp < endOfStartPeriod;
             double distanceT7 = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, goalTask7);
             bool distanceT7Ok = distanceT7 >= 1000.0;

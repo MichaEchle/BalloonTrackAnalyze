@@ -33,7 +33,7 @@ namespace TrackReportGenerator
         private async void btSelectFiles_Click(object sender, EventArgs e)
         {
             progressBar1.Value = 0;
-            OpenFileDialog openFileDialog = new OpenFileDialog();
+            OpenFileDialog openFileDialog = new();
             if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.InitalDirectory))
                 openFileDialog.InitialDirectory = Properties.Settings.Default.InitalDirectory;
             openFileDialog.Title = "Select .igc files";
@@ -85,10 +85,9 @@ namespace TrackReportGenerator
                 }
                 if (rbBallonLiveParser.Checked)
                 {
-                    string changeOfPositionSource;
-                    if (track.AdditionalPropertiesFromIGCFile.TryGetValue("Change of position source", out changeOfPositionSource))
+                    if (track.AdditionalPropertiesFromIGCFile.TryGetValue("Change of position source", out string changeOfPositionSource))
                     {
-                        if (changeOfPositionSource.ToLower() == "yes")
+                        if (changeOfPositionSource.Equals("yes", StringComparison.CurrentCultureIgnoreCase))
                         {
                             Logger?.LogWarning("Caution: change of position source has been detected, refer the log for more details");
                             //   MessageBox.Show("Caution: change of position source has been detected, refer the log for more details");
@@ -157,10 +156,9 @@ namespace TrackReportGenerator
 
         private void tbMaxAltitude_Leave(object sender, EventArgs e)
         {
-            double tempMaxAltitude;
-            if (!double.TryParse(tbMaxAltitude.Text, out tempMaxAltitude))
+            if (!double.TryParse(tbMaxAltitude.Text, out double tempMaxAltitude))
             {
-                Logger?.LogError("Failed to parse '{maxAltitude}' as double. Please enter a number",tbMaxAltitude.Text);
+                Logger?.LogError("Failed to parse '{maxAltitude}' as double. Please enter a number", tbMaxAltitude.Text);
                 return;
             }
             if (rbMeter.Checked)

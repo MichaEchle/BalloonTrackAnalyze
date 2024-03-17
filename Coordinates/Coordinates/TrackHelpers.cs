@@ -24,7 +24,7 @@ namespace Coordinates
         /// <returns>a list with the 2D distances</returns>
         public static List<double> Calculate2DDistanceBetweenPositionOfDeclarationAndDeclaredGoal(List<Declaration> declarations)
         {
-            List<double> distance2DBetweenPositionOfDeclarationsAndDeclaredGoal = new List<double>();
+            List<double> distance2DBetweenPositionOfDeclarationsAndDeclaredGoal = [];
             foreach (Declaration declaration in declarations)
             {
                 distance2DBetweenPositionOfDeclarationsAndDeclaredGoal.Add(CoordinateHelpers.Calculate2DDistanceHavercos(declaration.PositionAtDeclaration, declaration.DeclaredGoal));
@@ -40,7 +40,7 @@ namespace Coordinates
         /// <returns>a list with the 3D distances</returns>
         public static List<double> Calculate3DDistanceBetweenPositionOfDeclarationAndDeclaredGoal(List<Declaration> declarations, bool useGPSAltitude)
         {
-            List<double> distance3DBetweenPositionOfDeclarationsAndDeclaredGoal = new List<double>();
+            List<double> distance3DBetweenPositionOfDeclarationsAndDeclaredGoal = [];
             foreach (Declaration declaration in declarations)
             {
                 distance3DBetweenPositionOfDeclarationsAndDeclaredGoal.Add(CoordinateHelpers.Calculate3DDistance(declaration.PositionAtDeclaration, declaration.DeclaredGoal, useGPSAltitude));
@@ -55,7 +55,7 @@ namespace Coordinates
         /// <returns>the list of 2D distances</returns>
         public static List<(string identifier, double distance)> Calculate2DDistanceBetweenDeclaredGoals(List<Declaration> declarations)
         {
-            List<(string identifier, double distance)> distance2DBetweenDeclaredGoals = new List<(string identifier, double distance)>();
+            List<(string identifier, double distance)> distance2DBetweenDeclaredGoals = [];
             for (int index = 0; index < declarations.Count; index++)
             {
                 bool useTimeStamp = declarations.Where(x => x.GoalNumber == declarations[index].GoalNumber).Count() > 1;
@@ -81,7 +81,7 @@ namespace Coordinates
         /// <returns>the list of 3D distances</returns>
         public static List<(string identifier, double distance)> Calculate3DDistanceBetweenDeclaredGoals(List<Declaration> declarations, bool useGPSAltitude)
         {
-            List<(string identifier, double distance)> distance3DBetweenDeclaredGoals = new List<(string identifier, double distance)>();
+            List<(string identifier, double distance)> distance3DBetweenDeclaredGoals = [];
             for (int index = 0; index < declarations.Count; index++)
             {
                 bool useTimeStamp = declarations.Where(x => x.GoalNumber == declarations[index].GoalNumber).Count() > 1;
@@ -106,7 +106,7 @@ namespace Coordinates
         /// <returns>the list of 2D distances</returns>
         public static List<(string identifier, double distance)> Calculate2DDistanceBetweenMarkers(List<MarkerDrop> markerDrops)
         {
-            List<(string identifier, double distance)> distance2DBetweenMarkers = new List<(string identifier, double distance)>();
+            List<(string identifier, double distance)> distance2DBetweenMarkers = [];
             for (int index = 0; index < markerDrops.Count; index++)
             {
                 bool useTimeStamp = markerDrops.Where(x => x.MarkerNumber == markerDrops[index].MarkerNumber).Count() > 1;
@@ -132,7 +132,7 @@ namespace Coordinates
         /// <returns>the list of 2D distances</returns>
         public static List<(string identifier, double distance)> Calculate3DDistanceBetweenMarkers(List<MarkerDrop> markerDrops, bool useGPSAltitude)
         {
-            List<(string identifier, double distance)> distance3DBetweenMarkers = new List<(string identifier, double distance)>();
+            List<(string identifier, double distance)> distance3DBetweenMarkers = [];
             for (int index = 0; index < markerDrops.Count; index++)
             {
                 bool useTimeStamp = markerDrops.Where(x => x.MarkerNumber == markerDrops[index].MarkerNumber).Count() > 1;
@@ -152,7 +152,7 @@ namespace Coordinates
 
         public static List<(string identifier, double distance)> Calculate2DDistanceBetweenMarkerAndGoals(List<Declaration> declarations, List<MarkerDrop> markerDrops)
         {
-            List<(string identifier, double distance)> distance2DBetweenMarkerAndGoals = new List<(string identifier, double distance)>();
+            List<(string identifier, double distance)> distance2DBetweenMarkerAndGoals = [];
             foreach (Declaration declaration in declarations)
             {
                 foreach (MarkerDrop markerDrop in markerDrops)
@@ -167,7 +167,7 @@ namespace Coordinates
 
         public static List<(string identifier, double distance)> Calculate3DDistanceBetweenMarkerAndGoals(List<Declaration> declarations, List<MarkerDrop> markerDrops, bool useGPSAltitude)
         {
-            List<(string identifier, double distance)> distance3DBetweenMarkerAndGoals = new List<(string identifier, double distance)>();
+            List<(string identifier, double distance)> distance3DBetweenMarkerAndGoals = [];
             foreach (Declaration declaration in declarations)
             {
                 foreach (MarkerDrop markerDrop in markerDrops)
@@ -182,7 +182,7 @@ namespace Coordinates
 
         public static List<(string identifier, double distance)> Calculate2DDistanceBetweenLaunchPointAndGoals(Coordinate launchPoint, List<Declaration> declarations)
         {
-            List<(string identifier, double distance)> distance2DBetweenLaunchPointAndGoals = new List<(string identifier, double distance)>();
+            List<(string identifier, double distance)> distance2DBetweenLaunchPointAndGoals = [];
             foreach (Declaration declaration in declarations)
             {
                 string idenifier = $"TO->G{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}";
@@ -193,7 +193,7 @@ namespace Coordinates
         }
         public static List<(string identifier, double distance)> Calculate3DDistanceBetweenLaunchPointAndGoals(Coordinate launchPoint, List<Declaration> declarations, bool useGPSAltitude)
         {
-            List<(string identifier, double distance)> distance2DBetweenLaunchPointAndGoals = new List<(string identifier, double distance)>();
+            List<(string identifier, double distance)> distance2DBetweenLaunchPointAndGoals = [];
             foreach (Declaration declaration in declarations)
             {
                 string idenifier = $"TO->G{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}";
@@ -205,7 +205,7 @@ namespace Coordinates
 
         public static List<(string identifier, double distance)> Calculate2DDistanceBetweenLandingPointAndGoals(Coordinate landingPoint, List<Declaration> declarations)
         {
-            List<(string identifier, double distance)> distance2DBetweenLandingPointAndGoals = new List<(string identifier, double distance)>();
+            List<(string identifier, double distance)> distance2DBetweenLandingPointAndGoals = [];
             foreach (Declaration declaration in declarations)
             {
                 string idenifier = $"TD->Goal{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}";
@@ -216,7 +216,7 @@ namespace Coordinates
         }
         public static List<(string identifier, double distance)> Calculate3DDistanceBetweenLandingPointAndGoals(Coordinate landingPoint, List<Declaration> declarations, bool useGPSAltitude)
         {
-            List<(string identifier, double distance)> distance2DBetweenLandingPointAndGoals = new List<(string identifier, double distance)>();
+            List<(string identifier, double distance)> distance2DBetweenLandingPointAndGoals = [];
             foreach (Declaration declaration in declarations)
             {
                 string idenifier = $"TD->Goal{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}";
@@ -228,11 +228,11 @@ namespace Coordinates
 
         public static List<(string identifier, double distance)> Calculate2DDistanceBetweenLaunchPointAndJudeDeclaredGoals(Coordinate launchPoint, List<(string goalName, Coordinate goalCoordinate)> judgeDeclaredGoals)
         {
-            List<(string identifier, double distance)> distance2DBetweenLaunchPointAndGoals = new List<(string identifier, double distance)>();
-            foreach ((string goalName, Coordinate goalCoordinate) judgeDeclaredGoal in judgeDeclaredGoals)
+            List<(string identifier, double distance)> distance2DBetweenLaunchPointAndGoals = [];
+            foreach ((string goalName, Coordinate goalCoordinate) in judgeDeclaredGoals)
             {
-                string identifier = $"TO->Goal{judgeDeclaredGoal.goalName}";
-                double distance = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, judgeDeclaredGoal.goalCoordinate);
+                string identifier = $"TO->Goal{goalName}";
+                double distance = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, goalCoordinate);
                 distance2DBetweenLaunchPointAndGoals.Add((identifier, distance));
             }
             return distance2DBetweenLaunchPointAndGoals;
@@ -240,11 +240,11 @@ namespace Coordinates
 
         public static List<(string identifier, double distance)> Calculate3DDistanceBetweenLaunchPointAndJudeDeclaredGoals(Coordinate launchPoint, List<(string goalName, Coordinate goalCoordinate)> judgeDeclaredGoals, bool useGPSAltitude)
         {
-            List<(string identifier, double distance)> distance3DBetweenLaunchPointAndGoals = new List<(string identifier, double distance)>();
-            foreach ((string goalName, Coordinate goalCoordinate) judgeDeclaredGoal in judgeDeclaredGoals)
+            List<(string identifier, double distance)> distance3DBetweenLaunchPointAndGoals = [];
+            foreach ((string goalName, Coordinate goalCoordinate) in judgeDeclaredGoals)
             {
-                string identifier = $"TO->Goal{judgeDeclaredGoal.goalName}";
-                double distance = CoordinateHelpers.Calculate3DDistance(launchPoint, judgeDeclaredGoal.goalCoordinate, useGPSAltitude);
+                string identifier = $"TO->Goal{goalName}";
+                double distance = CoordinateHelpers.Calculate3DDistance(launchPoint, goalCoordinate, useGPSAltitude);
                 distance3DBetweenLaunchPointAndGoals.Add((identifier, distance));
             }
             return distance3DBetweenLaunchPointAndGoals;
@@ -252,13 +252,13 @@ namespace Coordinates
 
         public static List<(string identifier, double distance)> Calculate2DDistanceBetweenPilotAndJudgeDeclaredGoals(List<Declaration> declarations, List<(string goalName, Coordinate goalCoordinate)> judgeDeclaredGoals)
         {
-            List<(string identifier, double distance)> distance2DBetweenPilotAndJudgeDeclaredGoals = new List<(string identifier, double distance)>();
+            List<(string identifier, double distance)> distance2DBetweenPilotAndJudgeDeclaredGoals = [];
             foreach (Declaration declaration in declarations)
             {
-                foreach ((string goalName, Coordinate goalCoordinate) judgeDeclaredGoal in judgeDeclaredGoals)
+                foreach ((string goalName, Coordinate goalCoordinate) in judgeDeclaredGoals)
                 {
-                    string identifier = $"Goal{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}->Goal{judgeDeclaredGoal.goalName}";
-                    double distance = CoordinateHelpers.Calculate2DDistanceHavercos(declaration.DeclaredGoal, judgeDeclaredGoal.goalCoordinate);
+                    string identifier = $"Goal{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}->Goal{goalName}";
+                    double distance = CoordinateHelpers.Calculate2DDistanceHavercos(declaration.DeclaredGoal, goalCoordinate);
                     distance2DBetweenPilotAndJudgeDeclaredGoals.Add((identifier, distance));
                 }
             }
@@ -267,13 +267,13 @@ namespace Coordinates
 
         public static List<(string identifier, double distance)> Calculate3DDistanceBetweenPilotAndJudgeDeclaredGoals(List<Declaration> declarations, List<(string goalName, Coordinate goalCoordinate)> judgeDeclaredGoals, bool useGPSAltitude)
         {
-            List<(string identifier, double distance)> distance3DBetweenPilotAndJudgeDeclaredGoals = new List<(string identifier, double distance)>();
+            List<(string identifier, double distance)> distance3DBetweenPilotAndJudgeDeclaredGoals = [];
             foreach (Declaration declaration in declarations)
             {
-                foreach ((string goalName, Coordinate goalCoordinate) judgeDeclaredGoal in judgeDeclaredGoals)
+                foreach ((string goalName, Coordinate goalCoordinate) in judgeDeclaredGoals)
                 {
-                    string identifier = $"Goal{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}->Goal{judgeDeclaredGoal.goalName}";
-                    double distance = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, judgeDeclaredGoal.goalCoordinate, useGPSAltitude);
+                    string identifier = $"Goal{declaration.GoalNumber}_{declaration.DeclaredGoal.TimeStamp:HH:mm:ss}->Goal{goalName}";
+                    double distance = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, goalCoordinate, useGPSAltitude);
                     distance3DBetweenPilotAndJudgeDeclaredGoals.Add((identifier, distance));
                 }
             }
@@ -287,15 +287,11 @@ namespace Coordinates
             try
             {
 
-                if (track is null)
-                {
-                    throw new ArgumentNullException(nameof(track));
-                }
+                ArgumentNullException.ThrowIfNull(track);
 
                 List<double> altitudesFiltered;
 
-                List<Coordinate> cleanedUpTrackPoints;
-                CleanTrackPoints(track, useGPSAltitude, 15.0, out cleanedUpTrackPoints);
+                CleanTrackPoints(track, useGPSAltitude, 15.0, out List<Coordinate> cleanedUpTrackPoints);
 
                 if (useGPSAltitude)
                     altitudesFiltered = cleanedUpTrackPoints.Select(x => x.AltitudeGPS).ToList();
@@ -313,7 +309,7 @@ namespace Coordinates
                     int filterStart = index - halfFilterLength;
                     altitudesFiltered[index] = Math.Round(altitudesFiltered.GetRange(filterStart, filterLength).Average(), 0, MidpointRounding.AwayFromZero);
                 }
-                List<(int index, double altitudeDifference)> altitudeFilteredDerivative = new List<(int index, double altitudeDifference)>();
+                List<(int index, double altitudeDifference)> altitudeFilteredDerivative = [];
 
                 for (int index = 0; index < cleanedUpTrackPoints.Count - 1; index++)
                 {
@@ -342,7 +338,7 @@ namespace Coordinates
                 if (lastPeak == -1)
                     lastPeak = altitudeFilteredDerivative.Count - 1;
                 counter = 0;
-                int landingPointIndex = altitudeFilteredDerivative[altitudeFilteredDerivative.Count - 1].index;
+                int landingPointIndex = altitudeFilteredDerivative[^1].index;
                 for (int index = lastPeak; index < altitudeFilteredDerivative.Count - 2; index++)
                 {
                     if ((altitudeFilteredDerivative[index].altitudeDifference >= 0) && (Math.Abs(CoordinateHelpers.Calculate2DDistanceHavercos(cleanedUpTrackPoints[altitudeFilteredDerivative[index].index], cleanedUpTrackPoints[altitudeFilteredDerivative[index].index + 1])) >= 2))
@@ -373,14 +369,13 @@ namespace Coordinates
             minVerticalVelocity = double.NaN;
             totalDuration = TimeSpan.Zero;
             penaltyPoints = 0;
-            relatedCoordinates = new List<Coordinate>();
+            relatedCoordinates = [];
             if (double.IsFinite(maxAbsVerticalVelocityLimit) && minDurationSeconds > 0)
             {
 
-                List<Coordinate> cleanedUpTrackPoints;
-                CleanTrackPoints(track, useGPSAltitude, 15.0, out cleanedUpTrackPoints);
+                CleanTrackPoints(track, useGPSAltitude, 15.0, out List<Coordinate> cleanedUpTrackPoints);
 
-                List<(DateTime timestamp, double altitudeDiff)> altitudeDerivative = new List<(DateTime timestamp, double altitudeDiff)>();
+                List<(DateTime timestamp, double altitudeDiff)> altitudeDerivative = [];
                 TimeSpan trackPointInterval = TimeSpan.MaxValue;
                 for (int index = 0; index < cleanedUpTrackPoints.Count - 1; index++)
                 {
@@ -418,9 +413,9 @@ namespace Coordinates
                     if (violatingPoints[index + consecutiveTrackPointsToCheck].timestamp.Subtract(violatingPoints[index].timestamp) <= TimeSpan.FromSeconds(minDurationSeconds))
                     {
                         isDangerousFlyingDetected = true;
-                        foreach ((DateTime timestamp, double altitudeDiff) consecutiveViolatingPoints in violatingPoints.Skip(index).Take(consecutiveTrackPointsToCheck))
+                        foreach ((DateTime timestamp, double altitudeDiff) in violatingPoints.Skip(index).Take(consecutiveTrackPointsToCheck))
                         {
-                            Coordinate trackPoint = cleanedUpTrackPoints.FirstOrDefault(x => x.TimeStamp == consecutiveViolatingPoints.timestamp);
+                            Coordinate trackPoint = cleanedUpTrackPoints.FirstOrDefault(x => x.TimeStamp == timestamp);
                             if (!relatedCoordinates.Contains(trackPoint))
                             {
                                 relatedCoordinates.Add(trackPoint);
@@ -443,7 +438,7 @@ namespace Coordinates
         public static void CheckFlyingAboveSpecifedAltitude(Track track, bool useGPSAltitude, double maxAllowedAltitude, out List<Coordinate> trackPointsAbove, out TimeSpan totalDuration, out double maxAltitude, out int penaltyPoints)
         {
             totalDuration = TimeSpan.Zero;
-            trackPointsAbove = new List<Coordinate>();
+            trackPointsAbove = [];
             maxAltitude = double.NaN;
             penaltyPoints = 0;
             if (double.IsFinite(maxAllowedAltitude))
@@ -486,7 +481,7 @@ namespace Coordinates
 
         private static void CleanTrackPoints(Track track, bool useGPSAltitude, double maxAbsVeritcalVelocityConsideredReasonable, out List<Coordinate> cleanedUpTrackPoints)
         {
-            cleanedUpTrackPoints = new List<Coordinate>();
+            cleanedUpTrackPoints = [];
             for (int index = 0; index < track.TrackPoints.Count - 1; index++)
             {
                 if (Math.Abs(track.TrackPoints[index].Latitude) <= double.Epsilon || Math.Abs(track.TrackPoints[index].Longitude) <= double.Epsilon)
@@ -508,9 +503,8 @@ namespace Coordinates
         public static bool CheckLaunchConstraints(Track track, bool useGPSAltitude, DateTime beginOfStartPeriod, DateTime endOfStartPeriod, List<Coordinate> goals, double min2DDistanceBetweenLaunchAndGoals, double max2DDistanceBetweenLaunchAndGoals, out Coordinate launchPoint, out bool launchInStartPeriod, out List<double> distanceToGoals, out List<bool> distanceToGoalsOk)
         {
             launchInStartPeriod = false;
-            distanceToGoals = new List<double>();
-            distanceToGoalsOk = new List<bool>();
-            launchPoint = new Coordinate(0, 0, 0, 0, DateTime.MinValue);
+            distanceToGoals = [];
+            distanceToGoalsOk = [];
             if (!EstimateLaunchAndLandingTime(track, useGPSAltitude, out launchPoint, out _))
                 return false;
             if (launchPoint.TimeStamp >= beginOfStartPeriod && launchPoint.TimeStamp <= endOfStartPeriod)

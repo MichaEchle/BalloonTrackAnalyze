@@ -22,8 +22,10 @@ public partial class WinFormsLogList : UserControl
 
     private void UILogger_LogEvent(object? sender, UILogEventArgs e)
     {
-        ListViewItem item = new();
-        item.Text=e.Timestamp.ToString("dd-MMM-yyyy HH:mm:ss");
+        ListViewItem item = new()
+        {
+            Text = e.Timestamp.ToString("dd-MMM-yyyy HH:mm:ss")
+        };
         item.SubItems.Add(e.Message);
         item.SubItems.Add(e.Source);
         item.ForeColor = Color.Black;

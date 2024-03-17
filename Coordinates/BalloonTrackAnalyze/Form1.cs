@@ -59,7 +59,7 @@ namespace BalloonTrackAnalyze
             {
                 case "Donut":
                     {
-                        DonutControl donutControl = new DonutControl(ServiceProvider.GetRequiredService<ILogger<DonutControl>>(), ServiceProvider);
+                        DonutControl donutControl = new(ServiceProvider.GetRequiredService<ILogger<DonutControl>>(), ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         donutControl.Location = TaskControlLocation;
@@ -71,7 +71,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case "Pie":
                     {
-                        PieControl pieControl = new PieControl(ServiceProvider.GetRequiredService<ILogger<PieControl>>(),ServiceProvider);
+                        PieControl pieControl = new(ServiceProvider.GetRequiredService<ILogger<PieControl>>(),ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         pieControl.Location = TaskControlLocation;
@@ -83,7 +83,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case "Elbow":
                     {
-                        ElbowControl elbowControl = new ElbowControl(ServiceProvider.GetRequiredService<ILogger<ElbowControl>>(), ServiceProvider);
+                        ElbowControl elbowControl = new(ServiceProvider.GetRequiredService<ILogger<ElbowControl>>(), ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         elbowControl.Location = TaskControlLocation;
@@ -95,7 +95,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case "Landrun":
                     {
-                        LandRunControl landrunControl = new LandRunControl(ServiceProvider.GetRequiredService<ILogger<LandRunControl>>(), ServiceProvider);
+                        LandRunControl landrunControl = new(ServiceProvider.GetRequiredService<ILogger<LandRunControl>>(), ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         landrunControl.Location = TaskControlLocation;
@@ -122,7 +122,7 @@ namespace BalloonTrackAnalyze
                 {
                     if (DoesTaskNumberAlreadyExists(landRun.TaskNumber))
                     {
-                        Logger?.LogError("Failed to create {landRun}: A task with the number '{landRun.TaskNumber}' already exists");
+                        Logger?.LogError("Failed to create '{landRun}': A task with the number '{landRun.TaskNumber}' already exists",landRun,landRun.TaskNumber);
                     }
                     else
                     {
@@ -276,7 +276,7 @@ namespace BalloonTrackAnalyze
             {
                 case DonutTask donut:
                     {
-                        DonutControl donutControl = new DonutControl(donut, ServiceProvider.GetRequiredService<ILogger<DonutControl>>(), ServiceProvider);
+                        DonutControl donutControl = new(donut, ServiceProvider.GetRequiredService<ILogger<DonutControl>>(), ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         donutControl.Location = TaskControlLocation;
@@ -288,7 +288,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case PieTask pie:
                     {
-                        PieControl pieControl = new PieControl(pie,ServiceProvider.GetRequiredService<ILogger<PieControl>>());
+                        PieControl pieControl = new(pie,ServiceProvider.GetRequiredService<ILogger<PieControl>>());
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         pieControl.Location = TaskControlLocation;
@@ -300,7 +300,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case ElbowTask elbow:
                     {
-                        ElbowControl elbowControl = new ElbowControl(elbow, ServiceProvider.GetRequiredService<ILogger<ElbowControl>>(), ServiceProvider);
+                        ElbowControl elbowControl = new(elbow, ServiceProvider.GetRequiredService<ILogger<ElbowControl>>(), ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         elbowControl.Location = TaskControlLocation;
@@ -312,7 +312,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case LandRunTask landRun:
                     {
-                        LandRunControl landrunControl = new LandRunControl(landRun, ServiceProvider.GetRequiredService<ILogger<LandRunControl>>(), ServiceProvider);
+                        LandRunControl landrunControl = new(landRun, ServiceProvider.GetRequiredService<ILogger<LandRunControl>>(), ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         landrunControl.Location = TaskControlLocation;
@@ -332,8 +332,7 @@ namespace BalloonTrackAnalyze
                 Logger?.LogError("Failed to calculate Results: Please enter a Flight No first");
                 return;
             }
-            int flightNumber;
-            if (!int.TryParse(tbFlightNumber.Text, out flightNumber))
+            if (!int.TryParse(tbFlightNumber.Text, out int flightNumber))
             {
                 Logger?.LogError("Failed to calculate Results: Failed to parse Flight No '{flightNumber}' as integer", tbFlightNumber.Text);
                 return;
@@ -403,7 +402,7 @@ namespace BalloonTrackAnalyze
             try
             {
                 flight.CalculateResults(rbGPSAltitude.Checked, Path.Combine(tbCompetitionFolder.Text, "Scoring", $"Flight{flightNumber:D2}"));
-                Logger.LogInformation("Successfully calculated results of all pilots for each task");
+                Logger?.LogInformation("Successfully calculated results of all pilots for each task");
             }
             catch (Exception ex)
             {
@@ -413,7 +412,7 @@ namespace BalloonTrackAnalyze
 
         private void CreateFolderStructure(int flightNumber)
         {
-            DirectoryInfo directoryInfo = new DirectoryInfo($@"{tbCompetitionFolder.Text}");
+            DirectoryInfo directoryInfo = new($@"{tbCompetitionFolder.Text}");
             if (!directoryInfo.Exists)
                 directoryInfo.Create();
             directoryInfo = new DirectoryInfo($@"{Path.Combine(tbCompetitionFolder.Text, "Scoring")}");
@@ -437,48 +436,48 @@ namespace BalloonTrackAnalyze
         {
             foreach (Track track in flight.Tracks)
             {
-                using (StreamWriter writer = new StreamWriter($@"{Path.Combine(tbCompetitionFolder.Text, "Scoring", $"Flight{flightNumber:D2}", "Pilots", $"Pilot{track.Pilot.PilotNumber:D3}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"_{track.Pilot.FirstName}_{track.Pilot.LastName}" : "")}.csv")}", false))
+                using StreamWriter writer = new($@"{Path.Combine(tbCompetitionFolder.Text, "Scoring", $"Flight{flightNumber:D2}", "Pilots", $"Pilot{track.Pilot.PilotNumber:D3}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"_{track.Pilot.FirstName}_{track.Pilot.LastName}" : "")}.csv")}", false);
+                string markerHeader = "Marker Number, Time Stamp, Latitude[dec], Longitude[dec], Latitude[deg], Longitude[deg], UTM Zone, Easting, Norting, Altitude GPS[m], Altitude Barometric[m]";
+                writer.WriteLine(markerHeader);
+                foreach (MarkerDrop marker in track.MarkerDrops)
                 {
-                    string markerHeader = "Marker Number, Time Stamp, Latitude[dec], Longitude[dec], Latitude[deg], Longitude[deg], UTM Zone, Easting, Norting, Altitude GPS[m], Altitude Barometric[m]";
-                    writer.WriteLine(markerHeader);
-                    foreach (MarkerDrop marker in track.MarkerDrops)
-                    {
-                        string timeStamp = marker.MarkerLocation.TimeStamp.ToString("dd.MM.yyyy HH:mm:ss");
-                        CoordinateSharp.Coordinate coordinateSharp = new CoordinateSharp.Coordinate(marker.MarkerLocation.Latitude, marker.MarkerLocation.Longitude);
-                        string line = string.Join(',', marker.MarkerNumber, timeStamp, marker.MarkerLocation.Latitude, marker.MarkerLocation.Longitude,
-                            coordinateSharp.Latitude.Display, coordinateSharp.Longitude.Display, coordinateSharp.UTM.LongZone + coordinateSharp.UTM.LatZone,
-                            coordinateSharp.UTM.Easting, coordinateSharp.UTM.Northing, marker.MarkerLocation.AltitudeGPS, marker.MarkerLocation.AltitudeBarometric);
-                        writer.WriteLine(line);
-                    }
-                    writer.WriteLine();
-                    writer.WriteLine();
-                    writer.WriteLine();
-                    string declarationHeader = "Declaration Number,Time Stamp,Position Latitude[dec],Position Longitude[dec],Position Latitude[deg],Position Longitude[deg],Position Altitude GPS[m],Position Altitude Barometric[m],Position UTM Zone,Position Easting,Position Norting,Goal Latitude[dec],Goal Longitude[dec],Goal Latitude[deg],Goal Longitude[deg],Goal UTM Zone,Goal Easting,Goal Norting,Goal Altitude GPS m],Goal Altitude Barometric[m]";
-                    writer.WriteLine(declarationHeader);
-                    foreach (Declaration declaration in track.Declarations)
-                    {
-                        string timeStamp = declaration.PositionAtDeclaration.TimeStamp.ToString("dd.MM.yyyy HH:mm:ss");
-                        CoordinateSharp.Coordinate posCoordinate = new CoordinateSharp.Coordinate(declaration.PositionAtDeclaration.Latitude, declaration.PositionAtDeclaration.Longitude);
-                        CoordinateSharp.Coordinate goalCoordinate = new CoordinateSharp.Coordinate(declaration.DeclaredGoal.Latitude, declaration.DeclaredGoal.Longitude);
-                        string line = string.Join(',', declaration.GoalNumber, timeStamp, declaration.PositionAtDeclaration.Latitude,
-                            declaration.PositionAtDeclaration.Longitude, posCoordinate.Latitude.Display, posCoordinate.Longitude.Display,
-                            posCoordinate.UTM.LongZone + posCoordinate.UTM.LatZone, posCoordinate.UTM.Easting, posCoordinate.UTM.Northing,
-                            declaration.PositionAtDeclaration.AltitudeGPS, declaration.PositionAtDeclaration.AltitudeBarometric,
-                            declaration.DeclaredGoal.Latitude, declaration.DeclaredGoal.Longitude, goalCoordinate.Latitude.Display,
-                            goalCoordinate.Longitude.Display, goalCoordinate.UTM.LongZone + goalCoordinate.UTM.LatZone, goalCoordinate.UTM.Easting,
-                            goalCoordinate.UTM.Northing, declaration.DeclaredGoal.AltitudeGPS, declaration.DeclaredGoal.AltitudeBarometric);
-                        writer.WriteLine(line);
-                    }
+                    string timeStamp = marker.MarkerLocation.TimeStamp.ToString("dd.MM.yyyy HH:mm:ss");
+                    CoordinateSharp.Coordinate coordinateSharp = new(marker.MarkerLocation.Latitude, marker.MarkerLocation.Longitude);
+                    string line = string.Join(',', marker.MarkerNumber, timeStamp, marker.MarkerLocation.Latitude, marker.MarkerLocation.Longitude,
+                        coordinateSharp.Latitude.Display, coordinateSharp.Longitude.Display, coordinateSharp.UTM.LongZone + coordinateSharp.UTM.LatZone,
+                        coordinateSharp.UTM.Easting, coordinateSharp.UTM.Northing, marker.MarkerLocation.AltitudeGPS, marker.MarkerLocation.AltitudeBarometric);
+                    writer.WriteLine(line);
+                }
+                writer.WriteLine();
+                writer.WriteLine();
+                writer.WriteLine();
+                string declarationHeader = "Declaration Number,Time Stamp,Position Latitude[dec],Position Longitude[dec],Position Latitude[deg],Position Longitude[deg],Position Altitude GPS[m],Position Altitude Barometric[m],Position UTM Zone,Position Easting,Position Norting,Goal Latitude[dec],Goal Longitude[dec],Goal Latitude[deg],Goal Longitude[deg],Goal UTM Zone,Goal Easting,Goal Norting,Goal Altitude GPS m],Goal Altitude Barometric[m]";
+                writer.WriteLine(declarationHeader);
+                foreach (Declaration declaration in track.Declarations)
+                {
+                    string timeStamp = declaration.PositionAtDeclaration.TimeStamp.ToString("dd.MM.yyyy HH:mm:ss");
+                    CoordinateSharp.Coordinate posCoordinate = new(declaration.PositionAtDeclaration.Latitude, declaration.PositionAtDeclaration.Longitude);
+                    CoordinateSharp.Coordinate goalCoordinate = new(declaration.DeclaredGoal.Latitude, declaration.DeclaredGoal.Longitude);
+                    string line = string.Join(',', declaration.GoalNumber, timeStamp, declaration.PositionAtDeclaration.Latitude,
+                        declaration.PositionAtDeclaration.Longitude, posCoordinate.Latitude.Display, posCoordinate.Longitude.Display,
+                        posCoordinate.UTM.LongZone + posCoordinate.UTM.LatZone, posCoordinate.UTM.Easting, posCoordinate.UTM.Northing,
+                        declaration.PositionAtDeclaration.AltitudeGPS, declaration.PositionAtDeclaration.AltitudeBarometric,
+                        declaration.DeclaredGoal.Latitude, declaration.DeclaredGoal.Longitude, goalCoordinate.Latitude.Display,
+                        goalCoordinate.Longitude.Display, goalCoordinate.UTM.LongZone + goalCoordinate.UTM.LatZone, goalCoordinate.UTM.Easting,
+                        goalCoordinate.UTM.Northing, declaration.DeclaredGoal.AltitudeGPS, declaration.DeclaredGoal.AltitudeBarometric);
+                    writer.WriteLine(line);
                 }
             }
         }
 
         private void btImportTask_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.DefaultExt = "json";
-            openFileDialog.Filter = "json files(*.json) | *.json";
-            openFileDialog.FilterIndex = 1;
+            OpenFileDialog openFileDialog = new()
+            {
+                DefaultExt = "json",
+                Filter = "json files(*.json) | *.json",
+                FilterIndex = 1
+            };
             if (!string.IsNullOrWhiteSpace(tbCompetitionFolder.Text))
                 openFileDialog.InitialDirectory = tbCompetitionFolder.Text;
             if (openFileDialog.ShowDialog() == DialogResult.OK)
@@ -490,7 +489,7 @@ namespace BalloonTrackAnalyze
                         string jsonString = File.ReadAllText(openFileDialog.FileName);
                         //DonutTask donut = JsonSerializer.Deserialize<DonutTask>(jsonString);
                         DonutTask donut = JsonConvert.DeserializeObject<DonutTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
-                        DonutControl donutControl = new DonutControl(donut, ServiceProvider.GetRequiredService<ILogger<DonutControl>>(),ServiceProvider);
+                        DonutControl donutControl = new(donut, ServiceProvider.GetRequiredService<ILogger<DonutControl>>(),ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         donutControl.Location = TaskControlLocation;
@@ -504,7 +503,7 @@ namespace BalloonTrackAnalyze
                         string jsonString = File.ReadAllText(openFileDialog.FileName);
                         //PieTask pie = JsonSerializer.Deserialize<PieTask>(jsonString);
                         PieTask pie = JsonConvert.DeserializeObject<PieTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
-                        PieControl pieControl = new PieControl(pie, ServiceProvider.GetRequiredService<ILogger<PieControl>>());
+                        PieControl pieControl = new(pie, ServiceProvider.GetRequiredService<ILogger<PieControl>>());
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         pieControl.Location = TaskControlLocation;
@@ -518,7 +517,7 @@ namespace BalloonTrackAnalyze
                         string jsonString = File.ReadAllText(openFileDialog.FileName);
                         //ElbowTask elbow = JsonSerializer.Deserialize<ElbowTask>(jsonString);
                         ElbowTask elbow = JsonConvert.DeserializeObject<ElbowTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
-                        ElbowControl elbowControl = new ElbowControl(elbow,ServiceProvider.GetRequiredService<ILogger<ElbowControl>>(), ServiceProvider);
+                        ElbowControl elbowControl = new(elbow,ServiceProvider.GetRequiredService<ILogger<ElbowControl>>(), ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         elbowControl.Location = TaskControlLocation;
@@ -532,7 +531,7 @@ namespace BalloonTrackAnalyze
                         string jsonString = File.ReadAllText(openFileDialog.FileName);
                         //LandRunTask landRun = JsonSerializer.Deserialize<LandRunTask>(jsonString);
                         LandRunTask landRun = JsonConvert.DeserializeObject<LandRunTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
-                        LandRunControl landrunControl = new LandRunControl(landRun, ServiceProvider.GetRequiredService<ILogger<LandRunControl>>(), ServiceProvider);
+                        LandRunControl landrunControl = new(landRun, ServiceProvider.GetRequiredService<ILogger<LandRunControl>>(), ServiceProvider);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         landrunControl.Location = TaskControlLocation;
@@ -565,8 +564,7 @@ namespace BalloonTrackAnalyze
                     Logger?.LogError("Failed to create default folder structure: Please enter a Flight No first");
                     return;
                 }
-                int flightNumber;
-                if (!int.TryParse(tbFlightNumber.Text, out flightNumber))
+                if (!int.TryParse(tbFlightNumber.Text, out int flightNumber))
                 {
                     Logger?.LogError("Failed to create default folder structure: Failed to parse Flight No '{flightNumber}' as integer", tbFlightNumber.Text);
                     return;

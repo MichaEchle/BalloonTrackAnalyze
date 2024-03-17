@@ -35,13 +35,13 @@ namespace Competition
         public List<MarkerDrop> MarkerDrops
         {
             get; set;
-        } = new List<MarkerDrop>();
+        } = [];
 
         /// <summary>
         /// List of the marker numbers to be considered and fed into after preprocessing
         /// <para>optional; use empty list to consider all markers</para>
         /// </summary>
-        public List<int> MarkerNumbers { get; set; } = new List<int>();
+        public List<int> MarkerNumbers { get; set; } = [];
 
 
         #endregion

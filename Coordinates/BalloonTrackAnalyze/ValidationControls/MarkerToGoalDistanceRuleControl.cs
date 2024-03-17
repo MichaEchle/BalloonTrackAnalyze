@@ -142,8 +142,7 @@ namespace BalloonTrackAnalyze.ValidationControls
                     isDataValid = false;
                 }
             }
-            int goalNumber;
-            if (!int.TryParse(tbGoalNumber.Text, out goalNumber))
+            if (!int.TryParse(tbGoalNumber.Text, out int goalNumber))
             {
                 Logger?.LogError("Failed to create/modify marker to goal distance rule: failed to parse Goal No. '{tbGoalNumber.Text}' as integer", tbGoalNumber.Text);
                 isDataValid = false;

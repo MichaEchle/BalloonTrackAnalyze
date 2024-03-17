@@ -8,17 +8,17 @@ namespace Coordinates
         /// <summary>
         /// The list of track points
         /// </summary>
-        public List<Coordinate> TrackPoints { get; private set; } = new List<Coordinate>();
+        public List<Coordinate> TrackPoints { get; private set; } = [];
 
         /// <summary>
         /// The list of declared goals
         /// </summary>
-        public List<Declaration> Declarations { get; private set; } = new List<Declaration>();
+        public List<Declaration> Declarations { get; private set; } = [];
 
         /// <summary>
         /// The list of marker drops
         /// </summary>
-        public List<MarkerDrop> MarkerDrops { get; private set; } = new List<MarkerDrop>();
+        public List<MarkerDrop> MarkerDrops { get; private set; } = [];
 
         /// <summary>
         /// The pilot which created this track
@@ -31,7 +31,7 @@ namespace Coordinates
         public Dictionary<string, string> AdditionalPropertiesFromIGCFile
         {
             get; private set;
-        } = new Dictionary<string, string>();
+        } = [];
 
         public Track()
         {

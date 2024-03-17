@@ -30,10 +30,10 @@ namespace Competition.Validation
         public static Declaration GetValidDeclaration(Track track, int goalNumber, List<IDeclarationValidationRules> declarationValidationRules)
         {
             List<Declaration> declarations = track.Declarations.Where(x => x.GoalNumber == goalNumber).ToList();
-            List<Declaration> validDeclarations = new List<Declaration>();
+            List<Declaration> validDeclarations = [];
             if (declarations.Count == 0)
             {
-                Logger.LogWarning("No declaration found for goal number '{goalNumber}'",goalNumber);
+                Logger?.LogWarning("No declaration found for goal number '{goalNumber}'",goalNumber);
                 return null;
             }
             else
@@ -57,7 +57,7 @@ namespace Competition.Validation
                 }
                 if (validDeclarations.Count == 0)
                 {
-                    Logger.LogWarning("No declaration of goal number '{goalNumber}' is conform to specified rules", goalNumber);    
+                    Logger?.LogWarning("No declaration of goal number '{goalNumber}' is conform to specified rules", goalNumber);    
                     return null;
                 }
                 else if (validDeclarations.Count == 1)
@@ -97,7 +97,7 @@ namespace Competition.Validation
             if (markerDrop == null)
             {
                 //Console.WriteLine($"No Marker '{FirstMarkerNumber}' found");
-                Logger.LogWarning("No Marker '{markerNumber}' found", markerNumber);
+                Logger?.LogWarning("No Marker '{markerNumber}' found", markerNumber);
                 isValid = false;
             }
             else
@@ -111,7 +111,7 @@ namespace Competition.Validation
                 }
                 if (!isValid)
                 {
-                    Logger.LogWarning("Marker '{markerNumber}' is not conform to specified rules", markerNumber);
+                    Logger?.LogWarning("Marker '{markerNumber}' is not conform to specified rules", markerNumber);
                 }
             }
             return isValid;

@@ -102,7 +102,7 @@ namespace Competition
                         {
                             double absoluteInfringement = tempMinimumDifference - heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal;
                             double relativeInfringement = Math.Abs(absoluteInfringement / tempMinimumDifference);
-                            Logger.LogWarning("Declaration {goalNumber} is not conform: {minimumDifference}m - {heightDifference}m = {absoluteInfringement}m ({relativeInfringement}) [minimum - actual = absolute (relative)]", declaration.GoalNumber, tempMinimumDifference, heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal, absoluteInfringement, relativeInfringement);
+                            Logger?.LogWarning("Declaration {goalNumber} is not conform: {minimumDifference}m - {heightDifference}m = {absoluteInfringement}m ({relativeInfringement}) [minimum - actual = absolute (relative)]", declaration.GoalNumber, tempMinimumDifference, heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal, absoluteInfringement, relativeInfringement);
                             isConform = false;
                         }
                     }
@@ -115,7 +115,7 @@ namespace Competition
                         {
                             double absoluteInfringement = heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal - tempMaximumDifference;
                             double relativeInfringement = Math.Abs(absoluteInfringement / tempMaximumDifference);
-                            Logger.LogWarning("Declaration {goalNumber} is not conform: {heightDifference}m - {maximumDifference}m  = {absoluteInfringement}m ({relativeInfringement}) [minimum - actual = absolute (relative)]", declaration.GoalNumber, heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal, tempMaximumDifference, absoluteInfringement, relativeInfringement);
+                            Logger?.LogWarning("Declaration {goalNumber} is not conform: {heightDifference}m - {maximumDifference}m  = {absoluteInfringement}m ({relativeInfringement}) [minimum - actual = absolute (relative)]", declaration.GoalNumber, heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal, tempMaximumDifference, absoluteInfringement, relativeInfringement);
                             isConform = false;
                         }
                     }
@@ -127,7 +127,7 @@ namespace Competition
                         {
                             double absoluteInfringement = Math.Abs(MinimumHeightDifference) - heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal;
                             double relativeInfringement = Math.Abs(absoluteInfringement / Math.Abs(MinimumHeightDifference));
-                            Logger.LogWarning("Declaration {goalNumber} is not conform: {minimumHeightDifference}m - {heightDifference}m = {absoluteInfringement}m ({relativeInfringement}) [minimum - actual = absolute (relative)]", declaration.GoalNumber, Math.Abs(MinimumHeightDifference), heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal, absoluteInfringement, relativeInfringement);
+                            Logger?.LogWarning("Declaration {goalNumber} is not conform: {minimumHeightDifference}m - {heightDifference}m = {absoluteInfringement}m ({relativeInfringement}) [minimum - actual = absolute (relative)]", declaration.GoalNumber, Math.Abs(MinimumHeightDifference), heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal, absoluteInfringement, relativeInfringement);
                             isConform = false;
                         }
                     if (!double.IsNaN(MaximumHeightDifference))
@@ -135,7 +135,7 @@ namespace Competition
                         {
                             double absoluteInfringement = heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal - Math.Abs(MaximumHeightDifference);
                             double relativeInfringement = Math.Abs(absoluteInfringement / Math.Abs(MaximumHeightDifference));
-                            Logger.LogWarning("Declaration {goalNumber} is not conform: {heightDifference}m - {maximumHeightDifference}m  = {absoluteInfringement}m ({relativeInfringement}) [minimum - actual = absolute (relative)]", declaration.GoalNumber, heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal, Math.Abs(MaximumHeightDifference), absoluteInfringement, relativeInfringement);
+                            Logger?.LogWarning("Declaration {goalNumber} is not conform: {heightDifference}m - {maximumHeightDifference}m  = {absoluteInfringement}m ({relativeInfringement}) [minimum - actual = absolute (relative)]", declaration.GoalNumber, heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal, Math.Abs(MaximumHeightDifference), absoluteInfringement, relativeInfringement);
                             isConform = false;
                         }
                     break;
@@ -149,7 +149,7 @@ namespace Competition
                         {
                             double absoluteInfringement = tempMinimumDifference - heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal;
                             double relativeInfringement = Math.Abs(absoluteInfringement / tempMinimumDifference);
-                            Logger.LogWarning("Declaration {goalNumber} is not conform: {minimumDifference}m - {heightDifference}m = {absoluteInfringement}m ({relativeInfringement}) [minimum - actual = absolute (relative)]", declaration.GoalNumber, tempMinimumDifference, heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal, absoluteInfringement, relativeInfringement);
+                            Logger?.LogWarning("Declaration {goalNumber} is not conform: {minimumDifference}m - {heightDifference}m = {absoluteInfringement}m ({relativeInfringement}) [minimum - actual = absolute (relative)]", declaration.GoalNumber, tempMinimumDifference, heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal, absoluteInfringement, relativeInfringement);
                             isConform = false;
                         }
                     }
@@ -162,7 +162,7 @@ namespace Competition
                         {
                             double absoluteInfringement = heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal - tempMaximumDifference;
                             double relativeInfringement = Math.Abs(absoluteInfringement / tempMaximumDifference);
-                            Logger.LogWarning("Declaration {goalNumber} is not conform: {heightDifference}m - {maximumDifference}m  = {absoluteInfringement}m ({relativeInfringement}) [minimum - actual = absolute (relative)]", declaration.GoalNumber, heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal, tempMaximumDifference, absoluteInfringement, relativeInfringement);
+                            Logger?.LogWarning("Declaration {goalNumber} is not conform: {heightDifference}m - {maximumDifference}m  = {absoluteInfringement}m ({relativeInfringement}) [minimum - actual = absolute (relative)]", declaration.GoalNumber, heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal, tempMaximumDifference, absoluteInfringement, relativeInfringement);
                             isConform = false;
                         }
                     }

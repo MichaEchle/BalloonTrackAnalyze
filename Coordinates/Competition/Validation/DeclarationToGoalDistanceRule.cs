@@ -50,7 +50,7 @@ namespace Competition
                 {
                     double absoluteInfringement = MinimumDistance - distanceBetweenPositionOfDeclarationAndDeclaredGoal;
                     double relativeInfringement = absoluteInfringement / MinimumDistance;
-                    Logger.LogWarning("Declaration '{goalNumber}' is not conform: '{minimumDistance}m' - '{distance}m' = '{abosluteInfringement}m' ('{relativeInfrigement}%') [minimum - actual = absolute (relative)]", declaration.GoalNumber, MinimumDistance.ToString("0.#"), distanceBetweenPositionOfDeclarationAndDeclaredGoal.ToString("0.#"), absoluteInfringement.ToString("0.#"), relativeInfringement.ToString("P1"));
+                    Logger?.LogWarning("Declaration '{goalNumber}' is not conform: '{minimumDistance}m' - '{distance}m' = '{abosluteInfringement}m' ('{relativeInfrigement}%') [minimum - actual = absolute (relative)]", declaration.GoalNumber, MinimumDistance.ToString("0.#"), distanceBetweenPositionOfDeclarationAndDeclaredGoal.ToString("0.#"), absoluteInfringement.ToString("0.#"), relativeInfringement.ToString("P1"));
                     isConform = false;
                 }
             if (!double.IsNaN(MaximumDistance))
@@ -58,7 +58,7 @@ namespace Competition
                 {
                     double absoluteInfringement = distanceBetweenPositionOfDeclarationAndDeclaredGoal - MaximumDistance;
                     double relativeInfringement = absoluteInfringement / MaximumDistance;
-                    Logger.LogWarning("Declaration '{goalNumber}' is not conform: '{distance}m' - '{maximumDistance}m' = '{abosluteInfringement}m' ('{relativeInfrigement}%') [actual - minimum = absolute (relative)]", declaration.GoalNumber, distanceBetweenPositionOfDeclarationAndDeclaredGoal.ToString("0.#"), MaximumDistance.ToString("0.#"), absoluteInfringement.ToString("0.#"), relativeInfringement.ToString("P1"));
+                    Logger?.LogWarning("Declaration '{goalNumber}' is not conform: '{distance}m' - '{maximumDistance}m' = '{abosluteInfringement}m' ('{relativeInfrigement}%') [actual - minimum = absolute (relative)]", declaration.GoalNumber, distanceBetweenPositionOfDeclarationAndDeclaredGoal.ToString("0.#"), MaximumDistance.ToString("0.#"), absoluteInfringement.ToString("0.#"), relativeInfringement.ToString("P1"));
                     isConform = false;
 
                 }

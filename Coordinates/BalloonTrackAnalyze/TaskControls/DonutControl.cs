@@ -44,7 +44,7 @@ namespace BalloonTrackAnalyze.TaskControls
         /// <summary>
         /// Location for the user controls of the different rules
         /// </summary>
-        private Point RuleControlLocation = new Point(0, 0);
+        private Point RuleControlLocation = new(0, 0);
 
 
         #endregion
@@ -137,8 +137,7 @@ namespace BalloonTrackAnalyze.TaskControls
         private void btCreate_Click(object sender, EventArgs e)
         {
             bool isDataValid = true;
-            int taskNumber;
-            if (!int.TryParse(tbTaskNumber.Text, out taskNumber))
+            if (!int.TryParse(tbTaskNumber.Text, out int taskNumber))
             {
                 Logger?.LogError("Failed to create/modify donut task: failed to parse Task No. '{taskNumber}' as integer", tbTaskNumber.Text);
                 isDataValid = false;
@@ -148,8 +147,7 @@ namespace BalloonTrackAnalyze.TaskControls
                 Logger?.LogError("Failed to create/modify donut task: Task No. must be greater than 0");
                 isDataValid = false;
             }
-            int goalNumber;
-            if (!int.TryParse(tbGoalNumber.Text, out goalNumber))
+            if (!int.TryParse(tbGoalNumber.Text, out int goalNumber))
             {
                 Logger?.LogError("Failed to create/modify donut task: failed to parse Goal No. '{goalNumber}' as integer", tbGoalNumber.Text);
                 isDataValid = false;
@@ -159,16 +157,14 @@ namespace BalloonTrackAnalyze.TaskControls
                 Logger?.LogError("Failed to create/modify donut task: Goal No. must be greater than 0");
                 isDataValid = false;
             }
-            double innerRadius;
-            if (!double.TryParse(tbInnerRadius.Text, out innerRadius))
+            if (!double.TryParse(tbInnerRadius.Text, out double innerRadius))
             {
                 Logger?.LogError("Failed to create/modify donut task: failed to parse Inner Radius '{innerRadius}' as double", tbInnerRadius.Text);
                 isDataValid = false;
             }
             if (rbInnerRadiusFeet.Checked)
                 innerRadius = CoordinateHelpers.ConvertToMeter(innerRadius);
-            double outerRadius;
-            if (!double.TryParse(tbOuterRadius.Text, out outerRadius))
+            if (!double.TryParse(tbOuterRadius.Text, out double outerRadius))
             {
                 Logger?.LogError("Failed to create/modify donut task: failed to parse Outer Radius '{outerRadius}' as double", tbOuterRadius.Text);
                 isDataValid = false;
@@ -218,7 +214,7 @@ namespace BalloonTrackAnalyze.TaskControls
             if (isDataValid)
             {
                 Donut ??= new DonutTask();
-                List<IDeclarationValidationRules> declarationValidationRules = new List<IDeclarationValidationRules>();
+                List<IDeclarationValidationRules> declarationValidationRules = [];
                 foreach (object item in lbRules.Items)
                 {
                     if (item is IDeclarationValidationRules declarationValidationRule)
@@ -257,7 +253,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 case "Declaration to Goal Distance":
                     {
-                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new DeclarationToGoalDistanceRuleControl(ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalDistanceRuleControl>>());
+                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new(ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalDistanceRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalDistanceRuleControl.Location = RuleControlLocation;
@@ -270,7 +266,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case "Declaration to Goal Height":
                     {
-                        DeclarationToGoalHeightRuleControl declarationToGoalHeigthRuleControl = new DeclarationToGoalHeightRuleControl(ServiceProvider.GetRequiredService<ILogger< DeclarationToGoalHeightRuleControl>>());
+                        DeclarationToGoalHeightRuleControl declarationToGoalHeigthRuleControl = new(ServiceProvider.GetRequiredService<ILogger< DeclarationToGoalHeightRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalHeigthRuleControl.Location = RuleControlLocation;
@@ -283,7 +279,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case "Goal to other Goals Distance":
                     {
-                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new GoalToOtherGoalsDistanceRuleControl( ServiceProvider.GetRequiredService<ILogger<GoalToOtherGoalsDistanceRuleControl>>());
+                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new( ServiceProvider.GetRequiredService<ILogger<GoalToOtherGoalsDistanceRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         goalToOtherGoalsDistanceRuleControl.Location = RuleControlLocation;
@@ -308,7 +304,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 case DeclarationToGoalDistanceRule declarationToGoalDistanceRule:
                     {
-                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new DeclarationToGoalDistanceRuleControl(declarationToGoalDistanceRule, ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalDistanceRuleControl>>());
+                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new(declarationToGoalDistanceRule, ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalDistanceRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalDistanceRuleControl.Location = RuleControlLocation;
@@ -321,7 +317,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case DeclarationToGoalHeightRule declarationToGoalHeightRule:
                     {
-                        DeclarationToGoalHeightRuleControl declarationToGoalHeigthRuleControl = new DeclarationToGoalHeightRuleControl(declarationToGoalHeightRule,ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalHeightRuleControl>>());
+                        DeclarationToGoalHeightRuleControl declarationToGoalHeigthRuleControl = new(declarationToGoalHeightRule,ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalHeightRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalHeigthRuleControl.Location = RuleControlLocation;
@@ -334,7 +330,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case GoalToOtherGoalsDistanceRule goalToOtherGoalsDistance:
                     {
-                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new GoalToOtherGoalsDistanceRuleControl(goalToOtherGoalsDistance,ServiceProvider.GetRequiredService<ILogger<GoalToOtherGoalsDistanceRuleControl>>());
+                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new(goalToOtherGoalsDistance,ServiceProvider.GetRequiredService<ILogger<GoalToOtherGoalsDistanceRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         goalToOtherGoalsDistanceRuleControl.Location = RuleControlLocation;

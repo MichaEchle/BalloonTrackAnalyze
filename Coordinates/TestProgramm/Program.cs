@@ -16,8 +16,8 @@ namespace TestProgramm
             //C:\Users\micechle\source\repos\MichaEchle\BalloonTrackAnalyze\TestTrack\5AD_f003_p002_l0.igc
             //\..\..\..\..\..\TestTrack\5AD_f003_p002_l0.igc
 
-            FileInfo fileInfo = new FileInfo(@"..\..\..\..\..\TestTrack\Archive-E[germannationals2022]F[3]P[18]-BFUrwYGs212.igc");
-            Coordinates.Coordinate referenceCoordiante = new Coordinates.Coordinate(15, 20, 10, 10, DateTime.Now); // define a reference coordinate (the values are random)
+            FileInfo fileInfo = new(@"..\..\..\..\..\TestTrack\Archive-E[germannationals2022]F[3]P[18]-BFUrwYGs212.igc");
+            Coordinates.Coordinate referenceCoordiante = new(15, 20, 10, 10, DateTime.Now); // define a reference coordinate (the values are random)
             if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out Track track, referenceCoordiante)) // provide the reference coordinate to the parser
             {
                 Console.WriteLine("Failed to parse track");

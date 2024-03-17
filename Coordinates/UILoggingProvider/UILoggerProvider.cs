@@ -5,7 +5,7 @@ namespace UILoggingProvider;
 public class UILoggerProvider : ILoggerProvider
 {
 
-    private readonly ConcurrentDictionary<string, UILogger> Loggers = new ConcurrentDictionary<string, UILogger>();
+    private readonly ConcurrentDictionary<string, UILogger> Loggers = new();
 
     public ILogger CreateLogger(string categoryName)
     {
@@ -15,5 +15,6 @@ public class UILoggerProvider : ILoggerProvider
     public void Dispose()
     {
         Loggers.Clear();
+        GC.SuppressFinalize(this);
     }
 }

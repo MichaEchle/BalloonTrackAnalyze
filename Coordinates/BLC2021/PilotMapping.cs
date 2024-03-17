@@ -63,13 +63,15 @@ namespace BLC2021
             if (showDialog)
             {
 
-                OpenFileDialog openFileDialog = new OpenFileDialog();
-                openFileDialog.AddExtension = true;
-                openFileDialog.CheckFileExists = true;
-                openFileDialog.CheckPathExists = true;
-                openFileDialog.Multiselect = false;
-                openFileDialog.Title = "Select pilot mapping";
-                openFileDialog.Filter = "xlsx files (*.xlsx)|*.xlsx";
+                OpenFileDialog openFileDialog = new()
+                {
+                    AddExtension = true,
+                    CheckFileExists = true,
+                    CheckPathExists = true,
+                    Multiselect = false,
+                    Title = "Select pilot mapping",
+                    Filter = "xlsx files (*.xlsx)|*.xlsx"
+                };
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     pilotMappingFile = new FileInfo(openFileDialog.FileName);
@@ -80,9 +82,9 @@ namespace BLC2021
             }
             try
             {
-                List<(int pilotNumber, string lastName, string firstName)> pilotMappings = new List<(int pilotNumber, string lastName, string firstName)>();
+                List<(int pilotNumber, string lastName, string firstName)> pilotMappings = [];
                 ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
-                using (ExcelPackage package = new ExcelPackage(pilotMappingFile))
+                using (ExcelPackage package = new(pilotMappingFile))
                 {
                     ExcelWorksheet wsPilots = package.Workbook.Worksheets.First();
 

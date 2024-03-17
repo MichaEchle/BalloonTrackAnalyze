@@ -51,7 +51,7 @@ namespace LoggerComponent
 				return m_logItems;
 			}
 		}
-		private static Dictionary<object, List<LogItem>> m_logItems = new Dictionary<object, List<LogItem>>();
+		private static Dictionary<object, List<LogItem>> m_logItems = [];
 
 		/// <summary>
 		/// Log
@@ -68,11 +68,11 @@ namespace LoggerComponent
 				//#endif
 				// add log item to log items, order by log source
 				List<LogItem> subLogItems;
-				if (LogItems.ContainsKey(logItem.Source))
-					subLogItems = LogItems[logItem.Source];
+				if (LogItems.TryGetValue(logItem.Source, out List<LogItem> value))
+					subLogItems = value;
 				else
 				{
-					subLogItems = new List<LogItem>();
+					subLogItems = [];
 					LogItems[logItem.Source] = subLogItems;
 				}
 				subLogItems.Add(logItem);
@@ -127,7 +127,7 @@ namespace LoggerComponent
 				if (finalText[i] == '\n')
 					finalText[i] = ' ';
 			}
-			LogItem logItem = new LogItem(source, severity, new string(finalText));
+			LogItem logItem = new(source, severity, new string(finalText));
 #if DEBUG
             Debug.WriteLine($"{source}: {severity} - {new string(finalText)}");
 #endif
@@ -172,9 +172,8 @@ namespace LoggerComponent
 		{
 			// create new log file writer
 			m_logFileWriter = new LogFileWriter(filePath, append);
-			FileInfo fileInfo = null;
-
-			try
+            FileInfo fileInfo;
+            try
 			{
 				fileInfo = new FileInfo(filePath);
 			}
@@ -207,7 +206,7 @@ namespace LoggerComponent
 					{
 						string fileNameWithoutExtension = fileInfo.Name.Substring(0, fileInfo.Name.Length - fileInfo.Extension.Length);
 						FileInfo[] fis = fileInfo.Directory.GetFiles(string.Format("{0}_*.txt", fileNameWithoutExtension), SearchOption.TopDirectoryOnly);
-						List<string> fileNames = new List<string>();
+						List<string> fileNames = [];
 						foreach (FileInfo fi in fis)
 						{
 							if (Regex.Match(fi.Name, "^" + fileNameWithoutExtension + @"_(\d{8})_(\d{6})\.txt").Success)
@@ -256,7 +255,7 @@ namespace LoggerComponent
 		/// </summary>
 		public static string ToMultiLineString(List<List<LogItem>> logItems, string lineSeparator)
 		{
-			StringBuilder logText = new StringBuilder();
+			StringBuilder logText = new();
 			if (logItems != null)
 			{
 				foreach (List<LogItem> logSection in logItems)

@@ -77,7 +77,7 @@ namespace Competition
             public List<IDeclarationValidationRules> DeclarationValidationRules
             {
                 get; set;
-            } = new List<IDeclarationValidationRules>();
+            } = [];
 
             public PieTier()
             {
@@ -99,12 +99,12 @@ namespace Competition
             {
                 string functionErrorMessage = $"Failed to calculate result for {this} and Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}': ";
                 result = 0.0;
-                List<(int, Coordinate)> trackPointsInTier = new List<(int trackPointNumber, Coordinate coordinate)>();
+                List<(int, Coordinate)> trackPointsInTier = [];
 
                 Declaration targetDeclaration = ValidationHelper.GetValidDeclaration(track, GoalNumber, DeclarationValidationRules);
                 if (targetDeclaration == null)
                 {
-                    Logger.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No valid goal found for goal '#{goalNumber}'", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), GoalNumber);
+                    Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No valid goal found for goal '#{goalNumber}'", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), GoalNumber);
                     return false;
                 }
                 List<Coordinate> coordinates = track.TrackPoints;
@@ -130,9 +130,9 @@ namespace Competition
                         trackPointsInTier.Add((track.TrackPoints.FindIndex(x => x == coordinates[index]), coordinates[index]));
 
                 }
-                List<List<Coordinate>> chunksInTier = new List<List<Coordinate>>();
+                List<List<Coordinate>> chunksInTier = [];
                 int addIndex = 0;
-                chunksInTier.Add(new List<Coordinate>());
+                chunksInTier.Add([]);
                 for (int index = 0; index < trackPointsInTier.Count - 1; index++)
                 {
                     if (trackPointsInTier[index + 1].Item1 - trackPointsInTier[index].Item1 == 1)//trackpoints are successive
@@ -149,7 +149,7 @@ namespace Competition
                     }
                     else//trackpoints are not successive -> create new chunk
                     {
-                        chunksInTier.Add(new List<Coordinate>());
+                        chunksInTier.Add([]);
                         addIndex++;
                     }
                 }
@@ -236,7 +236,7 @@ namespace Competition
         public List<PieTier> Tiers
         {
             get; set;
-        } = new List<PieTier>();
+        } = [];
         #endregion
 
         public PieTask()
@@ -258,10 +258,9 @@ namespace Competition
             result = 0.0;
             foreach (PieTier tier in Tiers)
             {
-                double tempResult;
-                if (!tier.CalculateTierResult(track, useGPSAltitude, out tempResult))
+                if (!tier.CalculateTierResult(track, useGPSAltitude, out double tempResult))
                 {
-                    Logger.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Failed to calculate tier result", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+                    Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Failed to calculate tier result", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
                     return false;
                 }
                 result += tempResult;

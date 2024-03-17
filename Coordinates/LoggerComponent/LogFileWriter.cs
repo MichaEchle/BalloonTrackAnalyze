@@ -12,7 +12,7 @@ namespace LoggerComponent
 		private string m_filePath;
 		private bool m_append;
 		private StreamWriter m_logFile;
-		private List<LogItem> m_logItems = new List<LogItem>();
+		private List<LogItem> m_logItems = [];
 		private Thread m_logFileWriterThread;
 		private CancellationTokenSource cancellationToken;
 
@@ -46,15 +46,17 @@ namespace LoggerComponent
 		{
 			LogFilterCallBack = logFilterCallBack;
 			cancellationToken = new CancellationTokenSource();
-			// create new sequencer thread
-			m_logFileWriterThread = new Thread(new ParameterizedThreadStart(Run));
-			m_logFileWriterThread.IsBackground = true;      // if all foreground threads have finished, the main process will no longer wait for LogFileWriter's thread to terminate prior to exit itself
+            // create new sequencer thread
+            m_logFileWriterThread = new Thread(new ParameterizedThreadStart(Run))
+            {
+                IsBackground = true,      // if all foreground threads have finished, the main process will no longer wait for LogFileWriter's thread to terminate prior to exit itself
 
-			// set name
-			m_logFileWriterThread.Name = "Logfile Writer";
+                // set name
+                Name = "Logfile Writer"
+            };
 
-			// run thread
-			m_logFileWriterThread.Start(cancellationToken.Token);
+            // run thread
+            m_logFileWriterThread.Start(cancellationToken.Token);
 
 			// success
 			return true;
@@ -74,7 +76,7 @@ namespace LoggerComponent
 				try
 				{
 					// create chronological log file stream
-					FileStream logFileStream = new FileStream(m_filePath, m_append ? FileMode.Append : FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
+					FileStream logFileStream = new(m_filePath, m_append ? FileMode.Append : FileMode.Create, FileAccess.Write, FileShare.ReadWrite);
 
 					// create stream writer for log file stream
 					m_logFile = new StreamWriter(logFileStream);

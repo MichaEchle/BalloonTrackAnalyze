@@ -30,23 +30,23 @@ namespace Competition
         public bool IsComplaintToRule(MarkerDrop marker)
         {
             bool isConform = false;
-            foreach ((int openAtMinute, int closeAtMinute) timingDefinition in TimingDefinitions)
+            foreach ((int openAtMinute, int closeAtMinute) in TimingDefinitions)
             {
                 bool confirmToCurrentTimingDefinition = true;
-                if (timingDefinition.openAtMinute < timingDefinition.closeAtMinute)
+                if (openAtMinute < closeAtMinute)
                 {
-                    if (marker.MarkerLocation.TimeStamp.Minute < timingDefinition.openAtMinute)
+                    if (marker.MarkerLocation.TimeStamp.Minute < openAtMinute)
                         confirmToCurrentTimingDefinition = false;
-                    if (marker.MarkerLocation.TimeStamp.Minute > timingDefinition.closeAtMinute)
+                    if (marker.MarkerLocation.TimeStamp.Minute > closeAtMinute)
                         confirmToCurrentTimingDefinition = false;
-                    if (marker.MarkerLocation.TimeStamp.Minute == timingDefinition.closeAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
+                    if (marker.MarkerLocation.TimeStamp.Minute == closeAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
                         confirmToCurrentTimingDefinition = false;
                 }
-                else if (timingDefinition.openAtMinute > timingDefinition.closeAtMinute)
+                else if (openAtMinute > closeAtMinute)
                 {
-                    if ((marker.MarkerLocation.TimeStamp.Minute < timingDefinition.openAtMinute) && (marker.MarkerLocation.TimeStamp.Minute > timingDefinition.closeAtMinute))
+                    if ((marker.MarkerLocation.TimeStamp.Minute < openAtMinute) && (marker.MarkerLocation.TimeStamp.Minute > closeAtMinute))
                         confirmToCurrentTimingDefinition = false;
-                    if (marker.MarkerLocation.TimeStamp.Minute == timingDefinition.closeAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
+                    if (marker.MarkerLocation.TimeStamp.Minute == closeAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
                         confirmToCurrentTimingDefinition = false;
                 }
                 isConform |= confirmToCurrentTimingDefinition;

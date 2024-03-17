@@ -43,7 +43,7 @@ namespace BalloonTrackAnalyze.TaskControls
         /// <summary>
         /// Location for the user controls of the different rules
         /// </summary>
-        private Point RuleControlLocation = new Point(0, 0);
+        private Point RuleControlLocation = new(0, 0);
         #endregion
 
         #region Constructors
@@ -115,8 +115,7 @@ namespace BalloonTrackAnalyze.TaskControls
         private void btCreate_Click(object sender, EventArgs e)
         {
             bool isDataValid = true;
-            int taskNumber;
-            if (!int.TryParse(tbTaskNumber.Text, out taskNumber))
+            if (!int.TryParse(tbTaskNumber.Text, out int taskNumber))
             {
                 Logger?.LogError("Failed to create/modify landrun task: failed to parse Task No. '{TaskNumber}' as integer", tbTaskNumber.Text);
                 isDataValid = false;
@@ -126,8 +125,7 @@ namespace BalloonTrackAnalyze.TaskControls
                 Logger?.LogError("Failed to create/modify landrun task: Task No. must be greater than 0");
                 isDataValid = false;
             }
-            int firstMarkerNumber;
-            if (!int.TryParse(tbFirstMarkerNumber.Text, out firstMarkerNumber))
+            if (!int.TryParse(tbFirstMarkerNumber.Text, out int firstMarkerNumber))
             {
                 Logger?.LogError("Failed to create/modify landrun task: failed to parse 1st Marker No '{FirstMarkerNumber}' as integer", tbFirstMarkerNumber.Text);
                 isDataValid = false;
@@ -138,8 +136,7 @@ namespace BalloonTrackAnalyze.TaskControls
                 isDataValid = false;
             }
 
-            int secondMarkerNumber;
-            if (!int.TryParse(tbSecondMarkerNumber.Text, out secondMarkerNumber))
+            if (!int.TryParse(tbSecondMarkerNumber.Text, out int secondMarkerNumber))
             {
                 Logger?.LogError("Failed to create/modify landrun task: failed to parse 2nd Marker No '{SecondMarkerNumber}' as integer", tbSecondMarkerNumber.Text);
                 isDataValid = false;
@@ -150,8 +147,7 @@ namespace BalloonTrackAnalyze.TaskControls
                 isDataValid = false;
             }
 
-            int thirdMarkerNumber;
-            if (!int.TryParse(tbThirdMarkerNumber.Text, out thirdMarkerNumber))
+            if (!int.TryParse(tbThirdMarkerNumber.Text, out int thirdMarkerNumber))
             {
                 Logger?.LogError("Failed to create/modify landrun task: failed to parse 3rd Marker No '{ThirdMarkerNumber}' as integer", tbThirdMarkerNumber.Text);
                 isDataValid = false;
@@ -165,7 +161,7 @@ namespace BalloonTrackAnalyze.TaskControls
             if (isDataValid)
             {
                 LandRun ??= new LandRunTask();
-                List<IMarkerValidationRules> markerValidationRules = new List<IMarkerValidationRules>();
+                List<IMarkerValidationRules> markerValidationRules = [];
                 foreach (object item in lbRules.Items)
                 {
                     if (item is IMarkerValidationRules markerValidationRule)
@@ -200,7 +196,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 case MarkerTimingRule markerTimingRule:
                     {
-                        MarkerTimingRuleControl markerTimingRuleControl = new MarkerTimingRuleControl(markerTimingRule, ServiceProvider.GetRequiredService<ILogger<MarkerTimingRuleControl>>());
+                        MarkerTimingRuleControl markerTimingRuleControl = new(markerTimingRule, ServiceProvider.GetRequiredService<ILogger<MarkerTimingRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerTimingRuleControl.Location = RuleControlLocation;
@@ -213,7 +209,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case MarkerToOtherMarkersDistanceRule markerToOtherMarkersDistanceRule:
                     {
-                        MarkerToOtherMarkersDistanceRuleControl markerToOtherMarkerDistanceRuleControl = new MarkerToOtherMarkersDistanceRuleControl(markerToOtherMarkersDistanceRule, ServiceProvider.GetRequiredService<ILogger<MarkerToOtherMarkersDistanceRuleControl>>());
+                        MarkerToOtherMarkersDistanceRuleControl markerToOtherMarkerDistanceRuleControl = new(markerToOtherMarkersDistanceRule, ServiceProvider.GetRequiredService<ILogger<MarkerToOtherMarkersDistanceRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerToOtherMarkerDistanceRuleControl.Location = RuleControlLocation;
@@ -226,7 +222,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case MarkerToGoalDistanceRule markerToGoalDistanceRule:
                     {
-                        MarkerToGoalDistanceRuleControl markerToGoalDistanceRuleControl = new MarkerToGoalDistanceRuleControl(markerToGoalDistanceRule, ServiceProvider.GetRequiredService<ILogger<MarkerToGoalDistanceRuleControl>>());
+                        MarkerToGoalDistanceRuleControl markerToGoalDistanceRuleControl = new(markerToGoalDistanceRule, ServiceProvider.GetRequiredService<ILogger<MarkerToGoalDistanceRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerToGoalDistanceRuleControl.Location = RuleControlLocation;
@@ -251,7 +247,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 case "Marker Timing":
                     {
-                        MarkerTimingRuleControl markerTimingRuleControl = new MarkerTimingRuleControl( ServiceProvider.GetRequiredService<ILogger<MarkerTimingRuleControl>>());
+                        MarkerTimingRuleControl markerTimingRuleControl = new( ServiceProvider.GetRequiredService<ILogger<MarkerTimingRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerTimingRuleControl.Location = RuleControlLocation;
@@ -264,7 +260,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case "Marker to other Markers Distance":
                     {
-                        MarkerToOtherMarkersDistanceRuleControl markerToOtherMarkerDistanceRuleControl = new MarkerToOtherMarkersDistanceRuleControl( ServiceProvider.GetRequiredService<ILogger<MarkerToOtherMarkersDistanceRuleControl>>());
+                        MarkerToOtherMarkersDistanceRuleControl markerToOtherMarkerDistanceRuleControl = new( ServiceProvider.GetRequiredService<ILogger<MarkerToOtherMarkersDistanceRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerToOtherMarkerDistanceRuleControl.Location = RuleControlLocation;
@@ -277,7 +273,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case "Marker to Goal Distance":
                     {
-                        MarkerToGoalDistanceRuleControl markerToGoalDistanceRuleControl = new MarkerToGoalDistanceRuleControl( ServiceProvider.GetRequiredService<ILogger<MarkerToGoalDistanceRuleControl>>());
+                        MarkerToGoalDistanceRuleControl markerToGoalDistanceRuleControl = new( ServiceProvider.GetRequiredService<ILogger<MarkerToGoalDistanceRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerToGoalDistanceRuleControl.Location = RuleControlLocation;

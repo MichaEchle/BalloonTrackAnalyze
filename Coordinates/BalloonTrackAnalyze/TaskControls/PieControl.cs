@@ -142,9 +142,7 @@ namespace BalloonTrackAnalyze.TaskControls
         private void btCreate_Click(object sender, EventArgs e)
         {
             bool isDataValid = true;
-            string functionErrorMessage = "Failed to create/modify donut task: ";
-            int taskNumber;
-            if (!int.TryParse(tbTaskNumber.Text, out taskNumber))
+            if (!int.TryParse(tbTaskNumber.Text, out int taskNumber))
             {
                 Logger?.LogError("Failed to create/modify donut task: failed to parse Task No. '{taskNumber}' as integer", tbTaskNumber.Text);
                 isDataValid = false;
@@ -157,7 +155,7 @@ namespace BalloonTrackAnalyze.TaskControls
             if (isDataValid)
             {
                 PieTask ??= new PieTask();
-                List<PieTask.PieTier> tiers = new List<PieTask.PieTier>();
+                List<PieTask.PieTier> tiers = [];
                 foreach (object item in lbPieTiers.Items)
                 {
                     if (item is PieTask.PieTier)

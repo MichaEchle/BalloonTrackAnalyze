@@ -125,11 +125,9 @@ namespace Coordinates
         /// <returns>the distance in meters</returns>
         public static double Calculate2DDistanceHavercos(Coordinate coordinate1, Coordinate coordinate2)
         {
-            if (coordinate1 is null)
-                throw new ArgumentNullException(nameof(coordinate1));
+            ArgumentNullException.ThrowIfNull(coordinate1);
 
-            if (coordinate2 is null)
-                throw new ArgumentNullException(nameof(coordinate2));
+            ArgumentNullException.ThrowIfNull(coordinate2);
 
 
             double phi1 = coordinate1.Latitude * PI / 180.0;
@@ -152,11 +150,9 @@ namespace Coordinates
         /// <returns>the distance in meters</returns>
         public static double Calculate2DDistanceHaversin(Coordinate coordinate1, Coordinate coordinate2)
         {
-            if (coordinate1 is null)
-                throw new ArgumentNullException(nameof(coordinate1));
+            ArgumentNullException.ThrowIfNull(coordinate1);
 
-            if (coordinate2 is null)
-                throw new ArgumentNullException(nameof(coordinate2));
+            ArgumentNullException.ThrowIfNull(coordinate2);
 
             double phi1 = coordinate1.Latitude * PI / 180.0;
             double phi2 = coordinate2.Latitude * PI / 180.0;
@@ -180,11 +176,9 @@ namespace Coordinates
         /// <exception cref="Exception">throws when lambda get greater than PI</exception>
         public static double Calculate2DDistanceVincentyWSG84(Coordinate coordinate1, Coordinate coordinate2)
         {
-            if (coordinate1 is null)
-                throw new ArgumentNullException(nameof(coordinate1));
+            ArgumentNullException.ThrowIfNull(coordinate1);
 
-            if (coordinate2 is null)
-                throw new ArgumentNullException(nameof(coordinate2));
+            ArgumentNullException.ThrowIfNull(coordinate2);
 
             double phi1 = coordinate1.Latitude * PI / 180.0;
             double lambda1 = coordinate1.Longitude * PI / 180.0;
@@ -276,16 +270,15 @@ namespace Coordinates
         /// <returns>the 2D Distance between the two coordinates in meters</returns>
         public static double Calculate2DDistanceUTM(Coordinate coordinate1, Coordinate coordinate2)
         {
-            if (coordinate1 is null)
-                throw new ArgumentNullException(nameof(coordinate1));
+            ArgumentNullException.ThrowIfNull(coordinate1);
 
-            if (coordinate2 is null)
-                throw new ArgumentNullException(nameof(coordinate2));
+            ArgumentNullException.ThrowIfNull(coordinate2);
 
-            (string zone, int easting, int northing) coordinate1UTM = CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM(coordinate1);
-            (string zone, int easting, int northing) coordinate2UTM = CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM(coordinate2);
 
-            return Sqrt(Pow(coordinate1UTM.easting - coordinate2UTM.easting, 2) + Pow(coordinate1UTM.northing - coordinate2UTM.northing, 2));
+            (_, int easting, int northing) = ConvertLatitudeLongitudeCoordinateToUTM(coordinate1);
+            (string zone, int easting, int northing) coordinate2UTM = ConvertLatitudeLongitudeCoordinateToUTM(coordinate2);
+
+            return Sqrt(Pow(easting - coordinate2UTM.easting, 2) + Pow(northing - coordinate2UTM.northing, 2));
         }
 
         /// <summary>
@@ -298,16 +291,15 @@ namespace Coordinates
         /// <returns>the 2D distance between the two coordiantes in meters</returns>
         public static double Calculate2DDistanceUTM_Precise(Coordinate coordinate1, Coordinate coordinate2)
         {
-            if (coordinate1 is null)
-                throw new ArgumentNullException(nameof(coordinate1));
+            ArgumentNullException.ThrowIfNull(coordinate1);
 
-            if (coordinate2 is null)
-                throw new ArgumentNullException(nameof(coordinate2));
+            ArgumentNullException.ThrowIfNull(coordinate2);
 
-            (string zone, double easting, double northing) coordinate1UTM = CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM_Precise(coordinate1);
-            (string zone, double easting, double northing) coordinate2UTM = CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM_Precise(coordinate2);
 
-            return Sqrt(Pow(coordinate1UTM.easting - coordinate2UTM.easting, 2) + Pow(coordinate1UTM.northing - coordinate2UTM.northing, 2));
+            (_, double easting, double northing) = ConvertLatitudeLongitudeCoordinateToUTM_Precise(coordinate1);
+            (string zone, double easting, double northing) coordinate2UTM = ConvertLatitudeLongitudeCoordinateToUTM_Precise(coordinate2);
+
+            return Sqrt(Pow(easting - coordinate2UTM.easting, 2) + Pow(northing - coordinate2UTM.northing, 2));
         }
 
         /// <summary>
@@ -319,11 +311,9 @@ namespace Coordinates
         /// <returns>the 3D distance in meters</returns>
         public static double Calculate3DDistance(Coordinate coordinate1, Coordinate coordinate2, bool useGPSAltitude)
         {
-            if (coordinate1 is null)
-                throw new ArgumentNullException(nameof(coordinate1));
+            ArgumentNullException.ThrowIfNull(coordinate1);
 
-            if (coordinate2 is null)
-                throw new ArgumentNullException(nameof(coordinate2));
+            ArgumentNullException.ThrowIfNull(coordinate2);
 
             double distance2D = Calculate2DDistanceHavercos(coordinate1, coordinate2);
             double deltaAltitude;
@@ -348,8 +338,7 @@ namespace Coordinates
         /// <returns>the accumulated 2D distance in meters</returns>
         public static double Calculate2DDistanceBetweenPoints(List<Coordinate> coordinates)
         {
-            if (coordinates is null)
-                throw new ArgumentNullException(nameof(coordinates));
+            ArgumentNullException.ThrowIfNull(coordinates);
 
             double result = 0.0;
             for (int index = 0; index < coordinates.Count - 1; index++)
@@ -388,17 +377,15 @@ namespace Coordinates
         /// <returns>the distance in [m]</returns>
         public static double CalculateDistanceWithSeparationAltitude(Coordinate targetCoordinate, Coordinate coordinate, double separationAltitude, bool useGPSAltitude)
         {
-            if (targetCoordinate is null)
-                throw new ArgumentNullException(nameof(targetCoordinate));
+            ArgumentNullException.ThrowIfNull(targetCoordinate);
 
-            if (coordinate is null)
-                throw new ArgumentNullException(nameof(coordinate));
+            ArgumentNullException.ThrowIfNull(coordinate);
 
             if (useGPSAltitude)
             {
                 if (coordinate.AltitudeGPS > separationAltitude)
                 {
-                    Coordinate tempCoordinate = new Coordinate(targetCoordinate.Latitude, targetCoordinate.Longitude, separationAltitude, separationAltitude, targetCoordinate.TimeStamp);
+                    Coordinate tempCoordinate = new(targetCoordinate.Latitude, targetCoordinate.Longitude, separationAltitude, separationAltitude, targetCoordinate.TimeStamp);
                     return Calculate3DDistance(tempCoordinate, coordinate, true);
                 }
                 else
@@ -410,7 +397,7 @@ namespace Coordinates
             {
                 if (coordinate.AltitudeBarometric > separationAltitude)
                 {
-                    Coordinate tempCoordinate = new Coordinate(targetCoordinate.Latitude, targetCoordinate.Longitude, separationAltitude, separationAltitude, targetCoordinate.TimeStamp);
+                    Coordinate tempCoordinate = new(targetCoordinate.Latitude, targetCoordinate.Longitude, separationAltitude, separationAltitude, targetCoordinate.TimeStamp);
                     return Calculate3DDistance(tempCoordinate, coordinate, false);
                 }
                 else
@@ -429,22 +416,17 @@ namespace Coordinates
         /// <returns>the interior angle in degrees</returns>
         public static double CalculateInteriorAngle(Coordinate coordinateA, Coordinate coordinateB, Coordinate coordinateC)
         {
-            if (coordinateA is null)
-                throw new ArgumentNullException(nameof(coordinateA));
+            ArgumentNullException.ThrowIfNull(coordinateA);
 
-            if (coordinateB is null)
-                throw new ArgumentNullException(nameof(coordinateB));
+            ArgumentNullException.ThrowIfNull(coordinateB);
 
-            if (coordinateC is null)
-                throw new ArgumentNullException(nameof(coordinateC));
-
-            double result = 0.0;
+            ArgumentNullException.ThrowIfNull(coordinateC);
             double a = Calculate2DDistanceHavercos(coordinateB, coordinateC);
             double b = Calculate2DDistanceHavercos(coordinateA, coordinateC);
             double c = Calculate2DDistanceHavercos(coordinateA, coordinateB);
 
             double beta = Acos((Pow(a, 2) + Pow(c, 2) - Pow(b, 2)) / (2 * a * c));
-            result = beta / PI * 180.0;
+            double result = beta / PI * 180.0;
             return result;
         }
 
@@ -457,16 +439,11 @@ namespace Coordinates
         /// <returns>the area in square meters</returns>
         public static double CalculateArea(Coordinate coordinateA, Coordinate coordinateB, Coordinate coordinateC)
         {
-            if (coordinateA is null)
-                throw new ArgumentNullException(nameof(coordinateA));
+            ArgumentNullException.ThrowIfNull(coordinateA);
 
-            if (coordinateB is null)
-                throw new ArgumentNullException(nameof(coordinateB));
+            ArgumentNullException.ThrowIfNull(coordinateB);
 
-            if (coordinateC is null)
-                throw new ArgumentNullException(nameof(coordinateC));
-
-            double result = 0.0;
+            ArgumentNullException.ThrowIfNull(coordinateC);
             double a = Calculate2DDistanceHavercos(coordinateB, coordinateC);
             double b = Calculate2DDistanceHavercos(coordinateA, coordinateC);
             double c = Calculate2DDistanceHavercos(coordinateA, coordinateB);
@@ -474,7 +451,7 @@ namespace Coordinates
             double halfOfCircumference = (a + b + c) / 2.0;
 
             double area = Sqrt(halfOfCircumference * (halfOfCircumference - a) * (halfOfCircumference - b) * (halfOfCircumference - c));
-            result = area;
+            double result = area;
 
             return result;
         }
@@ -489,14 +466,13 @@ namespace Coordinates
         /// <returns>a target coordinate</returns>
         public static Coordinate CalculatePointWithDistanceAndBearing(Coordinate coordinate1, double distanceInMeters, double bearingInDecimalDegree)
         {
-            if (coordinate1 is null)
-                throw new ArgumentNullException(nameof(coordinate1));
+            ArgumentNullException.ThrowIfNull(coordinate1);
 
             if (double.IsNaN(distanceInMeters) || double.IsInfinity(distanceInMeters))
-                throw new ArgumentException(nameof(distanceInMeters));
+                throw new ArgumentException("Cannot be NaN or Infinity",nameof(distanceInMeters));
 
             if (double.IsNaN(bearingInDecimalDegree) || double.IsInfinity(bearingInDecimalDegree))
-                throw new ArgumentException(nameof(bearingInDecimalDegree));
+                throw new ArgumentException("Cannot be NaN or Infinity",nameof(bearingInDecimalDegree));
 
             double angularDistance = Abs(distanceInMeters) / EARTH_RADIUS_METER;
             double lat1 = coordinate1.Latitude * PI / 180.0;
@@ -508,7 +484,7 @@ namespace Coordinates
 
             latitude *= 180.0 / PI;
             longitude *= 180.0 / PI;
-            Coordinate coordinate = new Coordinate(latitude, longitude, coordinate1.AltitudeGPS, coordinate1.AltitudeBarometric, DateTime.UtcNow);
+            Coordinate coordinate = new(latitude, longitude, coordinate1.AltitudeGPS, coordinate1.AltitudeBarometric, DateTime.UtcNow);
 
             return coordinate;
         }
@@ -521,11 +497,9 @@ namespace Coordinates
         /// <returns>the initial bearing in degrees</returns>
         public static double CalculateInitalBearing(Coordinate coordinate1, Coordinate coordinate2)
         {
-            if (coordinate1 is null)
-                throw new ArgumentNullException(nameof(coordinate1));
+            ArgumentNullException.ThrowIfNull(coordinate1);
 
-            if (coordinate2 is null)
-                throw new ArgumentNullException(nameof(coordinate2));
+            ArgumentNullException.ThrowIfNull(coordinate2);
 
             double phi1 = coordinate1.Latitude * PI / 180.0;
             double phi2 = coordinate2.Latitude * PI / 180.0;
@@ -552,8 +526,8 @@ namespace Coordinates
         /// <returns>a Coordinate object</returns>
         public static Coordinate ConvertUTMToLatitudeLongitudeCoordinate(string utmZone, int easting, int northing)
         {
-            (double latitude, double longitude) latitudeLongitude = ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
-            return new Coordinate(latitudeLongitude.latitude, latitudeLongitude.longitude, double.NaN, double.NaN, DateTime.MinValue);
+            (double latitude, double longitude) = ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
+            return new Coordinate(latitude, longitude, double.NaN, double.NaN, DateTime.MinValue);
         }
 
         /// <summary>
@@ -567,8 +541,8 @@ namespace Coordinates
         /// <returns>a Coordinate object</returns>
         public static Coordinate ConvertUTMToLatitudeLongitudeCoordinate(string utmZone, int easting, int northing, double altitude)
         {
-            (double latitude, double longitude) latitudeLongitude = ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
-            return new Coordinate(latitudeLongitude.latitude, latitudeLongitude.longitude, altitude, altitude, DateTime.MinValue);
+            (double latitude, double longitude) = ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
+            return new Coordinate(latitude, longitude, altitude, altitude, DateTime.MinValue);
         }
 
         /// <summary>
@@ -580,7 +554,7 @@ namespace Coordinates
         /// <returns>the latitude and longitude pair</returns>
         public static (double latitude, double longitude) ConvertUTMToLatitudeLongitude(string utmZone, int easting, int northing)
         {
-            CoordinateSharp.UniversalTransverseMercator utmCoordindate = new CoordinateSharp.UniversalTransverseMercator(utmZone, easting, northing);
+            CoordinateSharp.UniversalTransverseMercator utmCoordindate = new(utmZone, easting, northing);
             CoordinateSharp.Coordinate coordinateSharp = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmCoordindate);
             return (coordinateSharp.Latitude.DecimalDegree, coordinateSharp.Longitude.DecimalDegree);
         }
@@ -602,8 +576,7 @@ namespace Coordinates
         /// <returns>UTM zone and easting / northing using double</returns>
         public static (string utmZone, double easting, double northing) ConvertLatitudeLongitudeCoordinateToUTM_Precise(Coordinate coordinate)
         {
-            if (coordinate is null)
-                throw new ArgumentNullException(nameof(coordinate));
+            ArgumentNullException.ThrowIfNull(coordinate);
 
 
             return ConvertLatitudeLongitudeToUTM_Presice(coordinate.Latitude, coordinate.Longitude);
@@ -618,7 +591,7 @@ namespace Coordinates
         /// <returns>UTM zone,easting and northing rounded to the next integer</returns>
         public static (string utmZone, int easting, int northing) ConvertLatitudeLongitudeToUTM(double latitude, double longitude)
         {
-            CoordinateSharp.Coordinate coordinateSharp = new CoordinateSharp.Coordinate(latitude, longitude);
+            CoordinateSharp.Coordinate coordinateSharp = new(latitude, longitude);
             return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", (int)(Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero)), (int)(Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero)));
         }
 
@@ -631,7 +604,7 @@ namespace Coordinates
         /// <returns>UTM zone and easting / northing using double</returns>
         public static (string utmZone, double easting, double northing) ConvertLatitudeLongitudeToUTM_Presice(double latitude, double longitude)
         {
-            CoordinateSharp.Coordinate coordinateSharp = new CoordinateSharp.Coordinate(latitude, longitude);
+            CoordinateSharp.Coordinate coordinateSharp = new(latitude, longitude);
             return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", coordinateSharp.UTM.Easting, coordinateSharp.UTM.Northing);
         }
     }

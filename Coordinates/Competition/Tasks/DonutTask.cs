@@ -102,7 +102,7 @@ namespace Competition
         public List<IDeclarationValidationRules> DeclarationValidationRules
         {
             get; set;
-        } = new List<IDeclarationValidationRules>();
+        } = [];
         #endregion
 
         #region API
@@ -116,12 +116,12 @@ namespace Competition
         public bool CalculateResults(Track track, bool useGPSAltitude, out double result)
         {
             result = 0.0;
-            List<(int trackPointNumber, Coordinate coordinate)> trackPointsInDonut = new List<(int trackPointNumber, Coordinate coordinate)>();
+            List<(int trackPointNumber, Coordinate coordinate)> trackPointsInDonut = [];
 
             Declaration targetDeclaration = ValidationHelper.GetValidDeclaration(track, GoalNumber, DeclarationValidationRules);
             if (targetDeclaration == null)
             {
-                Logger.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No valid goal found for goal '#{goalNumber}'", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), GoalNumber);
+                Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No valid goal found for goal '#{goalNumber}'", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), GoalNumber);
                 return false;
             }
             List<Coordinate> coordinates = track.TrackPoints;
@@ -147,9 +147,9 @@ namespace Competition
                     trackPointsInDonut.Add((track.TrackPoints.FindIndex(x => x == coordinates[index]), coordinates[index]));
 
             }
-            List<List<Coordinate>> chunksInDonut = new List<List<Coordinate>>();
+            List<List<Coordinate>> chunksInDonut = [];
             int addIndex = 0;
-            chunksInDonut.Add(new List<Coordinate>());
+            chunksInDonut.Add([]);
             for (int index = 0; index < trackPointsInDonut.Count - 1; index++)
             {
                 if (trackPointsInDonut[index + 1].trackPointNumber - trackPointsInDonut[index].trackPointNumber == 1)//trackpoints are successive
@@ -166,7 +166,7 @@ namespace Competition
                 }
                 else//trackpoints are not successive -> create new chunk
                 {
-                    chunksInDonut.Add(new List<Coordinate>());
+                    chunksInDonut.Add([]);
                     addIndex++;
                 }
             }

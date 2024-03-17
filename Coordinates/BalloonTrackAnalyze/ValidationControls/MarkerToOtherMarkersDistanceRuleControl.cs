@@ -143,10 +143,10 @@ namespace BalloonTrackAnalyze.ValidationControls
                     isDataValid = false;
                 }
             }
-            List<int> markerNumbers = new List<int>();
+            List<int> markerNumbers = [];
             if (!string.IsNullOrWhiteSpace(tbMarkerNumbers.Text))
-                if (tbMarkerNumbers.Text.ToLowerInvariant() != "all")
-                    markerNumbers = Array.ConvertAll(tbMarkerNumbers.Text.Split(','), int.Parse).ToList();
+                if (!tbMarkerNumbers.Text.Equals("all", StringComparison.InvariantCultureIgnoreCase))
+                    markerNumbers = [.. Array.ConvertAll(tbMarkerNumbers.Text.Split(','), int.Parse)];
 
 
             if (isDataValid)

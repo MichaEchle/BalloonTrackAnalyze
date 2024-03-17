@@ -23,19 +23,21 @@ namespace BLC2021
 
         private void btTaskSheet1_Click(object sender, EventArgs e)
         {
-            BLC2021TaskSheet1 blc2021TaskSheet1 = new BLC2021TaskSheet1(rbBatchMode.Checked);
+            BLC2021TaskSheet1 blc2021TaskSheet1 = new(rbBatchMode.Checked);
             blc2021TaskSheet1.Show();
         }
 
         private void btChangePilotMapping_Click(object sender, EventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.AddExtension = true;
-            openFileDialog.CheckFileExists = true;
-            openFileDialog.CheckPathExists = true;
-            openFileDialog.Multiselect = false;
-            openFileDialog.Title = "Select pilot mapping";
-            openFileDialog.Filter = "xlsx files (*.xlsx)|*.xlsx";
+            OpenFileDialog openFileDialog = new()
+            {
+                AddExtension = true,
+                CheckFileExists = true,
+                CheckPathExists = true,
+                Multiselect = false,
+                Title = "Select pilot mapping",
+                Filter = "xlsx files (*.xlsx)|*.xlsx"
+            };
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
                 Properties.Settings.Default.PathToPilotMapping = openFileDialog.FileName;
@@ -46,17 +48,15 @@ namespace BLC2021
 
         private void btChangeOutputDirectory_Click(object sender, EventArgs e)
         {
-            using (FolderBrowserDialog folderBrowserDialog = new FolderBrowserDialog())
+            using FolderBrowserDialog folderBrowserDialog = new();
+            folderBrowserDialog.RootFolder = Environment.SpecialFolder.MyComputer;
+            folderBrowserDialog.UseDescriptionForTitle = true;
+            folderBrowserDialog.Description = "Select an output directory";
+            if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
             {
-                folderBrowserDialog.RootFolder = Environment.SpecialFolder.MyComputer;
-                folderBrowserDialog.UseDescriptionForTitle = true;
-                folderBrowserDialog.Description = "Select an output directory";
-                if (folderBrowserDialog.ShowDialog() == DialogResult.OK)
-                {
-                    Properties.Settings.Default.DefaultOutputDirectory = folderBrowserDialog.SelectedPath;
-                    lbOutputDirectory.Text = Properties.Settings.Default.DefaultOutputDirectory;
-                    Properties.Settings.Default.Save();
-                }
+                Properties.Settings.Default.DefaultOutputDirectory = folderBrowserDialog.SelectedPath;
+                lbOutputDirectory.Text = Properties.Settings.Default.DefaultOutputDirectory;
+                Properties.Settings.Default.Save();
             }
         }
 
@@ -75,7 +75,7 @@ namespace BLC2021
 
         private void btTaskSheet2_Click(object sender, EventArgs e)
         {
-            BLC2021TaskSheet2 blc2021TaskSheet2 = new BLC2021TaskSheet2(rbBatchMode.Checked);
+            BLC2021TaskSheet2 blc2021TaskSheet2 = new(rbBatchMode.Checked);
             blc2021TaskSheet2.Show();
         }
     }

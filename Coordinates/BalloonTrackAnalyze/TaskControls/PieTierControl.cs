@@ -43,7 +43,7 @@ namespace BalloonTrackAnalyze.TaskControls
         /// <summary>
         /// Location for the user controls of the different rules
         /// </summary>
-        private Point RuleControlLocation = new Point(0, 0);
+        private Point RuleControlLocation = new(0, 0);
 
 
         #endregion
@@ -121,8 +121,7 @@ namespace BalloonTrackAnalyze.TaskControls
         private void btCreate_Click(object sender, EventArgs e)
         {
             bool isDataValid = true;
-            int goalNumber;
-            if (!int.TryParse(tbGoalNumber.Text, out goalNumber))
+            if (!int.TryParse(tbGoalNumber.Text, out int goalNumber))
             {
                 Logger?.LogError("Failed to create/modify pie tier: failed to parse Goal No. '{goalNumber}' as integer", tbGoalNumber.Text);
                 isDataValid = false;
@@ -132,8 +131,7 @@ namespace BalloonTrackAnalyze.TaskControls
                 Logger?.LogError("Failed to create/modify pie tier: Goal No. must be greater than 0");
                 isDataValid = false;
             }
-            double radius;
-            if (!double.TryParse(tbRadius.Text, out radius))
+            if (!double.TryParse(tbRadius.Text, out double radius))
             {
                 Logger?.LogError("Failed to create/modify pie tier: failed to parse Radius '{radius}' as double", tbRadius.Text);
                 isDataValid = false;
@@ -141,8 +139,7 @@ namespace BalloonTrackAnalyze.TaskControls
             if (rbRadiusFeet.Checked)
                 radius = CoordinateHelpers.ConvertToMeter(radius);
             bool isReentranceAllowed = cbIsReetranceAllowed.Checked;
-            double multiplier;
-            if (!double.TryParse(tbMultiplier.Text, out multiplier))
+            if (!double.TryParse(tbMultiplier.Text, out double multiplier))
             {
                 Logger?.LogError("Failed to create/modify pie tier: failed to parse Multiplier '{multiplier}' as double", tbMultiplier.Text);
                 isDataValid = false;
@@ -165,7 +162,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 if (!double.TryParse(tbUpperBoundary.Text, out upperBoundary))
                 {
-                    Logger.LogError("Failed to create/modify pie tier: failed to parse Upper Boundary '{upperBoundary}' as double", tbUpperBoundary.Text);
+                    Logger?.LogError("Failed to create/modify pie tier: failed to parse Upper Boundary '{upperBoundary}' as double", tbUpperBoundary.Text);
                     isDataValid = false;
                 }
                 if (!double.IsNaN(upperBoundary))
@@ -185,7 +182,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 if (IsNewTier)
                     Tier = new PieTask.PieTier();
-                List<IDeclarationValidationRules> declarationValidationRules = new List<IDeclarationValidationRules>();
+                List<IDeclarationValidationRules> declarationValidationRules = [];
                 foreach (object item in lbRules.Items)
                 {
                     if (item is IDeclarationValidationRules declarationValidationRule)
@@ -223,7 +220,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 case "Declaration to Goal Distance":
                     {
-                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new DeclarationToGoalDistanceRuleControl( ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalDistanceRuleControl>>());
+                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new( ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalDistanceRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalDistanceRuleControl.Location = RuleControlLocation;
@@ -236,7 +233,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case "Declaration to Goal Height":
                     {
-                        DeclarationToGoalHeightRuleControl declarationToGoalHeigthRuleControl = new DeclarationToGoalHeightRuleControl( ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalHeightRuleControl>>());
+                        DeclarationToGoalHeightRuleControl declarationToGoalHeigthRuleControl = new( ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalHeightRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalHeigthRuleControl.Location = RuleControlLocation;
@@ -249,7 +246,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case "Goal to other Goals Distance":
                     {
-                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new GoalToOtherGoalsDistanceRuleControl( ServiceProvider.GetRequiredService<ILogger<GoalToOtherGoalsDistanceRuleControl>>());
+                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new( ServiceProvider.GetRequiredService<ILogger<GoalToOtherGoalsDistanceRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         goalToOtherGoalsDistanceRuleControl.Location = RuleControlLocation;
@@ -274,7 +271,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 case DeclarationToGoalDistanceRule declarationToGoalDistanceRule:
                     {
-                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new DeclarationToGoalDistanceRuleControl(declarationToGoalDistanceRule, ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalDistanceRuleControl>>());
+                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new(declarationToGoalDistanceRule, ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalDistanceRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalDistanceRuleControl.Location = RuleControlLocation;
@@ -287,7 +284,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case DeclarationToGoalHeightRule declarationToGoalHeightRule:
                     {
-                        DeclarationToGoalHeightRuleControl declarationToGoalHeigthRuleControl = new DeclarationToGoalHeightRuleControl(declarationToGoalHeightRule, ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalHeightRuleControl>>());
+                        DeclarationToGoalHeightRuleControl declarationToGoalHeigthRuleControl = new(declarationToGoalHeightRule, ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalHeightRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalHeigthRuleControl.Location = RuleControlLocation;
@@ -300,7 +297,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case GoalToOtherGoalsDistanceRule goalToOtherGoalsDistance:
                     {
-                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new GoalToOtherGoalsDistanceRuleControl(goalToOtherGoalsDistance, ServiceProvider.GetRequiredService<ILogger<GoalToOtherGoalsDistanceRuleControl>>());
+                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new(goalToOtherGoalsDistance, ServiceProvider.GetRequiredService<ILogger<GoalToOtherGoalsDistanceRuleControl>>());
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         goalToOtherGoalsDistanceRuleControl.Location = RuleControlLocation;
