@@ -1,5 +1,4 @@
-using Competition.Configuration;
-using Coordinates.Configuration;
+using LoggingConnector;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -30,16 +29,12 @@ namespace BLC2021
                 .ConfigureServices((_, services) =>
                 {
                     services.AddLogging();
-                    services.AddCompetitionServices();
-                    services.AddSingleton<BLC2021Launch>();
-                    services.AddSingleton<PilotMapping>();
-                    services.ProviderLoggerFactory();
                 });
 
             var host = builder.Build();
-            //_ = host.Services.GetRequiredService<CoordinatesLoggingConnector>();
-            _ = host.Services.GetRequiredService<CompetitionLoggingConnector>();
-            Application.Run(host.Services.GetRequiredService<BLC2021Launch>());
+            var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+            LogConnector.LoggerFactory = loggerFactory;
+            Application.Run(new BLC2021Launch());
         }
     }
 }

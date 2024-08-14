@@ -1,5 +1,4 @@
-﻿using Coordinates.Configuration;
-using Coordinates.Parsers;
+﻿using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -14,13 +13,7 @@ namespace Coordinates
     public static class CoordinateHelpers
     {
 
-        private static ILogger Logger
-        {
-            get
-            {
-                return ServiceConfiguration.LoggerFactory.CreateLogger(nameof(CoordinateHelpers));
-            }
-        }
+        private static readonly ILogger Logger = LogConnector.LoggerFactory.CreateLogger(nameof(CoordinateHelpers));
 
         /// <summary>
         /// the ratio of feet to meter conversion
@@ -469,10 +462,10 @@ namespace Coordinates
             ArgumentNullException.ThrowIfNull(coordinate1);
 
             if (double.IsNaN(distanceInMeters) || double.IsInfinity(distanceInMeters))
-                throw new ArgumentException("Cannot be NaN or Infinity",nameof(distanceInMeters));
+                throw new ArgumentException("Cannot be NaN or Infinity", nameof(distanceInMeters));
 
             if (double.IsNaN(bearingInDecimalDegree) || double.IsInfinity(bearingInDecimalDegree))
-                throw new ArgumentException("Cannot be NaN or Infinity",nameof(bearingInDecimalDegree));
+                throw new ArgumentException("Cannot be NaN or Infinity", nameof(bearingInDecimalDegree));
 
             double angularDistance = Abs(distanceInMeters) / EARTH_RADIUS_METER;
             double lat1 = coordinate1.Latitude * PI / 180.0;

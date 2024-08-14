@@ -1,5 +1,6 @@
 ﻿using Competition.Validation;
 using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace Competition
     public class DonutTask : ICompetitionTask
     {
         [JsonIgnore()]
-        private readonly ILogger<DonutTask> Logger;    
+        private readonly ILogger<DonutTask> Logger=LogConnector.LoggerFactory.CreateLogger<DonutTask>();    
 
         #region Properties
         /// <summary>

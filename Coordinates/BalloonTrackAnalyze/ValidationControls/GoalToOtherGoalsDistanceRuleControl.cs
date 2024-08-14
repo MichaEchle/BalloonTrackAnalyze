@@ -1,5 +1,7 @@
-﻿using Competition;
+﻿using BalloonTrackAnalyze.TaskControls;
+using Competition;
 using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -12,7 +14,7 @@ namespace BalloonTrackAnalyze.ValidationControls
     {
         #region Properties
 
-        private readonly ILogger<GoalToOtherGoalsDistanceRuleControl> Logger;
+        private readonly ILogger<GoalToOtherGoalsDistanceRuleControl> Logger = LogConnector.LoggerFactory.CreateLogger<GoalToOtherGoalsDistanceRuleControl>();
         /// <summary>
         /// The rule to be created or modified with this control
         /// </summary>
@@ -37,24 +39,23 @@ namespace BalloonTrackAnalyze.ValidationControls
         /// <summary>
         /// Default constructor
         /// </summary>
-        public GoalToOtherGoalsDistanceRuleControl(ILogger<GoalToOtherGoalsDistanceRuleControl> logger)
+        public GoalToOtherGoalsDistanceRuleControl()
         {
             InitializeComponent();
             btCreate.Text = "Create rule";
-            Logger = logger;
+
         }
 
         /// <summary>
         /// Constructor which pre-fills control from existing rule
         /// </summary>
         /// <param name="goalToOtherGoalsDistanceRule">the existing goal to other goals distance rule</param>
-        public GoalToOtherGoalsDistanceRuleControl(GoalToOtherGoalsDistanceRule goalToOtherGoalsDistanceRule, ILogger<GoalToOtherGoalsDistanceRuleControl> logger)
+        public GoalToOtherGoalsDistanceRuleControl(GoalToOtherGoalsDistanceRule goalToOtherGoalsDistanceRule)
         {
             GoalToOtherGoalsDistanceRule = goalToOtherGoalsDistanceRule;
             InitializeComponent();
             Prefill();
             btCreate.Text = "Create rule";
-            Logger = logger;
         }
         #endregion
 

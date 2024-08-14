@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,18 +8,9 @@ namespace Competition.Validation
 {
     public static class ValidationHelper
     {
-        private static ILoggerFactory LoggerFactory
-        {
-            get; set;
-        }
 
-        private static ILogger Logger
-        {
-            get
-            {
-                return LoggerFactory.CreateLogger(nameof(ValidationHelper));
-            }
-        }
+        private static readonly ILogger Logger = LogConnector.LoggerFactory.CreateLogger(nameof(ValidationHelper));
+
 
         /// <summary>
         /// Applies all specified declaration rules for goals of the specified goal number and return the latest valid declaration

@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
@@ -7,7 +8,7 @@ namespace Competition
     public class MarkerToOtherMarkersDistanceRule : IMarkerValidationRules
     {
         #region Properties
-        private readonly ILogger<MarkerToOtherMarkersDistanceRule> Logger;
+        private readonly ILogger<MarkerToOtherMarkersDistanceRule> Logger = LogConnector.LoggerFactory.CreateLogger<MarkerToOtherMarkersDistanceRule>();
 
         /// <summary>
         /// Minimum distance to other markers in meter

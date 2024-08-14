@@ -1,4 +1,4 @@
-using Coordinates.Configuration;
+using LoggingConnector;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -29,14 +29,12 @@ namespace TrackReportGenerator
                 .ConfigureServices((_, services) =>
                     {
                         services.AddLogging();
-                        services.AddSingleton<TrackReportGeneratorForm>();
-                        services.AddSingleton<ExcelTrackReportGenerator>();
-                        services.ProviderLoggerFactory();
                     });
 
             var host = builder.Build();
-            //_ = host.Services.GetRequiredService<CoordinatesLoggingConnector>();
-            Application.Run(host.Services.GetRequiredService<TrackReportGeneratorForm>());
+            var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+            LogConnector.LoggerFactory = loggerFactory;
+            Application.Run(new TrackReportGeneratorForm());
         }
     }
 }

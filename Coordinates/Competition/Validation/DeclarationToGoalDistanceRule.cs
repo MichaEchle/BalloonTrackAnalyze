@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 
 namespace Competition
@@ -6,7 +7,7 @@ namespace Competition
     public class DeclarationToGoalDistanceRule : IDeclarationValidationRules
     {
         #region Properties
-        private readonly ILogger<DeclarationToGoalDistanceRule> Logger;
+        private readonly ILogger<DeclarationToGoalDistanceRule> Logger = LogConnector.LoggerFactory.CreateLogger<DeclarationToGoalDistanceRule>();
 
         /// <summary>
         /// Minimum distance between declaration position and declared goal in meter

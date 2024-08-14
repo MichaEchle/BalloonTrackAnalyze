@@ -1,4 +1,4 @@
-﻿using Coordinates.Configuration;
+﻿using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -9,13 +9,7 @@ namespace Coordinates.Parsers
 {
     public static class FAILoggerParser
     {
-        private static ILogger Logger
-        {
-            get
-            {
-                return ServiceConfiguration.LoggerFactory.CreateLogger(nameof(FAILoggerParser));
-            }
-        }
+        private static readonly ILogger Logger = LogConnector.LoggerFactory.CreateLogger(nameof(FAILoggerParser));
 
         #region API
 

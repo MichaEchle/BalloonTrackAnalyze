@@ -1,6 +1,7 @@
 ﻿using BalloonTrackAnalyze.TaskControls;
 using Competition;
 using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -13,9 +14,8 @@ namespace BalloonTrackAnalyze
 {
     public partial class Form1 : Form
     {
-        private readonly ILogger<Form1> Logger;
+        private readonly ILogger<Form1> Logger = LogConnector.LoggerFactory.CreateLogger<Form1>();
 
-        private readonly IServiceProvider ServiceProvider;
 
         private Point TaskControlLocation { get; set; } = new Point(0, 0);
 
@@ -24,11 +24,9 @@ namespace BalloonTrackAnalyze
             get; set;
         }
 
-        public Form1(IServiceProvider serviceProvider)
+        public Form1()
         {
             InitializeComponent();
-            ServiceProvider = serviceProvider;
-            Logger = serviceProvider.GetRequiredService<ILogger<Form1>>();
         }
 
 
@@ -59,7 +57,7 @@ namespace BalloonTrackAnalyze
             {
                 case "Donut":
                     {
-                        DonutControl donutControl = new(ServiceProvider.GetRequiredService<ILogger<DonutControl>>(), ServiceProvider);
+                        DonutControl donutControl = new DonutControl();
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         donutControl.Location = TaskControlLocation;
@@ -71,7 +69,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case "Pie":
                     {
-                        PieControl pieControl = new(ServiceProvider.GetRequiredService<ILogger<PieControl>>(),ServiceProvider);
+                        PieControl pieControl = new();
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         pieControl.Location = TaskControlLocation;
@@ -83,7 +81,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case "Elbow":
                     {
-                        ElbowControl elbowControl = new(ServiceProvider.GetRequiredService<ILogger<ElbowControl>>(), ServiceProvider);
+                        ElbowControl elbowControl = new();
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         elbowControl.Location = TaskControlLocation;
@@ -95,7 +93,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case "Landrun":
                     {
-                        LandRunControl landrunControl = new(ServiceProvider.GetRequiredService<ILogger<LandRunControl>>(), ServiceProvider);
+                        LandRunControl landrunControl = new();
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         landrunControl.Location = TaskControlLocation;
@@ -122,7 +120,7 @@ namespace BalloonTrackAnalyze
                 {
                     if (DoesTaskNumberAlreadyExists(landRun.TaskNumber))
                     {
-                        Logger?.LogError("Failed to create '{landRun}': A task with the number '{landRun.TaskNumber}' already exists",landRun,landRun.TaskNumber);
+                        Logger?.LogError("Failed to create '{landRun}': A task with the number '{landRun.TaskNumber}' already exists", landRun, landRun.TaskNumber);
                     }
                     else
                     {
@@ -276,7 +274,7 @@ namespace BalloonTrackAnalyze
             {
                 case DonutTask donut:
                     {
-                        DonutControl donutControl = new(donut, ServiceProvider.GetRequiredService<ILogger<DonutControl>>(), ServiceProvider);
+                        DonutControl donutControl = new(donut);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         donutControl.Location = TaskControlLocation;
@@ -288,7 +286,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case PieTask pie:
                     {
-                        PieControl pieControl = new(pie,ServiceProvider.GetRequiredService<ILogger<PieControl>>());
+                        PieControl pieControl = new(pie);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         pieControl.Location = TaskControlLocation;
@@ -300,7 +298,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case ElbowTask elbow:
                     {
-                        ElbowControl elbowControl = new(elbow, ServiceProvider.GetRequiredService<ILogger<ElbowControl>>(), ServiceProvider);
+                        ElbowControl elbowControl = new(elbow);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         elbowControl.Location = TaskControlLocation;
@@ -312,7 +310,7 @@ namespace BalloonTrackAnalyze
                     break;
                 case LandRunTask landRun:
                     {
-                        LandRunControl landrunControl = new(landRun, ServiceProvider.GetRequiredService<ILogger<LandRunControl>>(), ServiceProvider);
+                        LandRunControl landrunControl = new(landRun);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         landrunControl.Location = TaskControlLocation;
@@ -373,7 +371,7 @@ namespace BalloonTrackAnalyze
             }
             catch (Exception ex)
             {
-                Logger?.LogError(ex,"Failed to calculate Results");
+                Logger?.LogError(ex, "Failed to calculate Results");
                 return;
             }
             try
@@ -489,7 +487,7 @@ namespace BalloonTrackAnalyze
                         string jsonString = File.ReadAllText(openFileDialog.FileName);
                         //DonutTask donut = JsonSerializer.Deserialize<DonutTask>(jsonString);
                         DonutTask donut = JsonConvert.DeserializeObject<DonutTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
-                        DonutControl donutControl = new(donut, ServiceProvider.GetRequiredService<ILogger<DonutControl>>(),ServiceProvider);
+                        DonutControl donutControl = new(donut);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         donutControl.Location = TaskControlLocation;
@@ -503,7 +501,7 @@ namespace BalloonTrackAnalyze
                         string jsonString = File.ReadAllText(openFileDialog.FileName);
                         //PieTask pie = JsonSerializer.Deserialize<PieTask>(jsonString);
                         PieTask pie = JsonConvert.DeserializeObject<PieTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
-                        PieControl pieControl = new(pie, ServiceProvider.GetRequiredService<ILogger<PieControl>>());
+                        PieControl pieControl = new(pie);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         pieControl.Location = TaskControlLocation;
@@ -517,7 +515,7 @@ namespace BalloonTrackAnalyze
                         string jsonString = File.ReadAllText(openFileDialog.FileName);
                         //ElbowTask elbow = JsonSerializer.Deserialize<ElbowTask>(jsonString);
                         ElbowTask elbow = JsonConvert.DeserializeObject<ElbowTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
-                        ElbowControl elbowControl = new(elbow,ServiceProvider.GetRequiredService<ILogger<ElbowControl>>(), ServiceProvider);
+                        ElbowControl elbowControl = new(elbow);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         elbowControl.Location = TaskControlLocation;
@@ -531,7 +529,7 @@ namespace BalloonTrackAnalyze
                         string jsonString = File.ReadAllText(openFileDialog.FileName);
                         //LandRunTask landRun = JsonSerializer.Deserialize<LandRunTask>(jsonString);
                         LandRunTask landRun = JsonConvert.DeserializeObject<LandRunTask>(jsonString, new JsonSerializerSettings() { TypeNameHandling = TypeNameHandling.Auto });
-                        LandRunControl landrunControl = new(landRun, ServiceProvider.GetRequiredService<ILogger<LandRunControl>>(), ServiceProvider);
+                        LandRunControl landrunControl = new(landRun);
                         SuspendLayout();
                         plUserControl.Controls.Remove(plUserControl.Controls["taskControl"]);
                         landrunControl.Location = TaskControlLocation;

@@ -11,10 +11,11 @@
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="EPPlus" Version="7.0.8" />
+    <PackageReference Include="EPPlus" Version="7.2.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Coordinates\Coordinates.csproj" />
+    <ProjectReference Include="..\LoggingConnector\LoggingConnector.csproj" />
   </ItemGroup>
 </Project>

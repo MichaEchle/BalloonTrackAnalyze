@@ -1,6 +1,7 @@
 ﻿using BalloonTrackAnalyze.ValidationControls;
 using Competition;
 using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -14,9 +15,7 @@ namespace BalloonTrackAnalyze.TaskControls
     {
         #region Properties
 
-        private readonly ILogger<PieTierControl> Logger;
-
-        private readonly IServiceProvider ServiceProvider;
+        private readonly ILogger<PieTierControl> Logger = LogConnector.LoggerFactory.CreateLogger<PieTierControl>();
         /// <summary>
         /// The pie tier to be created or modified by this control
         /// </summary>
@@ -52,13 +51,11 @@ namespace BalloonTrackAnalyze.TaskControls
         /// <summary>
         /// Default constructor
         /// </summary>
-        public PieTierControl(ILogger<PieTierControl> logger, IServiceProvider serviceProvider)
+        public PieTierControl()
         {
             InitializeComponent();
             IsNewTier = true;
             btCreate.Text = "Create tier";
-            Logger = logger;
-            ServiceProvider = serviceProvider;
         }
 
         #endregion
@@ -220,7 +217,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 case "Declaration to Goal Distance":
                     {
-                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new( ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalDistanceRuleControl>>());
+                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new();
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalDistanceRuleControl.Location = RuleControlLocation;
@@ -233,7 +230,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case "Declaration to Goal Height":
                     {
-                        DeclarationToGoalHeightRuleControl declarationToGoalHeigthRuleControl = new( ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalHeightRuleControl>>());
+                        DeclarationToGoalHeightRuleControl declarationToGoalHeigthRuleControl = new();
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalHeigthRuleControl.Location = RuleControlLocation;
@@ -246,7 +243,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case "Goal to other Goals Distance":
                     {
-                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new( ServiceProvider.GetRequiredService<ILogger<GoalToOtherGoalsDistanceRuleControl>>());
+                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new();
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         goalToOtherGoalsDistanceRuleControl.Location = RuleControlLocation;
@@ -271,7 +268,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 case DeclarationToGoalDistanceRule declarationToGoalDistanceRule:
                     {
-                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new(declarationToGoalDistanceRule, ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalDistanceRuleControl>>());
+                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new(declarationToGoalDistanceRule);
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalDistanceRuleControl.Location = RuleControlLocation;
@@ -284,7 +281,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case DeclarationToGoalHeightRule declarationToGoalHeightRule:
                     {
-                        DeclarationToGoalHeightRuleControl declarationToGoalHeigthRuleControl = new(declarationToGoalHeightRule, ServiceProvider.GetRequiredService<ILogger<DeclarationToGoalHeightRuleControl>>());
+                        DeclarationToGoalHeightRuleControl declarationToGoalHeigthRuleControl = new(declarationToGoalHeightRule);
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalHeigthRuleControl.Location = RuleControlLocation;
@@ -297,7 +294,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case GoalToOtherGoalsDistanceRule goalToOtherGoalsDistance:
                     {
-                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new(goalToOtherGoalsDistance, ServiceProvider.GetRequiredService<ILogger<GoalToOtherGoalsDistanceRuleControl>>());
+                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new(goalToOtherGoalsDistance);
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         goalToOtherGoalsDistanceRuleControl.Location = RuleControlLocation;
@@ -322,7 +319,7 @@ namespace BalloonTrackAnalyze.TaskControls
             GoalToOtherGoalsDistanceRule goalToOtherGoalsDistanceRule = (plRuleControl.Controls["ruleControl"] as GoalToOtherGoalsDistanceRuleControl).GoalToOtherGoalsDistanceRule;
             if (!lbRules.Items.Contains(goalToOtherGoalsDistanceRule))
                 lbRules.Items.Add(goalToOtherGoalsDistanceRule);
-            Logger?.LogInformation("'{goalToOtherGoalsDistanceRule}' created/modified",goalToOtherGoalsDistanceRule);
+            Logger?.LogInformation("'{goalToOtherGoalsDistanceRule}' created/modified", goalToOtherGoalsDistanceRule);
         }
 
         /// <summary>

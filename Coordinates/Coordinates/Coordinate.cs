@@ -1,4 +1,4 @@
-﻿using Coordinates.Configuration;
+﻿using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 
@@ -7,7 +7,7 @@ namespace Coordinates
     public class Coordinate
     {
 
-        private readonly ILogger<Coordinate> Logger = ServiceConfiguration.LoggerFactory.CreateLogger<Coordinate>();
+        private readonly ILogger<Coordinate> Logger = LogConnector.LoggerFactory.CreateLogger<Coordinate>();
 
         /// <summary>
         /// The latitude or northing in decimal degrees

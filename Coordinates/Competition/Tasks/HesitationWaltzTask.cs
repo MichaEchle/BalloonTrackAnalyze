@@ -1,5 +1,6 @@
 ﻿using Competition.Validation;
 using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -12,7 +13,7 @@ namespace Competition
     {
         #region Properties
         [JsonIgnore()]
-        private readonly ILogger<HesitationWaltzTask> Logger;
+        private readonly ILogger<HesitationWaltzTask> Logger = LogConnector.LoggerFactory.CreateLogger<HesitationWaltzTask>();
 
         public int TaskNumber
         {

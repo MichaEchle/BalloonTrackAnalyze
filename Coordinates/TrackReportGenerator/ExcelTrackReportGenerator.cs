@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using OfficeOpenXml.Drawing.Chart;
@@ -10,16 +11,11 @@ using System.Linq;
 
 namespace TrackReportGenerator
 {
-    public class ExcelTrackReportGenerator
+    public static class ExcelTrackReportGenerator
     {
-        private readonly ILogger<ExcelTrackReportGenerator> Logger;
+        private static readonly ILogger Logger = LogConnector.LoggerFactory.CreateLogger(nameof(ExcelTrackReportGenerator));
 
-        public ExcelTrackReportGenerator(ILogger<ExcelTrackReportGenerator> logger)
-        {
-            Logger = logger;
-        }
-
-        public bool GenerateTrackReport(string filename, Track track, bool skipCoordinatesWithOutLocation, bool useGPSAltitude, double maxAllowedAltitude)
+        public static bool GenerateTrackReport(string filename, Track track, bool skipCoordinatesWithOutLocation, bool useGPSAltitude, double maxAllowedAltitude)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
             int iterator = 0;
@@ -86,7 +82,7 @@ namespace TrackReportGenerator
         }
 
 
-        private bool WriteTrackPoints(ExcelWorksheet wsTrackpoints, Track track, bool skipCoordinatesWithOutLocation, bool useGPSAltitude, out List<(int easting, int norting)> trackChartPoints, out List<(DateTime timestamp, double altitude)> altitudeChartPoints)
+        private static bool WriteTrackPoints(ExcelWorksheet wsTrackpoints, Track track, bool skipCoordinatesWithOutLocation, bool useGPSAltitude, out List<(int easting, int norting)> trackChartPoints, out List<(DateTime timestamp, double altitude)> altitudeChartPoints)
         {
             trackChartPoints = [];
             altitudeChartPoints = [];
@@ -230,7 +226,7 @@ namespace TrackReportGenerator
 
         }
 
-        private bool WriteDeclaratrionsAndMarkerDrops(ExcelWorksheet wsDeclarationsAndMarkerDrops, Track track, bool useGPSAltitude)
+        private static bool WriteDeclaratrionsAndMarkerDrops(ExcelWorksheet wsDeclarationsAndMarkerDrops, Track track, bool useGPSAltitude)
         {
             try
             {
@@ -491,7 +487,7 @@ namespace TrackReportGenerator
             return true;
         }
 
-        private bool CreateCharts(ExcelWorksheet wsCharts, List<(int easting, int norting)> trackChartPoints,
+        private static bool CreateCharts(ExcelWorksheet wsCharts, List<(int easting, int norting)> trackChartPoints,
         List<(DateTime timestamp, double altitude)> altitudeChartPoints)
         {
             try
@@ -542,7 +538,7 @@ namespace TrackReportGenerator
             return true;
         }
 
-        private bool WriteIncidentsInOrder(ExcelWorksheet wsIncidients, Track track)
+        private static bool WriteIncidentsInOrder(ExcelWorksheet wsIncidients, Track track)
         {
             try
             {
@@ -589,7 +585,7 @@ namespace TrackReportGenerator
             return true;
         }
 
-        private bool WriteViolations(ExcelWorksheet wsViolations, Track track, bool useGPSAltitude, double maxAllowedAltitude)
+        private static bool WriteViolations(ExcelWorksheet wsViolations, Track track, bool useGPSAltitude, double maxAllowedAltitude)
         {
             try
             {

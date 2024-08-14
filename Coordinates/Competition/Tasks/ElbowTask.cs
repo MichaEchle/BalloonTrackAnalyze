@@ -1,5 +1,6 @@
 ﻿using Competition.Validation;
 using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Competition
     {
         #region Properties
         [JsonIgnore()]
-        private readonly ILogger<ElbowTask> Logger;
+        private readonly ILogger<ElbowTask> Logger = LogConnector.LoggerFactory.CreateLogger<ElbowTask>();
         /// <summary>
         /// The task number
         /// <para>mandatory</para>

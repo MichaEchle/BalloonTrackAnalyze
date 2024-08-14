@@ -1,5 +1,6 @@
 ﻿using Competition.Validation;
 using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace Competition
         {
             #region Properties
             [JsonIgnore()]
-            private readonly ILogger<PieTier> Logger;
+            private readonly ILogger<PieTier> Logger = LogConnector.LoggerFactory.CreateLogger<PieTier>();
 
             /// <summary>
             /// The target goal number
@@ -219,7 +220,7 @@ namespace Competition
 
         #region Properties
 
-        private readonly ILogger<PieTask> Logger;
+        private readonly ILogger<PieTask> Logger = LogConnector.LoggerFactory.CreateLogger<PieTask>();
         /// <summary>
         /// The task number
         /// <para>mandatory</para>

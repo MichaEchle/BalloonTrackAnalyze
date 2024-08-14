@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 
@@ -28,7 +29,7 @@ namespace Competition
 
         #region Properties
 
-        private readonly ILogger<DeclarationToGoalHeightRule> Logger;
+        private readonly ILogger<DeclarationToGoalDistanceRule> Logger = LogConnector.LoggerFactory.CreateLogger<DeclarationToGoalDistanceRule>();
 
         /// <summary>
         /// Minimum difference in height between declaration position and declared goal in meter

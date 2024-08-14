@@ -1,4 +1,5 @@
 ﻿using Competition;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,8 @@ namespace BalloonTrackAnalyze.TaskControls
     {
         #region Properties
 
-        private readonly ILogger<PieControl> Logger;
+        private readonly ILogger<PieControl> Logger = LogConnector.LoggerFactory.CreateLogger<PieControl>();
 
-        private readonly IServiceProvider ServiceProvider;
         /// <summary>
         /// The pie task to be created or modified by this control
         /// </summary>
@@ -41,10 +41,8 @@ namespace BalloonTrackAnalyze.TaskControls
         /// <summary>
         /// Default constructor
         /// </summary>
-        public PieControl(ILogger<PieControl> logger,IServiceProvider serviceProvider)
+        public PieControl()
         {
-            Logger = logger;
-            ServiceProvider = serviceProvider;
             InitializeComponent();
             IsNewTask = true;
             btCreate.Text = "Create task";
@@ -55,7 +53,7 @@ namespace BalloonTrackAnalyze.TaskControls
         /// Constructor which pre-fills controls from existing pie task
         /// </summary>
         /// <param name="pieTask">the existing pie task</param>
-        public PieControl(PieTask pieTask, ILogger<PieControl> logger)
+        public PieControl(PieTask pieTask)
         {
             PieTask = pieTask;
             InitializeComponent();
@@ -63,7 +61,6 @@ namespace BalloonTrackAnalyze.TaskControls
             btCreate.Text = "Modify task";
             Prefill();
             pieTierControl1.DataValid += PieTierControl1_DataValid;
-            Logger = logger;
         }
         #endregion
 

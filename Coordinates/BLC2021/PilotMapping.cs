@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using LoggingConnector;
+using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -10,17 +11,13 @@ namespace BLC2021
 {
     public sealed class PilotMapping
     {
-        private readonly ILogger<PilotMapping> Logger;
+        private readonly ILogger<PilotMapping> Logger = LogConnector.LoggerFactory.CreateLogger<PilotMapping>();
 
         private List<(int pilotNumber, string lastName, string firstName)> PilotMappings
         {
             get; set;
         }
 
-        public PilotMapping(ILogger<PilotMapping> logger)
-        {
-            Logger = logger;
-        }
 
         public bool GetPilotName(int pilotNumber, out string lastName, out string firstName)
         {

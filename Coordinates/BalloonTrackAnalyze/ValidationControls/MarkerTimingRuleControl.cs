@@ -1,4 +1,6 @@
-﻿using Competition;
+﻿using BalloonTrackAnalyze.TaskControls;
+using Competition;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Windows.Forms;
@@ -8,7 +10,7 @@ namespace BalloonTrackAnalyze.ValidationControls
     public partial class MarkerTimingRuleControl : UserControl
     {
         #region Properties
-        private readonly ILogger<MarkerTimingRuleControl> Logger;
+        private readonly ILogger<MarkerTimingRuleControl> Logger = LogConnector.LoggerFactory.CreateLogger<MarkerTimingRuleControl>();
         /// <summary>
         /// The rule to be created or modified with this control
         /// </summary>
@@ -32,24 +34,22 @@ namespace BalloonTrackAnalyze.ValidationControls
         /// <summary>
         /// Default constructor
         /// </summary>
-        public MarkerTimingRuleControl(ILogger<MarkerTimingRuleControl> logger)
+        public MarkerTimingRuleControl()
         {
             InitializeComponent();
             btCreate.Text = "Create rule";
-            Logger = logger;
         }
 
         /// <summary>
         /// Constructor which pre-fills control from existing rule
         /// </summary>
         /// <param name="markerTimingRule">the existing marker timing rule</param>
-        public MarkerTimingRuleControl(MarkerTimingRule markerTimingRule, ILogger<MarkerTimingRuleControl> logger)
+        public MarkerTimingRuleControl(MarkerTimingRule markerTimingRule)
         {
             MarkerTimingRule = markerTimingRule;
             InitializeComponent();
             Prefill();
             btCreate.Text = "Create rule";
-            Logger = logger;
         }
         #endregion
 

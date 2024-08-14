@@ -1,6 +1,7 @@
 ﻿using Competition.Validation;
 using Coordinates;
 using Coordinates.Parsers;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace Competition
     {
         #region Properties
 
-        private readonly ILogger<Flight> Logger;
+        private readonly ILogger<Flight> Logger = LogConnector.LoggerFactory.CreateLogger<Flight>();
 
         /// <summary>
         /// The number of the flight

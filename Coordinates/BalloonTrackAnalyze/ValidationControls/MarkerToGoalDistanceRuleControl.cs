@@ -1,5 +1,7 @@
-﻿using Competition;
+﻿using BalloonTrackAnalyze.TaskControls;
+using Competition;
 using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Windows.Forms;
@@ -9,7 +11,7 @@ namespace BalloonTrackAnalyze.ValidationControls
     public partial class MarkerToGoalDistanceRuleControl : UserControl
     {
         #region Properties
-        private readonly ILogger<MarkerToGoalDistanceRuleControl> Logger;
+        private readonly ILogger<MarkerToGoalDistanceRuleControl> Logger = LogConnector.LoggerFactory.CreateLogger<MarkerToGoalDistanceRuleControl>();
         /// <summary>
         /// The rule to be created or modified with this control
         /// </summary>
@@ -33,24 +35,22 @@ namespace BalloonTrackAnalyze.ValidationControls
         /// <summary>
         /// Default constructor
         /// </summary>
-        public MarkerToGoalDistanceRuleControl(ILogger<MarkerToGoalDistanceRuleControl> logger)
+        public MarkerToGoalDistanceRuleControl()
         {
             InitializeComponent();
             btCreate.Text = "Create rule";
-            Logger = logger;
         }
 
         /// <summary>
         /// Constructor which pre-fills control from existing rule
         /// </summary>
         /// <param name="markerToGoalDistanceRule">the existing marker to goal distance rule</param>
-        public MarkerToGoalDistanceRuleControl(MarkerToGoalDistanceRule markerToGoalDistanceRule, ILogger<MarkerToGoalDistanceRuleControl> logger)
+        public MarkerToGoalDistanceRuleControl(MarkerToGoalDistanceRule markerToGoalDistanceRule)
         {
             MarkerToGoalDistanceRule = markerToGoalDistanceRule;
             InitializeComponent();
             Prefill();
             btCreate.Text = "Modify rule";
-            Logger = logger;
         }
         #endregion
 

@@ -1,5 +1,7 @@
-﻿using Competition;
+﻿using BalloonTrackAnalyze.TaskControls;
+using Competition;
 using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -12,7 +14,7 @@ namespace BalloonTrackAnalyze.ValidationControls
     {
         #region Properties
 
-        private readonly ILogger<MarkerToOtherMarkersDistanceRuleControl> Logger;
+        private readonly ILogger<MarkerToOtherMarkersDistanceRuleControl> Logger = LogConnector.LoggerFactory.CreateLogger<MarkerToOtherMarkersDistanceRuleControl>();
         /// <summary>
         /// The rule to be created or modified with this control
         /// </summary>
@@ -36,24 +38,22 @@ namespace BalloonTrackAnalyze.ValidationControls
         /// <summary>
         /// Default constructor
         /// </summary>
-        public MarkerToOtherMarkersDistanceRuleControl(ILogger<MarkerToOtherMarkersDistanceRuleControl> logger)
+        public MarkerToOtherMarkersDistanceRuleControl()
         {
             InitializeComponent();
             btCreate.Text = "Create rule";
-            Logger = logger;
         }
 
         /// <summary>
         /// Constructor which pre-fills control from existing rule
         /// </summary>
         /// <param name="markerToOtherMarkersDistanceRule">the existing marker to other markers distance rule</param>
-        public MarkerToOtherMarkersDistanceRuleControl(MarkerToOtherMarkersDistanceRule markerToOtherMarkersDistanceRule, ILogger<MarkerToOtherMarkersDistanceRuleControl> logger)
+        public MarkerToOtherMarkersDistanceRuleControl(MarkerToOtherMarkersDistanceRule markerToOtherMarkersDistanceRule)
         {
             MarkerToOtherMarkersDistanceRule = markerToOtherMarkersDistanceRule;
             InitializeComponent();
             Prefill();
             btCreate.Text = "Modify rule";
-            Logger = logger;
         }
         #endregion
 

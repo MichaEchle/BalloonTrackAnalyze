@@ -1,20 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Coordinates
+﻿namespace Coordinates
 {
     public class MarkerDrop
     {
         /// <summary>
         /// The number of the marker
         /// </summary>
-        public int MarkerNumber { get; private set; }
+        public int MarkerNumber
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// The position of the marker
         /// </summary>
-        public Coordinate MarkerLocation { get; private set; }
+        public Coordinate MarkerLocation
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// Create a marker drop

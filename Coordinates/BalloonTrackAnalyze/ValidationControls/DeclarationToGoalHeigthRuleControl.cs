@@ -1,5 +1,7 @@
-﻿using Competition;
+﻿using BalloonTrackAnalyze.TaskControls;
+using Competition;
 using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Windows.Forms;
@@ -10,7 +12,7 @@ namespace BalloonTrackAnalyze.ValidationControls
     {
         #region Properties
 
-        private readonly ILogger<DeclarationToGoalHeightRuleControl> Logger;
+        private readonly ILogger<DeclarationToGoalHeightRuleControl> Logger = LogConnector.LoggerFactory.CreateLogger<DeclarationToGoalHeightRuleControl>();
 
         /// <summary>
         /// The rule to be created or modified with this control
@@ -36,24 +38,22 @@ namespace BalloonTrackAnalyze.ValidationControls
         /// <summary>
         /// Default constructor
         /// </summary>
-        public DeclarationToGoalHeightRuleControl(ILogger<DeclarationToGoalHeightRuleControl> logger)
+        public DeclarationToGoalHeightRuleControl()
         {
             InitializeComponent();
             btCreate.Text = "Create rule";
-            Logger = logger;
         }
 
         /// <summary>
         /// Constructor which pre-fills control from existing rule
         /// </summary>
         /// <param name="declarationToGoalHeightRule">the existing declaration to goal height rule</param>
-        public DeclarationToGoalHeightRuleControl(DeclarationToGoalHeightRule declarationToGoalHeightRule, ILogger<DeclarationToGoalHeightRuleControl> logger)
+        public DeclarationToGoalHeightRuleControl(DeclarationToGoalHeightRule declarationToGoalHeightRule)
         {
             DeclarationToGoalHeightRule = declarationToGoalHeightRule;
             InitializeComponent();
             Prefill();
             btCreate.Text = "Modify rule";
-            Logger = logger;
         }
         #endregion
 

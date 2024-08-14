@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ namespace Competition.Validation
     {
         #region Properties
 
-        private readonly ILogger<MarkerToMarkerTimingRule> Logger;
+        private readonly ILogger<MarkerToMarkerTimingRule> Logger = LogConnector.LoggerFactory.CreateLogger<MarkerToMarkerTimingRule>();
         /// <summary>
         /// Earliest time to drop second marker
         /// <para>optional; use double.NaN to omit</para>

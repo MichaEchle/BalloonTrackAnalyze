@@ -11,10 +11,13 @@
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="CoordinateSharp" Version="2.21.1.1" />
-    <PackageReference Include="EPPlus" Version="7.0.8" />
+    <PackageReference Include="CoordinateSharp" Version="2.24.2.1" />
+    <PackageReference Include="EPPlus" Version="7.2.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LoggingConnector\LoggingConnector.csproj" />
   </ItemGroup>
 </Project>

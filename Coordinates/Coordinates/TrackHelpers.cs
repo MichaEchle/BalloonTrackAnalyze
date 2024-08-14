@@ -1,5 +1,4 @@
-﻿using Coordinates.Configuration;
-using Coordinates.Parsers;
+﻿using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -10,13 +9,8 @@ namespace Coordinates
     public static class TrackHelpers
     {
 
-        private static ILogger Logger
-        {
-            get
-            {
-                return ServiceConfiguration.LoggerFactory.CreateLogger(nameof(TrackHelpers));
-            }
-        }
+        private readonly static ILogger Logger = LogConnector.LoggerFactory.CreateLogger(nameof(TrackHelpers));
+
         /// <summary>
         /// Calculates the 2D distance between position of declaration and declared goal for all given declarations
         /// </summary>

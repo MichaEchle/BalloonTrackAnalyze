@@ -1,8 +1,11 @@
 ﻿using Coordinates;
 using Coordinates.Parsers;
+using LoggingConnector;
+using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Linq;
+using Microsoft.Extensions.Logging.Console;
 
 namespace TestProgramm
 {
@@ -12,6 +15,7 @@ namespace TestProgramm
 
         static void Main(string[] args)
         {
+            LogConnector.LoggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
             //C:\Users\micechle\source\repos\MichaEchle\BalloonTrackAnalyze\TestTrack\5AD_f003_p002_l0.igc
             //\..\..\..\..\..\TestTrack\5AD_f003_p002_l0.igc

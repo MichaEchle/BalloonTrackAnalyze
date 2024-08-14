@@ -1,6 +1,6 @@
 ﻿using BalloonTrackAnalyze.ValidationControls;
 using Competition;
-using Microsoft.Extensions.DependencyInjection;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -13,9 +13,8 @@ namespace BalloonTrackAnalyze.TaskControls
     {
         #region Properties
 
-        private readonly ILogger<LandRunControl> Logger;
+        private readonly ILogger<LandRunControl> Logger = LogConnector.LoggerFactory.CreateLogger<LandRunControl>();
 
-        private readonly IServiceProvider ServiceProvider;
 
         /// <summary>
         /// The land run task to be created or modified by this control
@@ -50,29 +49,25 @@ namespace BalloonTrackAnalyze.TaskControls
         /// <summary>
         /// Default constructor
         /// </summary>
-        public LandRunControl(ILogger<LandRunControl> logger, IServiceProvider serviceProvider)
+        public LandRunControl()
         {
             InitializeComponent();
             IsNewTask = true;
             btCreate.Text = "Create task";
-            Logger = logger;
-
-            ServiceProvider = serviceProvider;
+            ;
         }
 
         /// <summary>
         /// Constructor which pre-fills controls from existing land run task
         /// </summary>
         /// <param name="landRun">the existing land run task</param>
-        public LandRunControl(LandRunTask landRun, ILogger<LandRunControl> logger, IServiceProvider serviceProvider)
+        public LandRunControl(LandRunTask landRun)
         {
             LandRun = landRun;
             InitializeComponent();
             IsNewTask = false;
             btCreate.Text = "Modify task";
             Prefill();
-            Logger = logger;
-            ServiceProvider = serviceProvider;
         }
         #endregion
 
@@ -196,7 +191,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 case MarkerTimingRule markerTimingRule:
                     {
-                        MarkerTimingRuleControl markerTimingRuleControl = new(markerTimingRule, ServiceProvider.GetRequiredService<ILogger<MarkerTimingRuleControl>>());
+                        MarkerTimingRuleControl markerTimingRuleControl = new(markerTimingRule);
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerTimingRuleControl.Location = RuleControlLocation;
@@ -209,7 +204,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case MarkerToOtherMarkersDistanceRule markerToOtherMarkersDistanceRule:
                     {
-                        MarkerToOtherMarkersDistanceRuleControl markerToOtherMarkerDistanceRuleControl = new(markerToOtherMarkersDistanceRule, ServiceProvider.GetRequiredService<ILogger<MarkerToOtherMarkersDistanceRuleControl>>());
+                        MarkerToOtherMarkersDistanceRuleControl markerToOtherMarkerDistanceRuleControl = new(markerToOtherMarkersDistanceRule);
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerToOtherMarkerDistanceRuleControl.Location = RuleControlLocation;
@@ -222,7 +217,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case MarkerToGoalDistanceRule markerToGoalDistanceRule:
                     {
-                        MarkerToGoalDistanceRuleControl markerToGoalDistanceRuleControl = new(markerToGoalDistanceRule, ServiceProvider.GetRequiredService<ILogger<MarkerToGoalDistanceRuleControl>>());
+                        MarkerToGoalDistanceRuleControl markerToGoalDistanceRuleControl = new(markerToGoalDistanceRule);
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerToGoalDistanceRuleControl.Location = RuleControlLocation;
@@ -247,7 +242,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 case "Marker Timing":
                     {
-                        MarkerTimingRuleControl markerTimingRuleControl = new( ServiceProvider.GetRequiredService<ILogger<MarkerTimingRuleControl>>());
+                        MarkerTimingRuleControl markerTimingRuleControl = new();
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerTimingRuleControl.Location = RuleControlLocation;
@@ -260,7 +255,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case "Marker to other Markers Distance":
                     {
-                        MarkerToOtherMarkersDistanceRuleControl markerToOtherMarkerDistanceRuleControl = new( ServiceProvider.GetRequiredService<ILogger<MarkerToOtherMarkersDistanceRuleControl>>());
+                        MarkerToOtherMarkersDistanceRuleControl markerToOtherMarkerDistanceRuleControl = new();
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerToOtherMarkerDistanceRuleControl.Location = RuleControlLocation;
@@ -273,7 +268,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case "Marker to Goal Distance":
                     {
-                        MarkerToGoalDistanceRuleControl markerToGoalDistanceRuleControl = new( ServiceProvider.GetRequiredService<ILogger<MarkerToGoalDistanceRuleControl>>());
+                        MarkerToGoalDistanceRuleControl markerToGoalDistanceRuleControl = new();
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         markerToGoalDistanceRuleControl.Location = RuleControlLocation;

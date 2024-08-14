@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
@@ -8,7 +9,7 @@ namespace Competition
     {
         #region Properties
 
-        private readonly ILogger<GoalToOtherGoalsDistanceRule> Logger;
+        private readonly ILogger<GoalToOtherGoalsDistanceRule> Logger = LogConnector.LoggerFactory.CreateLogger<GoalToOtherGoalsDistanceRule>();
 
         /// <summary>
         /// Minimum distance to other declared goals in meter

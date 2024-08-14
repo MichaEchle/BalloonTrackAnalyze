@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
@@ -8,7 +9,7 @@ namespace Competition
     {
         #region Properties
 
-        private readonly ILogger<MarkerTimingRule> Logger;
+        private readonly ILogger<MarkerTimingRule> Logger = LogConnector.LoggerFactory.CreateLogger<MarkerTimingRule>();
         /// <summary>
         /// The list of timing definitions
         /// <para>each entry consists of two values</para>

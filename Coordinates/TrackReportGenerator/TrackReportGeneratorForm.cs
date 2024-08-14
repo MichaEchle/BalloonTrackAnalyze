@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
@@ -10,9 +11,7 @@ namespace TrackReportGenerator
     public partial class TrackReportGeneratorForm : Form
     {
         #region Properties
-        private readonly ILogger<TrackReportGeneratorForm> Logger;
-
-        private readonly ExcelTrackReportGenerator ExcelTrackReportGenerator;
+        private readonly ILogger<TrackReportGeneratorForm> Logger=LogConnector.LoggerFactory.CreateLogger<TrackReportGeneratorForm>();
         private bool UseGPSAltitude = true;
         private double MaxAllowedAltitude = CoordinateHelpers.ConvertToMeter(10000);
         private bool SkipCoordinatesWithoutLocation = true;
