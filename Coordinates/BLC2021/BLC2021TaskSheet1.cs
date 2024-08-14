@@ -1,5 +1,6 @@
 ﻿using Competition;
 using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using System;
@@ -17,9 +18,9 @@ namespace BLC2021
     {
         #region Properties
 
-        private readonly ILogger<BLC2021TaskSheet1> Logger;
+        private readonly ILogger<BLC2021TaskSheet1> Logger = LogConnector.LoggerFactory.CreateLogger<BLC2021TaskSheet1>();
 
-        private readonly PilotMapping PilotMapping;
+        private readonly PilotMapping PilotMapping = new ();
 
         private bool BatchMode
         {
@@ -91,7 +92,6 @@ namespace BLC2021
         {
             InitializeComponent();
             BatchMode = batchMode;
-
             Text = ToString();
 
         }
@@ -593,7 +593,7 @@ namespace BLC2021
                         wsResults.Cells.AutoFitColumns();
                         package.Save();
                     }
-                    Logger?.LogInformation("Successfully created or modified provisional results file '{resultsFileProvisional}'",resultsFileProvisional.Name);
+                    Logger?.LogInformation("Successfully created or modified provisional results file '{resultsFileProvisional}'", resultsFileProvisional.Name);
                 }
                 catch (Exception ex)
                 {
@@ -1042,7 +1042,7 @@ namespace BLC2021
             double distanceDeclarationToGoal = CoordinateHelpers.Calculate3DDistance(fiddleDeclaration.DeclaredGoal, markerDrop.MarkerLocation, true);
             double distanceGoalToMarker = CoordinateHelpers.Calculate2DDistanceHavercos(fiddleDeclaration.PositionAtDeclaration, fiddleDeclaration.DeclaredGoal);
             double result = distanceDeclarationToGoal / (distanceGoalToMarker / 1000.0);
-            Logger?.LogInformation("Task 3 Pilot No {pilotNumber}: Distance between declaration position and declared goal is '{distanceDeclarationToGoal}m' / Distance goal to marker is '{distanceGoalToMarker}km'", FiddleTrack.Pilot.PilotNumber, Math.Round(distanceDeclarationToGoal, 3, MidpointRounding.AwayFromZero), Math.Round(distanceGoalToMarker / 1000.0, 3, MidpointRounding.AwayFromZero));      
+            Logger?.LogInformation("Task 3 Pilot No {pilotNumber}: Distance between declaration position and declared goal is '{distanceDeclarationToGoal}m' / Distance goal to marker is '{distanceGoalToMarker}km'", FiddleTrack.Pilot.PilotNumber, Math.Round(distanceDeclarationToGoal, 3, MidpointRounding.AwayFromZero), Math.Round(distanceGoalToMarker / 1000.0, 3, MidpointRounding.AwayFromZero));
             Logger?.LogInformation("Calculated result of '{result}m/km' at Task 3 for Pilot No '{pilotNumber}'", Math.Round(result, 3, MidpointRounding.AwayFromZero), FiddleTrack.Pilot.PilotNumber);
             try
             {

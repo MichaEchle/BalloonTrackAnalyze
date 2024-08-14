@@ -6,11 +6,13 @@ namespace BLC2021
 {
     public partial class BLC2021Launch : Form
     {
+        private PilotMapping PilotMapping = new();
+
         public BLC2021Launch()
         {
             InitializeComponent();
             Text += $" v{typeof(BLC2021Launch).Assembly.GetName().Version}";
-
+            
         }
 
         private void btTaskSheet1_Click(object sender, EventArgs e)
