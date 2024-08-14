@@ -1,11 +1,15 @@
 ﻿using Coordinates;
 using LoggerComponent;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Competition.Penalties
 {
     public static class PenaltyCalculation
     {
+        private static readonly ILogger Logger = LogConnector.LoggerFactory.CreateLogger(nameof(PenaltyCalculation));
+
         /// <summary>
         /// Checks if pilot flight in blue PZ and calculate the penalty
         /// <para>For each track point in the PZ, the penalty will be: infringement [ft] * logger interval / 100  </para>
@@ -15,9 +19,9 @@ namespace Competition.Penalties
         /// <param name="tracks">the list of tracks to check</param>
         /// <param name="useGPSAltitude">true:use GPS altitude; false: use barometric altitude</param>
         /// <param name="penalties">output parameter. a list containing the pilot number, number of violating track points and the penalty</param>
-        public static void CheckForBluePZAndCalculatePenaltyPoints(double lowerAltitudeOfBluePZ, bool useGPSAltitude, List<Track> tracks, out List<(int pilotNumber, int numberOfViolatingTrackPoints, int penalty)> penalties)
+        public static void CheckForBluePZAndCalculatePenaltyPoints(double lowerAltitudeOfBluePZ, bool useGPSAltitude, List<Track> tracks, out List<(int pilotNumber, int numberOfViolatingTrackPoints, TimeSpan durationInBluePZ,double maxAlitudeInFeet, int penalty)> penalties)
         {
-            penalties = new List<(int pilotNumber, int numberOfViolatingTrackPoints, int penalty)>();
+            penalties = new();
             double penalty;
             int numberOfViolatingTrackPoints;
             double trackPointInterval;
@@ -31,12 +35,12 @@ namespace Competition.Penalties
                 {
                     if (!double.TryParse(track.AdditionalPropertiesFromIGCFile["LoggerInterval"], out trackPointInterval))
                     {
-                        Logger.Log(LogSeverityType.Warning, $"Cannot parse LoggerInterval for track of pilot no. {track.Pilot.PilotNumber}, the default value of {trackPointInterval}s is used");
+                        Logger?.LogWarning("Cannot parse LoggerInterval for track of pilot no. {PilotNumber}, the default value of {trackPointInterval}s is used", track.Pilot.PilotNumber, trackPointInterval);
                     }
                 }
                 else
                 {
-                    Logger.Log(LogSeverityType.Warning, $"The track of pilot no. {track.Pilot.PilotNumber} has no logger interval stored, the default value of {trackPointInterval}s is used");
+                    Logger?.LogWarning("The track of pilot no. {PilotNumber} has no logger interval stored, the default value of {trackPointInterval}s is used", track.Pilot.PilotNumber, trackPointInterval);
                 }
                 List<Coordinate> violatingTrackPoints;
                 if (useGPSAltitude)
@@ -50,8 +54,9 @@ namespace Competition.Penalties
                     double infrigmentInFeet = CoordinateHelpers.ConvertToFeet(altitude - lowerAltitudeOfBluePZ);
                     penalty += infrigmentInFeet * trackPointInterval / 100.0;
                 }
+                double maxAltitudeInFeet = useGPSAltitude ? CoordinateHelpers.ConvertToFeet(violatingTrackPoints.Max(x => x.AltitudeGPS)) : CoordinateHelpers.ConvertToFeet(violatingTrackPoints.Max(x => x.AltitudeBarometric));
                 penalty = Math.Round(penalty / 10.0, 0, MidpointRounding.AwayFromZero) * 10.0;//Round to tens digit
-                penalties.Add((track.Pilot.PilotNumber, numberOfViolatingTrackPoints, (int)penalty));
+                penalties.Add((track.Pilot.PilotNumber, numberOfViolatingTrackPoints, TimeSpan.FromSeconds(trackPointInterval * numberOfViolatingTrackPoints), maxAltitudeInFeet, (int)penalty));
             }
         }
 
@@ -64,29 +69,29 @@ namespace Competition.Penalties
         /// <param name="referenceCoordinate">the coordinate to which distances are calculated</param>
         /// <param name="minimumDistance">the minimum allowed distance in [m]. Use <see cref="double.NaN"/> to omit</param>
         /// <param name="maximumDistance">the maximum allowed distance in [m]. Use <see cref="double.NaN"/> to omit</param>
-        /// <param name="coordinateToCheck">the list to be checked, each entry consist of a pilot Number and coordinate pair</param>
+        /// <param name="coordinatesToCheck">the list to be checked, each entry consist of a pilot Number and coordinate pair</param>
         /// <param name="penalties">output parameter. a list containing pilot number, distance, infringement and penalty points</param>
         /// <returns>true:success; false:error</returns>
-        public static bool CheckFor2DDistanceInfringementAndCalculatePenaltyPoints(Coordinate referenceCoordinate, double minimumDistance, double maximumDistance, List<(int pilotNumber, Coordinate coordinate)> coordinateToCheck, out List<(int pilotNumber, double distance, double infrigement, int penalty)> penalties)
+        public static bool CheckFor2DDistanceInfringementAndCalculatePenaltyPoints(Coordinate referenceCoordinate, double minimumDistance, double maximumDistance, List<(int pilotNumber, Coordinate coordinate)> coordinatesToCheck, out List<(int pilotNumber, double distance, double infringement, int penalty)> penalties)
         {
             penalties = new List<(int pilotNumber, double distance, double infrigement, int penalty)>();
             if (referenceCoordinate is null)
             {
-                Logger.Log(LogSeverityType.Error, "Reference coordinate cannot be null");
+                Logger?.LogError("Reference coordinate cannot be null");
                 return false;
             }
             if (!double.IsNaN(minimumDistance) && !double.IsNaN(maximumDistance))
             {
                 if (minimumDistance > maximumDistance)
                 {
-                    Logger.Log(LogSeverityType.Error, "Minimum distance cannot be larger than maximum distance");
+                    Logger?.LogError("Minimum distance cannot be larger than maximum distance");
                     return false;
                 }
             }
             double infringement;
             double penalty;
             double distance;
-            foreach ((int pilotNumber, Coordinate coordinate) coordinate in coordinateToCheck)
+            foreach ((int pilotNumber, Coordinate coordinate) coordinate in coordinatesToCheck)
             {
                 infringement = 0.0;
                 distance = CoordinateHelpers.Calculate2DDistanceVincentyWSG84(referenceCoordinate, coordinate.coordinate);
@@ -112,29 +117,29 @@ namespace Competition.Penalties
         /// <param name="minimumDistance">the minimum allowed distance in [m]. Use <see cref="double.NaN"/> to omit</param>
         /// <param name="maximumDistance">the maximum allowed distance in [m]. Use <see cref="double.NaN"/> to omit</param>
         /// <param name="useGPSAltitude">true: uses GPS altitude; false: uses barometric altitude</param>
-        /// <param name="coordinateToCheck">the list to be checked, each entry consist of a pilot Number and coordinate pair</param>
+        /// <param name="coordinatesToCheck">the list to be checked, each entry consist of a pilot Number and coordinate pair</param>
         /// <param name="penalties">output parameter. a list containing pilot number, distance, infringement and penalty points</param>
         /// <returns>true:success; false:error</returns>
-        public static bool CheckFor3DDistanceInfringementAndCalculatePenaltyPoints(Coordinate referenceCoordinate, double minimumDistance, double maximumDistance, bool useGPSAltitude, List<(int pilotNumber, Coordinate coordinate)> coordinateToCheck, out List<(int pilotNumber, double distance, double infrigement, int penalty)> penalties)
+        public static bool CheckFor3DDistanceInfringementAndCalculatePenaltyPoints(Coordinate referenceCoordinate, double minimumDistance, double maximumDistance, bool useGPSAltitude, List<(int pilotNumber, Coordinate coordinate)> coordinatesToCheck, out List<(int pilotNumber, double distance, double infringement, int penalty)> penalties)
         {
             penalties = new List<(int pilotNumber, double distance, double infrigement, int penalty)>();
             if (referenceCoordinate is null)
             {
-                Logger.Log(LogSeverityType.Error, "Reference coordinate cannot be null");
+                Logger?.LogError("Reference coordinate cannot be null");
                 return false;
             }
             if (!double.IsNaN(minimumDistance) && !double.IsNaN(maximumDistance))
             {
                 if (minimumDistance > maximumDistance)
                 {
-                    Logger.Log(LogSeverityType.Error, "Minimum distance cannot be larger than maximum distance");
+                    Logger?.LogError("Minimum distance cannot be larger than maximum distance");
                     return false;
                 }
             }
             double infringement;
             double penalty;
             double distance;
-            foreach ((int pilotNumber, Coordinate coordinate) coordinate in coordinateToCheck)
+            foreach ((int pilotNumber, Coordinate coordinate) coordinate in coordinatesToCheck)
             {
                 infringement = 0.0;
                 distance = CoordinateHelpers.Calculate3DDistance(referenceCoordinate, coordinate.coordinate, useGPSAltitude);
@@ -156,21 +161,126 @@ namespace Competition.Penalties
             //penalty: round infringement[%] to one digit * 20
         }
 
-        public static void CheckForVerticalDistanceInfringementAndCalculatePenaltyPoints()
+        public static bool CheckForVerticalDistanceInfringementAndCalculatePenaltyPoints(Coordinate referenceCoordinate, double minimumDistance, double maximumDistance, bool useGPSAltitude, List<(int pilotNumber, Coordinate coordinate)> coordinatesToCheck, out List<(int pilotNumber, double distance, double infringement, int penalty)> penalties)
         {
+            penalties = new List<(int pilotNumber, double distance, double infrigement, int penalty)>();
+            if (referenceCoordinate is null)
+            {
+                Logger?.LogError("Reference coordinate cannot be null");
+                return false;
+            }
+            if (!double.IsNaN(minimumDistance) && !double.IsNaN(maximumDistance))
+            {
+                if (minimumDistance > maximumDistance)
+                {
+                    Logger?.LogError("Minimum distance cannot be larger than maximum distance");
+                    return false;
+                }
+            }
+            double infringementInFeet;
+            double penalty;
+            double distance;
+            foreach ((int pilotNumber, Coordinate coordinate) coordinate in coordinatesToCheck)
+            {
+                infringementInFeet = 0.0;
+                if (useGPSAltitude)
+                {
+                    distance = referenceCoordinate.AltitudeGPS - coordinate.coordinate.AltitudeGPS;
+                }
+                else
+                {
+                    distance = referenceCoordinate.AltitudeBarometric - coordinate.coordinate.AltitudeBarometric;
+                }
+                if (!double.IsNaN(minimumDistance))
+                    if (distance < minimumDistance)
+                        infringementInFeet = CoordinateHelpers.ConvertToFeet((1.0 - (distance / minimumDistance)) * 100.0);
+                if (!double.IsNaN(maximumDistance))
+                    if (distance > maximumDistance)
+                        infringementInFeet = CoordinateHelpers.ConvertToFeet(((distance / maximumDistance) - 1.0) * 100.0);
+                penalty = Math.Round(infringementInFeet, 0, MidpointRounding.AwayFromZero) * 20.0;
+                penalties.Add((coordinate.pilotNumber, distance, infringementInFeet, (int)penalty));
+            }
+            return true;
             //TODO check if minimum or maximum limits have been violated using altitude only
             //if so calculate infringement in %
             //minimum: (1 - distance/limit) * 100
             //maximum: (distance/limit - 1) * 100
             //penalty: round infringement[%] to one digit * 20
-            throw new NotImplementedException();
         }
 
-        public static void CheckForDangerousFlyingAndCalculatePenaltyPoints()
+
+        public static void CheckForDangerousFlyingAndCalculatePenaltyPoints(Track track, bool useGPSAltitude, out bool isDangerousFlyingDetected, out List<Coordinate> relatedCoordinates, out double minVerticalVelocity, out double maxVerticalVelocity, out TimeSpan totalDuration, out int penaltyPoints, double maxAbsVerticalVelocityLimit = 8.0, int minDurationSeconds = 5)
         {
+            isDangerousFlyingDetected = false;
+            maxVerticalVelocity = double.NaN;
+            minVerticalVelocity = double.NaN;
+            totalDuration = TimeSpan.Zero;
+            penaltyPoints = 0;
+            relatedCoordinates = [];
+            if (double.IsFinite(maxAbsVerticalVelocityLimit) && minDurationSeconds > 0)
+            {
+
+                TrackHelpers.CleanTrackPoints(track, useGPSAltitude, 15.0, out List<Coordinate> cleanedUpTrackPoints);
+
+                List<(DateTime timestamp, double altitudeDiff)> altitudeDerivative = [];
+                TimeSpan trackPointInterval = TimeSpan.MaxValue;
+                for (int index = 0; index < cleanedUpTrackPoints.Count - 1; index++)
+                {
+
+                    if (useGPSAltitude)
+                    {
+                        double derivative = (cleanedUpTrackPoints[index + 1].AltitudeGPS - cleanedUpTrackPoints[index].AltitudeGPS) / (cleanedUpTrackPoints[index + 1].TimeStamp.Subtract(cleanedUpTrackPoints[index].TimeStamp).TotalSeconds);
+                        if (!double.IsNaN(derivative) && !double.IsInfinity(derivative))
+                        {
+                            if (cleanedUpTrackPoints[index + 1].TimeStamp.Subtract(cleanedUpTrackPoints[index].TimeStamp) < trackPointInterval)
+                            {
+                                trackPointInterval = cleanedUpTrackPoints[index + 1].TimeStamp.Subtract(cleanedUpTrackPoints[index].TimeStamp);
+                            }
+                            altitudeDerivative.Add((cleanedUpTrackPoints[index].TimeStamp, derivative));
+                        }
+                    }
+                    else
+                    {
+                        double derivative = (cleanedUpTrackPoints[index + 1].AltitudeBarometric - cleanedUpTrackPoints[index].AltitudeBarometric) / (cleanedUpTrackPoints[index + 1].TimeStamp.Subtract(cleanedUpTrackPoints[index].TimeStamp).TotalSeconds);
+                        if (!double.IsNaN(derivative) && !double.IsInfinity(derivative))
+                        {
+                            if (cleanedUpTrackPoints[index + 1].TimeStamp.Subtract(cleanedUpTrackPoints[index].TimeStamp) < trackPointInterval)
+                            {
+                                trackPointInterval = cleanedUpTrackPoints[index + 1].TimeStamp.Subtract(cleanedUpTrackPoints[index].TimeStamp);
+                            }
+                            altitudeDerivative.Add((cleanedUpTrackPoints[index].TimeStamp, derivative));
+                        }
+                    }
+                }
+
+                List<(DateTime timestamp, double altitudeDiff)> violatingPoints = altitudeDerivative.Where(x => Math.Abs(x.altitudeDiff) > maxAbsVerticalVelocityLimit).ToList();
+                int consecutiveTrackPointsToCheck = (int)Math.Ceiling(minDurationSeconds / (double)trackPointInterval.Seconds);
+                for (int index = 0; index < violatingPoints.Count - consecutiveTrackPointsToCheck; index++)
+                {
+                    if (violatingPoints[index + consecutiveTrackPointsToCheck].timestamp.Subtract(violatingPoints[index].timestamp) <= TimeSpan.FromSeconds(minDurationSeconds))
+                    {
+                        isDangerousFlyingDetected = true;
+                        foreach ((DateTime timestamp, double altitudeDiff) in violatingPoints.Skip(index).Take(consecutiveTrackPointsToCheck))
+                        {
+                            Coordinate trackPoint = cleanedUpTrackPoints.FirstOrDefault(x => x.TimeStamp == timestamp);
+                            if (!relatedCoordinates.Contains(trackPoint))
+                            {
+                                relatedCoordinates.Add(trackPoint);
+                            }
+                        }
+                    }
+                }
+
+                minVerticalVelocity = altitudeDerivative.Min(x => x.altitudeDiff);
+                maxVerticalVelocity = altitudeDerivative.Max(x => x.altitudeDiff);
+                totalDuration = TimeSpan.FromSeconds(relatedCoordinates.Count * trackPointInterval.TotalSeconds);
+                if (isDangerousFlyingDetected)
+                {
+                    penaltyPoints = (int)Math.Round((Math.Max(maxVerticalVelocity, Math.Abs(minVerticalVelocity)) - maxAbsVerticalVelocityLimit) * 250, 0, MidpointRounding.AwayFromZero);
+                }
+            }
             //TODO check if vertical velocity is +/- 8m/s  for 5 consecutive seconds
             //penalty: max abs vertical velocity - max abs allowed vertical velocity *250 (use integer)
-            throw new NotImplementedException();
         }
 
         public static void CheckForCloseProximityAndCalculatePenaltyPoints(TimeSpan gracePeriodAfterLaunch, TimeSpan gracePeriodBeforeLanding, bool useGPSAltitude, List<Track> tracks)
@@ -183,7 +293,7 @@ namespace Competition.Penalties
                 Coordinate referenceLandingPoint;
                 if (!TrackHelpers.EstimateLaunchAndLandingTime(referenceTrack, useGPSAltitude, out referenceLaunchPoint, out referenceLandingPoint))
                 {
-                    Logger.Log(LogSeverityType.Warning, $"Failed to estimate launch and landing points for pilot no. {referenceTrack.Pilot.PilotNumber}, the first and last track point will be used instead");
+                    Logger?.LogWarning("Failed to estimate launch and landing points for pilot no. {PilotNumber}, the first and last track point will be used instead", referenceTrack.Pilot.PilotNumber);
                     referenceLaunchPoint = referenceTrack.TrackPoints[0];
                     referenceLandingPoint = referenceTrack.TrackPoints[referenceTrack.TrackPoints.Count - 1];
                 }
@@ -193,10 +303,9 @@ namespace Competition.Penalties
                     Track otherTrack = tracks[innerIndex];
                     Coordinate otherLaunchPoint;
                     Coordinate otherLandingPoint;
-                    if (!TrackHelpers.EstimateLaunchAndLandingTime(otherTrack
-                        , useGPSAltitude, out otherLaunchPoint, out otherLandingPoint))
+                    if (!TrackHelpers.EstimateLaunchAndLandingTime(otherTrack, useGPSAltitude, out otherLaunchPoint, out otherLandingPoint))
                     {
-                        Logger.Log(LogSeverityType.Warning, $"Failed to estimate launch and landing points for pilot no. {otherTrack.Pilot.PilotNumber}, the first and last track point will be used instead");
+                        Logger?.LogWarning("Failed to estimate launch and landing points for pilot no. {PilotNumber}, the first and last track point will be used instead", otherTrack.Pilot.PilotNumber);
                         otherLaunchPoint = otherTrack.TrackPoints[0];
                         otherLandingPoint = otherTrack.TrackPoints[otherTrack.TrackPoints.Count - 1];
                     }

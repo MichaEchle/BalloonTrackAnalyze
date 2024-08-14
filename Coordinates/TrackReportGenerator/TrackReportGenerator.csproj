@@ -15,6 +15,7 @@
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Competition\Competition.csproj" />
     <ProjectReference Include="..\Coordinates\Coordinates.csproj" />
     <ProjectReference Include="..\UILoggingProvider\UILoggingProvider.csproj" />
     <ProjectReference Include="..\WinFormsLoggerControl\WinFormsLoggerControl.csproj" />
