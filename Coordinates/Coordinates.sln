@@ -33,7 +33,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoordinateConverter", "Coor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsLoggerControl", "WinFormsLoggerControl\WinFormsLoggerControl.csproj", "{2A40C2BF-A9ED-4E70-93A9-26C2F4757DB7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UILoggingProvider", "UILoggingProvider\UILoggingProvider.csproj", "{22D96485-07FA-4675-9203-CA7B83B59C2A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UILoggingProvider", "UILoggingProvider\UILoggingProvider.csproj", "{22D96485-07FA-4675-9203-CA7B83B59C2A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -20,7 +20,7 @@ namespace BLC2021
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            var uiLoggerProvider = new UILoggerProvider();
+            var uiLoggerProvider = UILoggerProvider.Instance;
             var builder = Host.CreateDefaultBuilder()
                 .ConfigureLogging(logging =>
                 {
@@ -30,14 +30,14 @@ namespace BLC2021
                 .ConfigureServices((_, services) =>
                 {
                     services.AddLogging();
-                    services.AddCoordinateServices();
                     services.AddCompetitionServices();
                     services.AddSingleton<BLC2021Launch>();
                     services.AddSingleton<PilotMapping>();
+                    services.ProviderLoggerFactory();
                 });
 
             var host = builder.Build();
-            _ = host.Services.GetRequiredService<CoordinatesLoggingConnector>();
+            //_ = host.Services.GetRequiredService<CoordinatesLoggingConnector>();
             _ = host.Services.GetRequiredService<CompetitionLoggingConnector>();
             Application.Run(host.Services.GetRequiredService<BLC2021Launch>());
         }

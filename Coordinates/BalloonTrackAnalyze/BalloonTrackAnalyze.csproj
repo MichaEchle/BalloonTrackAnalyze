@@ -21,7 +21,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Competition\Competition.csproj" />
-    <ProjectReference Include="..\LoggerComponent\LoggerComponent.csproj" />
     <ProjectReference Include="..\UILoggingProvider\UILoggingProvider.csproj" />
     <ProjectReference Include="..\WinFormsLoggerControl\WinFormsLoggerControl.csproj" />
   </ItemGroup>

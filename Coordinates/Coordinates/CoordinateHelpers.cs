@@ -18,7 +18,7 @@ namespace Coordinates
         {
             get
             {
-                return CoordinatesLoggingConnector.LoggerFactory.CreateLogger(nameof(CoordinateHelpers));
+                return ServiceConfiguration.LoggerFactory.CreateLogger(nameof(CoordinateHelpers));
             }
         }
 

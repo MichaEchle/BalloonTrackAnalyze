@@ -14,7 +14,7 @@ namespace Coordinates
         {
             get
             {
-                return CoordinatesLoggingConnector.LoggerFactory.CreateLogger(nameof(TrackHelpers));
+                return ServiceConfiguration.LoggerFactory.CreateLogger(nameof(TrackHelpers));
             }
         }
         /// <summary>

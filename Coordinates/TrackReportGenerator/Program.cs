@@ -19,7 +19,7 @@ namespace TrackReportGenerator
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            var uiLoggerProvider = new UILoggerProvider();
+            var uiLoggerProvider = UILoggerProvider.Instance;
             var builder = Host.CreateDefaultBuilder()
                 .ConfigureLogging(logging =>
                     {
@@ -29,13 +29,13 @@ namespace TrackReportGenerator
                 .ConfigureServices((_, services) =>
                     {
                         services.AddLogging();
-                        services.AddCoordinateServices();
                         services.AddSingleton<TrackReportGeneratorForm>();
                         services.AddSingleton<ExcelTrackReportGenerator>();
+                        services.ProviderLoggerFactory();
                     });
 
             var host = builder.Build();
-            _ = host.Services.GetRequiredService<CoordinatesLoggingConnector>();
+            //_ = host.Services.GetRequiredService<CoordinatesLoggingConnector>();
             Application.Run(host.Services.GetRequiredService<TrackReportGeneratorForm>());
         }
     }

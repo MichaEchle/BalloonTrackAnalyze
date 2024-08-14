@@ -14,7 +14,7 @@ namespace Coordinates.Parsers
         {
             get
             {
-                return CoordinatesLoggingConnector.LoggerFactory.CreateLogger(nameof(BalloonLiveParser));
+                return ServiceConfiguration.LoggerFactory.CreateLogger(nameof(BalloonLiveParser));
             }
         }
 

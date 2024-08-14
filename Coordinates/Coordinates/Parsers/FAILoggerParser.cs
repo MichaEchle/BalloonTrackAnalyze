@@ -13,7 +13,7 @@ namespace Coordinates.Parsers
         {
             get
             {
-                return CoordinatesLoggingConnector.LoggerFactory.CreateLogger(nameof(FAILoggerParser));
+                return ServiceConfiguration.LoggerFactory.CreateLogger(nameof(FAILoggerParser));
             }
         }
 

@@ -2,9 +2,9 @@
 
 namespace UILoggingProvider;
 
-public class UILogEventArgs
+public class LogItem
 {
-    public UILogEventArgs(DateTime timestamp, LogLevel logLevel, string message, string source)
+    public LogItem(DateTime timestamp, LogLevel logLevel, string message, string source)
     {
         Timestamp = timestamp;
         LogLevel = logLevel;

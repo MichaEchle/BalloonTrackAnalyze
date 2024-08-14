@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using System.Threading.Channels;
 
 namespace UILoggingProvider;
 public class UILogger : ILogger
@@ -8,12 +9,16 @@ public class UILogger : ILogger
         get;
     }
 
-    public UILogger(string categoryName)
+    private ChannelWriter<LogItem> LogWriter
     {
-        CategoryName = categoryName;
+        get;
     }
 
-    public static event EventHandler<UILogEventArgs>? LogEvent;
+    public UILogger(string categoryName, ChannelWriter<LogItem> logWriter)
+    {
+        CategoryName = categoryName;
+        LogWriter = logWriter;
+    }
 
     public IDisposable BeginScope<TState>(TState state)
     {
@@ -34,13 +39,13 @@ public class UILogger : ILogger
 
         string message = formatter(state, exception);
         DateTime dateTime = DateTime.Now;
-        string eventText=string.Empty;
+        string eventText = string.Empty;
         if (!string.IsNullOrWhiteSpace(eventId.Name))
         {
             eventText = $" [{eventId.Name}]";
         }
         string source = $"{CategoryName}{eventText}";
-        LogEvent?.Invoke(this, new UILogEventArgs(dateTime, logLevel, message, source));
+        _ = LogWriter.TryWrite(new LogItem(dateTime, logLevel, message, source));
     }
 }
 
