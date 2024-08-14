@@ -274,6 +274,27 @@ namespace Coordinates
             return distance3DBetweenPilotAndJudgeDeclaredGoals;
         }
 
+        public static void CleanTrackPoints(Track track, bool useGPSAltitude, double maxAbsVeritcalVelocityConsideredReasonable, out List<Coordinate> cleanedUpTrackPoints)
+        {
+            cleanedUpTrackPoints = [];
+            for (int index = 0; index < track.TrackPoints.Count - 1; index++)
+            {
+                if (Math.Abs(track.TrackPoints[index].Latitude) <= double.Epsilon || Math.Abs(track.TrackPoints[index].Longitude) <= double.Epsilon)
+                    continue;
+                if (useGPSAltitude)
+                {
+                    if (Math.Abs(track.TrackPoints[index + 1].AltitudeGPS - track.TrackPoints[index].AltitudeGPS) > maxAbsVeritcalVelocityConsideredReasonable)
+                        continue;
+                }
+                else
+                {
+                    if (Math.Abs(track.TrackPoints[index + 1].AltitudeBarometric - track.TrackPoints[index].AltitudeBarometric) > maxAbsVeritcalVelocityConsideredReasonable)
+                        continue;
+                }
+                cleanedUpTrackPoints.Add(track.TrackPoints[index]);
+            }
+        }
+
         public static bool EstimateLaunchAndLandingTime(Track track, bool useGPSAltitude, out Coordinate launchPoint, out Coordinate landingPoint)
         {
             launchPoint = new Coordinate(0, 0, -1, -1, DateTime.MinValue);
@@ -356,143 +377,7 @@ namespace Coordinates
             return true;
         }
 
-        public static void CheckForDangerousFlying(Track track, bool useGPSAltitude, out bool isDangerousFlyingDetected, out List<Coordinate> relatedCoordinates, out double minVerticalVelocity, out double maxVerticalVelocity, out TimeSpan totalDuration, out int penaltyPoints, double maxAbsVerticalVelocityLimit = 8.0, int minDurationSeconds = 5)
-        {
-            isDangerousFlyingDetected = false;
-            maxVerticalVelocity = double.NaN;
-            minVerticalVelocity = double.NaN;
-            totalDuration = TimeSpan.Zero;
-            penaltyPoints = 0;
-            relatedCoordinates = [];
-            if (double.IsFinite(maxAbsVerticalVelocityLimit) && minDurationSeconds > 0)
-            {
-
-                CleanTrackPoints(track, useGPSAltitude, 15.0, out List<Coordinate> cleanedUpTrackPoints);
-
-                List<(DateTime timestamp, double altitudeDiff)> altitudeDerivative = [];
-                TimeSpan trackPointInterval = TimeSpan.MaxValue;
-                for (int index = 0; index < cleanedUpTrackPoints.Count - 1; index++)
-                {
-
-                    if (useGPSAltitude)
-                    {
-                        double derivative = (cleanedUpTrackPoints[index + 1].AltitudeGPS - cleanedUpTrackPoints[index].AltitudeGPS) / (cleanedUpTrackPoints[index + 1].TimeStamp.Subtract(cleanedUpTrackPoints[index].TimeStamp).TotalSeconds);
-                        if (!double.IsNaN(derivative) && !double.IsInfinity(derivative))
-                        {
-                            if (cleanedUpTrackPoints[index + 1].TimeStamp.Subtract(cleanedUpTrackPoints[index].TimeStamp) < trackPointInterval)
-                            {
-                                trackPointInterval = cleanedUpTrackPoints[index + 1].TimeStamp.Subtract(cleanedUpTrackPoints[index].TimeStamp);
-                            }
-                            altitudeDerivative.Add((cleanedUpTrackPoints[index].TimeStamp, derivative));
-                        }
-                    }
-                    else
-                    {
-                        double derivative = (cleanedUpTrackPoints[index + 1].AltitudeBarometric - cleanedUpTrackPoints[index].AltitudeBarometric) / (cleanedUpTrackPoints[index + 1].TimeStamp.Subtract(cleanedUpTrackPoints[index].TimeStamp).TotalSeconds);
-                        if (!double.IsNaN(derivative) && !double.IsInfinity(derivative))
-                        {
-                            if (cleanedUpTrackPoints[index + 1].TimeStamp.Subtract(cleanedUpTrackPoints[index].TimeStamp) < trackPointInterval)
-                            {
-                                trackPointInterval = cleanedUpTrackPoints[index + 1].TimeStamp.Subtract(cleanedUpTrackPoints[index].TimeStamp);
-                            }
-                            altitudeDerivative.Add((cleanedUpTrackPoints[index].TimeStamp, derivative));
-                        }
-                    }
-                }
-
-                List<(DateTime timestamp, double altitudeDiff)> violatingPoints = altitudeDerivative.Where(x => Math.Abs(x.altitudeDiff) > maxAbsVerticalVelocityLimit).ToList();
-                int consecutiveTrackPointsToCheck = (int)Math.Ceiling(minDurationSeconds / (double)trackPointInterval.Seconds);
-                for (int index = 0; index < violatingPoints.Count - consecutiveTrackPointsToCheck; index++)
-                {
-                    if (violatingPoints[index + consecutiveTrackPointsToCheck].timestamp.Subtract(violatingPoints[index].timestamp) <= TimeSpan.FromSeconds(minDurationSeconds))
-                    {
-                        isDangerousFlyingDetected = true;
-                        foreach ((DateTime timestamp, double altitudeDiff) in violatingPoints.Skip(index).Take(consecutiveTrackPointsToCheck))
-                        {
-                            Coordinate trackPoint = cleanedUpTrackPoints.FirstOrDefault(x => x.TimeStamp == timestamp);
-                            if (!relatedCoordinates.Contains(trackPoint))
-                            {
-                                relatedCoordinates.Add(trackPoint);
-                            }
-                        }
-                    }
-                }
-
-                minVerticalVelocity = altitudeDerivative.Min(x => x.altitudeDiff);
-                maxVerticalVelocity = altitudeDerivative.Max(x => x.altitudeDiff);
-                totalDuration = TimeSpan.FromSeconds(relatedCoordinates.Count * trackPointInterval.TotalSeconds);
-                if (isDangerousFlyingDetected)
-                {
-                    penaltyPoints = (int)Math.Round((Math.Max(maxVerticalVelocity, Math.Abs(minVerticalVelocity)) - maxAbsVerticalVelocityLimit) * 250, 0, MidpointRounding.AwayFromZero);
-                }
-            }
-
-        }
-
-        public static void CheckFlyingAboveSpecifedAltitude(Track track, bool useGPSAltitude, double maxAllowedAltitude, out List<Coordinate> trackPointsAbove, out TimeSpan totalDuration, out double maxAltitude, out int penaltyPoints)
-        {
-            totalDuration = TimeSpan.Zero;
-            trackPointsAbove = [];
-            maxAltitude = double.NaN;
-            penaltyPoints = 0;
-            if (double.IsFinite(maxAllowedAltitude))
-            {
-                if (useGPSAltitude)
-                {
-                    trackPointsAbove = track.TrackPoints.Where(x => x.AltitudeGPS > maxAllowedAltitude).ToList();
-                    maxAltitude = track.TrackPoints.Max(x => x.AltitudeGPS);
-                }
-                else
-                {
-                    trackPointsAbove = track.TrackPoints.Where(x => x.AltitudeBarometric > maxAllowedAltitude).ToList();
-                    maxAltitude = track.TrackPoints.Max(x => x.AltitudeBarometric);
-                }
-                if (trackPointsAbove.Count > 1)
-                {
-                    TimeSpan trackPointInterval = TimeSpan.MaxValue;
-                    for (int index = 0; index < trackPointsAbove.Count - 1; index++)
-                    {
-                        if (trackPointsAbove[index + 1].TimeStamp.Subtract(trackPointsAbove[index].TimeStamp) < trackPointInterval)
-                        {
-                            trackPointInterval = trackPointsAbove[index + 1].TimeStamp.Subtract(trackPointsAbove[index].TimeStamp);
-                        }
-                    }
-                    totalDuration = TimeSpan.FromSeconds(trackPointsAbove.Count * trackPointInterval.TotalSeconds);
-                    double tempPenaltyPoints = 0.0;
-                    foreach (Coordinate coordinate in trackPointsAbove)
-                    {
-                        if (useGPSAltitude)
-                            tempPenaltyPoints += (CoordinateHelpers.ConvertToFeet(coordinate.AltitudeGPS - maxAllowedAltitude)) * trackPointInterval.TotalSeconds / 100.0;
-
-                        else
-                            tempPenaltyPoints += (CoordinateHelpers.ConvertToFeet(coordinate.AltitudeBarometric - maxAllowedAltitude)) * trackPointInterval.TotalSeconds / 100.0;
-
-                    }
-                    penaltyPoints = (int)Math.Ceiling(tempPenaltyPoints / 10.0) * 10;
-                }
-            }
-        }
-
-        private static void CleanTrackPoints(Track track, bool useGPSAltitude, double maxAbsVeritcalVelocityConsideredReasonable, out List<Coordinate> cleanedUpTrackPoints)
-        {
-            cleanedUpTrackPoints = [];
-            for (int index = 0; index < track.TrackPoints.Count - 1; index++)
-            {
-                if (Math.Abs(track.TrackPoints[index].Latitude) <= double.Epsilon || Math.Abs(track.TrackPoints[index].Longitude) <= double.Epsilon)
-                    continue;
-                if (useGPSAltitude)
-                {
-                    if (Math.Abs(track.TrackPoints[index + 1].AltitudeGPS - track.TrackPoints[index].AltitudeGPS) > maxAbsVeritcalVelocityConsideredReasonable)
-                        continue;
-                }
-                else
-                {
-                    if (Math.Abs(track.TrackPoints[index + 1].AltitudeBarometric - track.TrackPoints[index].AltitudeBarometric) > maxAbsVeritcalVelocityConsideredReasonable)
-                        continue;
-                }
-                cleanedUpTrackPoints.Add(track.TrackPoints[index]);
-            }
-        }
+        
 
         public static bool CheckLaunchConstraints(Track track, bool useGPSAltitude, DateTime beginOfStartPeriod, DateTime endOfStartPeriod, List<Coordinate> goals, double min2DDistanceBetweenLaunchAndGoals, double max2DDistanceBetweenLaunchAndGoals, out Coordinate launchPoint, out bool launchInStartPeriod, out List<double> distanceToGoals, out List<bool> distanceToGoalsOk)
         {

@@ -1,4 +1,5 @@
-﻿using Coordinates;
+﻿using Competition.Penalties;
+using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
@@ -590,7 +591,7 @@ namespace TrackReportGenerator
             try
             {
                 Logger?.LogInformation("List violations ...");
-                TrackHelpers.CheckForDangerousFlying(track, useGPSAltitude, out bool isDangerousFlyingDetected, out List<Coordinate> relatedCoordinates, out double maxDropRate, out double maxClimbRate, out TimeSpan totalDuration, out int penaltyPointsDangerousFlying);
+                PenaltyCalculation.CheckForDangerousFlyingAndCalculatePenaltyPoints(track, useGPSAltitude, out bool isDangerousFlyingDetected, out List<Coordinate> relatedCoordinates, out double maxDropRate, out double maxClimbRate, out TimeSpan totalDuration, out int penaltyPointsDangerousFlying);
                 wsViolations.Cells[1, 1].Value = "Dangerous Flying";
                 wsViolations.Cells[2, 1].Value = isDangerousFlyingDetected ? "yes" : "no";
                 wsViolations.Cells[1, 2].Value = "Vertical Limit [m/s]";
@@ -658,56 +659,56 @@ namespace TrackReportGenerator
                 //12
                 if (double.IsFinite(maxAllowedAltitude))
                 {
-                    TrackHelpers.CheckFlyingAboveSpecifedAltitude(track, useGPSAltitude, maxAllowedAltitude, out List<Coordinate> trackPointsAbove, out TimeSpan durationAbove, out double maxAltitude, out int penaltyPointsAltitude);
-                    wsViolations.Cells[1, 12].Value = "Max Allowed Altitude [m]";
-                    wsViolations.Cells[2, 12].Value = Math.Round(maxAllowedAltitude, 0, MidpointRounding.AwayFromZero);
-                    wsViolations.Cells[1, 13].Value = "Max Altitude [m]";
-                    wsViolations.Cells[2, 13].Value = Math.Round(maxAltitude, 0, MidpointRounding.AwayFromZero);
+                    PenaltyCalculation.CheckForBluePZAndCalculatePenaltyPoints(maxAllowedAltitude, useGPSAltitude, [track], out List<(int pilotNumber, int numberOfViolatingTrackPoints, TimeSpan durationInBluePZ,double maxAlitudeInFeet, int penalty)> penalties);
+                    wsViolations.Cells[1, 12].Value = "Max Allowed Altitude [ft]";
+                    wsViolations.Cells[2, 12].Value = Math.Round(CoordinateHelpers.ConvertToFeet(maxAllowedAltitude), 0, MidpointRounding.AwayFromZero);
+                    wsViolations.Cells[1, 13].Value = "Max Altitude [ft]";
+                    wsViolations.Cells[2, 13].Value = Math.Round(penalties.FirstOrDefault().maxAlitudeInFeet, 0, MidpointRounding.AwayFromZero);
                     wsViolations.Cells[1, 14].Value = "Duration";
-                    wsViolations.Cells[2, 14].Value = durationAbove;
+                    wsViolations.Cells[2, 14].Value = penalties.FirstOrDefault().durationInBluePZ;
                     wsViolations.Cells[2, 14].Style.Numberformat.Format = "HH:mm:ss";
                     wsViolations.Cells[1, 15].Value = "Penalties";
-                    wsViolations.Cells[2, 15].Value = penaltyPointsAltitude;
+                    wsViolations.Cells[2, 15].Value = penalties.FirstOrDefault().penalty;
                     wsViolations.Cells[1, 12, 1, 15].Style.Font.Bold = true;
                     ExcelRange maxAltitudeSummaryRange = wsViolations.Cells[1, 12, 2, 15];
                     ExcelTable maxAltitudeSummaryTable = wsViolations.Tables.Add(maxAltitudeSummaryRange, "Max_Altitude_Sum");
                     maxAltitudeSummaryTable.TableStyle = TableStyles.Light16;
 
-                    index = 5;
-                    wsViolations.Cells[4, 12].Value = "Timestamp";
-                    wsViolations.Cells[4, 13].Value = "Long";
-                    wsViolations.Cells[4, 14].Value = "Lat";
-                    wsViolations.Cells[4, 15].Value = "Long [°]";
-                    wsViolations.Cells[4, 16].Value = "Lat [°]";
-                    wsViolations.Cells[4, 17].Value = "UTM Zone";
-                    wsViolations.Cells[4, 18].Value = "East";
-                    wsViolations.Cells[4, 19].Value = "North";
-                    wsViolations.Cells[4, 20].Value = "Alt [m]";
-                    wsViolations.Cells[4, 21].Value = "Alt [ft]";
-                    wsViolations.Cells[4, 12, 4, 21].Style.Font.Bold = true;
-                    foreach (Coordinate coordinate in trackPointsAbove)
-                    {
-                        wsViolations.Cells[index, 12].Style.Numberformat.Format = "dd-MMM-yyyy HH:mm:ss";
-                        wsViolations.Cells[index, 12].Value = coordinate.TimeStamp;
-                        wsViolations.Cells[index, 13].Value = coordinate.Longitude;
-                        wsViolations.Cells[index, 14].Value = coordinate.Latitude;
-                        degreeMinuteFormat = CoordinateHelpers.ConvertToDegreeMinutes(coordinate.Longitude);
-                        longitudeBeautified = $"{(coordinate.Longitude < 0.0 ? "W" : "E")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
-                        wsViolations.Cells[index, 15].Value = longitudeBeautified;
-                        degreeMinuteFormat = CoordinateHelpers.ConvertToDegreeMinutes(coordinate.Latitude);
-                        latitudeBeautified = $"{(coordinate.Latitude < 0.0 ? "S" : "N")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
-                        wsViolations.Cells[index, 16].Value = latitudeBeautified;
-                        coordinateSharp = new CoordinateSharp.Coordinate(coordinate.Latitude, coordinate.Longitude);
-                        wsViolations.Cells[index, 17].Value = coordinateSharp.UTM.LongZone + coordinateSharp.UTM.LatZone;
-                        wsViolations.Cells[index, 18].Value = Math.Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero);
-                        wsViolations.Cells[index, 19].Value = Math.Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero);
-                        wsViolations.Cells[index, 20].Value = coordinate.AltitudeGPS;
-                        wsViolations.Cells[index, 21].Value = Math.Round(CoordinateHelpers.ConvertToFeet(coordinate.AltitudeGPS), 0, MidpointRounding.AwayFromZero);
-                        index++;
-                    }
-                    ExcelRange maxAltitudeRange = wsViolations.Cells[4, 12, index - 1, 21];
-                    ExcelTable maxAltitudeTable = wsViolations.Tables.Add(maxAltitudeRange, "Max_Altitude");
-                    maxAltitudeTable.TableStyle = TableStyles.Light16;
+                    //index = 5;
+                    //wsViolations.Cells[4, 12].Value = "Timestamp";
+                    //wsViolations.Cells[4, 13].Value = "Long";
+                    //wsViolations.Cells[4, 14].Value = "Lat";
+                    //wsViolations.Cells[4, 15].Value = "Long [°]";
+                    //wsViolations.Cells[4, 16].Value = "Lat [°]";
+                    //wsViolations.Cells[4, 17].Value = "UTM Zone";
+                    //wsViolations.Cells[4, 18].Value = "East";
+                    //wsViolations.Cells[4, 19].Value = "North";
+                    //wsViolations.Cells[4, 20].Value = "Alt [m]";
+                    //wsViolations.Cells[4, 21].Value = "Alt [ft]";
+                    //wsViolations.Cells[4, 12, 4, 21].Style.Font.Bold = true;
+                    //foreach (Coordinate coordinate in trackPointsAbove)
+                    //{
+                    //    wsViolations.Cells[index, 12].Style.Numberformat.Format = "dd-MMM-yyyy HH:mm:ss";
+                    //    wsViolations.Cells[index, 12].Value = coordinate.TimeStamp;
+                    //    wsViolations.Cells[index, 13].Value = coordinate.Longitude;
+                    //    wsViolations.Cells[index, 14].Value = coordinate.Latitude;
+                    //    degreeMinuteFormat = CoordinateHelpers.ConvertToDegreeMinutes(coordinate.Longitude);
+                    //    longitudeBeautified = $"{(coordinate.Longitude < 0.0 ? "W" : "E")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
+                    //    wsViolations.Cells[index, 15].Value = longitudeBeautified;
+                    //    degreeMinuteFormat = CoordinateHelpers.ConvertToDegreeMinutes(coordinate.Latitude);
+                    //    latitudeBeautified = $"{(coordinate.Latitude < 0.0 ? "S" : "N")} {CoordinateHelpers.BeautifyDegreeMinutes(degreeMinuteFormat.degrees, degreeMinuteFormat.degreeMinutes, degreeMinuteFormat.degreeSeconds, degreeMinuteFormat.degreeTenthSeconds)}";
+                    //    wsViolations.Cells[index, 16].Value = latitudeBeautified;
+                    //    coordinateSharp = new CoordinateSharp.Coordinate(coordinate.Latitude, coordinate.Longitude);
+                    //    wsViolations.Cells[index, 17].Value = coordinateSharp.UTM.LongZone + coordinateSharp.UTM.LatZone;
+                    //    wsViolations.Cells[index, 18].Value = Math.Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero);
+                    //    wsViolations.Cells[index, 19].Value = Math.Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero);
+                    //    wsViolations.Cells[index, 20].Value = coordinate.AltitudeGPS;
+                    //    wsViolations.Cells[index, 21].Value = Math.Round(CoordinateHelpers.ConvertToFeet(coordinate.AltitudeGPS), 0, MidpointRounding.AwayFromZero);
+                    //    index++;
+                    //}
+                    //ExcelRange maxAltitudeRange = wsViolations.Cells[4, 12, index - 1, 21];
+                    //ExcelTable maxAltitudeTable = wsViolations.Tables.Add(maxAltitudeRange, "Max_Altitude");
+                    //maxAltitudeTable.TableStyle = TableStyles.Light16;
                 }
 
                 wsViolations.Cells.Style.Font.Size = 10;
