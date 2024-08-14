@@ -58,7 +58,7 @@ public class FlightManager
         Console.WriteLine("Finish generate Flight Report");
         foreach (Task task in flight.getTasks())
         {
-            string resultsPath = $"{scoringFolderLink}\\f{flightNumber}_t{task.number()}_Results_{scoringTime}.csv";
+            string resultsPath = $"{scoringFolderLink}\\f{flightNumber}_t{task.TaskNumber()}_Results_{scoringTime}.csv";
 
             using (StreamWriter writer1 = new(resultsPath))
             {
@@ -75,20 +75,23 @@ public class FlightManager
                         }
                     }
 
-                    string[] score = task.score(currentTrack);
-                    string result = score[0];
-                    string comment = (score.Length > 1 ? score[1] : "");
-                    writer1.WriteLine($"{currentTrack.Pilot.PilotNumber};{result};{comment}");
+                    string comment = "";
+                    if (task.ScoringChecks(currentTrack, comment: ref comment))
+                    {
+                        writer1.WriteLine($"{currentTrack.Pilot.PilotNumber};NR;{comment}");
+                        continue;
+                    }
+
+                    task.Score(currentTrack, comment: ref comment, out double score);
+                    writer1.WriteLine(
+                        $"{currentTrack.Pilot.PilotNumber};{(score != double.MinValue ? NumberHelper.formatDoubleToStringAndRound(score) : "NR")};{comment}");
                 }
 
                 writer1.Close();
-                Console.WriteLine($"Succesful scored Task {task.number()}");
+                Console.WriteLine($"Succesful scored Task {task.TaskNumber()}");
             }
 
-            ProcessStartInfo psi = new();
-            psi.FileName = resultsPath;
-            psi.UseShellExecute = true;
-            Process.Start(psi);
+            openFile(resultsPath);
         }
     }
 
@@ -120,8 +123,11 @@ public class FlightManager
         List<Coordinate> goals = new();
         foreach (Task task in flight.getTasks())
         {
-            foreach (Coordinate coordinate in task.goals().ToList())
+            int i = 0;
+            foreach (Coordinate coordinate in task.Goals().ToList())
             {
+                i++;
+                Console.WriteLine($"Loaded goal {i} for task {task.TaskNumber()}");
                 goals.Add(coordinate);
             }
         }
@@ -181,11 +187,19 @@ public class FlightManager
 
             if (!launchInStartPeriod)
             {
-                TimeSpan launchPointTimeSpan = launchPoint.TimeStamp -
-                                               flight.getStartOfLaunchPeriode().AddMinutes(flight.launchPeriode());
-
-                comment +=
-                    $"Pilot started outside the launchperiode [{launchPointTimeSpan.ToString(@"hh\:mm\:ss")}]. Started {launchPoint.TimeStamp:dd.MM.yy HH:mm:ss} | ";
+                if (flight.getStartOfLaunchPeriode() > launchPoint.TimeStamp)
+                {
+                    TimeSpan launchPointTimeSpan = flight.getStartOfLaunchPeriode() - launchPoint.TimeStamp;
+                    comment +=
+                        $"Pilot started before the launch periode [{launchPointTimeSpan.ToString(@"hh\:mm\:ss")}]. Started {launchPoint.TimeStamp:dd.MM.yy HH:mm:ss} UTC | ";
+                }
+                else
+                {
+                    TimeSpan launchPointTimeSpan = launchPoint.TimeStamp -
+                                                   flight.getStartOfLaunchPeriode().AddMinutes(flight.launchPeriode());
+                    comment +=
+                        $"Pilot started after the launch periode [{launchPointTimeSpan.ToString(@"hh\:mm\:ss")}]. Started {launchPoint.TimeStamp:dd.MM.yy HH:mm:ss} UTC | ";
+                }
             }
 
 
@@ -224,6 +238,16 @@ public class FlightManager
             writer1.Close();
             Console.WriteLine($"Succesful created Report for Flight {flight.getFlightNumber()}");
         }
+
+        openFile(path);
+    }
+
+    private static void openFile(String filePath)
+    {
+        ProcessStartInfo psi = new();
+        psi.FileName = filePath;
+        psi.UseShellExecute = true;
+        Process.Start(psi);
     }
 
     private static void Log(LogSeverityType logSeverity, string text)

@@ -14,7 +14,7 @@ public class Flight01 : Flight
 
     public override DateTime getStartOfLaunchPeriode()
     {
-        return new DateTime(2024,08,14,03,55,00);
+        return new DateTime(2024,08,14,16,35,00);
     }
 
     public override int launchPeriode()
@@ -63,6 +63,6 @@ public class Flight01 : Flight
 
     public override int getQNH()
     {
-       return 1013;
+       return 1010;
     }
 }

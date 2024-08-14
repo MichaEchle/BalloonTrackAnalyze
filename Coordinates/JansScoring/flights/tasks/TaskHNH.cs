@@ -1,5 +1,6 @@
 ﻿using Coordinates;
 using JansScoring.calculation;
+using JansScoring.check;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,62 +9,41 @@ namespace JansScoring.flights;
 
 public abstract class TaskHNH : Task
 {
-    protected TaskHNH(Flight flight) : base(flight)
+    public TaskHNH(Flight flight) : base(flight)
     {
     }
 
-    protected abstract int markerDropNumber();
-    protected abstract int mma();
 
-    public override string[] score(Track track)
+    protected abstract int MarkerNumber();
+    protected abstract int MMA();
+
+    public override void Score(Track track, ref string comment, out double result)
     {
-        MarkerDrop markerDrop = track.MarkerDrops.FindLast(drop => drop.MarkerNumber == markerDropNumber());
-
+        MarkerChecks.LoadMarker(track, MarkerNumber(), out MarkerDrop markerDrop, ref comment);
         if (markerDrop == null)
         {
-            return new[] { "No Result", "No Markerdrop " + markerDropNumber() };
+            result = Double.MinValue;
+            return;
         }
 
-
-        double result;
-        String comment = "";;
-        if (flight.useGPSAltitude()
-                ? markerDrop.MarkerLocation.AltitudeGPS <= flight.getSeperationAltitudeMeters()
-                : markerDrop.MarkerLocation.AltitudeBarometric <= flight.getSeperationAltitudeMeters())
+        MarkerChecks.CheckScoringPeriode(this, markerDrop, ref comment);
+        if (GoalChecks.Use3DScoring(Flight, markerDrop, ref comment))
         {
-            List<double> distanceToAllGoals = CalculationHelper.calculate2DDistanceToAllGoals(markerDrop.MarkerLocation,
-                goals(),
-                flight.getCalculationType());
-
+            Coordinate[] goals = Goals();
+            GoalChecks.MoveGoalHeightToSeperationAltitude(Flight, ref goals);
+            List<double> distanceToAllGoals = CalculationHelper.calculate3DDistanceToAllGoals(markerDrop.MarkerLocation,
+                goals,
+                Flight.useGPSAltitude(), Flight.getCalculationType());
             result = distanceToAllGoals.Min();
-            comment += "Calculated with 2D | ";
         }
         else
         {
-            List<Coordinate> heightGoals = new List<Coordinate>();
-            foreach (Coordinate coordinate in goals())
-            {
-                Coordinate goal = coordinate.Clone();
-                goal.AltitudeGPS = flight.getSeperationAltitudeMeters();
-                goal.AltitudeBarometric = flight.getSeperationAltitudeMeters();
-                heightGoals.Add(goal);
-            }
-
-            List<double> distanceToAllGoals = CalculationHelper.calculate3DDistanceToAllGoals(markerDrop.MarkerLocation,
-                heightGoals.ToArray(),
-                flight.useGPSAltitude(), flight.getCalculationType());
-
+            List<double> distanceToAllGoals = CalculationHelper.calculate2DDistanceToAllGoals(markerDrop.MarkerLocation,
+                Goals(),
+                Flight.getCalculationType());
 
             result = distanceToAllGoals.Min();
-            comment += "Calculated with 3D | ";
         }
-        if (result < mma())
-        {
-            comment +=
-                $"The distance is less than the MMA, the result must be {mma()}m ({NumberHelper.formatDoubleToStringAndRound(result)})  | ";
-            result = mma();
-        }
-
-        return new[] { NumberHelper.formatDoubleToStringAndRound(result), comment };
+        GoalChecks.CorrectMMAResult(MMA(), ref result, ref comment);
     }
 }

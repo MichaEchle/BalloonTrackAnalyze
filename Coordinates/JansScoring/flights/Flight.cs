@@ -59,7 +59,7 @@ public abstract class Flight
     {
         foreach (Task task in getTasks())
         {
-            if (task.number() == number)
+            if (task.TaskNumber() == number)
             {
                 return task;
             }

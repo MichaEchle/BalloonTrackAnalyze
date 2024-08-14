@@ -9,30 +9,32 @@ public class Task01 : TaskHNH
     {
     }
 
-    public override int number()
+    public override int TaskNumber()
     {
         return 01;
     }
 
-    public override Coordinate[] goals()
+    public override bool ScoringChecks(Track track, ref string comment)
     {
-        return new Coordinate[]
-        {
-
-        };
+        return false;
     }
 
-    public override DateTime getScoringPeriodUntil()
+    public override Coordinate[] Goals()
     {
-        return new DateTime(2024,08,14,18,00,00);
+        return new Coordinate[] { CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 0506348, 5327307) };
     }
 
-    protected override int markerDropNumber()
+    public override DateTime GetScoringPeriodUntil()
     {
-        return 01;
+        return new DateTime(2024, 08, 14, 18, 00, 00);
     }
 
-    protected override int mma()
+    protected override int MarkerNumber()
+    {
+        return 1;
+    }
+
+    protected override int MMA()
     {
         return 30;
     }
