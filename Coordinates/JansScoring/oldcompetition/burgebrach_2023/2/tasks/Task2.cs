@@ -66,7 +66,7 @@ public class Task2 : Task
         return new[] { CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 624709, 5521262, 267) };
     }
 
-    public override DateTime getScoringPeriodeUntil()
+    public override DateTime getScoringPeriodUntil()
     {
         return new DateTime(2023, 06, 09, 05, 00, 00);
     }

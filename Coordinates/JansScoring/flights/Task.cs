@@ -42,7 +42,7 @@ public abstract class Task
     /// Time need to be in UTC
     /// </summary>
     /// <returns></returns>
-    public abstract DateTime getScoringPeriodeUntil();
+    public abstract DateTime getScoringPeriodUntil();
 
     public bool checkScoringPeriodeForMarker(Track track, MarkerDrop markerDrop, out string comment)
     {
@@ -54,10 +54,10 @@ public abstract class Task
         }
 
         Coordinate trackPoint = getTrackPointByTime(track, markerDrop.MarkerTime);
-        if (trackPoint.TimeStamp >= getScoringPeriodeUntil())
+        if (trackPoint.TimeStamp >= getScoringPeriodUntil())
         {
             TimeSpan timeOutsideScoringPeriode =
-                getScoringPeriodeUntil() - trackPoint.TimeStamp;
+                getScoringPeriodUntil() - trackPoint.TimeStamp;
             comment +=
                 $"Pilots last Trackpoint was outside the scoringperiode of task {number()}({timeOutsideScoringPeriode.ToString(@"hh\:mm\:ss")}) | ";
             return false;

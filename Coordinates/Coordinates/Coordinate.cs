@@ -20,12 +20,21 @@ namespace Coordinates
         /// <summary>
         /// The GPS altitude in meters
         /// </summary>
-        public double AltitudeGPS { get; private set; }
+        public double AltitudeGPS { get; set; }
 
         /// <summary>
         /// The barometric altitude in meters
         /// </summary>
-        public double AltitudeBarometric { get; private set; }
+        public double AltitudeBarometric { get; set; }
+
+        /// <summary>
+        /// If the altitude is corrected with the current qnh
+        /// </summary>
+        public bool CorrectedBarometric
+        {
+            get;
+            set;
+        } = false;
 
         /// <summary>
         /// The time stamp when this coordinate was create in GPS time
@@ -69,6 +78,15 @@ namespace Coordinates
             set;
         }
 
-        
+        public Coordinate Clone()
+        {
+            return new Coordinate(Latitude, Longitude, AltitudeGPS, AltitudeBarometric, TimeStamp);
+        }
+
+        public void CorrectBarometricHeight(double qnh)
+        {
+            AltitudeBarometric = CoordinateHelpers.ConvertBarometricHeight(AltitudeBarometric, qnh);
+            CorrectedBarometric = true;
+        }
     }
 }

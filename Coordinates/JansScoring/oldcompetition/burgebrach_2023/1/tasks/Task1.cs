@@ -93,7 +93,7 @@ public class Task1 : Task
         };
     }
 
-    public override DateTime getScoringPeriodeUntil()
+    public override DateTime getScoringPeriodUntil()
     {
         return new DateTime(2023, 06, 08, 19, 22, 00);
     }

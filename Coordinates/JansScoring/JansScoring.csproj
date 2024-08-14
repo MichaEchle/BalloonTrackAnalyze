@@ -26,8 +26,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="oldcompetition\austira_2022\" />
-    <Folder Include="oldcompetition\burgebrach_2023\" />
+    <Compile Remove="oldcompetition\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="oldcompetition\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="oldcompetition\**" />
   </ItemGroup>
 
 </Project>

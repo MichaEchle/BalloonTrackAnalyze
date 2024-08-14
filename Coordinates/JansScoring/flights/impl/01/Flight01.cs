@@ -14,7 +14,7 @@ public class Flight01 : Flight
 
     public override DateTime getStartOfLaunchPeriode()
     {
-        return new DateTime(2023, 08, 09, 18, 05, 00);
+        return new DateTime(2024,08,14,03,55,00);
     }
 
     public override int launchPeriode()
@@ -24,22 +24,26 @@ public class Flight01 : Flight
 
     public override bool useGPSAltitude()
     {
-        return true;
+        return false;
     }
 
     public override int distanceToAllGoals()
     {
-        return 3000;
+       return 0;
     }
 
     public override string getTracksPath()
     {
-        return @"C:\Users\Jan\OneDrive\Ballonveranstaltungen\2023 HNBC\Flights\flight01\tracks";
+        return @"C:\Users\Jan\Documents\scoring\wieselburg_2024\flight01\tracks";
     }
 
     public override Task[] getTasks()
     {
-        return new Task[] { new Task01(this), new Task02(this) };
+        return new Task[]
+        {
+            new Task01(this),
+            new Task02(this)
+        };
     }
 
     public override CalculationType getCalculationType()
@@ -49,12 +53,16 @@ public class Flight01 : Flight
 
     public override double getSeperationAltitudeFeet()
     {
-        return 2400;
+       return 1500;
     }
 
     public override Coordinate getBackupCoordinates()
     {
-        return CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 483390, 5370330,
-            CoordinateHelpers.ConvertToMeter(1453));
+        return CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U",508660,5328360);
+    }
+
+    public override int getQNH()
+    {
+       return 1013;
     }
 }

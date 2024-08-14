@@ -107,7 +107,7 @@ public class FlightFour : Flight
             return new Coordinate[] { };
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 10, 07, 00, 00);
         }
@@ -182,7 +182,7 @@ public class FlightFour : Flight
             };
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 10, 07, 00, 00);
         }
@@ -257,7 +257,7 @@ public class FlightFour : Flight
             };
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 10, 07, 30, 00);
         }
@@ -332,7 +332,7 @@ public class FlightFour : Flight
             };
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 10, 07, 30, 00);
         }
@@ -490,7 +490,7 @@ public class FlightFour : Flight
             return new Coordinate[] { };
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 10, 07, 30, 00);
         }

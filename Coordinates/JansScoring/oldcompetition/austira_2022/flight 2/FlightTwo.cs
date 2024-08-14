@@ -110,7 +110,7 @@ public class FlightTwo : Flight
             };
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 08, 17, 30, 00);
         }

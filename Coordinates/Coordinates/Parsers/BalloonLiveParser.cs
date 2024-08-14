@@ -871,6 +871,7 @@ namespace Coordinates.Parsers
             }
             Coordinate coordinate = new Coordinate(latitude, longitude, altitudeGPS, altitudeBarometric, timeStamp);
             markerDrop = new MarkerDrop(markerNumber, coordinate);
+            markerDrop.MarkerTime = timeStamp;
             return true;
         }
 

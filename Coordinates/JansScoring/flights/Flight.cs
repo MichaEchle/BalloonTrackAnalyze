@@ -49,8 +49,22 @@ public abstract class Flight
 
     public abstract Coordinate getBackupCoordinates();
 
+    public abstract int getQNH();
+
     public double getSeperationAltitudeMeters()
     {
         return CoordinateHelpers.ConvertToMeter(getSeperationAltitudeFeet());
+    }
+    public Task getTaskByNumber(int number)
+    {
+        foreach (Task task in getTasks())
+        {
+            if (task.number() == number)
+            {
+                return task;
+            }
+        }
+
+        return null;
     }
 }

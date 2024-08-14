@@ -72,6 +72,7 @@ public class BluePZ : PZ
         this.maxHeight = maxHeight;
     }
 
+
     public override bool IsInsidePz(Flight flight, Track track, Coordinate coordinate, out string comment)
     {
         comment = "";

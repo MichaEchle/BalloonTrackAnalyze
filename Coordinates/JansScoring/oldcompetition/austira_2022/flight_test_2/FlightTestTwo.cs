@@ -64,7 +64,7 @@ public class FlightTestTwo : Flight
         public Task7(Flight flight) : base(flight)
         {
         }
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 07, 08, 00, 00);
         }

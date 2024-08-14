@@ -44,6 +44,11 @@ namespace Coordinates
             get; private set;
         } = new Dictionary<string, string>();
 
+        public Dictionary<string, Object> AdditionalPropertiesFromScoring
+        {
+            get; private set;
+        } = new Dictionary<string, Object>();
+
         public Track()
         {
 

@@ -2,16 +2,11 @@
 using Coordinates.Parsers;
 using JansScoring.flights;
 using JansScoring.flights.impl._01;
-using JansScoring.flights.impl._02;
-using JansScoring.flights.impl._03;
-using JansScoring.flights.impl._04;
-using JansScoring.flights.impl._05;
-using JansScoring.flights.impl._06;
-using JansScoring.flights.impl._07;
 using JansScoring.pz_rework;
 using LoggerComponent;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Console = System.Console;
@@ -30,15 +25,8 @@ public class FlightManager
         pzManager = new PZManager();
 
         flights.Add(1, new Flight01());
-        flights.Add(2, new Flight02());
-        flights.Add(3, new Flight03());
-        flights.Add(4, new Flight04());
-        flights.Add(5, new Flight05());
-        flights.Add(6, new Flight06());
-        flights.Add(7, new Flight07());
 
-
-        scoreFlight(4);
+        scoreFlight(1);
     }
 
 
@@ -66,7 +54,7 @@ public class FlightManager
         string scoringTime = DateTime.Now.ToString("MMddHHmmss");
 
         Console.WriteLine("Start generate Flight Report");
-        generateFlightReport(trackList, flight, scoringFolder, scoringTime);
+        generateFlightReport(trackList, flight, scoringFolder, scoringTime, false);
         Console.WriteLine("Finish generate Flight Report");
         foreach (Task task in flight.getTasks())
         {
@@ -96,28 +84,37 @@ public class FlightManager
                 writer1.Close();
                 Console.WriteLine($"Succesful scored Task {task.number()}");
             }
+
+            ProcessStartInfo psi = new();
+            psi.FileName = resultsPath;
+            psi.UseShellExecute = true;
+            Process.Start(psi);
         }
     }
 
     private void generateFlightReport(List<Track> tracks, Flight flight, DirectoryInfo scoringFolder,
-        string scoringTime)
+        string scoringTime, bool despiker)
     {
         Dictionary<Pilot, string> comments = new();
 
-        /*
-        Console.WriteLine($"Start Despiking {tracks.Count} Tracks");
-        foreach (Track track in tracks)
+
+        if (despiker)
         {
-            Console.WriteLine($"Start despike for pilot {track.Pilot.PilotNumber}");
-            int spikes = DeSpiker.despike(track, flight.useGPSAltitude());
-            if (spikes > 0)
+            Console.WriteLine($"Start Despiking {tracks.Count} Tracks");
+            foreach (Track track in tracks)
             {
-                comments.Add(track.Pilot, $"Removed {spikes} Spikes | ");
+                Console.WriteLine($"Start despike for pilot {track.Pilot.PilotNumber}");
+                int spikes = DeSpiker.despike(track, flight.useGPSAltitude());
+                if (spikes > 0)
+                {
+                    comments.Add(track.Pilot, $"Removed {spikes} Spikes | ");
+                }
+
+                Console.WriteLine($"Despiked {spikes} fro pilot {track.Pilot.PilotNumber}");
             }
-            Console.WriteLine($"Despiked {spikes} fro pilot {track.Pilot.PilotNumber}");
+
+            Console.WriteLine($"Finish Despiking {tracks.Count} Tracks");
         }
-        Console.WriteLine($"Finish Despiking {tracks.Count} Tracks");
-         */
 
 
         List<Coordinate> goals = new();
@@ -251,6 +248,26 @@ public class FlightManager
             }
 
             track.trackPath = fileInfo;
+
+
+            if (!flight.useGPSAltitude())
+            {
+                foreach (Coordinate trackPoint in track.TrackPoints)
+                {
+                    trackPoint.CorrectBarometricHeight(flight.getQNH());
+                }
+
+                foreach (MarkerDrop markerDrop in track.MarkerDrops)
+                {
+                    markerDrop.MarkerLocation.CorrectBarometricHeight(flight.getQNH());
+                }
+
+                foreach (Declaration decleration in track.Declarations)
+                {
+                    decleration.PositionAtDeclaration.CorrectBarometricHeight(flight.getQNH());
+                }
+            }
+
             tracks.Add(track);
         }
 

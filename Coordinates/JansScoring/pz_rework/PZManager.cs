@@ -14,17 +14,15 @@ public class PZManager
 
     public PZManager()
     {
-        pzs.Add(new RedPZ(1, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 472850, 5367350, 3000),CoordinateHelpers.ConvertToMeter(3000d), 500));
-        pzs.Add(new RedPZ(2, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 479900 , 5364120, 3000),CoordinateHelpers.ConvertToMeter(3000d), 500));
-        pzs.Add(new RedPZ(3, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 471780 , 5357200, 3000),CoordinateHelpers.ConvertToMeter(3000d), 500));
-        pzs.Add(new RedPZ(4, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 485750 , 5358850, 3000),CoordinateHelpers.ConvertToMeter(3000d), 500));
+        pzs.Add(new BluePZ(01, CoordinateHelpers.ConvertToMeter(9000), Double.MaxValue));
+        pzs.Add(new RedPZ(02, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 511130, 5327080), CoordinateHelpers.ConvertToMeter(2000), 500));
+        pzs.Add(new RedPZ(03, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 503670, 5328130), CoordinateHelpers.ConvertToMeter(1500), 200));
+        pzs.Add(new RedPZ(04, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 508870, 5327880), CoordinateHelpers.ConvertToMeter(1500), 200));
+        pzs.Add(new RedPZ(05, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 515630, 5325190), CoordinateHelpers.ConvertToMeter(2000), 300));
 
-        pzs.Add(new BluePZ(21, CoordinateHelpers.ConvertToMeter(9000), Double.MaxValue));
-
-        pzs.Add(new BluePZ(22, @"C:\Users\Jan M\OneDrive\Ballonveranstaltungen\2023 HNBC\PZ\PZ 22 7000ft.plt",CoordinateHelpers.ConvertToMeter(7000), Double.MaxValue));
-        pzs.Add(new BluePZ(23, @"C:\Users\Jan M\OneDrive\Ballonveranstaltungen\2023 HNBC\PZ\PZ 23 5000ft.plt",CoordinateHelpers.ConvertToMeter(5000), Double.MaxValue));
-        pzs.Add(new BluePZ(24, @"C:\Users\Jan M\OneDrive\Ballonveranstaltungen\2023 HNBC\PZ\PZ 24 4000ft.plt",CoordinateHelpers.ConvertToMeter(4000), Double.MaxValue));
-        pzs.Add(new BluePZ(25, @"C:\Users\Jan M\OneDrive\Ballonveranstaltungen\2023 HNBC\PZ\PZ 25 3000ft.plt",CoordinateHelpers.ConvertToMeter(3000), Double.MaxValue));
+        pzs.Add(new YellowPZ(06, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 501900, 5325070),200));
+        pzs.Add(new YellowPZ(07, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 506840, 5328380),500));
+        pzs.Add(new YellowPZ(08, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 524410, 5329570),500));
     }
 
     public string checkPZ(Flight flight, Track track)
@@ -40,7 +38,6 @@ public class PZManager
             double distanceInPZ = 0;
 
             DateTime infrigementBegin = DateTime.MinValue;
-
 
             foreach (Coordinate trackTrackPoint in track.TrackPoints)
             {

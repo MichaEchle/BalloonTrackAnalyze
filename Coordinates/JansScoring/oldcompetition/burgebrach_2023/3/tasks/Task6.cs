@@ -102,7 +102,7 @@ public class Task6 : Task
         return Array.Empty<Coordinate>();
     }
 
-    public override DateTime getScoringPeriodeUntil()
+    public override DateTime getScoringPeriodUntil()
     {
         return new DateTime(2023, 06, 10, 05, 00, 00);
     }

@@ -70,7 +70,7 @@ public class FlightOne : Flight
             return 1;
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 07, 06, 30, 00);
         }
@@ -299,7 +299,7 @@ public class FlightOne : Flight
         }
 
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 08, 07, 03, 00);
         }
@@ -387,7 +387,7 @@ public class FlightOne : Flight
             return new Coordinate[] { };
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 08, 07, 30, 00);
         }

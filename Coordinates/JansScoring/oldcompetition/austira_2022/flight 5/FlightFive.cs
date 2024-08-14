@@ -160,7 +160,7 @@ public class  FlightFive : Flight
             };
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 10, 17, 20, 00);
         }
@@ -220,7 +220,7 @@ public class  FlightFive : Flight
             };
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 10, 17, 20, 00);
         }

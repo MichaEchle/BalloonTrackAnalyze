@@ -157,7 +157,7 @@ public class FlightThree : Flight
             return new Coordinate[] { };
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 09, 07, 00, 00);
         }
@@ -184,7 +184,7 @@ public class FlightThree : Flight
             throw new NotImplementedException();
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             throw new NotImplementedException();
         }
@@ -211,7 +211,7 @@ public class FlightThree : Flight
             throw new NotImplementedException();
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             throw new NotImplementedException();
         }
@@ -238,7 +238,7 @@ public class FlightThree : Flight
             throw new NotImplementedException();
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             throw new NotImplementedException();
         }
@@ -315,7 +315,7 @@ public class FlightThree : Flight
             };
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 09, 07, 30, 00);
         }
@@ -395,7 +395,7 @@ public class FlightThree : Flight
             return new Coordinate[] { };
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 08, 08, 00, 00);
         }
@@ -462,7 +462,7 @@ public class FlightThree : Flight
             return new Coordinate[] { };
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 09, 08, 30, 00);
         }

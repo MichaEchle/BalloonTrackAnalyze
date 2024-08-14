@@ -65,7 +65,7 @@ public class FlightTestOne : Flight
             return 1;
         }
 
-        public override DateTime getScoringPeriodeUntil()
+        public override DateTime getScoringPeriodUntil()
         {
             return new DateTime(2022, 09, 06, 06, 00, 00);
         }

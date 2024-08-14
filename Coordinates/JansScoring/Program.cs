@@ -1,10 +1,4 @@
-﻿using Coordinates;
-using JansScoring.coordinates;
-using JansScoring.flights.impl._01;
-using JansScoring.pz_rework.type;
-using System;
-
-namespace JansScoring
+﻿namespace JansScoring
 {
     class Programm
     {

@@ -69,7 +69,12 @@ namespace Competition
                 return flight;
             }
         }
-
+        /// <summary>
+        /// Takes all .igc files for the given path, parses them and add to the list of tracks
+        /// </summary>
+        /// <param name="path">the directory of the .igc files</param>
+        /// <param name="useBalloonLiveParse">true: use balloon live parser; false: use FAI parser </param>
+        /// <returns>true: success; false: error</returns>
         public bool ParseTrackFiles(string path, bool useBalloonLiveParse)
         {
             string functionErrorMessage = "Failed to parse track files: ";
@@ -104,6 +109,14 @@ namespace Competition
             return true;
         }
 
+        /// <summary>
+        /// Maps the pilot names to the tracks
+        /// <para>the expected format is pilot number,first name, last name, pilot identifier (balloon live)</para>
+        /// </summary>
+        /// <param name="mappingFile">a csv file with the mapping info
+        /// <para>semicolons are replaces with commas</para>
+        /// </param>
+        /// <returns>true:success; false:error</returns>
         public bool MapPilotNamesToTracks(string mappingFile)
         {
             string functionErrorMessage = "Failed to map pilot names to tracks";
@@ -125,7 +138,7 @@ namespace Competition
                 while (!reader.EndOfStream)
                 {
                     string line = reader.ReadLine();
-                    line=line.Replace(';',',');
+                    line = line.Replace(';', ',');
                     string[] parts = line.Split(',');
                     int pilotNumber;
                     if (!int.TryParse(parts[0], out pilotNumber))
@@ -167,8 +180,17 @@ namespace Competition
             return true;
         }
 
+        /// <summary>
+        /// Pre-process a track to make sure all declarations and markers are valid
+        /// </summary>
+        /// <param name="track">teh track to be pre-processed</param>
+        /// <returns>true:success; false:error</returns>
+        /// <exception cref="ArgumentNullException">track cannot be null</exception>
         public bool PreprocessTrack(Track track)
         {
+            if (track is null)
+                throw new ArgumentNullException(nameof(track));
+
             List<Declaration> validDeclarations = new List<Declaration>();
             List<MarkerDrop> validMarkers = new List<MarkerDrop>();
             foreach (ICompetitionTask task in Tasks)
@@ -414,7 +436,11 @@ namespace Competition
             return true;
         }
 
-
+        /// <summary>
+        /// Calculates the results for all pilots and all tasks and write the results as csv to the specified path
+        /// </summary>
+        /// <param name="useGPSAltitude">true:use GPS altitude; false: use barometric altitude</param>
+        /// <param name="filePath">the path at which the result file should be created</param>
         public void CalculateResults(bool useGPSAltitude, string filePath)
         {
             string header = "Pilot No.,First Name,Last Name," + string.Join(',', Tasks);
@@ -441,11 +467,49 @@ namespace Competition
             }
         }
 
+        /// <summary>
+        /// Sets the specified default altitude to all declaration where no altitude was declared
+        /// </summary>
+        /// <param name="defaultAltitude">the default altitude in meters</param>
+        /// <returns>a list containing the pilot and the declaration where default altitude has been set</returns>
+        public List<(Pilot pilot, Declaration declaration)> SetDefaultGoalAltitude(double defaultAltitude)
+        {
+            List<(Pilot pilot, Declaration declaration)> declarationsWithAltitude = new List<(Pilot pilot, Declaration declaration)>();
+            foreach (Track track in Tracks)
+            {
+                foreach (Declaration declaration in track.Declarations)
+                {
+                    if (!declaration.HasPilotDelaredGoalAltitude)
+                    {
 
+                       /*
+                        *  if (declaration.DeclaredGoal.SetDefaultAltitude(defaultAltitude))
+                        {
+                            declarationsWithAltitude.Add((track.Pilot, declaration));
+                            Log(LogSeverityType.Info, $"Default alitude set for Pilot {track.Pilot.PilotNumber} at declaration {declaration.GoalNumber}");
+                        }
+                        else
+                        {
+                            Log(LogSeverityType.Info, $"Default altitude could not be set for Pilot {track.Pilot.PilotNumber} at declaration {declaration.GoalNumber}");
+
+                        }
+                        */
+                    }
+                }
+            }
+            return declarationsWithAltitude;
+        }
+
+        /// <summary>
+        /// Log helper
+        /// </summary>
+        /// <param name="logSeverityType">the severity of the message</param>
+        /// <param name="text">the log message</param>
         private void Log(LogSeverityType logSeverityType, string text)
         {
             Logger.Log(this, logSeverityType, text);
         }
+
 
         public override string ToString()
         {
