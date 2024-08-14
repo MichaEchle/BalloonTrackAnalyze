@@ -1,17 +1,18 @@
 ﻿using Competition.Validation;
 using Coordinates;
-using LoggerComponent;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
+using LoggingConnector;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Competition
 {
     public class DonutTask : ICompetitionTask
     {
+        [JsonIgnore()]
+        private readonly ILogger<DonutTask> Logger=LogConnector.LoggerFactory.CreateLogger<DonutTask>();    
+
         #region Properties
         /// <summary>
         /// The task number
@@ -89,7 +90,7 @@ namespace Competition
         /// <para>mandatory</para>
         /// </summary>
         [JsonProperty("Is reentrance allowed")]
-        public bool IsReentranceAllowed
+        public bool IsReEntranceAllowed
         {
             get; set;
         } = true;
@@ -102,7 +103,7 @@ namespace Competition
         public List<IDeclarationValidationRules> DeclarationValidationRules
         {
             get; set;
-        } = new List<IDeclarationValidationRules>();
+        } = [];
         #endregion
 
         #region API
@@ -115,15 +116,13 @@ namespace Competition
         /// <returns>true:success;false:error</returns>
         public bool CalculateResults(Track track, bool useGPSAltitude, out double result)
         {
-            string functionErrorMessage = $"Failed to calculate result for {this} and Pilot '#{track.Pilot.PilotNumber}{(!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "")}': ";
             result = 0.0;
-            List<(int trackPointNumber, Coordinate coordinate)> trackPointsInDonut = new List<(int trackPointNumber, Coordinate coordinate)>();
+            List<(int trackPointNumber, Coordinate coordinate)> trackPointsInDonut = [];
 
             Declaration targetDeclaration = ValidationHelper.GetValidDeclaration(track, GoalNumber, DeclarationValidationRules);
             if (targetDeclaration == null)
             {
-                //Debug.WriteLine("No valid goal found");
-                Log(LogSeverityType.Error, functionErrorMessage + $"No valid goal found for goal '#{GoalNumber}'");
+                Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No valid goal found for goal '#{goalNumber}'", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), GoalNumber);
                 return false;
             }
             List<Coordinate> coordinates = track.TrackPoints;
@@ -149,9 +148,9 @@ namespace Competition
                     trackPointsInDonut.Add((track.TrackPoints.FindIndex(x => x == coordinates[index]), coordinates[index]));
 
             }
-            List<List<Coordinate>> chunksInDonut = new List<List<Coordinate>>();
+            List<List<Coordinate>> chunksInDonut = [];
             int addIndex = 0;
-            chunksInDonut.Add(new List<Coordinate>());
+            chunksInDonut.Add([]);
             for (int index = 0; index < trackPointsInDonut.Count - 1; index++)
             {
                 if (trackPointsInDonut[index + 1].trackPointNumber - trackPointsInDonut[index].trackPointNumber == 1)//trackpoints are successive
@@ -168,13 +167,13 @@ namespace Competition
                 }
                 else//trackpoints are not successive -> create new chunk
                 {
-                    chunksInDonut.Add(new List<Coordinate>());
+                    chunksInDonut.Add([]);
                     addIndex++;
                 }
             }
 
 
-            if (!IsReentranceAllowed)//evaluate first chunk only
+            if (!IsReEntranceAllowed)//evaluate first chunk only
             {
                 if (chunksInDonut[0].Count >= 2)
                 {
@@ -214,9 +213,9 @@ namespace Competition
         /// <param name="outerRadius">The radius of the outer circle in meter (mandatory)</param>
         /// <param name="lowerBoundary">Lower boundary of the donut in meter (optional; use double.NaN to omit)</param>
         /// <param name="upperBoundary">Upper boundary of the donut in meter (optional; use double.NaN to omit)</param>
-        /// <param name="isReentranceAllowed">Specify whether or not re-entrance in the donut is allowed (mandatory)</param>
+        /// <param name="isReEntranceAllowed">Specify whether or not re-entrance in the donut is allowed (mandatory)</param>
         /// <param name="declarationValidationRules">List of rules for declaration validation (optional; leave list empty to omit)</param>
-        public void SetupDonut(int taskNumber, int goalNumber, int numberOfDeclarations, double innerRadius, double outerRadius, double lowerBoundary, double upperBoundary, bool isReentranceAllowed, List<IDeclarationValidationRules> declarationValidationRules)
+        public void SetupDonut(int taskNumber, int goalNumber, int numberOfDeclarations, double innerRadius, double outerRadius, double lowerBoundary, double upperBoundary, bool isReEntranceAllowed, List<IDeclarationValidationRules> declarationValidationRules)
         {
             TaskNumber = taskNumber;
             GoalNumber = goalNumber;
@@ -225,7 +224,7 @@ namespace Competition
             OuterRadius = outerRadius;
             LowerBoundary = lowerBoundary;
             UpperBoundary = upperBoundary;
-            IsReentranceAllowed = isReentranceAllowed;
+            IsReEntranceAllowed = isReEntranceAllowed;
             DeclarationValidationRules = declarationValidationRules;
         }
 
@@ -236,10 +235,6 @@ namespace Competition
         #endregion
 
         #region Private methods
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
-        }
         #endregion
     }
 }

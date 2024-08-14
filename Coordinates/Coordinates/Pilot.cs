@@ -1,30 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Coordinates
+﻿namespace Coordinates
 {
     public class Pilot
     {
         /// <summary>
         /// The first name of the pilot
         /// </summary>
-        public string FirstName { get; set; }
+        public string FirstName
+        {
+            get; set;
+        }
 
         /// <summary>
         /// The last name of the pilot
         /// </summary>
-        public string LastName { get; set; }
+        public string LastName
+        {
+            get; set;
+        }
 
         /// <summary>
         /// A number of the pilot
         /// </summary>
-        public int PilotNumber { get; private set; }
+        public int PilotNumber
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// A list of identifiers associated with that pilot as issued in the track file
         /// </summary>
-        public string PilotIdentifier { get; private set; }
+        public string PilotIdentifier
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// Create a new pilot

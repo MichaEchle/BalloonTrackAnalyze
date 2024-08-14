@@ -1,13 +1,14 @@
 ﻿using Coordinates;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using LoggingConnector;
+using Microsoft.Extensions.Logging;
 
 namespace Competition
 {
     public class MarkerToGoalDistanceRule : IMarkerValidationRules
     {
         #region Properties
+
+        private readonly ILogger<MarkerToGoalDistanceRule> Logger = LogConnector.LoggerFactory.CreateLogger<MarkerToGoalDistanceRule>();
 
         /// <summary>
         /// Minimum distance between marker position and declared goal in meter
@@ -57,7 +58,10 @@ namespace Competition
         /// The number of the goal to be checked against (the last valid goal with that number will be fed in after track preprocessing)
         /// <para>mandatory</para>
         /// </summary>
-        public int GoalNumber { get; set; }
+        public int GoalNumber
+        {
+            get; set;
+        }
 
         #endregion
 
@@ -108,7 +112,7 @@ namespace Competition
         /// <param name="use3DDistance">True: 3D distance is considered; false: only 2D distance is considered</param>
         /// <param name="useGPSAltitude">True: GPS altitude is used to calculate 3D distance; false: barometric altitude is used to calculate 3D distance</param>
         /// <param name="goalNumber">The number of the goal to be checked against (the last valid goal with that number will be used) (mandatory). the actual declared goal object will be fed in after track preprocessing</param>
-        public void SetupRule(double minimumDistance, double maximumDistance,bool use3DDistance,bool useGPSAltitude, int goalNumber)
+        public void SetupRule(double minimumDistance, double maximumDistance, bool use3DDistance, bool useGPSAltitude, int goalNumber)
         {
             MinimumDistance = minimumDistance;
             MaximumDistance = maximumDistance;

@@ -1,14 +1,13 @@
 ﻿using Coordinates;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using LoggerComponent;
+using LoggingConnector;
+using Microsoft.Extensions.Logging;
 
 namespace Competition
 {
     public class DeclarationToGoalDistanceRule : IDeclarationValidationRules
     {
         #region Properties
+        private readonly ILogger<DeclarationToGoalDistanceRule> Logger = LogConnector.LoggerFactory.CreateLogger<DeclarationToGoalDistanceRule>();
 
         /// <summary>
         /// Minimum distance between declaration position and declared goal in meter
@@ -29,10 +28,12 @@ namespace Competition
         } = double.NaN;
 
         #endregion
+
         public DeclarationToGoalDistanceRule()
         {
 
         }
+
         #region API
 
         /// <summary>
@@ -50,7 +51,7 @@ namespace Competition
                 {
                     double absoluteInfringement = MinimumDistance - distanceBetweenPositionOfDeclarationAndDeclaredGoal;
                     double relativeInfringement = absoluteInfringement / MinimumDistance;
-                    Log(LogSeverityType.Warning, $"Declaration {declaration.GoalNumber} is not conform: {MinimumDistance:0.#}m - {distanceBetweenPositionOfDeclarationAndDeclaredGoal:0.#}m = {absoluteInfringement:0.#}m ({relativeInfringement:P1}%) [minimum - actual = absolute (relative)] ");
+                    Logger?.LogWarning("Declaration '{goalNumber}' is not conform: '{minimumDistance}m' - '{distance}m' = '{abosluteInfringement}m' ('{relativeInfrigement}%') [minimum - actual = absolute (relative)]", declaration.GoalNumber, MinimumDistance.ToString("0.#"), distanceBetweenPositionOfDeclarationAndDeclaredGoal.ToString("0.#"), absoluteInfringement.ToString("0.#"), relativeInfringement.ToString("P1"));
                     isConform = false;
                 }
             if (!double.IsNaN(MaximumDistance))
@@ -58,7 +59,7 @@ namespace Competition
                 {
                     double absoluteInfringement = distanceBetweenPositionOfDeclarationAndDeclaredGoal - MaximumDistance;
                     double relativeInfringement = absoluteInfringement / MaximumDistance;
-                    Log(LogSeverityType.Warning, $"Declaration {declaration.GoalNumber} is not conform: {distanceBetweenPositionOfDeclarationAndDeclaredGoal:0.#}m - {MaximumDistance:0.#}m = {absoluteInfringement:0.#}m ({relativeInfringement:P1}%) [actual - minimum = absolute (relative)] ");
+                    Logger?.LogWarning("Declaration '{goalNumber}' is not conform: '{distance}m' - '{maximumDistance}m' = '{abosluteInfringement}m' ('{relativeInfrigement}%') [actual - minimum = absolute (relative)]", declaration.GoalNumber, distanceBetweenPositionOfDeclarationAndDeclaredGoal.ToString("0.#"), MaximumDistance.ToString("0.#"), absoluteInfringement.ToString("0.#"), relativeInfringement.ToString("P1"));
                     isConform = false;
 
                 }
@@ -83,10 +84,6 @@ namespace Competition
 
         #endregion
         #region Private methods
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
-        }
         #endregion
     }
 }

@@ -1,18 +1,17 @@
-﻿using System;
+﻿using Competition;
+using LoggingConnector;
+using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
 using System.Windows.Forms;
-using Competition;
-using LoggerComponent;
 
 namespace BalloonTrackAnalyze.TaskControls
 {
     public partial class PieControl : UserControl
     {
         #region Properties
+
+        private readonly ILogger<PieControl> Logger = LogConnector.LoggerFactory.CreateLogger<PieControl>();
 
         /// <summary>
         /// The pie task to be created or modified by this control
@@ -104,11 +103,11 @@ namespace BalloonTrackAnalyze.TaskControls
                 {
                     if (!lbPieTiers.Items.Contains(tier))
                         lbPieTiers.Items.Add(tier);
-                    Log(LogSeverityType.Info, $"{tier} created successfully");
+                    Logger?.LogInformation("'{tier}' created successfully",tier);
                 }
                 else
                 {
-                    Log(LogSeverityType.Info, $"{tier} modified successfully");
+                    Logger?.LogInformation("'{tier}' modified successfully",tier);
                 }
             }
         }
@@ -133,16 +132,6 @@ namespace BalloonTrackAnalyze.TaskControls
         }
 
         /// <summary>
-        /// Logs a user messages
-        /// </summary>
-        /// <param name="logSeverity">the severity of the message</param>
-        /// <param name="text">the message text</param>
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
-        }
-
-        /// <summary>
         /// Validates user input and creates a new pie task / modifies the existing pie task
         /// </summary>
         /// <param name="sender">sender of the event</param>
@@ -150,26 +139,24 @@ namespace BalloonTrackAnalyze.TaskControls
         private void btCreate_Click(object sender, EventArgs e)
         {
             bool isDataValid = true;
-            string functionErrorMessage = "Failed to create/modify donut task: ";
-            int taskNumber;
-            if (!int.TryParse(tbTaskNumber.Text, out taskNumber))
+            if (!int.TryParse(tbTaskNumber.Text, out int taskNumber))
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Task No. '{tbTaskNumber.Text}' as integer");
+                Logger?.LogError("Failed to create/modify donut task: failed to parse Task No. '{taskNumber}' as integer", tbTaskNumber.Text);
                 isDataValid = false;
             }
             if (taskNumber <= 0)
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Task No. must be greater than 0");
+                Logger?.LogError("Failed to create/modify donut task: Task No. must be greater than 0");
                 isDataValid = false;
             }
             if (isDataValid)
             {
                 PieTask ??= new PieTask();
-                List<PieTask.PieTier> tiers = new List<PieTask.PieTier>();
+                List<PieTask.PieTier> tiers = [];
                 foreach (object item in lbPieTiers.Items)
                 {
                     if (item is PieTask.PieTier)
-                            tiers.Add(item as PieTask.PieTier);
+                        tiers.Add(item as PieTask.PieTier);
                 }
                 PieTask.SetupPie(taskNumber, tiers);
                 tbTaskNumber.Text = "";
@@ -197,7 +184,7 @@ namespace BalloonTrackAnalyze.TaskControls
             }
         }
 
-        
+
         #endregion
     }
 }

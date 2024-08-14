@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Icons\StatusCriticalError_exp_16x.png" />
+    <None Remove="Icons\StatusInformation_exp_16x.png" />
+    <None Remove="Icons\StatusWarning_exp_16x.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\UILoggingProvider\UILoggingProvider.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Icons\StatusCriticalError_exp_16x.png" />
+    <Resource Include="Icons\StatusInformation_exp_16x.png" />
+    <Resource Include="Icons\StatusWarning_exp_16x.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

@@ -1,21 +1,17 @@
 ﻿using Coordinates;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Shapes
 {
     public abstract class Shapes2D
     {
-        public  abstract bool IsWithin(Coordinate coordinate);
+        public abstract bool IsWithin(Coordinate coordinate);
 
-        public  virtual double Calculate2DDistanceWithIn(Track track, bool isReentranceAllowed)
+        public virtual double Calculate2DDistanceWithIn(Track track, bool isReentranceAllowed)
         {
             double distance = 0.0;
-            List<List<Coordinate>> pointsWithIn = new List<List<Coordinate>>();
-            pointsWithIn.Add(new List<Coordinate>());
+            List<List<Coordinate>> pointsWithIn = [[]];
             int count = 0;
             for (int index = 0; index < track.TrackPoints.Count; index++)
             {
@@ -27,7 +23,7 @@ namespace Shapes
                 else
                 {
                     if (isReentranceAllowed)
-                        pointsWithIn.Add(new List<Coordinate>());
+                        pointsWithIn.Add([]);
                     else
                     {
                         if (count > 0)

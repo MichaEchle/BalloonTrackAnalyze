@@ -1,16 +1,16 @@
 ﻿using Coordinates;
-using LoggerComponent;
+using LoggingConnector;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Competition.Validation
 {
     public class MarkerToMarkerTimingRule : IMarkerValidationRules
     {
         #region Properties
+
+        private readonly ILogger<MarkerToMarkerTimingRule> Logger = LogConnector.LoggerFactory.CreateLogger<MarkerToMarkerTimingRule>();
         /// <summary>
         /// Earliest time to drop second marker
         /// <para>optional; use double.NaN to omit</para>
@@ -37,13 +37,13 @@ namespace Competition.Validation
         public List<MarkerDrop> MarkerDrops
         {
             get; set;
-        } = new List<MarkerDrop>();
+        } = [];
 
         /// <summary>
         /// List of the marker numbers to be considered and fed into after preprocessing
         /// <para>optional; use empty list to consider all markers</para>
         /// </summary>
-        public List<int> MarkerNumbers { get; set; } = new List<int>();
+        public List<int> MarkerNumbers { get; set; } = [];
         #endregion Properties
 
         #region API
@@ -87,11 +87,9 @@ namespace Competition.Validation
             return "Marker to Markers Timing Rule";
         }
         #endregion
+
         #region Private methods
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
-        }
+
         #endregion
     }
 }

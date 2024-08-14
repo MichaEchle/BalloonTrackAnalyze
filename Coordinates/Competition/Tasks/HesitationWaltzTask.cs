@@ -1,17 +1,20 @@
-﻿using Coordinates;
-using LoggerComponent;
+﻿using Competition.Validation;
+using Coordinates;
+using LoggingConnector;
+using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Competition.Validation;
 
 namespace Competition
 {
     public class HesitationWaltzTask : ICompetitionTask
     {
         #region Properties
+        [JsonIgnore()]
+        private readonly ILogger<HesitationWaltzTask> Logger = LogConnector.LoggerFactory.CreateLogger<HesitationWaltzTask>();
+
         public int TaskNumber
         {
             get;
@@ -21,7 +24,7 @@ namespace Competition
         public List<Coordinate> Goals
         {
             get; set;
-        } = new List<Coordinate>();
+        } = [];
 
         public int MarkerNumber
         {
@@ -55,14 +58,14 @@ namespace Competition
             result = double.NaN;
             if (!ValidationHelper.IsMarkerValid(track, MarkerNumber, MarkerValidationRules))
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Marker '{MarkerNumber}' is invalid or doesn't exists");
+                Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), MarkerNumber);
                 return false;
             }
 
             MarkerDrop markerDrop = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == MarkerNumber);
             if (markerDrop != null)
             {
-                List<double> distances = new List<double>();
+                List<double> distances = [];
                 result = 0.0;
 
                 if (Goals.Count == 0 && CalculateGoals != null)
@@ -72,13 +75,13 @@ namespace Competition
                         Goals = CalculateGoals(track);
                         if (Goals.Count == 0)
                         {
-                            Log(LogSeverityType.Error, $"Failed to calculate goals: no goals could be calculated");
+                            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No goals could be calculated", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
                             return false;
                         }
                     }
                     catch (Exception ex)
                     {
-                        Log(LogSeverityType.Error, $"Failed to calculate goals: {ex.Message}");
+                        Logger?.LogError(ex,"Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}'", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
                         return false;
                     }
                 }
@@ -126,10 +129,6 @@ namespace Competition
         #endregion
 
         #region Private methods
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
-        }
         #endregion
     }
 }

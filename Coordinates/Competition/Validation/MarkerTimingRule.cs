@@ -1,8 +1,7 @@
 ﻿using Coordinates;
-using LoggerComponent;
-using System;
+using LoggingConnector;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Competition
 {
@@ -10,6 +9,7 @@ namespace Competition
     {
         #region Properties
 
+        private readonly ILogger<MarkerTimingRule> Logger = LogConnector.LoggerFactory.CreateLogger<MarkerTimingRule>();
         /// <summary>
         /// The list of timing definitions
         /// <para>each entry consists of two values</para>
@@ -31,23 +31,23 @@ namespace Competition
         public bool IsComplaintToRule(MarkerDrop marker)
         {
             bool isConform = false;
-            foreach ((int openAtMinute, int closeAtMinute) timingDefinition in TimingDefinitions)
+            foreach ((int openAtMinute, int closeAtMinute) in TimingDefinitions)
             {
                 bool confirmToCurrentTimingDefinition = true;
-                if (timingDefinition.openAtMinute < timingDefinition.closeAtMinute)
+                if (openAtMinute < closeAtMinute)
                 {
-                    if (marker.MarkerLocation.TimeStamp.Minute < timingDefinition.openAtMinute)
+                    if (marker.MarkerLocation.TimeStamp.Minute < openAtMinute)
                         confirmToCurrentTimingDefinition = false;
-                    if (marker.MarkerLocation.TimeStamp.Minute > timingDefinition.closeAtMinute)
+                    if (marker.MarkerLocation.TimeStamp.Minute > closeAtMinute)
                         confirmToCurrentTimingDefinition = false;
-                    if (marker.MarkerLocation.TimeStamp.Minute == timingDefinition.closeAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
+                    if (marker.MarkerLocation.TimeStamp.Minute == closeAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
                         confirmToCurrentTimingDefinition = false;
                 }
-                else if (timingDefinition.openAtMinute > timingDefinition.closeAtMinute)
+                else if (openAtMinute > closeAtMinute)
                 {
-                    if ((marker.MarkerLocation.TimeStamp.Minute < timingDefinition.openAtMinute) && (marker.MarkerLocation.TimeStamp.Minute > timingDefinition.closeAtMinute))
+                    if ((marker.MarkerLocation.TimeStamp.Minute < openAtMinute) && (marker.MarkerLocation.TimeStamp.Minute > closeAtMinute))
                         confirmToCurrentTimingDefinition = false;
-                    if (marker.MarkerLocation.TimeStamp.Minute == timingDefinition.closeAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
+                    if (marker.MarkerLocation.TimeStamp.Minute == closeAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
                         confirmToCurrentTimingDefinition = false;
                 }
                 isConform |= confirmToCurrentTimingDefinition;
@@ -76,10 +76,6 @@ namespace Competition
         #endregion
 
         #region Private methods
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
-        }
         #endregion
     }
 }

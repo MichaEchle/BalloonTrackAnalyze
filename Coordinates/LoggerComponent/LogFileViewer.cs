@@ -42,7 +42,7 @@ namespace LoggerComponent
         private delegate void HiLighterDelegate();
         private delegate void LogFileStringBuilderDelegate();
 
-        private Dictionary<string, Color> m_lookupTable = new Dictionary<string, Color>();
+        private Dictionary<string, Color> m_lookupTable = [];
         private Thread m_readerThread = null;
         private Thread m_hiLighterThread = null;
 
@@ -126,13 +126,13 @@ namespace LoggerComponent
         /// </summary>
         private void LogFileStringBuilder()
         {
-            FileStream fileStream = new FileStream(LogFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            StringBuilder logFileBuilder = new StringBuilder();
-            StreamReader reader = new StreamReader(fileStream);
+            FileStream fileStream = new(LogFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+            StringBuilder logFileBuilder = new();
+            StreamReader reader = new(fileStream);
             LogFileString = reader.ReadToEnd();
 
             // cuts the string from the logfile to the searchItem +- a specified count of lines
-            Regex regEx = new Regex(MaskedSearchItem, RegexOptions.Compiled);
+            Regex regEx = new(MaskedSearchItem, RegexOptions.Compiled);
             Match firstMatch = regEx.Match(LogFileString, 0);
             regEx = new Regex("\n", RegexOptions.RightToLeft);
             MatchCollection lineBreaksBefor = regEx.Matches(LogFileString, firstMatch.Index);
@@ -141,9 +141,9 @@ namespace LoggerComponent
                 startPosition = lineBreaksBefor[m_linesBefor].Index;
             System.Text.Encoding aCode = System.Text.Encoding.UTF8;
             byte[] content = aCode.GetBytes(LogFileString);
-            MemoryStream logStream = new MemoryStream(content);
+            MemoryStream logStream = new(content);
 
-            StreamReader reader2 = new StreamReader(logStream);
+            StreamReader reader2 = new(logStream);
             reader2.BaseStream.Seek(startPosition, SeekOrigin.Begin);
             m_searchString = reader2.ReadToEnd();
 
@@ -162,10 +162,14 @@ namespace LoggerComponent
         /// <returns></returns>
         public void ReadLog()
         {
-            m_readerThread = new Thread(new ThreadStart(ReadLogFile));
-            m_readerThread.Name = "Logfile Viewer Reader";
-            m_hiLighterThread = new Thread(new ThreadStart(HiLighter));
-            m_hiLighterThread.Name = "Logfile Viewer HiLighter";
+            m_readerThread = new Thread(new ThreadStart(ReadLogFile))
+            {
+                Name = "Logfile Viewer Reader"
+            };
+            m_hiLighterThread = new Thread(new ThreadStart(HiLighter))
+            {
+                Name = "Logfile Viewer HiLighter"
+            };
             m_readerThread.Start();
         }
 
@@ -232,10 +236,10 @@ namespace LoggerComponent
 
         private void CopyToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            AutoResetEvent copyToClipboardAutoResetEvent = new AutoResetEvent(false);
+            AutoResetEvent copyToClipboardAutoResetEvent = new(false);
             try
             {
-                Thread copyToClipboardThread = new Thread(delegate (object data)
+                Thread copyToClipboardThread = new(delegate (object data)
                 {
                     Clipboard.SetDataObject(data as string, true);
                     copyToClipboardAutoResetEvent.Set();

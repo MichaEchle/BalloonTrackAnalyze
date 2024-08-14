@@ -29,7 +29,7 @@ namespace CoordinateConverter
         public ObservableCollection<string> UTMZones
         {
             get; set;
-        } = new ObservableCollection<string>();
+        } = [];
 
         private double Latitude
         {
@@ -73,7 +73,7 @@ namespace CoordinateConverter
         private List<string> IGCFileLines
         {
             get; set;
-        } = new List<string>();
+        } = [];
 
 
         public MainWindow()
@@ -108,14 +108,12 @@ namespace CoordinateConverter
                 return;
             }
             string utmZone = CbUTMZone.Text;
-            int easting;
-            if (!int.TryParse(TbEastingInput.Text, out easting))
+            if (!int.TryParse(TbEastingInput.Text, out int easting))
             {
                 MessageBox.Show("Please enter a valid easting value");
                 return;
             }
-            int northing;
-            if (!int.TryParse(TbNorthingInput.Text, out northing))
+            if (!int.TryParse(TbNorthingInput.Text, out int northing))
             {
                 MessageBox.Show("Please enter a valid northing value");
                 return;
@@ -146,8 +144,7 @@ namespace CoordinateConverter
 
         private void BtConvertToUTM_Click(object sender, RoutedEventArgs e)
         {
-            double latitude;
-            if (!double.TryParse(TbLatitudeInput.Text, out latitude))
+            if (!double.TryParse(TbLatitudeInput.Text, out double latitude))
             {
                 if (!ParseAndConvertDegreeMinuteInput(TbLatitudeInput.Text, out latitude))
                 {
@@ -155,8 +152,7 @@ namespace CoordinateConverter
                     return;
                 }
             }
-            double longitude;
-            if (!double.TryParse(TbLongitudeInput.Text, out longitude))
+            if (!double.TryParse(TbLongitudeInput.Text, out double longitude))
             {
                 if (!ParseAndConvertDegreeMinuteInput(TbLongitudeInput.Text, out longitude))
                 {
@@ -268,19 +264,19 @@ namespace CoordinateConverter
 
         private void BtSelectIGCFile_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Multiselect = false;
-            openFileDialog.CheckFileExists = true;
-            openFileDialog.Filter = "igc File (*.igc)|*.igc";
+            OpenFileDialog openFileDialog = new()
+            {
+                Multiselect = false,
+                CheckFileExists = true,
+                Filter = "igc File (*.igc)|*.igc"
+            };
             if (openFileDialog.ShowDialog() ?? false)
             {
                 IGCFileLines.Clear();
-                using (StreamReader reader = new StreamReader(openFileDialog.FileName))
+                using StreamReader reader = new(openFileDialog.FileName);
+                while (!reader.EndOfStream)
                 {
-                    while (!reader.EndOfStream)
-                    {
-                        IGCFileLines.Add(reader.ReadLine());
-                    }
+                    IGCFileLines.Add(reader.ReadLine());
                 }
             }
             else
@@ -304,10 +300,9 @@ namespace CoordinateConverter
         {
             if (IGCFileLines.Count > 0)
             {
-                int lineNumber;
                 if (!string.IsNullOrEmpty(TbLineNumber.Text))
                 {
-                    if (!int.TryParse(TbLineNumber.Text, out lineNumber))
+                    if (!int.TryParse(TbLineNumber.Text, out int lineNumber))
                     {
                         TbLineContent.Text = string.Empty;
                         MessageBox.Show("Please enter a valid line number");

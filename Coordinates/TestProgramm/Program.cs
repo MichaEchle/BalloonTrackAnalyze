@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Diagnostics.Contracts;
-using System.Drawing.Design;
+﻿using Coordinates;
+using Coordinates.Parsers;
+using LoggingConnector;
+using Microsoft.Extensions.Logging;
+using System;
 using System.IO;
 using System.Linq;
-using Competition;
-using Competition.Penalties;
-using Coordinates;
-using Coordinates.Parsers;
-using CoordinateSharp;
-using OfficeOpenXml.FormulaParsing.Excel.Functions;
+using Microsoft.Extensions.Logging.Console;
 
 namespace TestProgramm
 {
@@ -20,26 +15,41 @@ namespace TestProgramm
 
         static void Main(string[] args)
         {
+            LogConnector.LoggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
+            //C:\Users\micechle\source\repos\MichaEchle\BalloonTrackAnalyze\TestTrack\5AD_f003_p002_l0.igc
+            //\..\..\..\..\..\TestTrack\5AD_f003_p002_l0.igc
 
-            //AccuracyEvaluation_GeodTest.CalculateDistances();
-            DirectoryInfo directoryInfo = new DirectoryInfo(@"C:\temp\E[HORB21]F[3]");
-            FileInfo[] files = directoryInfo.GetFiles("*.igc");
-            Track track;
-            List<Track> tracks = new List<Track>();
-            foreach (FileInfo fileInfo in files)
+            FileInfo fileInfo = new(@"..\..\..\..\..\TestTrack\Archive-E[germannationals2022]F[3]P[18]-BFUrwYGs212.igc");
+            Coordinates.Coordinate referenceCoordiante = new(15, 20, 10, 10, DateTime.Now); // define a reference coordinate (the values are random)
+            if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out Track track, referenceCoordiante)) // provide the reference coordinate to the parser
             {
-                if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out track))
-                {
-                    Console.WriteLine($"Failed to parse track '{fileInfo.FullName}'");
-                    continue;
-                }
-                tracks.Add(track);
+                Console.WriteLine("Failed to parse track");
             }
-            tracks = tracks.OrderBy(x => x.Pilot.PilotNumber).ToList();
-            tracks.RemoveAt(0);
-            PenaltyCalculation.CheckForCloseProximityAndCalculatePenaltyPoints(TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30), true, tracks);
-            Console.WriteLine("Nothing found");
+
+            var declaration = track.Declarations.First(x => x.GoalNumber == 1); // get the declaration for goal 1
+
+            var newDeclaredGoal = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 670000 + declaration.OrignalEastingDeclarationUTM, 59000 + declaration.OrignalNorhtingDeclarationUTM, declaration.DeclaredGoal.AltitudeGPS); // create a new coordinate using the original declarations
+
+            track.Declarations.Remove(declaration); // remove the old declaration
+            track.Declarations.Add(new Declaration(declaration.GoalNumber, newDeclaredGoal, declaration.PositionAtDeclaration, true, declaration.OrignalEastingDeclarationUTM, declaration.OrignalNorhtingDeclarationUTM)); // add a new one with correct declared goal.
+
+            Console.ReadLine();
+            //AccuracyEvaluation_GeodTest.CalculateDistances();
+            //DirectoryInfo directoryInfo = new DirectoryInfo(@"C:\temp\Donut_DM2022");
+            //FileInfo[] files = directoryInfo.GetFiles("*.igc");
+            //Track track;
+            //List<Track> tracks = new List<Track>();
+            //foreach (FileInfo fileInfo in files)
+            //{
+            //    if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out track))
+            //    {
+            //        Console.WriteLine($"Failed to parse track '{fileInfo.FullName}'");
+            //        continue;
+            //    }
+            //    tracks.Add(track);
+            //}
+            //tracks = tracks.OrderBy(x => x.Pilot.PilotNumber).ToList();
             //DonutTask donutTask = new DonutTask();
             //DeclarationToGoalDistanceRule declarationToGoalDistanceRule = new DeclarationToGoalDistanceRule();
             //declarationToGoalDistanceRule.SetupRule(2500, double.NaN);
@@ -73,17 +83,16 @@ namespace TestProgramm
             //    }
             //}
             //Montgolfiade_DM2022.CalculateFlight5();
-            Console.ReadLine();
         }
-    
 
 
 
-    private static string ToProperText(CoordinateSharp.CoordinatePart part)
-    {
-        string text = part.Degrees + "° " + part.Minutes + "ʹ " + Math.Round(part.Seconds, 2, MidpointRounding.AwayFromZero) + "ʺ";
-        return text;
+
+        private static string ToProperText(CoordinateSharp.CoordinatePart part)
+        {
+            string text = part.Degrees + "° " + part.Minutes + "ʹ " + Math.Round(part.Seconds, 2, MidpointRounding.AwayFromZero) + "ʺ";
+            return text;
+        }
+
     }
-
-}
 }

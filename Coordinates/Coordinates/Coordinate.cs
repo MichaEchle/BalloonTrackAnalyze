@@ -1,4 +1,5 @@
-﻿using LoggerComponent;
+﻿using LoggingConnector;
+using Microsoft.Extensions.Logging;
 using System;
 
 namespace Coordinates
@@ -6,32 +7,49 @@ namespace Coordinates
     public class Coordinate
     {
 
+        private readonly ILogger<Coordinate> Logger = LogConnector.LoggerFactory.CreateLogger<Coordinate>();
+
         /// <summary>
         /// The latitude or northing in decimal degrees
         /// <para>use negative values for southing</para>
         /// </summary>
-        public double Latitude { get; private set; }
+        public double Latitude
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// The longitude or easting in decimal degrees
         /// <para>use negative values for westing</para>
         /// </summary>
-        public double Longitude { get; private set; }
+        public double Longitude
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// The GPS altitude in meters
         /// </summary>
-        public double AltitudeGPS { get; private set; }
+        public double AltitudeGPS
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// The barometric altitude in meters
         /// </summary>
-        public double AltitudeBarometric { get; private set; }
+        public double AltitudeBarometric
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// The time stamp when this coordinate was create in GPS time
         /// </summary>
-        public DateTime TimeStamp { get; private set; }
+        public DateTime TimeStamp
+        {
+            get; private set;
+        }
 
 
         /// <summary>
@@ -55,10 +73,10 @@ namespace Coordinates
         {
             if (AltitudeBarometric is not 0 || AltitudeGPS is not 0)
             {
-                Logger.Log(LogSeverityType.Error, "Setting a default altitude is not allowed as the altitudes are not zero");
+                Logger?.LogError("Setting a default altitude is not allowed as the altitudes are not zero");
                 return false;
             }
-            AltitudeGPS= defautlAltitude;
+            AltitudeGPS = defautlAltitude;
             AltitudeBarometric = defautlAltitude;
             return true;
         }

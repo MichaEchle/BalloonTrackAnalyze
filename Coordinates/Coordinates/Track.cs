@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Coordinates
 {
@@ -10,37 +8,37 @@ namespace Coordinates
         /// <summary>
         /// The list of track points
         /// </summary>
-        public List<Coordinate> TrackPoints { get; private set; } = new List<Coordinate>();
+        public List<Coordinate> TrackPoints { get; private set; } = [];
 
         /// <summary>
         /// The list of declared goals
         /// </summary>
-        public List<Declaration> Declarations { get; private set; } = new List<Declaration>();
+        public List<Declaration> Declarations { get; private set; } = [];
 
         /// <summary>
         /// The list of marker drops
         /// </summary>
-        public List<MarkerDrop> MarkerDrops { get; private set; } = new List<MarkerDrop>();
+        public List<MarkerDrop> MarkerDrops { get; private set; } = [];
 
         /// <summary>
         /// The pilot which created this track
         /// </summary>
         public Pilot Pilot
         {
-            get;set;
+            get; set;
         }
 
         public Dictionary<string, string> AdditionalPropertiesFromIGCFile
         {
             get; private set;
-        } = new Dictionary<string, string>();
+        } = [];
 
         public Track()
         {
 
         }
 
-        public Declaration GetLatestDeclaration( int goalNumber)
+        public Declaration GetLatestDeclaration(int goalNumber)
         {
             List<Declaration> declarations = Declarations.Where(x => x.GoalNumber == goalNumber).ToList();
             if (declarations.Count == 0)

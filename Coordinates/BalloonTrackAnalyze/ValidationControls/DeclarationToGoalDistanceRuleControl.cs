@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
+﻿using BalloonTrackAnalyze.TaskControls;
 using Competition;
-using LoggerComponent;
 using Coordinates;
+using LoggingConnector;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Windows.Forms;
 
 namespace BalloonTrackAnalyze.ValidationControls
 {
@@ -15,10 +12,14 @@ namespace BalloonTrackAnalyze.ValidationControls
     {
         #region Properties
 
+        private readonly ILogger<DeclarationToGoalDistanceRuleControl> Logger = LogConnector.LoggerFactory.CreateLogger<DeclarationToGoalDistanceRuleControl>();
         /// <summary>
         /// The rule to be created or modified with this control
         /// </summary>
-        public DeclarationToGoalDistanceRule DeclarationToGoalDistanceRule { get; private set; }
+        public DeclarationToGoalDistanceRule DeclarationToGoalDistanceRule
+        {
+            get; private set;
+        }
 
 
         /// <summary>
@@ -98,18 +99,17 @@ namespace BalloonTrackAnalyze.ValidationControls
         private void btCreate_Click(object sender, EventArgs e)
         {
             bool isDataValid = true;
-            string functionErrorMessage = "Failed to create/modify declaration to goal distance rule: ";
             double minimumDistance = double.NaN;
             if (!string.IsNullOrWhiteSpace(tbMinimumDistance.Text))
             {
                 if (!double.TryParse(tbMinimumDistance.Text, out minimumDistance))
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Min. Distance '{tbMinimumDistance.Text}' as double");
+                    Logger?.LogError("Failed to create/modify declaration to goal distance rule: failed to parse Min. Distance '{minimumDistance}' as double", tbMinimumDistance.Text);
                     isDataValid = false;
                 }
                 if (minimumDistance < 0)
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Min. Distance '{minimumDistance}' must be greater than zero");
+                    Logger?.LogError("Failed to create/modify declaration to goal distance rule: Min. Distance must be greater than zero");
                     isDataValid = false;
                 }
 
@@ -122,12 +122,12 @@ namespace BalloonTrackAnalyze.ValidationControls
             {
                 if (!double.TryParse(tbMaximumDistance.Text, out maximumDistance))
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Max. Distance '{tbMinimumDistance.Text}' as double");
+                    Logger?.LogError("Failed to create/modify declaration to goal distance rule: failed to parse Max. Distance '{tbMinimumDistance.Text}' as double", tbMinimumDistance.Text);
                     isDataValid = false;
                 }
                 if (maximumDistance < 0)
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Max. Distance '{maximumDistance}' must be greater than zero");
+                    Logger?.LogError("Failed to create/modify declaration to goal distance rule: Max. Distance must be greater than zero");
                     isDataValid = false;
                 }
 
@@ -139,7 +139,7 @@ namespace BalloonTrackAnalyze.ValidationControls
             {
                 if (minimumDistance >= maximumDistance)
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Min. Distance '{minimumDistance}[m]' must be smaller than Max. Distance '{maximumDistance}[m]'");
+                    Logger?.LogError("Failed to create/modify declaration to goal distance rule: Min. Distance '{minimumDistance}[m]' must be smaller than Max. Distance '{maximumDistance}[m]'",minimumDistance,maximumDistance);
                     isDataValid = false;
                 }
             }
@@ -162,16 +162,6 @@ namespace BalloonTrackAnalyze.ValidationControls
             DataValid?.Invoke();
         }
 
-
-        /// <summary>
-        /// Logs a user message
-        /// </summary>
-        /// <param name="logSeverity">the severity of the message</param>
-        /// <param name="text">the message text</param>
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
-        }
         #endregion
     }
 }

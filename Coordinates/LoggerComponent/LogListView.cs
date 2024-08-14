@@ -121,7 +121,7 @@ namespace LoggerComponent
                 {
                     try
                     {
-                        FileInfo fi = new FileInfo(logFilePath);
+                        FileInfo fi = new(logFilePath);
                         logFilePath = fi.FullName;      // resolve logfile path to full name to be independent of "System.Environment.CurrentDirectory" which might change within the current thread (or process)
                     }
                     catch (Exception ex)
@@ -204,7 +204,7 @@ namespace LoggerComponent
 
         private void OpenLogfileToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            LogFileViewer logFileViewer = new LogFileViewer(LogFilePath);
+            LogFileViewer logFileViewer = new(LogFilePath);
             logFileViewer.Show(this);
             logFileViewer.ReadLog();
             string searchItem = "";
@@ -235,12 +235,12 @@ namespace LoggerComponent
             if (LogListViewer.SelectedItems.Count == 0)
                 return;
 
-            AutoResetEvent copyToClipboardAutoResetEvent = new AutoResetEvent(false);
+            AutoResetEvent copyToClipboardAutoResetEvent = new(false);
             try
             {
                 LogItem logItem = (LogItem)LogListViewer.SelectedItems[0].Tag;
 
-                Thread copyToClipboardThread = new Thread(delegate (object data)
+                Thread copyToClipboardThread = new(delegate (object data)
                 {
                     Clipboard.SetDataObject(data as string, true);
                     copyToClipboardAutoResetEvent.Set();
@@ -267,7 +267,7 @@ namespace LoggerComponent
         private void BFLogListView_Load(object sender, EventArgs e)
         {
             // prepare log icons for list view
-            ImageList logIcons = new ImageList();
+            ImageList logIcons = new();
             //foreach (LogIconType iconType in Enum.GetValues(typeof(LogIconType)))
             //    logIcons.Images.Add(new Icon(Assembly.GetExecutingAssembly().GetManifestResourceStream(string.Format("BFBase3.icons.{0}.ico", iconType))));
             logIcons.Images.Add(Properties.Resources.StatusInformation_exp_16x);
@@ -308,11 +308,13 @@ namespace LoggerComponent
                     backColor = Color.Yellow;
 
                 // create and fill a new list view item
-                ListViewItem listViewItem = new ListViewItem();
-                listViewItem.Text = logItem.TimeStamp.ToString();
-                listViewItem.Tag = logItem;
-                listViewItem.ForeColor = foreColor;
-                listViewItem.BackColor = backColor;
+                ListViewItem listViewItem = new()
+                {
+                    Text = logItem.TimeStamp.ToString(),
+                    Tag = logItem,
+                    ForeColor = foreColor,
+                    BackColor = backColor
+                };
                 listViewItem.SubItems.Add(logItem.Text);
                 listViewItem.SubItems.Add(logItem.Source.ToString());
                 if (logItem.Severity == LogSeverityType.Info)

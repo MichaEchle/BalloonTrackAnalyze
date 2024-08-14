@@ -30,7 +30,7 @@ namespace BLC2021
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BLC2021TaskSheet1));
-            this.logListView1 = new LoggerComponent.LogListView();
+            
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tbZoneTask1 = new System.Windows.Forms.TextBox();
@@ -101,15 +101,6 @@ namespace BLC2021
             this.tabPage3.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // logListView1
-            // 
-            this.logListView1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.logListView1.Location = new System.Drawing.Point(0, 293);
-            this.logListView1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.logListView1.Name = "logListView1";
-            this.logListView1.Size = new System.Drawing.Size(912, 200);
-            this.logListView1.TabIndex = 0;
             // 
             // tabControl1
             // 
@@ -789,7 +780,6 @@ namespace BLC2021
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(912, 493);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Controls.Add(this.logListView1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "BLC2021TaskSheet1";
             this.Text = "BLC2021TaskSheet1";
@@ -808,7 +798,6 @@ namespace BLC2021
 
         #endregion
 
-        private LoggerComponent.LogListView logListView1;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Button btSelectIGCFiles;

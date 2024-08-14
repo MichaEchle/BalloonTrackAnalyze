@@ -1,23 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
-using Coordinates;
-using LoggerComponent;
+﻿using BalloonTrackAnalyze.TaskControls;
 using Competition;
+using Coordinates;
+using LoggingConnector;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Windows.Forms;
 
 namespace BalloonTrackAnalyze.ValidationControls
 {
     public partial class MarkerToGoalDistanceRuleControl : UserControl
     {
         #region Properties
+        private readonly ILogger<MarkerToGoalDistanceRuleControl> Logger = LogConnector.LoggerFactory.CreateLogger<MarkerToGoalDistanceRuleControl>();
         /// <summary>
         /// The rule to be created or modified with this control
         /// </summary>
-        public MarkerToGoalDistanceRule MarkerToGoalDistanceRule { get; private set; }
+        public MarkerToGoalDistanceRule MarkerToGoalDistanceRule
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// Delegate for the DataValid event
@@ -97,18 +98,17 @@ namespace BalloonTrackAnalyze.ValidationControls
         private void btCreate_Click(object sender, EventArgs e)
         {
             bool isDataValid = true;
-            string functionErrorMessage = "Failed to create/modify marker to goal distance rule: ";
             double minimumDistance = double.NaN;
             if (!string.IsNullOrWhiteSpace(tbMinimumDistance.Text))
             {
                 if (!double.TryParse(tbMinimumDistance.Text, out minimumDistance))
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Min. Distance '{tbMinimumDistance.Text}' as double");
+                    Logger?.LogError("Failed to create/modify marker to goal distance rule: failed to parse Min. Distance '{tbMinimumDistance.Text}' as double",tbMinimumDistance.Text);
                     isDataValid = false;
                 }
                 if (minimumDistance < 0)
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Min. Distance '{minimumDistance}' must be greater than zero");
+                    Logger?.LogError("Failed to create/modify marker to goal distance rule: Min. Distance '{minimumDistance}' must be greater than zero", minimumDistance);
                     isDataValid = false;
                 }
 
@@ -121,12 +121,12 @@ namespace BalloonTrackAnalyze.ValidationControls
             {
                 if (!double.TryParse(tbMaximumDistance.Text, out maximumDistance))
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Max. Distance '{tbMinimumDistance.Text}' as double");
+                    Logger?.LogError("Failed to create/modify marker to goal distance rule: Failed to parse Max. Distance '{tbMinimumDistance.Text}' as double", tbMaximumDistance.Text);
                     isDataValid = false;
                 }
                 if (maximumDistance < 0)
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Max. Distance '{maximumDistance}' must be greater than zero");
+                    Logger?.LogError("Failed to create/modify marker to goal distance rule: Max. Distance '{maximumDistance}' must be greater than zero", maximumDistance);
                     isDataValid = false;
                 }
 
@@ -138,19 +138,18 @@ namespace BalloonTrackAnalyze.ValidationControls
             {
                 if (minimumDistance >= maximumDistance)
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Min. Distance '{minimumDistance}[m]' must be smaller than Max. Distance '{maximumDistance}[m]'");
+                    Logger?.LogError("Failed to create/modify marker to goal distance rule: Min. Distance '{minimumDistance}[m]' must be smaller than Max. Distance '{maximumDistance}[m]'", minimumDistance, maximumDistance);
                     isDataValid = false;
                 }
             }
-            int goalNumber;
-            if (!int.TryParse(tbGoalNumber.Text, out goalNumber))
+            if (!int.TryParse(tbGoalNumber.Text, out int goalNumber))
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Goal No. '{tbGoalNumber.Text}' as integer");
+                Logger?.LogError("Failed to create/modify marker to goal distance rule: failed to parse Goal No. '{tbGoalNumber.Text}' as integer", tbGoalNumber.Text);
                 isDataValid = false;
             }
             if (goalNumber <= 0)
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Goal No '{goalNumber}' must be greater than zero");
+                Logger?.LogError("Failed to create/modify marker to goal distance rule: Goal No. '{goalNumber}' must be greater than zero", goalNumber);
                 isDataValid = false;
             }
             if (isDataValid)
@@ -172,15 +171,6 @@ namespace BalloonTrackAnalyze.ValidationControls
             DataValid?.Invoke();
         }
 
-        /// <summary>
-        /// Logs a user message
-        /// </summary>
-        /// <param name="logSeverity">the severity of the message</param>
-        /// <param name="text">the message text</param>
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
-        }
         #endregion
     }
 }

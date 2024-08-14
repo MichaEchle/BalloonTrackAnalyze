@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
-using System.Data;
-using System.Text;
-using System.Windows.Forms;
+﻿using BalloonTrackAnalyze.ValidationControls;
 using Competition;
-using LoggerComponent;
 using Coordinates;
-using BalloonTrackAnalyze.ValidationControls;
+using LoggingConnector;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace BalloonTrackAnalyze.TaskControls
 {
@@ -16,15 +15,19 @@ namespace BalloonTrackAnalyze.TaskControls
     {
         #region Properties
 
+        private readonly ILogger<PieTierControl> Logger = LogConnector.LoggerFactory.CreateLogger<PieTierControl>();
         /// <summary>
         /// The pie tier to be created or modified by this control
         /// </summary>
-        public PieTask.PieTier Tier { get; private set; }
+        public PieTask.PieTier Tier
+        {
+            get; private set;
+        }
 
 
         public bool IsNewTier
         {
-            get;private set;
+            get; private set;
         }
         /// <summary>
         /// The delegate for the DataValid event
@@ -39,7 +42,7 @@ namespace BalloonTrackAnalyze.TaskControls
         /// <summary>
         /// Location for the user controls of the different rules
         /// </summary>
-        private Point RuleControlLocation = new Point(0, 0);
+        private Point RuleControlLocation = new(0, 0);
 
 
         #endregion
@@ -72,7 +75,7 @@ namespace BalloonTrackAnalyze.TaskControls
                 tbRadius.Text = Math.Round(Tier.Radius, 3, MidpointRounding.AwayFromZero).ToString();
                 rbRadiusMeter.Checked = true;
                 //rbInnerRadiusFeet.Checked = false;
-                cbIsReetranceAllowed.Checked = Tier.IsReentranceAllowed;
+                cbIsReetranceAllowed.Checked = Tier.IsReEntranceAllowed;
                 tbMultiplier.Text = Tier.Multiplier.ToString();
 
                 if (!double.IsNaN(Tier.LowerBoundary))
@@ -115,31 +118,27 @@ namespace BalloonTrackAnalyze.TaskControls
         private void btCreate_Click(object sender, EventArgs e)
         {
             bool isDataValid = true;
-            string functionErrorMessage = "Failed to create/modify pie tier: ";
-            int goalNumber;
-            if (!int.TryParse(tbGoalNumber.Text, out goalNumber))
+            if (!int.TryParse(tbGoalNumber.Text, out int goalNumber))
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Goal No. '{tbGoalNumber.Text}' as integer");
+                Logger?.LogError("Failed to create/modify pie tier: failed to parse Goal No. '{goalNumber}' as integer", tbGoalNumber.Text);
                 isDataValid = false;
             }
             if (goalNumber <= 0)
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Goal No. must be greater than 0");
+                Logger?.LogError("Failed to create/modify pie tier: Goal No. must be greater than 0");
                 isDataValid = false;
             }
-            double radius;
-            if (!double.TryParse(tbRadius.Text, out radius))
+            if (!double.TryParse(tbRadius.Text, out double radius))
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Radius '{tbRadius.Text}' as double");
+                Logger?.LogError("Failed to create/modify pie tier: failed to parse Radius '{radius}' as double", tbRadius.Text);
                 isDataValid = false;
             }
             if (rbRadiusFeet.Checked)
                 radius = CoordinateHelpers.ConvertToMeter(radius);
             bool isReentranceAllowed = cbIsReetranceAllowed.Checked;
-            double multiplier;
-            if (!double.TryParse(tbMultiplier.Text, out multiplier))
+            if (!double.TryParse(tbMultiplier.Text, out double multiplier))
             {
-                Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Multiplier '{tbMultiplier.Text}' as double");
+                Logger?.LogError("Failed to create/modify pie tier: failed to parse Multiplier '{multiplier}' as double", tbMultiplier.Text);
                 isDataValid = false;
             }
 
@@ -148,7 +147,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 if (!double.TryParse(tbLowerBoundary.Text, out lowerBoundary))
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Lower Boundary '{tbLowerBoundary.Text}' as double");
+                    Logger?.LogError("Failed to create/modify pie tier: failed to parse Lower Boundary '{lowerBoundary}' as double", tbLowerBoundary.Text);
                     isDataValid = false;
                 }
                 if (!double.IsNaN(lowerBoundary))
@@ -160,7 +159,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 if (!double.TryParse(tbUpperBoundary.Text, out upperBoundary))
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse Upper Boundary '{tbUpperBoundary.Text}' as double");
+                    Logger?.LogError("Failed to create/modify pie tier: failed to parse Upper Boundary '{upperBoundary}' as double", tbUpperBoundary.Text);
                     isDataValid = false;
                 }
                 if (!double.IsNaN(upperBoundary))
@@ -171,7 +170,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 if (lowerBoundary >= upperBoundary)
                 {
-                    Log(LogSeverityType.Error, functionErrorMessage + $"Lower Boundary '{lowerBoundary}[m]' must be smaller than Upper Boundary '{upperBoundary}[m]'");
+                    Logger?.LogError("Failed to create/modify pie tier: Lower Boundary '{lowerBoundary}' must be smaller than Upper Boundary '{upperBoundary}'", lowerBoundary, upperBoundary);
                     isDataValid = false;
                 }
             }
@@ -180,11 +179,11 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 if (IsNewTier)
                     Tier = new PieTask.PieTier();
-                List<IDeclarationValidationRules> declarationValidationRules = new List<IDeclarationValidationRules>();
+                List<IDeclarationValidationRules> declarationValidationRules = [];
                 foreach (object item in lbRules.Items)
                 {
                     if (item is IDeclarationValidationRules declarationValidationRule)
-                            declarationValidationRules.Add(declarationValidationRule);
+                        declarationValidationRules.Add(declarationValidationRule);
                 }
                 Tier.SetupPieTier(goalNumber, radius, isReentranceAllowed, multiplier, lowerBoundary, upperBoundary, declarationValidationRules);
                 tbGoalNumber.Text = "";
@@ -208,16 +207,6 @@ namespace BalloonTrackAnalyze.TaskControls
         }
 
         /// <summary>
-        /// Logs a user messages
-        /// </summary>
-        /// <param name="logSeverity">the severity of the message</param>
-        /// <param name="text">the message text</param>
-        private void Log(LogSeverityType logSeverity, string text)
-        {
-            Logger.Log(this, logSeverity, text);
-        }
-
-        /// <summary>
         /// Displays the corresponding user control for the selected rule
         /// </summary>
         /// <param name="sender">sender of the event</param>
@@ -228,7 +217,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 case "Declaration to Goal Distance":
                     {
-                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new DeclarationToGoalDistanceRuleControl();
+                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new();
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalDistanceRuleControl.Location = RuleControlLocation;
@@ -241,7 +230,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case "Declaration to Goal Height":
                     {
-                        DeclarationToGoalHeigthRuleControl declarationToGoalHeigthRuleControl = new DeclarationToGoalHeigthRuleControl();
+                        DeclarationToGoalHeightRuleControl declarationToGoalHeigthRuleControl = new();
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalHeigthRuleControl.Location = RuleControlLocation;
@@ -254,7 +243,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case "Goal to other Goals Distance":
                     {
-                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new GoalToOtherGoalsDistanceRuleControl();
+                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new();
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         goalToOtherGoalsDistanceRuleControl.Location = RuleControlLocation;
@@ -279,7 +268,7 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 case DeclarationToGoalDistanceRule declarationToGoalDistanceRule:
                     {
-                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new DeclarationToGoalDistanceRuleControl(declarationToGoalDistanceRule);
+                        DeclarationToGoalDistanceRuleControl declarationToGoalDistanceRuleControl = new(declarationToGoalDistanceRule);
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalDistanceRuleControl.Location = RuleControlLocation;
@@ -292,7 +281,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case DeclarationToGoalHeightRule declarationToGoalHeightRule:
                     {
-                        DeclarationToGoalHeigthRuleControl declarationToGoalHeigthRuleControl = new DeclarationToGoalHeigthRuleControl(declarationToGoalHeightRule);
+                        DeclarationToGoalHeightRuleControl declarationToGoalHeigthRuleControl = new(declarationToGoalHeightRule);
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         declarationToGoalHeigthRuleControl.Location = RuleControlLocation;
@@ -305,7 +294,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     break;
                 case GoalToOtherGoalsDistanceRule goalToOtherGoalsDistance:
                     {
-                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new GoalToOtherGoalsDistanceRuleControl(goalToOtherGoalsDistance);
+                        GoalToOtherGoalsDistanceRuleControl goalToOtherGoalsDistanceRuleControl = new(goalToOtherGoalsDistance);
                         SuspendLayout();
                         plRuleControl.Controls.Remove(plRuleControl.Controls["ruleControl"]);
                         goalToOtherGoalsDistanceRuleControl.Location = RuleControlLocation;
@@ -330,7 +319,7 @@ namespace BalloonTrackAnalyze.TaskControls
             GoalToOtherGoalsDistanceRule goalToOtherGoalsDistanceRule = (plRuleControl.Controls["ruleControl"] as GoalToOtherGoalsDistanceRuleControl).GoalToOtherGoalsDistanceRule;
             if (!lbRules.Items.Contains(goalToOtherGoalsDistanceRule))
                 lbRules.Items.Add(goalToOtherGoalsDistanceRule);
-            Logger.Log(this, LogSeverityType.Info, $"{goalToOtherGoalsDistanceRule} created/modified");
+            Logger?.LogInformation("'{goalToOtherGoalsDistanceRule}' created/modified", goalToOtherGoalsDistanceRule);
         }
 
         /// <summary>
@@ -338,10 +327,10 @@ namespace BalloonTrackAnalyze.TaskControls
         /// </summary>
         private void DeclarationToGoalHeigthRuleControl_DataValid()
         {
-            DeclarationToGoalHeightRule declarationToGoalHeightRule = (plRuleControl.Controls["ruleControl"] as DeclarationToGoalHeigthRuleControl).DeclarationToGoalHeightRule;
+            DeclarationToGoalHeightRule declarationToGoalHeightRule = (plRuleControl.Controls["ruleControl"] as DeclarationToGoalHeightRuleControl).DeclarationToGoalHeightRule;
             if (!lbRules.Items.Contains(declarationToGoalHeightRule))
                 lbRules.Items.Add(declarationToGoalHeightRule);
-            Logger.Log(this, LogSeverityType.Info, $"{declarationToGoalHeightRule} created/modified");
+            Logger?.LogInformation("'{declarationToGoalHeightRule}' created/modified", declarationToGoalHeightRule);
         }
 
         /// <summary>
@@ -352,7 +341,7 @@ namespace BalloonTrackAnalyze.TaskControls
             DeclarationToGoalDistanceRule declarationToGoalDistanceRule = (plRuleControl.Controls["ruleControl"] as DeclarationToGoalDistanceRuleControl).DeclarationToGoalDistanceRule;
             if (!lbRules.Items.Contains(declarationToGoalDistanceRule))
                 lbRules.Items.Add(declarationToGoalDistanceRule);
-            Logger.Log(this, LogSeverityType.Info, $"{declarationToGoalDistanceRule} created/modified");
+            Logger?.LogInformation("'{declarationToGoalDistanceRule}' created/modified", declarationToGoalDistanceRule);
         }
 
         /// <summary>

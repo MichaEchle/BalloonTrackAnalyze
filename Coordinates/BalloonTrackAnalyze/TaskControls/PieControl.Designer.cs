@@ -1,4 +1,7 @@
-﻿namespace BalloonTrackAnalyze.TaskControls
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+
+namespace BalloonTrackAnalyze.TaskControls
 {
     partial class PieControl
     {
