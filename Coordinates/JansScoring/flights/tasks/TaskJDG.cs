@@ -15,7 +15,7 @@ public abstract class TaskJDG : Task, ISingleMarkerTask
     public override string[] score(Track track)
     {
         string comment = "";
-
+        ISingleMarkerTask mathis;
         HandleMarker(track, out MarkerDrop markerDrop, out comment);
 
         List<double> distances = null;

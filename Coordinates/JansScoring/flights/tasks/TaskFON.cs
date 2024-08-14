@@ -26,7 +26,7 @@ public abstract class TaskFON : Task
 
         if (!track.GetAllGoalNumbers().Contains(declerationNumber()))
         {
-            return new[] { "No Result", $"No Declaration in {declerationNumber()}" };
+            return new[] { "No Result", $"No declaration in {declerationNumber()}" };
         }
 
         Declaration declaration =
@@ -34,23 +34,23 @@ public abstract class TaskFON : Task
 
         if (declaration.DeclaredGoal == null || declaration.PositionAtDeclaration == null)
         {
-            return new[] { "No Result", $"No valid Declaration in {declerationNumber()}" };
+            return new[] { "No Result", $"No valid declaration in {declerationNumber()}" };
         }
 
         if (!track.GetAllMarkerNumbers().Contains(markerDropNumber()))
         {
-            return new[] { "No Result", $"No Marker in {markerDropNumber()}" };
+            return new[] { "No Result", $"No marker in {markerDropNumber()}" };
         }
 
         MarkerDrop markerDrop = track.MarkerDrops.FindLast(drop => drop.MarkerNumber == markerDropNumber());
         if (markerDrop == null)
         {
-            return new[] { "No Result", $"No Marker drops at slot {markerDropNumber()} | " };
+            return new[] { "No Result", $"No marker drops at slot {markerDropNumber()} | " };
         }
 
         if (markerDrop.MarkerLocation == null)
         {
-            return new[] { "No Result", $"No valid Marker in slot {markerDropNumber()}" };
+            return new[] { "No Result", $"No valid marker in slot {markerDropNumber()}" };
         }
 
         if (track.Declarations.Count > maxDeclerations())
@@ -82,9 +82,10 @@ public abstract class TaskFON : Task
         List<double> distanceToAllGoals = CalculationHelper.calculate2DDistanceToAllGoals(declaration.DeclaredGoal,
             goals.ToArray(),
             flight.getCalculationType());
-        var distanceToDeclarationPoint = CalculationHelper.Calculate2DDistance(declaration.DeclaredGoal,
+        double distanceToDeclarationPoint = CalculationHelper.Calculate2DDistance(declaration.DeclaredGoal,
             declaration.PositionAtDeclaration,
             flight.getCalculationType());
+
         if (distanceToDeclarationPoint < minDistanceToDeclerationPoint())
         {
             comment += $"Goal is to close to dec. point {distanceToDeclarationPoint}m | ";
@@ -99,13 +100,7 @@ public abstract class TaskFON : Task
         }
 
 
-        if ((flight.useGPSAltitude()
-                ? Math.Abs(declaration.PositionAtDeclaration.AltitudeGPS - declaration.DeclaredGoal.AltitudeGPS) < minHeightDifferenceInMetersToDelcearedPoint()
-                : Math.Abs(declaration.PositionAtDeclaration.AltitudeBarometric - declaration.DeclaredGoal.AltitudeBarometric) < minHeightDifferenceInMetersToDelcearedPoint()))
-        {
-            var difference = flight.useGPSAltitude() ? Math.Abs(declaration.PositionAtDeclaration.AltitudeGPS - declaration.DeclaredGoal.AltitudeGPS) : Math.Abs(declaration.PositionAtDeclaration.AltitudeBarometric - declaration.DeclaredGoal.AltitudeBarometric);
-            comment += $"Declared with to less height difference. {difference}m | ";
-        }
+
 
         if (declaration.PositionAtDeclaration.TimeStamp.AddSeconds(minTimeInSecondsToDeclarationPoint()) >
             markerDrop.MarkerTime)
@@ -113,7 +108,7 @@ public abstract class TaskFON : Task
             TimeSpan timeSpan =
                 declaration.PositionAtDeclaration.TimeStamp.AddSeconds(minTimeInSecondsToDeclarationPoint()) -
                 markerDrop.MarkerTime;
-            comment += $"Goal was declared to late for markerdrop. [{timeSpan.TotalSeconds}s to close] | ";
+            comment += $"Goal was declared to late for marker drop. [{timeSpan.TotalSeconds}s to close] | ";
         }
 
         result = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, markerDrop.MarkerLocation,

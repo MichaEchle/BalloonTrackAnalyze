@@ -17,7 +17,7 @@ public abstract class Task
     /// <summary>
     /// Only for scoring perpurse
     /// </summary>
-    protected Flight flight;
+    public Flight flight;
 
 
     public abstract int number();
