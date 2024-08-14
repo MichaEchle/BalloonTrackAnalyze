@@ -1,6 +1,7 @@
 ﻿using Competition;
 using Competition.Validation;
 using Coordinates;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using System;
@@ -9,7 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Net.WebRequestMethods;
 
 namespace BLC2021
 {
@@ -18,9 +18,9 @@ namespace BLC2021
 
         #region Properties
 
-        private readonly ILogger<BLC2021TaskSheet2> Logger;
+        private readonly ILogger<BLC2021TaskSheet2> Logger = LogConnector.LoggerFactory.CreateLogger<BLC2021TaskSheet2>();
 
-        private readonly PilotMapping PilotMapping;
+        private readonly PilotMapping PilotMapping = new();
 
         private bool BatchMode
         {
@@ -77,7 +77,6 @@ namespace BLC2021
         {
             BatchMode = batchMode;
             InitializeComponent();
-
             Text = ToString();
 
         }
@@ -385,7 +384,7 @@ namespace BLC2021
                             if (!double.IsNaN(result_Task4_1) && !double.IsNaN(result_Task4_2) && !double.IsNaN(result_Task4_3))
                             {
                                 result_Task4 = result_Task4_1 + result_Task4_2 + result_Task4_3;
-                                Logger?.LogInformation("Calculated result of '{result_Task4}m' ({result_Task4_1} + {result_Task4_2} + {result_Task4_3}) at Task 4 for Pilot No '{pilotNumber}'", Math.Round(result_Task4, 0, MidpointRounding.AwayFromZero), $"{result_Task4_1: 0.#}", $"{result_Task4_2: 0.#}",$"{result_Task4_3:0.#}", track.Pilot.PilotNumber);
+                                Logger?.LogInformation("Calculated result of '{result_Task4}m' ({result_Task4_1} + {result_Task4_2} + {result_Task4_3}) at Task 4 for Pilot No '{pilotNumber}'", Math.Round(result_Task4, 0, MidpointRounding.AwayFromZero), $"{result_Task4_1: 0.#}", $"{result_Task4_2: 0.#}", $"{result_Task4_3:0.#}", track.Pilot.PilotNumber);
                             }
                             else
                             {
@@ -449,7 +448,7 @@ namespace BLC2021
                         wsResults.Cells.AutoFitColumns();
                         package.Save();
                     }
-                    Logger?.LogInformation("Successfully created or modified internal results file '{resultsFileInternal.Name}'",resultsFileInternal.Name);
+                    Logger?.LogInformation("Successfully created or modified internal results file '{resultsFileInternal.Name}'", resultsFileInternal.Name);
                     FileInfo resultsFileProvisional = new(Path.Combine(OutputDirectory.FullName, ResultsFileNameProvisional));
                     using (ExcelPackage package = new(resultsFileProvisional))
                     {
