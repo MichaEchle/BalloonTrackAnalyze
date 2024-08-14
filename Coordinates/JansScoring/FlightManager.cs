@@ -134,6 +134,8 @@ public class FlightManager
 
         foreach (Track track in tracks)
         {
+            Console.WriteLine($"Start Loading Track for Pilot {track.Pilot.PilotNumber}.");
+
             string comment = comments.GetValueOrDefault(track.Pilot, "");
             comments.Remove(track.Pilot);
 

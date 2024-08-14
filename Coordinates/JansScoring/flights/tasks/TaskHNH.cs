@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace JansScoring.flights;
+namespace JansScoring.flights.tasks;
 
 public abstract class TaskHNH : Task
 {

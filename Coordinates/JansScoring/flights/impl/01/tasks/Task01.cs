@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using JansScoring.flights.tasks;
 using System;
 
 namespace JansScoring.flights.impl._01.tasks;

@@ -18,7 +18,7 @@ public class Task02 : TaskFON
 
     public override bool ScoringChecks(Track track, ref string comment)
     {
-        DeclarationChecks.LoadDeclaration(track, DeclarationGoal(), out Declaration declaration, ref comment );
+        DeclarationChecks.LoadDeclaration(track, DeclarationNumber(), out Declaration declaration, ref comment );
         if (declaration == null)
         {
             return true;
@@ -28,7 +28,7 @@ public class Task02 : TaskFON
         {
             return true;
         }
-        DeclarationChecks.CheckMaxRedecleration(track, DeclarationGoal(), 3, ref comment);
+        DeclarationChecks.CheckMaxReDeclaration(track, DeclarationNumber(), 3, ref comment);
         DeclarationChecks.CheckHeightBetweenDeclarationPointAndDeclaredGoal(Flight, declaration, CoordinateHelpers.ConvertToMeter(1000), ref comment);
         DeclarationChecks.CheckIfDeclarationWasWithDelayBeforeMarkerDrop(declaration, markerDrop, 300, ref comment);
         MarkerChecks.CheckScoringPeriode(this, markerDrop, ref comment);
@@ -39,7 +39,7 @@ public class Task02 : TaskFON
     {
         return new DateTime(2024,08,14,18,00,00);
     }
-    protected override int DeclarationGoal()
+    protected override int DeclarationNumber()
     {
         return 1;
     }

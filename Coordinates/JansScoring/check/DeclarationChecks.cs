@@ -35,7 +35,7 @@ public class DeclarationChecks
         }
     }
 
-    public static void CheckMaxRedecleration(Track track, int goalNumber, int maxRedeclaration, ref string comment)
+    public static void CheckMaxReDeclaration(Track track, int goalNumber, int maxRedeclaration, ref string comment)
     {
         if (track.Declarations.FindAll(declaration1 => declaration1.GoalNumber == goalNumber).Count > maxRedeclaration)
         {
@@ -57,7 +57,7 @@ public class DeclarationChecks
         if (heightDifference < minHeightDifferenceInMetersToDeclaredPoint)
         {
             comment +=
-                $"Declared with to less height difference. {NumberHelper.formatDoubleToStringAndRound(heightDifference)}m difference | ";
+                $"Declared with to less height difference. {NumberHelper.formatDoubleToStringAndRound(heightDifference)}m difference  | Need: {NumberHelper.formatDoubleToStringAndRound(minHeightDifferenceInMetersToDeclaredPoint)}m| ";
         }
     }
 

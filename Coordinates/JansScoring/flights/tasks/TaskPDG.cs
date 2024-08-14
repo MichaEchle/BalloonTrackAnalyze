@@ -2,13 +2,17 @@
 using JansScoring.check;
 using System;
 
-namespace JansScoring.flights;
+namespace JansScoring.flights.tasks;
 
-public abstract class TaskFON : Task
+public abstract class TaskPDG : Task
 {
-    protected TaskFON(Flight flight) : base(flight)
+    public TaskPDG(Flight flight) : base(flight)
     {
     }
+
+    public abstract int MarkerNumber();
+    public abstract int DeclarationNumber();
+
 
     public override void Score(Track track, ref string comment, out double result)
     {
@@ -31,9 +35,6 @@ public abstract class TaskFON : Task
 
         result = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, markerDrop.MarkerLocation, Flight.useGPSAltitude(), Flight.getCalculationType());
     }
-
-    protected abstract int DeclarationNumber();
-    protected abstract int MarkerNumber();
 
     public override Coordinate[] Goals()
     {
