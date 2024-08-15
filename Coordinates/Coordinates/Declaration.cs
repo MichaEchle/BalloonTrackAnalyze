@@ -31,6 +31,11 @@
             get; private set;
         }
 
+        public bool HasPilotDelaredGoalAltitude
+        {
+            get; private set;
+        }
+
         /// <summary>
         /// The position at which the goal has been declared
         /// </summary>
