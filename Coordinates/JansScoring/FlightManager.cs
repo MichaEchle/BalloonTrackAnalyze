@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Threading;
 using Console = System.Console;
 using Task = JansScoring.flights.Task;
 
@@ -22,7 +23,7 @@ public class FlightManager
     private Dictionary<int, Flight> flights = new();
     private PZManager pzManager;
 
-    public static bool RUN_PZ_CHECKS = false;
+    public static bool RUN_PZ_CHECKS = true;
     public static bool RUN_DESPIKER = false;
 
     public void register()
@@ -107,25 +108,6 @@ public class FlightManager
         Dictionary<Pilot, string> comments = new();
 
 
-        if (despiker)
-        {
-            Console.WriteLine($"Start Despiking {tracks.Count} Tracks");
-            foreach (Track track in tracks)
-            {
-                Console.WriteLine($"Start despike for pilot {track.Pilot.PilotNumber}");
-                int spikes = DeSpiker.despike(track, flight.useGPSAltitude());
-                if (spikes > 0)
-                {
-                    comments.Add(track.Pilot, $"Removed {spikes} Spikes | ");
-                }
-
-                Console.WriteLine($"Despiked {spikes} fro pilot {track.Pilot.PilotNumber}");
-            }
-
-            Console.WriteLine($"Finish Despiking {tracks.Count} Tracks");
-        }
-
-
         List<Coordinate> goals = new();
         foreach (Task task in flight.getTasks())
         {
@@ -138,102 +120,149 @@ public class FlightManager
             }
         }
 
+        Thread[] generateThread = new Thread[tracks.Count];
+        int currentThread = 0;
+        Object lockObject = new();
+        int finishThreads = 0;
         foreach (Track track in tracks)
         {
-            Console.WriteLine($"Start Loading Track for Pilot {track.Pilot.PilotNumber}.");
-
-            string comment = comments.GetValueOrDefault(track.Pilot, "");
-            comments.Remove(track.Pilot);
-
-            FileInfo trackPath = track.trackPath;
-            if (trackPath != null)
+            generateThread[currentThread] = new Thread(() =>
             {
-                long fileSize = trackPath.Length / 1000;
-                if (fileSize < 50)
+                lock (lockObject)
                 {
-                    comment += "The Trackfile is smaller than 50kb and will be ignored in scoring | ";
+                    comments.Remove(track.Pilot);
                 }
-            }
 
-            if (!TrackHelpers.CheckLaunchConstraints(track, flight.useGPSAltitude(), flight.getStartOfLaunchPeriode(),
-                    flight.getStartOfLaunchPeriode().AddMinutes(flight.launchPeriode()), goals,
-                    flight.distanceToAllGoals(), double.NaN,
-                    out Coordinate launchPoint,
-                    out bool launchInStartPeriod, out List<double> distanceToGoals, out List<bool> distanceToGoalsOk))
-            {
-                comment += "Failed to check launch constraints | ";
-                comments.Add(track.Pilot, comment);
-                continue;
-            }
+                string comment = comments.GetValueOrDefault(track.Pilot, "");
 
-            String decNumbers = "";
-
-            foreach (Declaration trackDeclaration in track.Declarations)
-            {
-                decNumbers += trackDeclaration.GoalNumber + ", ";
-            }
-
-            if (DEBUG)
-            {
-                comment += $"Found Declarations: {track.Declarations.Count} ({decNumbers}) | ";
-            }
-
-            String markNumbers = "";
-
-            foreach (MarkerDrop markerDrop in track.MarkerDrops)
-            {
-                markNumbers += markerDrop.MarkerNumber + ", ";
-            }
-
-            if (DEBUG)
-            {
-                comment += $"Found Markers: {track.MarkerDrops.Count} ({markNumbers}) | ";
-            }
-
-            if (checkPZ)
-            {
-                comment += pzManager.checkPZ(flight, track);
-            }
-
-
-            if (!launchInStartPeriod)
-            {
-                if (flight.getStartOfLaunchPeriode() > launchPoint.TimeStamp)
+                if (despiker)
                 {
-                    TimeSpan launchPointTimeSpan = flight.getStartOfLaunchPeriode() - launchPoint.TimeStamp;
-                    comment +=
-                        $"Pilot started before the launch periode [{launchPointTimeSpan.ToString(@"hh\:mm\:ss")}]. Started {launchPoint.TimeStamp:dd.MM.yy HH:mm:ss} UTC | ";
-                }
-                else
-                {
-                    TimeSpan launchPointTimeSpan = launchPoint.TimeStamp -
-                                                   flight.getStartOfLaunchPeriode().AddMinutes(flight.launchPeriode());
-                    comment +=
-                        $"Pilot started after the launch periode [{launchPointTimeSpan.ToString(@"hh\:mm\:ss")}]. Started {launchPoint.TimeStamp:dd.MM.yy HH:mm:ss} UTC | ";
-                }
-            }
-
-
-            if (distanceToGoalsOk.Contains(false))
-            {
-                if (goals.Count > 0)
-                {
-                    for (int index = 1; index <= distanceToGoalsOk.Count; index++)
+                    Console.WriteLine($"Start despike for pilot {track.Pilot.PilotNumber}");
+                    int spikes = DeSpiker.despike(track, flight.useGPSAltitude());
+                    if (spikes > 0)
                     {
-                        bool ok = distanceToGoalsOk[index - 1];
-                        if (ok)
-                        {
-                            continue;
-                        }
+                        comment += $"Removed {spikes} Spikes | ";
+                    }
+                    Console.WriteLine($"Despiked {spikes} fro pilot {track.Pilot.PilotNumber}");
+                }
+                Console.WriteLine($"Start Loading Track for Pilot {track.Pilot.PilotNumber}.");
 
-                        comment +=
-                            $"Pilot started to close to goal {index} ({NumberHelper.formatDoubleToStringAndRound(distanceToGoals[index - 1])})  | ";
+                FileInfo trackPath = track.trackPath;
+                if (trackPath != null)
+                {
+                    long fileSize = trackPath.Length / 1000;
+                    if (fileSize < 50)
+                    {
+                        comment += "The Trackfile is smaller than 50kb and will be ignored in scoring | ";
                     }
                 }
-            }
 
-            comments.Add(track.Pilot, (comment.Length > 0 ? comment.Substring(0, comment.Length - 3) : comment));
+                if (!TrackHelpers.CheckLaunchConstraints(track, flight.useGPSAltitude(),
+                        flight.getStartOfLaunchPeriode(),
+                        flight.getStartOfLaunchPeriode().AddMinutes(flight.launchPeriode()), goals,
+                        flight.distanceToAllGoals(), double.NaN,
+                        out Coordinate launchPoint,
+                        out bool launchInStartPeriod, out List<double> distanceToGoals,
+                        out List<bool> distanceToGoalsOk))
+                {
+                    comment += "Failed to check launch constraints | ";
+                    lock (lockObject)
+                    {
+                        comments.Add(track.Pilot, comment);
+                        finishThreads++;
+                        Console.WriteLine(
+                            $"Finish generating Flight Report for Pilot {track.Pilot.PilotNumber}. [{finishThreads}/{tracks.Count}]");
+                    }
+
+                    return;
+                }
+
+                String decNumbers = "";
+
+                foreach (Declaration trackDeclaration in track.Declarations)
+                {
+                    decNumbers += trackDeclaration.GoalNumber + ", ";
+                }
+
+                if (DEBUG)
+                {
+                    comment += $"Found Declarations: {track.Declarations.Count} ({decNumbers}) | ";
+                }
+
+                String markNumbers = "";
+
+                foreach (MarkerDrop markerDrop in track.MarkerDrops)
+                {
+                    markNumbers += markerDrop.MarkerNumber + ", ";
+                }
+
+                if (DEBUG)
+                {
+                    comment += $"Found Markers: {track.MarkerDrops.Count} ({markNumbers}) | ";
+                }
+
+
+                if (!launchInStartPeriod)
+                {
+                    if (flight.getStartOfLaunchPeriode() > launchPoint.TimeStamp)
+                    {
+                        TimeSpan launchPointTimeSpan = flight.getStartOfLaunchPeriode() - launchPoint.TimeStamp;
+                        comment +=
+                            $"Pilot started before the launch periode [{launchPointTimeSpan.ToString(@"hh\:mm\:ss")}]. Started {launchPoint.TimeStamp:dd.MM.yy HH:mm:ss} UTC | ";
+                    }
+                    else
+                    {
+                        TimeSpan launchPointTimeSpan = launchPoint.TimeStamp -
+                                                       flight.getStartOfLaunchPeriode()
+                                                           .AddMinutes(flight.launchPeriode());
+                        comment +=
+                            $"Pilot started after the launch periode [{launchPointTimeSpan.ToString(@"hh\:mm\:ss")}]. Started {launchPoint.TimeStamp:dd.MM.yy HH:mm:ss} UTC | ";
+                    }
+                }
+
+
+                if (distanceToGoalsOk.Contains(false))
+                {
+                    if (goals.Count > 0)
+                    {
+                        for (int index = 1; index <= distanceToGoalsOk.Count; index++)
+                        {
+                            bool ok = distanceToGoalsOk[index - 1];
+                            if (ok)
+                            {
+                                continue;
+                            }
+
+                            comment +=
+                                $"Pilot started to close to goal {index} ({NumberHelper.formatDoubleToStringAndRound(distanceToGoals[index - 1])})  | ";
+                        }
+                    }
+                }
+
+                if (checkPZ)
+                {
+                    comment += pzManager.CheckPz(flight, track);
+                }
+
+                lock (lockObject)
+                {
+                    comments.Add(track.Pilot,
+                        (comment.Length > 0 ? comment.Substring(0, comment.Length - 3) : comment));
+                    finishThreads++;
+                    Console.WriteLine(
+                        $"Finish generating Flight Report for Pilot {track.Pilot.PilotNumber}. [{finishThreads}/{tracks.Count}]");
+                }
+            });
+            generateThread[currentThread].Start();
+            currentThread++;
         }
+
+        foreach (Thread thread in generateThread)
+        {
+            thread.Join();
+        }
+
+        var orderedComments = comments.OrderBy(pair => pair.Key.PilotNumber);
 
         string path = $"{scoringFolder}\\f{flight.getFlightNumber()}_FlightReport_{scoringTime}.csv";
 
@@ -241,7 +270,7 @@ public class FlightManager
         {
             writer1.WriteLine($"PilotNumber;Comment");
 
-            foreach ((Pilot key, string value) in comments)
+            foreach ((Pilot key, string value) in orderedComments)
             {
                 writer1.WriteLine($"{key.PilotNumber};{value}");
             }

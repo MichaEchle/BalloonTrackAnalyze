@@ -32,4 +32,16 @@ public class RedPZ : PZ
 
         return false;
     }
+
+    public double calculatePenalty(Flight flight, Coordinate entry, Coordinate exit, out double percentage)
+    {
+        double distanceHorizontal = CalculationHelper.Calculate2DDistance(entry, exit, flight.getCalculationType());
+        double averageHeigtDiffrence = Math.Abs((flight.useGPSAltitude()
+            ? entry.AltitudeGPS + exit.AltitudeGPS
+            : entry.AltitudeBarometric + exit.AltitudeBarometric) / 2);
+        double horizontalPercentage = (distanceHorizontal / radius * 2) * 100;
+        double verticalPercentage = 100 - ((averageHeigtDiffrence / height) * 100);
+        percentage = (verticalPercentage + horizontalPercentage) / 2;
+        return percentage * 500;
+    }
 }
