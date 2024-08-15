@@ -30,22 +30,8 @@ namespace Shapes
         {
             if (!Circle.IsWithin(coordinate))
                 return false;
-            return IsWithinAltitudeBoundary(coordinate, useGPSAltitude);
+            return base.IsWithinAltitudeBoundary(coordinate, useGPSAltitude,LowerBoundary,UpperBoundary);
         }
 
-        private bool IsWithinAltitudeBoundary(Coordinate coordinate, bool useGPSAltitude)
-        {
-            double altitude = coordinate.AltitudeGPS;
-            if (!useGPSAltitude)
-                altitude = coordinate.AltitudeBarometric;
-
-            bool isWithin = true;
-            if (!double.IsNaN(LowerBoundary))
-                isWithin &= altitude >= LowerBoundary;
-            if (!double.IsNaN(UpperBoundary))
-                isWithin &= altitude <= UpperBoundary;
-            return isWithin;
-
-        }
     }
 }

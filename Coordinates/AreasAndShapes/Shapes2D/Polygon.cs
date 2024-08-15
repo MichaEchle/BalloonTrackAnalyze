@@ -38,7 +38,7 @@ namespace Shapes
                     if (GetPolygonPointWrappedAround(index + 1).Latitude <= coordinate.Latitude)
                     {
                         if (IsLeft(GetPolygonPointWrappedAround(index), GetPolygonPointWrappedAround(index + 1), coordinate) < 0)
-                            windingNumber++;
+                            windingNumber--;
                     }
                 }
             }
