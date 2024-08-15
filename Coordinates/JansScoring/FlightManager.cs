@@ -2,6 +2,7 @@
 using Coordinates.Parsers;
 using JansScoring.flights;
 using JansScoring.flights.impl._01;
+using JansScoring.flights.impl._02;
 using JansScoring.pz_rework;
 using LoggerComponent;
 using System;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using Console = System.Console;
 using Task = JansScoring.flights.Task;
 
@@ -20,13 +22,17 @@ public class FlightManager
     private Dictionary<int, Flight> flights = new();
     private PZManager pzManager;
 
+    public static bool RUN_PZ_CHECKS = false;
+    public static bool RUN_DESPIKER = false;
+
     public void register()
     {
         pzManager = new PZManager();
 
         flights.Add(1, new Flight01());
+        flights.Add(2, new Flight02());
 
-        scoreFlight(1);
+        scoreFlight(2);
     }
 
 
@@ -54,7 +60,7 @@ public class FlightManager
         string scoringTime = DateTime.Now.ToString("MMddHHmmss");
 
         Console.WriteLine("Start generate Flight Report");
-        generateFlightReport(trackList, flight, scoringFolder, scoringTime, false);
+        generateFlightReport(trackList, flight, scoringFolder, scoringTime, RUN_DESPIKER, RUN_PZ_CHECKS);
         Console.WriteLine("Finish generate Flight Report");
         foreach (Task task in flight.getTasks())
         {
@@ -96,7 +102,7 @@ public class FlightManager
     }
 
     private void generateFlightReport(List<Track> tracks, Flight flight, DirectoryInfo scoringFolder,
-        string scoringTime, bool despiker)
+        string scoringTime, bool despiker, bool checkPZ)
     {
         Dictionary<Pilot, string> comments = new();
 
@@ -184,7 +190,10 @@ public class FlightManager
                 comment += $"Found Markers: {track.MarkerDrops.Count} ({markNumbers}) | ";
             }
 
-            comment += pzManager.checkPZ(flight, track);
+            if (checkPZ)
+            {
+                comment += pzManager.checkPZ(flight, track);
+            }
 
 
             if (!launchInStartPeriod)

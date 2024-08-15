@@ -47,7 +47,8 @@ namespace Coordinates
         /// </summary>
         public Coordinate PositionAtDeclaration
         {
-            get; private set;
+            get;
+            set;
         }
 
         /// <summary>
@@ -64,6 +65,11 @@ namespace Coordinates
             HasPilotDelaredGoalAltitude = hasPilotDelaredGoalAltitude;
             OrignalEastingDeclarationUTM = orignalEastingDeclarationUTM;
             OrignalNorhtingDeclarationUTM = orignalNorhtingDeclarationUTM;
+        }
+
+        public Declaration Clone()
+        {
+            return new Declaration(GoalNumber, DeclaredGoal, PositionAtDeclaration, HasPilotDelaredGoalAltitude, OrignalEastingDeclarationUTM, OrignalNorhtingDeclarationUTM);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Coordinates;
+using JansScoring.calculation;
 using JansScoring.flights;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,4 +42,28 @@ public class MarkerChecks
         }
     }
 
+    public static void CheckMin2DDistanceBetweenMarkers(Flight flight, MarkerDrop markerDropA, MarkerDrop markerDropB,
+        int minDistanceInMeters, ref string comment)
+    {
+        double distance = CalculationHelper.Calculate2DDistance(markerDropA.MarkerLocation,
+            markerDropB.MarkerLocation,
+            flight.getCalculationType());
+        if (distance < minDistanceInMeters)
+        {
+            comment +=
+                $"The distance between marker {markerDropA.MarkerNumber} and Marker {markerDropB.MarkerNumber} is too short. [{distance}m / {minDistanceInMeters}m] | ";
+        }
+    }
+    public static void CheckMax2DDistanceBetweenMarkers(Flight flight, MarkerDrop markerDropA, MarkerDrop markerDropB,
+        int maxDistanceInMeters, ref string comment)
+    {
+        double distance = CalculationHelper.Calculate2DDistance(markerDropA.MarkerLocation,
+            markerDropB.MarkerLocation,
+            flight.getCalculationType());
+        if (distance > maxDistanceInMeters)
+        {
+            comment +=
+                $"The distance between marker {markerDropA.MarkerNumber} and Marker {markerDropB.MarkerNumber} is too long. [{distance}m / {maxDistanceInMeters}m] | ";
+        }
+    }
 }

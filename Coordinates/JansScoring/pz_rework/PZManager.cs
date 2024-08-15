@@ -73,7 +73,7 @@ public class PZManager
                 foreach (PZInfrigement pzInfrigement in infrigements)
                 {
                     infigement += pzInfrigement.infrigementBegin + " " + pzInfrigement.infrigementEnd + " " +
-                                  pzInfrigement.distance + "m | ";
+                                  NumberHelper.formatDoubleToStringAndRound(pzInfrigement.distance) + "m | ";
                 }
 
                 comment +=

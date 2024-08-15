@@ -26,6 +26,8 @@ public abstract class TaskFON : Task
             result = Double.MinValue;
             return;
         }
+        MarkerChecks.CheckScoringPeriode(this, markerDrop, ref comment);
+
 
         DeclarationChecks.CheckIfDeclarationWasBeforeMarkerDrop(declaration, markerDrop, ref comment);
 
