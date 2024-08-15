@@ -25,7 +25,7 @@ namespace Competition.Validation
             List<Declaration> validDeclarations = [];
             if (declarations.Count == 0)
             {
-                Logger?.LogWarning("No declaration found for goal number '{goalNumber}'",goalNumber);
+                Logger?.LogWarning("No declaration found for goal number '{goalNumber}'", goalNumber);
                 return null;
             }
             else
@@ -49,7 +49,7 @@ namespace Competition.Validation
                 }
                 if (validDeclarations.Count == 0)
                 {
-                    Logger?.LogWarning("No declaration of goal number '{goalNumber}' is conform to specified rules", goalNumber);    
+                    Logger?.LogWarning("No declaration of goal number '{goalNumber}' is conform to specified rules", goalNumber);
                     return null;
                 }
                 else if (validDeclarations.Count == 1)
@@ -94,7 +94,7 @@ namespace Competition.Validation
             }
             else
             {
-                if (markerValidationRules != null)
+                if (markerValidationRules?.Count > 0)
                 {
                     foreach (IMarkerValidationRules markerValidationRule in markerValidationRules)
                     {

@@ -13,7 +13,7 @@ namespace Competition.Validation
         private readonly ILogger<MarkerToMarkerTimingRule> Logger = LogConnector.LoggerFactory.CreateLogger<MarkerToMarkerTimingRule>();
         /// <summary>
         /// Earliest time to drop second marker
-        /// <para>optional; use double.NaN to omit</para>
+        /// <para>optional; use TimeSpan.Zero to omit</para>
         /// </summary>
         public TimeSpan Earliest
         {
@@ -22,7 +22,7 @@ namespace Competition.Validation
 
         /// <summary>
         /// Latest time to drop second marker
-        /// <para>optional; use double.NaN to omit</para>
+        /// <para>optional; use TimeSpan.MaxValue to omit</para>
         /// </summary>
         public TimeSpan Latest
         {

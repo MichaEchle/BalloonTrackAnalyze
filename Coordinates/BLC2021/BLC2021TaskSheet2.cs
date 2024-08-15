@@ -9,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Net.WebRequestMethods;
 
 namespace BLC2021
 {
@@ -220,15 +219,22 @@ namespace BLC2021
                 HesitationWaltzTask task4_3 = new();
                 task4_3.SetupHWZ(4, CalculateGoalsTask4_3, Task4_ThridMarkerNumber, true, null);
 
-                MarkerTimingRule markerTimingRule = new();
-                markerTimingRule.SetupRule([(0, 5), (20, 25), (40, 45)]);
 
+                MarkerOrRule markerOrRule = new();
+                MarkerTimingRule markerTimingRule1 = new();
+                markerTimingRule1.SetupRule(0, 5);
+                MarkerTimingRule markerTimingRule2 = new();
+                markerTimingRule2.SetupRule(20, 25);
+                MarkerTimingRule markerTimingRule3 = new();
+                markerTimingRule3.SetupRule(40, 45);
+
+                markerOrRule.SetupRule(new List<IMarkerValidationRules> { markerTimingRule1, markerTimingRule2, markerTimingRule3 });
 
                 MarkerToGoalDistanceRule markerToGoalDistanceRule = new();
                 markerToGoalDistanceRule.SetupRule(double.NaN, 300.0, true, true, Task5_GoalNumber);
 
 
-                List<IMarkerValidationRules> markerValidationRules = [markerTimingRule, markerToGoalDistanceRule];
+                List<IMarkerValidationRules> markerValidationRules = [markerOrRule, markerToGoalDistanceRule];
                 HesitationWaltzTask task5 = new();
                 task5.SetupHWZ(5, CalculateGoalsTask5, Task5_MarkerNumber, true, markerValidationRules);
 

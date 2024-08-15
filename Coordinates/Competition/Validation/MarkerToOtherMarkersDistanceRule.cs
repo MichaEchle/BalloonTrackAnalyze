@@ -61,6 +61,13 @@ namespace Competition
             {
                 if (marker.Equals(markerDrop))
                     continue;
+                if (MarkerNumbers?.Count > 0)
+                {
+                    if(!MarkerNumbers.Contains(markerDrop.MarkerNumber))
+                    {
+                        continue;
+                    }
+                }
                 double distanceToOtherMarker = CoordinateHelpers.Calculate2DDistanceHavercos(marker.MarkerLocation, markerDrop.MarkerLocation);
                 if (!double.IsNaN(MinimumDistance))
                 {
@@ -81,7 +88,7 @@ namespace Competition
         /// </summary>
         /// <param name="minimumDistance">Minimum distance to other markers in meter (optional; use double.NaN to omit)</param>
         /// <param name="maximumDistance">Maximum distance to other markers in meter (optional; use double.NaN to omit)</param>
-        /// <param name="markerNumbers">List of marker numbers to be checked against [will not check against itself] (optional; use empty list to consider all markers). The actuals marker objects will be fed in after track-preprocessing</param>
+        /// <param name="markerNumbers">List of marker numbers to be checked against [will not check against itself] (optional; use empty list to consider all markers). The actuals marker objects will need to be fed in after track-preprocessing</param>
         public void SetupRule(double minimumDistance, double maximumDistance, List<int> markerNumbers)
         {
             MinimumDistance = minimumDistance;

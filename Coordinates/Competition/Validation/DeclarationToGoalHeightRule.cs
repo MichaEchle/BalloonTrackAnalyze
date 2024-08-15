@@ -70,11 +70,6 @@ namespace Competition
         } = HeightDifferenceType.AbsoluteDifference;
         #endregion
 
-        public DeclarationToGoalHeightRule()
-        {
-
-        }
-
         #region API
 
         /// <summary>

@@ -46,11 +46,6 @@ namespace Competition
         public List<int> GoalNumbers { get; set; } = [];
         #endregion
 
-        public GoalToOtherGoalsDistanceRule()
-        {
-
-        }
-
         #region API
 
         /// <summary>

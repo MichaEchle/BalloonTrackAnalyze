@@ -29,11 +29,6 @@ namespace Competition
 
         #endregion
 
-        public DeclarationToGoalDistanceRule()
-        {
-
-        }
-
         #region API
 
         /// <summary>

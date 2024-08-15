@@ -1,7 +1,6 @@
 ﻿using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
 
 namespace Competition
 {
@@ -10,15 +9,42 @@ namespace Competition
         #region Properties
 
         private readonly ILogger<MarkerTimingRule> Logger = LogConnector.LoggerFactory.CreateLogger<MarkerTimingRule>();
+        private int openAtMinute;
+        private int closeAtMinute;
+
         /// <summary>
-        /// The list of timing definitions
-        /// <para>each entry consists of two values</para>
-        /// <para>first value: The first minute at which marking is valid</para>
-        /// <para>second value: The first minute at which marking is no longer valid</para>
+        /// The first minute at which the marker is valid
         /// </summary>
-        public List<(int openAtMinute, int closeAtMinute)> TimingDefinitions
+        public int OpenAtMinute
         {
-            get; set;
+            get => openAtMinute;
+            set
+            {
+                if (value < 0 || value > 59)
+                {
+                    Logger.LogError("The minute value must be between 0 and 59");
+                    return;
+                }
+
+                openAtMinute = value;
+
+            }
+        }
+        /// <summary>
+        /// The first minute at which the marker is no longer valid
+        /// </summary>
+        public int CloseAtMinute
+        {
+            get => closeAtMinute;
+            set
+            {
+                if (value < 0 || value > 59)
+                {
+                    Logger.LogError("The minute value must be between 0 and 59");
+                    return;
+                }
+                closeAtMinute = value;
+            }
         }
         #endregion
 
@@ -31,28 +57,23 @@ namespace Competition
         public bool IsComplaintToRule(MarkerDrop marker)
         {
             bool isConform = false;
-            foreach ((int openAtMinute, int closeAtMinute) in TimingDefinitions)
-            {
-                bool confirmToCurrentTimingDefinition = true;
-                if (openAtMinute < closeAtMinute)
-                {
-                    if (marker.MarkerLocation.TimeStamp.Minute < openAtMinute)
-                        confirmToCurrentTimingDefinition = false;
-                    if (marker.MarkerLocation.TimeStamp.Minute > closeAtMinute)
-                        confirmToCurrentTimingDefinition = false;
-                    if (marker.MarkerLocation.TimeStamp.Minute == closeAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
-                        confirmToCurrentTimingDefinition = false;
-                }
-                else if (openAtMinute > closeAtMinute)
-                {
-                    if ((marker.MarkerLocation.TimeStamp.Minute < openAtMinute) && (marker.MarkerLocation.TimeStamp.Minute > closeAtMinute))
-                        confirmToCurrentTimingDefinition = false;
-                    if (marker.MarkerLocation.TimeStamp.Minute == closeAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
-                        confirmToCurrentTimingDefinition = false;
-                }
-                isConform |= confirmToCurrentTimingDefinition;
-            }
 
+            if (OpenAtMinute < CloseAtMinute)
+            {
+                if (marker.MarkerLocation.TimeStamp.Minute < OpenAtMinute)
+                    isConform = false;
+                if (marker.MarkerLocation.TimeStamp.Minute > CloseAtMinute)
+                    isConform = false;
+                if (marker.MarkerLocation.TimeStamp.Minute == CloseAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
+                    isConform = false;
+            }
+            else if (OpenAtMinute > CloseAtMinute)
+            {
+                if ((marker.MarkerLocation.TimeStamp.Minute < OpenAtMinute) && (marker.MarkerLocation.TimeStamp.Minute > CloseAtMinute))
+                    isConform = false;
+                if (marker.MarkerLocation.TimeStamp.Minute == CloseAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
+                    isConform = false;
+            }
             return isConform;
         }
 
@@ -64,9 +85,10 @@ namespace Competition
         /// <para>each entry consists of two values</para>
         /// <para>first value: The first minute at which marking is valid</para>
         /// <para>second value: The first minute at which marking is no longer valid</para>
-        public void SetupRule(List<(int openAtMinute, int closeAtMinute)> timingDefinitions)
+        public void SetupRule(int openAtMinute, int closeAtMinute)
         {
-            TimingDefinitions = timingDefinitions;
+            OpenAtMinute = openAtMinute;
+            CloseAtMinute = closeAtMinute;
         }
 
         public override string ToString()
