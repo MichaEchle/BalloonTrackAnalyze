@@ -17,16 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BalloonTrackAnalyze", "BalloonTrackAnalyze\BalloonTrackAnalyze.csproj", "{05937557-29AF-46EC-A81D-CCE71C296E62}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggerComponent", "LoggerComponent\LoggerComponent.csproj", "{A20BCF11-5770-4ED8-90A6-32CE4829C7B3}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrackReportGenerator", "TrackReportGenerator\TrackReportGenerator.csproj", "{A6AE023A-1347-4771-9382-B9A406074775}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BLC2021", "BLC2021\BLC2021.csproj", "{FC8ECAB9-7CC1-4393-B213-DFE96BFB8260}"
-	ProjectSection(ProjectDependencies) = postProject
-		{52CD5609-DF77-4B6F-8C0D-B60D0767B927} = {52CD5609-DF77-4B6F-8C0D-B60D0767B927}
-		{A20BCF11-5770-4ED8-90A6-32CE4829C7B3} = {A20BCF11-5770-4ED8-90A6-32CE4829C7B3}
-		{DE7F6BD6-A3B7-4214-954B-43EDE4612C0A} = {DE7F6BD6-A3B7-4214-954B-43EDE4612C0A}
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shapes", "AreasAndShapes\Shapes.csproj", "{84B05DE9-F1EF-46CD-A34D-51E31411B160}"
 EndProject
@@ -36,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WinFormsLoggerControl", "Wi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UILoggingProvider", "UILoggingProvider\UILoggingProvider.csproj", "{22D96485-07FA-4675-9203-CA7B83B59C2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggingConnector", "LoggingConnector\LoggingConnector.csproj", "{CA6AFA97-0F01-44D6-A33A-0E5BFF89C115}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggingConnector", "LoggingConnector\LoggingConnector.csproj", "{CA6AFA97-0F01-44D6-A33A-0E5BFF89C115}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -60,18 +51,10 @@ Global
 		{05937557-29AF-46EC-A81D-CCE71C296E62}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{05937557-29AF-46EC-A81D-CCE71C296E62}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{05937557-29AF-46EC-A81D-CCE71C296E62}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A20BCF11-5770-4ED8-90A6-32CE4829C7B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A20BCF11-5770-4ED8-90A6-32CE4829C7B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A20BCF11-5770-4ED8-90A6-32CE4829C7B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A20BCF11-5770-4ED8-90A6-32CE4829C7B3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A6AE023A-1347-4771-9382-B9A406074775}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A6AE023A-1347-4771-9382-B9A406074775}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6AE023A-1347-4771-9382-B9A406074775}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A6AE023A-1347-4771-9382-B9A406074775}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FC8ECAB9-7CC1-4393-B213-DFE96BFB8260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC8ECAB9-7CC1-4393-B213-DFE96BFB8260}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FC8ECAB9-7CC1-4393-B213-DFE96BFB8260}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FC8ECAB9-7CC1-4393-B213-DFE96BFB8260}.Release|Any CPU.Build.0 = Release|Any CPU
 		{84B05DE9-F1EF-46CD-A34D-51E31411B160}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{84B05DE9-F1EF-46CD-A34D-51E31411B160}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84B05DE9-F1EF-46CD-A34D-51E31411B160}.Release|Any CPU.ActiveCfg = Release|Any CPU
