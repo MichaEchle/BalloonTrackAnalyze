@@ -1,20 +1,21 @@
 ﻿using Coordinates;
 using JansScoring.calculation;
-using JansScoring.flights.impl._02.tasks;
+using JansScoring.flights.impl._03.tasks;
+using JansScoring.flights.impl._04.tasks;
 using System;
 
-namespace JansScoring.flights.impl._02;
+namespace JansScoring.flights.impl._04;
 
-public class Flight02 : Flight
+public class Flight04 : Flight
 {
     public override int getFlightNumber()
     {
-        return 2;
+        return 4;
     }
 
     public override DateTime getStartOfLaunchPeriode()
     {
-        return new DateTime(2024, 08, 15, 04, 00, 00);
+        return new DateTime(2024, 08, 16, 04, 00, 00);
     }
 
     public override int launchPeriode()
@@ -29,24 +30,27 @@ public class Flight02 : Flight
 
     public override int distanceToAllGoals()
     {
-        return 3000;
+        return 750;
     }
 
     public override string getTracksPath()
     {
-        return @"C:\Users\Jan\Documents\scoring\wieselburg_2024\flight02\tracks";
+        return @"C:\Users\Jan\Documents\scoring\wieselburg_2024\flight04\tracks";
     }
 
     public override Task[] getTasks()
     {
+        Task14 task14 = new Task14(this);
         return new Task[]
         {
-           // new Task03(this),
-           // new Task04(this),
-           // new Task06(this),
-           // new Task07(this),
-            new Task08(this),
-           // new Task09(this),
+            task14,
+            new Task15(this, task14),
+           /*
+            *  new Task16(this),
+            *  new Task17(this),
+            */
+            new Task18(this)
+
         };
     }
 
@@ -59,13 +63,14 @@ public class Flight02 : Flight
     {
         return 1500;
     }
+
     public override Coordinate getBackupCoordinates()
     {
-        return CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U",508660,5328360);
+        return CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 508660, 5328360);
     }
 
     public override int getQNH()
     {
-        return 1016;
+        return 1018;
     }
 }

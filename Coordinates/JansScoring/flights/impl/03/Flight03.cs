@@ -1,20 +1,21 @@
 ﻿using Coordinates;
 using JansScoring.calculation;
 using JansScoring.flights.impl._02.tasks;
+using JansScoring.flights.impl._03.tasks;
 using System;
 
-namespace JansScoring.flights.impl._02;
+namespace JansScoring.flights.impl._03;
 
-public class Flight02 : Flight
+public class Flight03 : Flight
 {
     public override int getFlightNumber()
     {
-        return 2;
+        return 3;
     }
 
     public override DateTime getStartOfLaunchPeriode()
     {
-        return new DateTime(2024, 08, 15, 04, 00, 00);
+        return new DateTime(2024, 08, 15, 16, 20, 00);
     }
 
     public override int launchPeriode()
@@ -29,24 +30,21 @@ public class Flight02 : Flight
 
     public override int distanceToAllGoals()
     {
-        return 3000;
+        return 0;
     }
 
     public override string getTracksPath()
     {
-        return @"C:\Users\Jan\Documents\scoring\wieselburg_2024\flight02\tracks";
+        return @"C:\Users\Jan\Documents\scoring\wieselburg_2024\flight03\tracks";
     }
 
     public override Task[] getTasks()
     {
         return new Task[]
         {
-           // new Task03(this),
-           // new Task04(this),
-           // new Task06(this),
-           // new Task07(this),
-            new Task08(this),
-           // new Task09(this),
+            new Task10(this),
+            new Task11(this),
+            new Task12(this)
         };
     }
 

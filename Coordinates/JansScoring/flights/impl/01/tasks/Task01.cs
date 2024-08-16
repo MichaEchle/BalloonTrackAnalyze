@@ -20,7 +20,7 @@ public class Task01 : TaskHNH
         return false;
     }
 
-    public override Coordinate[] Goals()
+    public override Coordinate[] Goals(int pilot)
     {
         return new Coordinate[] { CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 0506348, 5327307) };
     }

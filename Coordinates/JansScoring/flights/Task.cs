@@ -40,7 +40,7 @@ public abstract class Task
     /// All goals, need for this Task
     /// </summary>
     /// <returns></returns>
-    public abstract Coordinate[] Goals();
+    public abstract Coordinate[] Goals(int pilot);
 
     /// <summary>
     /// The end of the scoring-periode

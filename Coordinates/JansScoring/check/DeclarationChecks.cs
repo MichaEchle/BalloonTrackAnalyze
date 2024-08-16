@@ -88,7 +88,7 @@ public class DeclarationChecks
         Dictionary<Coordinate, Task> goals = new();
         foreach (Task currentTask in flight.getTasks())
         {
-            foreach (Coordinate coordinate in currentTask.Goals())
+            foreach (Coordinate coordinate in currentTask.Goals(0))
             {
                 goals.Add(coordinate, currentTask);
             }

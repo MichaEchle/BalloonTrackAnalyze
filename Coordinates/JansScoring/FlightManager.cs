@@ -3,6 +3,8 @@ using Coordinates.Parsers;
 using JansScoring.flights;
 using JansScoring.flights.impl._01;
 using JansScoring.flights.impl._02;
+using JansScoring.flights.impl._03;
+using JansScoring.flights.impl._04;
 using JansScoring.pz_rework;
 using LoggerComponent;
 using System;
@@ -23,7 +25,7 @@ public class FlightManager
     private Dictionary<int, Flight> flights = new();
     private PZManager pzManager;
 
-    public static bool RUN_PZ_CHECKS = true;
+    public static bool RUN_PZ_CHECKS = false;
     public static bool RUN_DESPIKER = false;
 
     public void register()
@@ -32,8 +34,10 @@ public class FlightManager
 
         flights.Add(1, new Flight01());
         flights.Add(2, new Flight02());
+        flights.Add(3, new Flight03());
+        flights.Add(4, new Flight04());
 
-        scoreFlight(2);
+        scoreFlight(4);
     }
 
 
@@ -91,7 +95,7 @@ public class FlightManager
 
                     task.Score(currentTrack, comment: ref comment, out double score);
                     writer1.WriteLine(
-                        $"{currentTrack.Pilot.PilotNumber};{(score != double.MinValue ? NumberHelper.formatDoubleToStringAndRound(score) : "NR")};{comment}");
+                        $"{currentTrack.Pilot.PilotNumber};{(score != double.MinValue && score != double.MaxValue ? NumberHelper.formatDoubleToStringAndRound(score) : "NR")};{comment}");
                 }
 
                 writer1.Close();
@@ -112,7 +116,7 @@ public class FlightManager
         foreach (Task task in flight.getTasks())
         {
             int i = 0;
-            foreach (Coordinate coordinate in task.Goals().ToList())
+            foreach (Coordinate coordinate in task.Goals(0).ToList())
             {
                 i++;
                 Console.WriteLine($"Loaded goal {i} for task {task.TaskNumber()}");
