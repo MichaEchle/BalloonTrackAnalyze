@@ -179,272 +179,272 @@ namespace Competition
             return true;
         }
 
-        /// <summary>
-        /// Pre-process a track to make sure all declarations and markers are valid
-        /// </summary>
-        /// <param name="track">teh track to be pre-processed</param>
-        /// <returns>true:success; false:error</returns>
-        /// <exception cref="ArgumentNullException">track cannot be null</exception>
-        public bool PreProcessTrack(Track track)
-        {
-            ArgumentNullException.ThrowIfNull(track);
+        ///// <summary>
+        ///// Pre-process a track to make sure all declarations and markers are valid
+        ///// </summary>
+        ///// <param name="track">teh track to be pre-processed</param>
+        ///// <returns>true:success; false:error</returns>
+        ///// <exception cref="ArgumentNullException">track cannot be null</exception>
+        //public bool PreProcessTrack(Track track)
+        //{
+        //    ArgumentNullException.ThrowIfNull(track);
 
-            List<Declaration> validDeclarations = [];
-            List<MarkerDrop> validMarkers = [];
-            foreach (ICompetitionTask task in Tasks)
-            {
-                switch (task)
-                {
-                    case DonutTask donut:
-                        {
-                            Declaration declaration = ValidationHelper.GetValidDeclaration(track, donut.GoalNumber, donut.DeclarationValidationRules);
-                            if (declaration != null)
-                                validDeclarations.Add(declaration);
-                        }
-                        break;
-                    case PieTask pie:
-                        {
-                            foreach (PieTask.PieTier tier in pie.Tiers)
-                            {
-                                Declaration declaration = ValidationHelper.GetValidDeclaration(track, tier.GoalNumber, tier.DeclarationValidationRules);
-                                if (declaration != null)
-                                    validDeclarations.Add(declaration);
-                            }
-                        }
-                        break;
-                    case ElbowTask elbowTask:
-                        {
-                            if (ValidationHelper.IsMarkerValid(track, elbowTask.FirstMarkerNumber, elbowTask.MarkerValidationRules))
-                                validMarkers.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == elbowTask.FirstMarkerNumber));
-                            if (ValidationHelper.IsMarkerValid(track, elbowTask.SecondMarkerNumber, elbowTask.MarkerValidationRules))
-                                validMarkers.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == elbowTask.SecondMarkerNumber));
-                            if (ValidationHelper.IsMarkerValid(track, elbowTask.ThirdMarkerNumber, elbowTask.MarkerValidationRules))
-                                validMarkers.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == elbowTask.ThirdMarkerNumber));
-                        }
-                        break;
-                    case LandRunTask landRun:
-                        {
-                            if (ValidationHelper.IsMarkerValid(track, landRun.FirstMarkerNumber, landRun.MarkerValidationRules))
-                                validMarkers.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == landRun.FirstMarkerNumber));
-                            if (ValidationHelper.IsMarkerValid(track, landRun.SecondMarkerNumber, landRun.MarkerValidationRules))
-                                validMarkers.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == landRun.SecondMarkerNumber));
-                            if (ValidationHelper.IsMarkerValid(track, landRun.ThirdMarkerNumber, landRun.MarkerValidationRules))
-                                validMarkers.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == landRun.ThirdMarkerNumber));
-                        }
-                        break;
-                }
-            }
-            List<int> allGoalNumbers = track.GetAllGoalNumbers();
-            List<int> allMarkerNubmers = track.GetAllMarkerNumbers();
-            foreach (ICompetitionTask task in Tasks)
-            {
-                switch (task)
-                {
-                    case DonutTask donut:
-                        {
-                            foreach (IDeclarationValidationRules rule in donut.DeclarationValidationRules)
-                            {
-                                if (rule is GoalToOtherGoalsDistanceRule)
-                                {
-                                    GoalToOtherGoalsDistanceRule goalToOtherGoalsDistanceRule = rule as GoalToOtherGoalsDistanceRule;
-                                    goalToOtherGoalsDistanceRule.Declarations.Clear();
-                                    if (goalToOtherGoalsDistanceRule.GoalNumbers.Count == 0)
-                                    {
-                                        foreach (int goalNumber in allGoalNumbers)
-                                        {
-                                            if (validDeclarations.Select(x => x.GoalNumber).Contains(goalNumber))
-                                            {
-                                                goalToOtherGoalsDistanceRule.Declarations.Add(validDeclarations.FirstOrDefault(x => x.GoalNumber == goalNumber));
-                                            }
-                                            else
-                                            {
-                                                goalToOtherGoalsDistanceRule.Declarations.Add(track.GetLatestDeclaration(goalNumber));
-                                            }
-                                        }
-                                    }
-                                    else
-                                    {
-                                        foreach (int goalNumber in goalToOtherGoalsDistanceRule.GoalNumbers)
-                                        {
-                                            if (!allGoalNumbers.Contains(goalNumber))
-                                            {
-                                                Logger?.LogWarning("No goal number '{goalNumber}' declared in track of Pilot '#{pilotNumber}{pilotName}'", goalNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
-                                            }
-                                            else
-                                            {
-                                                if (validDeclarations.Select(x => x.GoalNumber).Contains(goalNumber))
-                                                {
-                                                    goalToOtherGoalsDistanceRule.Declarations.Add(validDeclarations.FirstOrDefault(x => x.GoalNumber == goalNumber));
-                                                }
-                                                else
-                                                {
-                                                    goalToOtherGoalsDistanceRule.Declarations.Add(track.GetLatestDeclaration(goalNumber));
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+        //    List<Declaration> validDeclarations = [];
+        //    List<MarkerDrop> validMarkers = [];
+        //    foreach (ICompetitionTask task in Tasks)
+        //    {
+        //        switch (task)
+        //        {
+        //            case DonutTask donut:
+        //                {
+        //                    Declaration declaration = ValidationHelper.GetValidDeclaration(track, donut.GoalNumber, donut.DeclarationValidationRule,donut.ValidationStrictness);
+        //                    if (declaration != null)
+        //                        validDeclarations.Add(declaration);
+        //                }
+        //                break;
+        //            case PieTask pie:
+        //                {
+        //                    foreach (PieTask.PieTier tier in pie.Tiers)
+        //                    {
+        //                        Declaration declaration = ValidationHelper.GetValidDeclaration(track, tier.GoalNumber, tier.DeclarationValidationRule,tier.ValidationStrictness);
+        //                        if (declaration != null)
+        //                            validDeclarations.Add(declaration);
+        //                    }
+        //                }
+        //                break;
+        //            case ElbowTask elbowTask:
+        //                {
+        //                    if (ValidationHelper.IsMarkerValid(track, elbowTask.FirstMarkerNumber, elbowTask.MarkerValidationRule))
+        //                        validMarkers.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == elbowTask.FirstMarkerNumber));
+        //                    if (ValidationHelper.IsMarkerValid(track, elbowTask.SecondMarkerNumber, elbowTask.MarkerValidationRule))
+        //                        validMarkers.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == elbowTask.SecondMarkerNumber));
+        //                    if (ValidationHelper.IsMarkerValid(track, elbowTask.ThirdMarkerNumber, elbowTask.MarkerValidationRule))
+        //                        validMarkers.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == elbowTask.ThirdMarkerNumber));
+        //                }
+        //                break;
+        //            case LandRunTask landRun:
+        //                {
+        //                    if (ValidationHelper.IsMarkerValid(track, landRun.FirstMarkerNumber, landRun.MarkerValidationRule))
+        //                        validMarkers.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == landRun.FirstMarkerNumber));
+        //                    if (ValidationHelper.IsMarkerValid(track, landRun.SecondMarkerNumber, landRun.MarkerValidationRule))
+        //                        validMarkers.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == landRun.SecondMarkerNumber));
+        //                    if (ValidationHelper.IsMarkerValid(track, landRun.ThirdMarkerNumber, landRun.MarkerValidationRule))
+        //                        validMarkers.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == landRun.ThirdMarkerNumber));
+        //                }
+        //                break;
+        //        }
+        //    }
+        //    List<int> allGoalNumbers = track.GetAllGoalNumbers();
+        //    List<int> allMarkerNubmers = track.GetAllMarkerNumbers();
+        //    foreach (ICompetitionTask task in Tasks)
+        //    {
+        //        switch (task)
+        //        {
+        //            case DonutTask donut:
+        //                {
+        //                    foreach (IDeclarationValidationRule rule in donut.DeclarationValidationRules)
+        //                    {
+        //                        if (rule is GoalToOtherGoalsDistanceRule)
+        //                        {
+        //                            GoalToOtherGoalsDistanceRule goalToOtherGoalsDistanceRule = rule as GoalToOtherGoalsDistanceRule;
+        //                            goalToOtherGoalsDistanceRule.Declarations.Clear();
+        //                            if (goalToOtherGoalsDistanceRule.GoalNumbers.Count == 0)
+        //                            {
+        //                                foreach (int goalNumber in allGoalNumbers)
+        //                                {
+        //                                    if (validDeclarations.Select(x => x.GoalNumber).Contains(goalNumber))
+        //                                    {
+        //                                        goalToOtherGoalsDistanceRule.Declarations.Add(validDeclarations.FirstOrDefault(x => x.GoalNumber == goalNumber));
+        //                                    }
+        //                                    else
+        //                                    {
+        //                                        goalToOtherGoalsDistanceRule.Declarations.Add(track.GetLatestDeclaration(goalNumber));
+        //                                    }
+        //                                }
+        //                            }
+        //                            else
+        //                            {
+        //                                foreach (int goalNumber in goalToOtherGoalsDistanceRule.GoalNumbers)
+        //                                {
+        //                                    if (!allGoalNumbers.Contains(goalNumber))
+        //                                    {
+        //                                        Logger?.LogWarning("No goal number '{goalNumber}' declared in track of Pilot '#{pilotNumber}{pilotName}'", goalNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+        //                                    }
+        //                                    else
+        //                                    {
+        //                                        if (validDeclarations.Select(x => x.GoalNumber).Contains(goalNumber))
+        //                                        {
+        //                                            goalToOtherGoalsDistanceRule.Declarations.Add(validDeclarations.FirstOrDefault(x => x.GoalNumber == goalNumber));
+        //                                        }
+        //                                        else
+        //                                        {
+        //                                            goalToOtherGoalsDistanceRule.Declarations.Add(track.GetLatestDeclaration(goalNumber));
+        //                                        }
+        //                                    }
+        //                                }
+        //                            }
+        //                        }
 
-                            }
-                        }
-                        break;
-                    case PieTask pie:
-                        {
-                            foreach (PieTask.PieTier tier in pie.Tiers)
-                            {
-                                foreach (IDeclarationValidationRules rule in tier.DeclarationValidationRules)
-                                {
-                                    if (rule is GoalToOtherGoalsDistanceRule)
-                                    {
-                                        GoalToOtherGoalsDistanceRule goalToOtherGoalsDistanceRule = rule as GoalToOtherGoalsDistanceRule;
-                                        goalToOtherGoalsDistanceRule.Declarations.Clear();
-                                        if (goalToOtherGoalsDistanceRule.GoalNumbers.Count == 0)
-                                        {
-                                            foreach (int goalNumber in allGoalNumbers)
-                                            {
-                                                if (validDeclarations.Select(x => x.GoalNumber).Contains(goalNumber))
-                                                {
-                                                    goalToOtherGoalsDistanceRule.Declarations.Add(validDeclarations.FirstOrDefault(x => x.GoalNumber == goalNumber));
-                                                }
-                                                else
-                                                {
-                                                    goalToOtherGoalsDistanceRule.Declarations.Add(track.GetLatestDeclaration(goalNumber));
-                                                }
-                                            }
-                                        }
-                                        else
-                                        {
-                                            foreach (int goalNumber in goalToOtherGoalsDistanceRule.GoalNumbers)
-                                            {
-                                                if (!allGoalNumbers.Contains(goalNumber))
-                                                {
-                                                    Logger?.LogWarning("No goal number '{goalNumber}' declared in track of Pilot '#{pilotNumber}{pilotName}'", goalNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
-                                                }
-                                                else
-                                                {
-                                                    if (validDeclarations.Select(x => x.GoalNumber).Contains(goalNumber))
-                                                    {
-                                                        goalToOtherGoalsDistanceRule.Declarations.Add(validDeclarations.FirstOrDefault(x => x.GoalNumber == goalNumber));
-                                                    }
-                                                    else
-                                                    {
-                                                        goalToOtherGoalsDistanceRule.Declarations.Add(track.GetLatestDeclaration(goalNumber));
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    case ElbowTask elbow:
-                        {
-                            foreach (IMarkerValidationRules rule in elbow.MarkerValidationRules)
-                            {
-                                if (rule is MarkerToGoalDistanceRule)
-                                {
-                                    MarkerToGoalDistanceRule markerToGoalDistanceRule = rule as MarkerToGoalDistanceRule;
-                                    markerToGoalDistanceRule.Declaration = null;
-                                    if (!allGoalNumbers.Contains(markerToGoalDistanceRule.GoalNumber))
-                                    {
-                                        Logger?.LogWarning("No goal number '{goalNumber}' declared in track of Pilot '#{pilotNumber}{pilotName}'", markerToGoalDistanceRule.GoalNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
-                                    }
-                                    else
-                                    {
-                                        if (validDeclarations.Select(x => x.GoalNumber).Contains(markerToGoalDistanceRule.GoalNumber))
-                                        {
-                                            markerToGoalDistanceRule.Declaration = validDeclarations.FirstOrDefault(x => x.GoalNumber == markerToGoalDistanceRule.GoalNumber);
-                                        }
-                                        else
-                                        {
-                                            markerToGoalDistanceRule.Declaration = track.GetLatestDeclaration(markerToGoalDistanceRule.GoalNumber);
-                                        }
-                                    }
-                                }
-                                else if (rule is MarkerToOtherMarkersDistanceRule)
-                                {
-                                    MarkerToOtherMarkersDistanceRule markerToOtherMarkersDistanceRule = rule as MarkerToOtherMarkersDistanceRule;
-                                    markerToOtherMarkersDistanceRule.MarkerDrops.Clear();
-                                    if (markerToOtherMarkersDistanceRule.MarkerNumbers.Count == 0)
-                                    {
-                                        markerToOtherMarkersDistanceRule.MarkerDrops = track.MarkerDrops;
-                                    }
-                                    else
-                                    {
-                                        foreach (int markerNumber in markerToOtherMarkersDistanceRule.MarkerNumbers)
-                                        {
-                                            if (!allMarkerNubmers.Contains(markerNumber))
-                                            {
-                                                Logger?.LogWarning("No marker '{markerNumber}' dropped in track of Pilot '#{pilotNumber}{pilotName}'", markerNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
-                                            }
-                                            else
-                                            {
-                                                markerToOtherMarkersDistanceRule.MarkerDrops.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == markerNumber));
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        break;
-                    case LandRunTask landRun:
-                        {
-                            foreach (IMarkerValidationRules rule in landRun.MarkerValidationRules)
-                            {
-                                if (rule is MarkerToGoalDistanceRule)
-                                {
-                                    MarkerToGoalDistanceRule markerToGoalDistanceRule = rule as MarkerToGoalDistanceRule;
-                                    markerToGoalDistanceRule.Declaration = null;
-                                    if (!allGoalNumbers.Contains(markerToGoalDistanceRule.GoalNumber))
-                                        {
-                                        Logger?.LogWarning("No goal number '{goalNumber}' declared in track of Pilot '#{pilotNumber}{pilotName}'", markerToGoalDistanceRule.GoalNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
-                                    }
-                                    else
-                                    {
-                                        if (validDeclarations.Select(x => x.GoalNumber).Contains(markerToGoalDistanceRule.GoalNumber))
-                                        {
-                                            markerToGoalDistanceRule.Declaration = validDeclarations.FirstOrDefault(x => x.GoalNumber == markerToGoalDistanceRule.GoalNumber);
-                                        }
-                                        else
-                                        {
-                                            markerToGoalDistanceRule.Declaration = track.GetLatestDeclaration(markerToGoalDistanceRule.GoalNumber);
-                                        }
-                                    }
-                                }
-                                else if (rule is MarkerToOtherMarkersDistanceRule)
-                                {
-                                    MarkerToOtherMarkersDistanceRule markerToOtherMarkersDistanceRule = rule as MarkerToOtherMarkersDistanceRule;
-                                    markerToOtherMarkersDistanceRule.MarkerDrops.Clear();
-                                    if (markerToOtherMarkersDistanceRule.MarkerNumbers.Count == 0)
-                                    {
-                                        markerToOtherMarkersDistanceRule.MarkerDrops = track.MarkerDrops;
-                                    }
-                                    else
-                                    {
-                                        foreach (int markerNumber in markerToOtherMarkersDistanceRule.MarkerNumbers)
-                                        {
-                                            if (!allMarkerNubmers.Contains(markerNumber))
-                                            {
-                                                Logger?.LogWarning("No marker '{markerNumber}' dropped in track of Pilot '#{pilotNumber}{pilotName}'", markerNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
-                                            }
-                                            else
-                                            {
-                                                markerToOtherMarkersDistanceRule.MarkerDrops.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == markerNumber));
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        break;
+        //                    }
+        //                }
+        //                break;
+        //            case PieTask pie:
+        //                {
+        //                    foreach (PieTask.PieTier tier in pie.Tiers)
+        //                    {
+        //                        foreach (IDeclarationValidationRule rule in tier.DeclarationValidationRules)
+        //                        {
+        //                            if (rule is GoalToOtherGoalsDistanceRule)
+        //                            {
+        //                                GoalToOtherGoalsDistanceRule goalToOtherGoalsDistanceRule = rule as GoalToOtherGoalsDistanceRule;
+        //                                goalToOtherGoalsDistanceRule.Declarations.Clear();
+        //                                if (goalToOtherGoalsDistanceRule.GoalNumbers.Count == 0)
+        //                                {
+        //                                    foreach (int goalNumber in allGoalNumbers)
+        //                                    {
+        //                                        if (validDeclarations.Select(x => x.GoalNumber).Contains(goalNumber))
+        //                                        {
+        //                                            goalToOtherGoalsDistanceRule.Declarations.Add(validDeclarations.FirstOrDefault(x => x.GoalNumber == goalNumber));
+        //                                        }
+        //                                        else
+        //                                        {
+        //                                            goalToOtherGoalsDistanceRule.Declarations.Add(track.GetLatestDeclaration(goalNumber));
+        //                                        }
+        //                                    }
+        //                                }
+        //                                else
+        //                                {
+        //                                    foreach (int goalNumber in goalToOtherGoalsDistanceRule.GoalNumbers)
+        //                                    {
+        //                                        if (!allGoalNumbers.Contains(goalNumber))
+        //                                        {
+        //                                            Logger?.LogWarning("No goal number '{goalNumber}' declared in track of Pilot '#{pilotNumber}{pilotName}'", goalNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+        //                                        }
+        //                                        else
+        //                                        {
+        //                                            if (validDeclarations.Select(x => x.GoalNumber).Contains(goalNumber))
+        //                                            {
+        //                                                goalToOtherGoalsDistanceRule.Declarations.Add(validDeclarations.FirstOrDefault(x => x.GoalNumber == goalNumber));
+        //                                            }
+        //                                            else
+        //                                            {
+        //                                                goalToOtherGoalsDistanceRule.Declarations.Add(track.GetLatestDeclaration(goalNumber));
+        //                                            }
+        //                                        }
+        //                                    }
+        //                                }
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //                break;
+        //            case ElbowTask elbow:
+        //                {
+        //                    foreach (IMarkerValidationRule rule in elbow.MarkerValidationRule)
+        //                    {
+        //                        if (rule is MarkerToGoalDistanceRule)
+        //                        {
+        //                            MarkerToGoalDistanceRule markerToGoalDistanceRule = rule as MarkerToGoalDistanceRule;
+        //                            markerToGoalDistanceRule.Declaration = null;
+        //                            if (!allGoalNumbers.Contains(markerToGoalDistanceRule.GoalNumber))
+        //                            {
+        //                                Logger?.LogWarning("No goal number '{goalNumber}' declared in track of Pilot '#{pilotNumber}{pilotName}'", markerToGoalDistanceRule.GoalNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+        //                            }
+        //                            else
+        //                            {
+        //                                if (validDeclarations.Select(x => x.GoalNumber).Contains(markerToGoalDistanceRule.GoalNumber))
+        //                                {
+        //                                    markerToGoalDistanceRule.Declaration = validDeclarations.FirstOrDefault(x => x.GoalNumber == markerToGoalDistanceRule.GoalNumber);
+        //                                }
+        //                                else
+        //                                {
+        //                                    markerToGoalDistanceRule.Declaration = track.GetLatestDeclaration(markerToGoalDistanceRule.GoalNumber);
+        //                                }
+        //                            }
+        //                        }
+        //                        else if (rule is MarkerToOtherMarkersDistanceRule)
+        //                        {
+        //                            MarkerToOtherMarkersDistanceRule markerToOtherMarkersDistanceRule = rule as MarkerToOtherMarkersDistanceRule;
+        //                            markerToOtherMarkersDistanceRule.MarkerDrops.Clear();
+        //                            if (markerToOtherMarkersDistanceRule.MarkerNumbers.Count == 0)
+        //                            {
+        //                                markerToOtherMarkersDistanceRule.MarkerDrops = track.MarkerDrops;
+        //                            }
+        //                            else
+        //                            {
+        //                                foreach (int markerNumber in markerToOtherMarkersDistanceRule.MarkerNumbers)
+        //                                {
+        //                                    if (!allMarkerNubmers.Contains(markerNumber))
+        //                                    {
+        //                                        Logger?.LogWarning("No marker '{markerNumber}' dropped in track of Pilot '#{pilotNumber}{pilotName}'", markerNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+        //                                    }
+        //                                    else
+        //                                    {
+        //                                        markerToOtherMarkersDistanceRule.MarkerDrops.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == markerNumber));
+        //                                    }
+        //                                }
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //                break;
+        //            case LandRunTask landRun:
+        //                {
+        //                    foreach (IMarkerValidationRule rule in landRun.MarkerValidationRule)
+        //                    {
+        //                        if (rule is MarkerToGoalDistanceRule)
+        //                        {
+        //                            MarkerToGoalDistanceRule markerToGoalDistanceRule = rule as MarkerToGoalDistanceRule;
+        //                            markerToGoalDistanceRule.Declaration = null;
+        //                            if (!allGoalNumbers.Contains(markerToGoalDistanceRule.GoalNumber))
+        //                                {
+        //                                Logger?.LogWarning("No goal number '{goalNumber}' declared in track of Pilot '#{pilotNumber}{pilotName}'", markerToGoalDistanceRule.GoalNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+        //                            }
+        //                            else
+        //                            {
+        //                                if (validDeclarations.Select(x => x.GoalNumber).Contains(markerToGoalDistanceRule.GoalNumber))
+        //                                {
+        //                                    markerToGoalDistanceRule.Declaration = validDeclarations.FirstOrDefault(x => x.GoalNumber == markerToGoalDistanceRule.GoalNumber);
+        //                                }
+        //                                else
+        //                                {
+        //                                    markerToGoalDistanceRule.Declaration = track.GetLatestDeclaration(markerToGoalDistanceRule.GoalNumber);
+        //                                }
+        //                            }
+        //                        }
+        //                        else if (rule is MarkerToOtherMarkersDistanceRule)
+        //                        {
+        //                            MarkerToOtherMarkersDistanceRule markerToOtherMarkersDistanceRule = rule as MarkerToOtherMarkersDistanceRule;
+        //                            markerToOtherMarkersDistanceRule.MarkerDrops.Clear();
+        //                            if (markerToOtherMarkersDistanceRule.MarkerNumbers.Count == 0)
+        //                            {
+        //                                markerToOtherMarkersDistanceRule.MarkerDrops = track.MarkerDrops;
+        //                            }
+        //                            else
+        //                            {
+        //                                foreach (int markerNumber in markerToOtherMarkersDistanceRule.MarkerNumbers)
+        //                                {
+        //                                    if (!allMarkerNubmers.Contains(markerNumber))
+        //                                    {
+        //                                        Logger?.LogWarning("No marker '{markerNumber}' dropped in track of Pilot '#{pilotNumber}{pilotName}'", markerNumber, track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+        //                                    }
+        //                                    else
+        //                                    {
+        //                                        markerToOtherMarkersDistanceRule.MarkerDrops.Add(track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == markerNumber));
+        //                                    }
+        //                                }
+        //                            }
+        //                        }
+        //                    }
+        //                }
+        //                break;
 
-                }
+        //        }
 
-            }
+        //    }
 
-            return true;
-        }
+        //    return true;
+        //}
 
         /// <summary>
         /// Calculates the results for all pilots and all tasks and write the results as csv to the specified path
@@ -461,7 +461,7 @@ namespace Competition
 
             foreach (Track track in Tracks)
             {
-                PreProcessTrack(track);
+                //PreProcessTrack(track);
                 string[] results = new string[Tasks.Count];
                 for (int index = 0; index < Tasks.Count; index++)
                 {
