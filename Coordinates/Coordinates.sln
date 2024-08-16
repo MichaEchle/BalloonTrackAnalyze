@@ -15,8 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ToDoList.txt = ToDoList.txt
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BalloonTrackAnalyze", "BalloonTrackAnalyze\BalloonTrackAnalyze.csproj", "{05937557-29AF-46EC-A81D-CCE71C296E62}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TrackReportGenerator", "TrackReportGenerator\TrackReportGenerator.csproj", "{A6AE023A-1347-4771-9382-B9A406074775}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shapes", "AreasAndShapes\Shapes.csproj", "{84B05DE9-F1EF-46CD-A34D-51E31411B160}"
@@ -47,10 +45,6 @@ Global
 		{52CD5609-DF77-4B6F-8C0D-B60D0767B927}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52CD5609-DF77-4B6F-8C0D-B60D0767B927}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52CD5609-DF77-4B6F-8C0D-B60D0767B927}.Release|Any CPU.Build.0 = Release|Any CPU
-		{05937557-29AF-46EC-A81D-CCE71C296E62}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{05937557-29AF-46EC-A81D-CCE71C296E62}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{05937557-29AF-46EC-A81D-CCE71C296E62}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{05937557-29AF-46EC-A81D-CCE71C296E62}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A6AE023A-1347-4771-9382-B9A406074775}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A6AE023A-1347-4771-9382-B9A406074775}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A6AE023A-1347-4771-9382-B9A406074775}.Release|Any CPU.ActiveCfg = Release|Any CPU
