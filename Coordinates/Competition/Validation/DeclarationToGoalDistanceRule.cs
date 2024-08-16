@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Competition
 {
-    public class DeclarationToGoalDistanceRule : IDeclarationValidationRules
+    public class DeclarationToGoalDistanceRule : IDeclarationValidationRule
     {
         #region Properties
         private readonly ILogger<DeclarationToGoalDistanceRule> Logger = LogConnector.LoggerFactory.CreateLogger<DeclarationToGoalDistanceRule>();

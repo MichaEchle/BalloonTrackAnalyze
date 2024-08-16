@@ -2,7 +2,7 @@
 
 namespace Competition
 {
-    public interface IDeclarationValidationRules
+    public interface IDeclarationValidationRule
     {
         public bool IsComplaintToRule(Declaration declaration);
     }

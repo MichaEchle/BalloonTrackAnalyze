@@ -72,13 +72,22 @@ namespace Competition
             } = 1.0;
 
             /// <summary>
-            /// List of rules for declaration validation
-            /// <para>optional; leave list empty to omit</para>
+            /// The rule that defines if a declaration is valid
+            /// <para>optional. use null to omit</para>
+            /// <para>use <see cref="DeclarationAndRule"/> or <see cref="DeclarationOrRule"/> to chain multiple rules together</para>
             /// </summary>
-            public List<IDeclarationValidationRules> DeclarationValidationRules
+            public IDeclarationValidationRule DeclarationValidationRule
             {
                 get; set;
-            } = [];
+            } = null;
+
+            /// <summary>
+            /// The strictness by which validation rules are enforced
+            /// </summary>
+            public ValidationStrictnessType ValidationStrictness
+            {
+                get; set;
+            } = ValidationStrictnessType.LatestValid;
 
             public PieTier()
             {
@@ -102,8 +111,8 @@ namespace Competition
                 result = 0.0;
                 List<(int, Coordinate)> trackPointsInTier = [];
 
-                Declaration targetDeclaration = ValidationHelper.GetValidDeclaration(track, GoalNumber, DeclarationValidationRules);
-                if (targetDeclaration == null)
+                Declaration targetDeclaration = ValidationHelper.GetValidDeclaration(track, GoalNumber, DeclarationValidationRule,ValidationStrictness);
+                if (targetDeclaration is null)
                 {
                     Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No valid goal found for goal '#{goalNumber}'", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), GoalNumber);
                     return false;
@@ -195,7 +204,7 @@ namespace Competition
             /// <param name="upperBoundary">Upper boundary of the donut in meter (optional; use double.NaN to omit)</param>
             /// <param name="isReEntranceAllowed">Specify whether or not re-entrance in the donut is allowed (mandatory)</param>
             /// <param name="declarationValidationRules">List of rules for declaration validation (optional; leave list empty to omit)</param>
-            public void SetupPieTier(int goalNumber, double radius, bool isReEntranceAllowed, double multiplier, double lowerBoundary, double upperBoundary, List<IDeclarationValidationRules> declarationValidationRules)
+            public void SetupPieTier(int goalNumber, double radius, bool isReEntranceAllowed, double multiplier, double lowerBoundary, double upperBoundary, IDeclarationValidationRule declarationValidationRule, ValidationStrictnessType validationStrictness)
             {
                 GoalNumber = goalNumber;
                 Radius = radius;
@@ -203,7 +212,8 @@ namespace Competition
                 Multiplier = multiplier;
                 LowerBoundary = lowerBoundary;
                 UpperBoundary = upperBoundary;
-                DeclarationValidationRules = declarationValidationRules;
+                DeclarationValidationRule = declarationValidationRule;
+                ValidationStrictness = validationStrictness;
             }
 
             public override string ToString()

@@ -95,7 +95,7 @@ namespace BalloonTrackAnalyze.TaskControls
                 tbFirstMarkerNumber.Text = LandRun.FirstMarkerNumber.ToString();
                 tbSecondMarkerNumber.Text = LandRun.SecondMarkerNumber.ToString();
                 tbThirdMarkerNumber.Text = LandRun.ThirdMarkerNumber.ToString();
-                foreach (IMarkerValidationRules rule in LandRun.MarkerValidationRules)
+                foreach (IMarkerValidationRule rule in LandRun.MarkerValidationRule)
                 {
                     lbRules.Items.Add(rule);
                 }
@@ -156,10 +156,10 @@ namespace BalloonTrackAnalyze.TaskControls
             if (isDataValid)
             {
                 LandRun ??= new LandRunTask();
-                List<IMarkerValidationRules> markerValidationRules = [];
+                List<IMarkerValidationRule> markerValidationRules = [];
                 foreach (object item in lbRules.Items)
                 {
-                    if (item is IMarkerValidationRules markerValidationRule)
+                    if (item is IMarkerValidationRule markerValidationRule)
                         markerValidationRules.Add(markerValidationRule);
                 }
                 LandRun.SetupLandRun(taskNumber, firstMarkerNumber, secondMarkerNumber, thirdMarkerNumber, markerValidationRules);

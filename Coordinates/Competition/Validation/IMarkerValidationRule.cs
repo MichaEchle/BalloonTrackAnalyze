@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Competition
 {
-    public interface IMarkerValidationRules
+    public interface IMarkerValidationRule
     {
         public bool IsComplaintToRule(MarkerDrop marker);
     }

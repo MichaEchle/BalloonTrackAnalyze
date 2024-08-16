@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Competition.Validation
 {
-    public class MarkerToMarkerTimingRule : IMarkerValidationRules
+    public class MarkerToMarkerTimingRule : IMarkerValidationRule
     {
         #region Properties
 

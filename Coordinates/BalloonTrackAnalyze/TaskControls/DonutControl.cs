@@ -118,7 +118,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     rbUpperBoundaryMeter.Checked = true;
                     //rbUpperBoundaryFeet.Checked = false;
                 }
-                foreach (IDeclarationValidationRules rule in Donut.DeclarationValidationRules)
+                foreach (IDeclarationValidationRule rule in Donut.DeclarationValidationRules)
                 {
                     lbRules.Items.Add(rule);
                 }
@@ -210,10 +210,10 @@ namespace BalloonTrackAnalyze.TaskControls
             if (isDataValid)
             {
                 Donut ??= new DonutTask();
-                List<IDeclarationValidationRules> declarationValidationRules = [];
+                List<IDeclarationValidationRule> declarationValidationRules = [];
                 foreach (object item in lbRules.Items)
                 {
-                    if (item is IDeclarationValidationRules declarationValidationRule)
+                    if (item is IDeclarationValidationRule declarationValidationRule)
                         declarationValidationRules.Add(declarationValidationRule);
                 }
 

@@ -51,13 +51,22 @@ namespace Competition
         } = -1;
 
         /// <summary>
-        /// List of rules for marker validation
-        /// <para>optional; leave list empty to omit</para>
+        /// The rule that defines if a marker is valid
+        /// <para>optional. use null to omit</para>
+        /// <para>use <see cref="MarkerAndRule"/> or <see cref="MarkerOrRule"/> to chain multiple rules together</para>
         /// </summary>
-        public List<IMarkerValidationRules> MarkerValidationRules
+        public IMarkerValidationRule MarkerValidationRule
         {
             get; set;
-        } = [];
+        } = null;
+
+        /// <summary>
+        /// The strictness of the validation
+        /// </summary>
+        public ValidationStrictnessType ValidationStrictness
+        {
+            get; set;
+        } = ValidationStrictnessType.FirstValid;
         #endregion
 
         #region API
@@ -71,28 +80,28 @@ namespace Competition
         /// <returns>true:success;false:error</returns>
         public bool CalculateResults(Track track, bool useGPSAltitude, out double result)
         {
-            result = 0.0;
+            result = double.NaN;
 
-            if (!ValidationHelper.IsMarkerValid(track, FirstMarkerNumber, MarkerValidationRules))
+            MarkerDrop firstMarker = ValidationHelper.GetValidMarker(track, FirstMarkerNumber, MarkerValidationRule, ValidationStrictness);
+            if (firstMarker is null)
             {
                 Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), FirstMarkerNumber);
                 return false;
             }
-
-            if (!ValidationHelper.IsMarkerValid(track, SecondMarkerNumber, MarkerValidationRules))
+            MarkerDrop secondMarker = ValidationHelper.GetValidMarker(track, SecondMarkerNumber, MarkerValidationRule, ValidationStrictness);
+            if (secondMarker is null)
             {
                 Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), SecondMarkerNumber);
                 return false;
             }
 
-            if (!ValidationHelper.IsMarkerValid(track, ThirdMarkerNumber, MarkerValidationRules))
+            MarkerDrop thirdMarker = ValidationHelper.GetValidMarker(track, ThirdMarkerNumber, MarkerValidationRule, ValidationStrictness);
+            if (thirdMarker is null)
             {
                 Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), ThirdMarkerNumber);
                 return false;
             }
-            MarkerDrop firstMarker = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == FirstMarkerNumber);
-            MarkerDrop secondMarker = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == SecondMarkerNumber);
-            MarkerDrop thirdMarker = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == ThirdMarkerNumber);
+
             result = CoordinateHelpers.CalculateArea(firstMarker.MarkerLocation, secondMarker.MarkerLocation, thirdMarker.MarkerLocation);
             return true;
         }
@@ -105,13 +114,14 @@ namespace Competition
         /// <param name="secondMarkerNumber">The marker number of the second marker (mandatory)</param>
         /// <param name="thirdMarkerNumber">The marker number of the third marker (mandatory)</param>
         /// <param name="markerValidationRules">List of rules for marker validation (optional; leave list empty to omit)</param>
-        public void SetupLandRun(int taskNumber, int firstMarkerNumber, int secondMarkerNumber, int thirdMarkerNumber, List<IMarkerValidationRules> markerValidationRules)
+        public void SetupLandRun(int taskNumber, int firstMarkerNumber, int secondMarkerNumber, int thirdMarkerNumber, IMarkerValidationRule markerValidationRule, ValidationStrictnessType validationStrictness)
         {
             TaskNumber = taskNumber;
             FirstMarkerNumber = firstMarkerNumber;
             SecondMarkerNumber = secondMarkerNumber;
             ThirdMarkerNumber = thirdMarkerNumber;
-            MarkerValidationRules = markerValidationRules;
+            MarkerValidationRule = markerValidationRule;
+            ValidationStrictness = validationStrictness;
         }
 
         public override string ToString()

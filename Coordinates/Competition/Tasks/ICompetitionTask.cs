@@ -1,18 +1,23 @@
 ﻿using Coordinates;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
 
 namespace Competition
 {
+    public enum DistanceCalculationType
+    {
+        TwoDimensional,
+        ThreeDimensional,
+        WithSeparationAlitude
+    }
+
     public interface ICompetitionTask
     {
         /// <summary>
         /// The task number
         /// </summary>
-        public int TaskNumber { get; set; }
+        public int TaskNumber
+        {
+            get; set;
+        }
 
         /// <summary>
         /// Calculate result of the task with the given track
@@ -21,7 +26,7 @@ namespace Competition
         /// <param name="useGPSAltitude">true: use GPS altitude;false: use barometric altitude</param>
         /// <param name="result">the result of the task</param>
         /// <returns>true:success;false:error</returns>
-        public abstract bool CalculateResults(Track track,bool useGPSAltitude, out double result);
+        public abstract bool CalculateResults(Track track, bool useGPSAltitude, out double result);
 
 
 

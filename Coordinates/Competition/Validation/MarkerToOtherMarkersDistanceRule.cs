@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Competition
 {
-    public class MarkerToOtherMarkersDistanceRule : IMarkerValidationRules
+    public class MarkerToOtherMarkersDistanceRule : IMarkerValidationRule
     {
         #region Properties
         private readonly ILogger<MarkerToOtherMarkersDistanceRule> Logger = LogConnector.LoggerFactory.CreateLogger<MarkerToOtherMarkersDistanceRule>();

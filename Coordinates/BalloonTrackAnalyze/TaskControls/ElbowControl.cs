@@ -97,7 +97,7 @@ namespace BalloonTrackAnalyze.TaskControls
                 tbFirstMarkerNumber.Text = Elbow.FirstMarkerNumber.ToString();
                 tbSecondMarkerNumber.Text = Elbow.SecondMarkerNumber.ToString();
                 tbThirdMarkerNumber.Text = Elbow.ThirdMarkerNumber.ToString();
-                foreach (IMarkerValidationRules rule in Elbow.MarkerValidationRules)
+                foreach (IMarkerValidationRule rule in Elbow.MarkerValidationRule)
                 {
                     lbRules.Items.Add(rule);
                 }
@@ -157,10 +157,10 @@ namespace BalloonTrackAnalyze.TaskControls
             if (isDataValid)
             {
                 Elbow ??= new ElbowTask();
-                List<IMarkerValidationRules> markerValidaitonRules = [];
+                List<IMarkerValidationRule> markerValidaitonRules = [];
                 foreach (object item in lbRules.Items)
                 {
-                    if (item is IMarkerValidationRules markerValidationRule)
+                    if (item is IMarkerValidationRule markerValidationRule)
                         markerValidaitonRules.Add(markerValidationRule);
                 }
                 Elbow.SetupElbow(taskNumber, firstMarkerNumber, secondMarkerNumber, thirdMarkerNumber, markerValidaitonRules);

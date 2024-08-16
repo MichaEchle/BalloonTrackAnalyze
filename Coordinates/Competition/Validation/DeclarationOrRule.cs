@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 
 namespace Competition.Validation;
-public class DeclarationOrRule : IDeclarationValidationRules
+public class DeclarationOrRule : IDeclarationValidationRule
 {
-    public List<IDeclarationValidationRules> ValidationRules
+    public List<IDeclarationValidationRule> ValidationRules
     {
         get; set;
     }
@@ -19,7 +19,7 @@ public class DeclarationOrRule : IDeclarationValidationRules
         return isConform;
     }
 
-    public void SetupRule(List<IDeclarationValidationRules> rules)
+    public void SetupRule(List<IDeclarationValidationRule> rules)
     {
         ValidationRules = rules;
     }

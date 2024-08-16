@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Competition
 {
-    public class MarkerTimingRule : IMarkerValidationRules
+    public class MarkerTimingRule : IMarkerValidationRule
     {
         #region Properties
 

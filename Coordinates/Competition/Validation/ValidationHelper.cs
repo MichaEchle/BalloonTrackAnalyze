@@ -6,6 +6,14 @@ using System.Linq;
 
 namespace Competition.Validation
 {
+    public enum ValidationStrictnessType
+    {
+        First,
+        FirstValid,
+        LatestValid
+    }
+
+
     public static class ValidationHelper
     {
 
@@ -17,11 +25,12 @@ namespace Competition.Validation
         /// </summary>
         /// <param name="track">the track to be used</param>
         /// <param name="goalNumber">the target goal number</param>
-        /// <param name="declarationValidationRules">the list of rules to be applied</param>
-        /// <returns>the latest valid declaration if any exists, otherwise null</returns>
-        public static Declaration GetValidDeclaration(Track track, int goalNumber, List<IDeclarationValidationRules> declarationValidationRules)
+        /// <param name="declarationValidationRule">the rule to check if a declaration is valid. Use null to omit or use <see cref="DeclarationAndRule"/> or <see cref="DeclarationOrRule"/> to chain rules</param>
+        /// <param name="validationStrictness">the strictness of the validation</param>
+        /// <returns>a valid declaration if one exists, null otherwise</returns>
+        public static Declaration GetValidDeclaration(Track track, int goalNumber, IDeclarationValidationRule declarationValidationRule, ValidationStrictnessType validationStrictness)
         {
-            List<Declaration> declarations = track.Declarations.Where(x => x.GoalNumber == goalNumber).ToList();
+            List<Declaration> declarations = track.Declarations.Where(x => x.GoalNumber == goalNumber).OrderBy(x => x.PositionAtDeclaration.TimeStamp).ToList();
             List<Declaration> validDeclarations = [];
             if (declarations.Count == 0)
             {
@@ -32,81 +41,111 @@ namespace Competition.Validation
             {
                 foreach (Declaration declaration in declarations)
                 {
-                    bool isValid = true;
-                    if (declarationValidationRules != null)
+
+                    if (declarationValidationRule?.IsComplaintToRule(declaration) ?? true)
                     {
-                        foreach (IDeclarationValidationRules declarationValidationRule in declarationValidationRules)
+                        validDeclarations.Add(declaration);
+                    }
+                }
+            }
+            if (validDeclarations.Count == 0)
+            {
+                Logger?.LogWarning("No declaration of goal number '{goalNumber}' is conform to specified rules", goalNumber);
+                return null;
+            }
+            else
+            {
+                switch (validationStrictness)
+                {
+                    case ValidationStrictnessType.First:
                         {
-                            if (!declarationValidationRule.IsComplaintToRule(declaration))
+                            if (validDeclarations.Contains(declarations[0]))
                             {
-                                isValid = false;
-                                break;
+                                return validDeclarations[0];
+                            }
+                            else
+                            {
+                                Logger?.LogWarning("The first valid declaration for goal number '{goalNumber}' is not the first declaration", goalNumber);
+                                return null;
                             }
                         }
-                    }
-                    if (isValid)
-                        validDeclarations.Add(declaration);
+                    case ValidationStrictnessType.FirstValid:
+                        Logger?.LogInformation("Detected '{numberOfValidDeclarations}' valid declarations for goal number '{goalNumber}'. The first valid declaration will be used", validDeclarations.Count, goalNumber);
+                        return validDeclarations[0];
+                    case ValidationStrictnessType.LatestValid:
+                        Logger?.LogInformation("Detected '{numberOfValidDeclarations}' valid declarations for goal number '{goalNumber}'. The latest valid declaration will be used", validDeclarations.Count, goalNumber);
+                        return validDeclarations.MaxBy(x => x.PositionAtDeclaration.TimeStamp);
+                    default:
+                        {
+                            Logger?.LogError("Unknown validation strictness type '{validationStrictness}'", validationStrictness);
+                            return null;
+                        }
                 }
-                if (validDeclarations.Count == 0)
-                {
-                    Logger?.LogWarning("No declaration of goal number '{goalNumber}' is conform to specified rules", goalNumber);
-                    return null;
-                }
-                else if (validDeclarations.Count == 1)
-                    return validDeclarations[0];
-                else
-                    return validDeclarations.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[0];
             }
         }
 
-        ///// <summary>
-        ///// Applies the specified rules to a marker drop and returns if its conform to the rules
-        ///// </summary>
-        ///// <param name="markerDrop">the marker to be checked</param>
-        ///// <param name="markerValidationRules">the rules to be applied</param>
-        ///// <returns>true: marker is valid; false: marker is invalid</returns>
-        //public static bool IsMarkerValid(MarkerDrop markerDrop, List<IMarkerValidationRules> markerValidationRules)
-        //{
-        //    bool isValid = true;
-        //    foreach (IMarkerValidationRules markerValidationRule in markerValidationRules)
-        //    {
-        //        isValid &= markerValidationRule.CheckConformance(markerDrop);
-        //    }
-        //    return isValid;
-        //}
 
         /// <summary>
         /// Applies the specified rules to a marker drop and returns if its conform to the rules
         /// </summary>
         /// <param name="track">the track to be used</param>
         /// <param name="markerNumber">the target marker number</param>
-        /// <param name="markerValidationRules">the rules to be applied</param>
-        /// <returns>true: marker is valid; false: marker is invalid or doesn't exists</returns>
-        public static bool IsMarkerValid(Track track, int markerNumber, List<IMarkerValidationRules> markerValidationRules)
+        /// <param name="markerValidationRule">the rule to check if a declaration is valid. Use null to omit or use <see cref="MarkerAndRule"/> or <see cref="MarkerOrRule"/> to chain rules</param>
+        /// <param name="validationStrictness">the strictness of the validation</param>
+        /// <returns>a valid marker if one exists, null otherwise</returns>
+        public static MarkerDrop GetValidMarker(Track track, int markerNumber, IMarkerValidationRule markerValidationRule, ValidationStrictnessType validationStrictness)
         {
-            bool isValid = true;
-            MarkerDrop markerDrop = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == markerNumber);
-            if (markerDrop == null)
+            List<MarkerDrop> markers = track.MarkerDrops.Where(x => x.MarkerNumber == markerNumber).ToList();
+            List<MarkerDrop> validMarkers = [];
+            if (markers.Count == 0)
             {
-                //Console.WriteLine($"No Marker '{FirstMarkerNumber}' found");
-                Logger?.LogWarning("No Marker '{markerNumber}' found", markerNumber);
-                isValid = false;
+                Logger?.LogWarning("No marker found for marker number '{markerNumber}'", markerNumber);
+                return null;
             }
             else
             {
-                if (markerValidationRules?.Count > 0)
+                foreach (MarkerDrop marker in markers)
                 {
-                    foreach (IMarkerValidationRules markerValidationRule in markerValidationRules)
+                    if (markerValidationRule?.IsComplaintToRule(marker) ?? true)
                     {
-                        isValid &= markerValidationRule.IsComplaintToRule(markerDrop);
+                        validMarkers.Add(marker);
                     }
                 }
-                if (!isValid)
+            }
+            if (validMarkers.Count == 0)
+            {
+                Logger?.LogWarning("No marker of marker number '{markerNumber}' is conform to specified rules", markerNumber);
+                return null;
+            }
+            else
+            {
+                switch (validationStrictness)
                 {
-                    Logger?.LogWarning("Marker '{markerNumber}' is not conform to specified rules", markerNumber);
+                    case ValidationStrictnessType.First:
+                        {
+                            if (markers.Contains(validMarkers[0]))
+                            {
+                                return validMarkers[0];
+                            }
+                            else
+                            {
+                                Logger?.LogWarning("The first valid marker for marker number '{markerNumber}' is not the first marker", markerNumber);
+                                return null;
+                            }
+                        }
+                    case ValidationStrictnessType.FirstValid:
+                        Logger?.LogInformation("Detected '{numberOfValidMarkers}' valid markers for marker number '{markerNumber}'. The first valid marker will be used", validMarkers.Count, markerNumber);
+                        return validMarkers[0];
+                    case ValidationStrictnessType.LatestValid:
+                        Logger?.LogInformation("Detected '{numberOfValidMarkers}' valid markers for marker number '{markerNumber}'. The latest valid marker will be used", validMarkers.Count, markerNumber);
+                        return validMarkers.MaxBy(x => x.MarkerLocation.TimeStamp);
+                    default:
+                        {
+                            Logger?.LogError("Unknown validation strictness type '{validationStrictness}'", validationStrictness);
+                            return null;
+                        }
                 }
             }
-            return isValid;
         }
     }
 }

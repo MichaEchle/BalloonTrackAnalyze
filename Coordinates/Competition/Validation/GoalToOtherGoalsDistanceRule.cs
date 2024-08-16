@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Competition
 {
-    public class GoalToOtherGoalsDistanceRule : IDeclarationValidationRules
+    public class GoalToOtherGoalsDistanceRule : IDeclarationValidationRule
     {
         #region Properties
 

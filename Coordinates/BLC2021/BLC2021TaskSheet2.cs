@@ -228,13 +228,13 @@ namespace BLC2021
                 MarkerTimingRule markerTimingRule3 = new();
                 markerTimingRule3.SetupRule(40, 45);
 
-                markerOrRule.SetupRule(new List<IMarkerValidationRules> { markerTimingRule1, markerTimingRule2, markerTimingRule3 });
+                markerOrRule.SetupRule(new List<IMarkerValidationRule> { markerTimingRule1, markerTimingRule2, markerTimingRule3 });
 
                 MarkerToGoalDistanceRule markerToGoalDistanceRule = new();
                 markerToGoalDistanceRule.SetupRule(double.NaN, 300.0, true, true, Task5_GoalNumber);
 
 
-                List<IMarkerValidationRules> markerValidationRules = [markerOrRule, markerToGoalDistanceRule];
+                List<IMarkerValidationRule> markerValidationRules = [markerOrRule, markerToGoalDistanceRule];
                 HesitationWaltzTask task5 = new();
                 task5.SetupHWZ(5, CalculateGoalsTask5, Task5_MarkerNumber, true, markerValidationRules);
 
@@ -356,7 +356,7 @@ namespace BLC2021
                     declarationToGoalDistanceRule.SetupRule(5000.0, double.NaN);
                     DeclarationToGoalHeightRule declarationToGoalHeightRule = new();
                     declarationToGoalHeightRule.SetupRule(CoordinateHelpers.ConvertToMeter(1000), double.NaN, DeclarationToGoalHeightRule.HeightDifferenceType.PositiveDifferenceOnly, true);
-                    List<IDeclarationValidationRules> declarationValidationRules = [declarationToGoalDistanceRule, declarationToGoalHeightRule];
+                    List<IDeclarationValidationRule> declarationValidationRules = [declarationToGoalDistanceRule, declarationToGoalHeightRule];
                     foreach (string igcFile in igcFiles)
                     {
                         if (!Coordinates.Parsers.BalloonLiveParser.ParseFile(igcFile, out Track track))

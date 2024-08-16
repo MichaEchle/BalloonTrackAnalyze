@@ -10,7 +10,7 @@ namespace Competition
 {
     public class DonutTask : ICompetitionTask
     {
-        [JsonIgnore()]
+        [JsonIgnore]
         private readonly ILogger<DonutTask> Logger=LogConnector.LoggerFactory.CreateLogger<DonutTask>();    
 
         #region Properties
@@ -95,15 +95,24 @@ namespace Competition
             get; set;
         } = true;
 
+
         /// <summary>
-        /// List of rules for declaration validation
-        /// <para>optional; leave list empty to omit</para>
+        /// The rule that defines if a declaration is valid
+        /// <para>optional. use null to omit</para>
+        /// <para>use <see cref="DeclarationAndRule"/> or <see cref="DeclarationOrRule"/> to chain multiple rules together</para>
         /// </summary>
-        [JsonIgnore]
-        public List<IDeclarationValidationRules> DeclarationValidationRules
+        public IDeclarationValidationRule DeclarationValidationRule
         {
             get; set;
-        } = [];
+        } = null;
+
+        /// <summary>
+        /// The strictness by which validation rules are enforced
+        /// </summary>
+        public ValidationStrictnessType ValidationStrictness
+        {
+            get; set;
+        } = ValidationStrictnessType.LatestValid;
         #endregion
 
         #region API
@@ -119,7 +128,7 @@ namespace Competition
             result = 0.0;
             List<(int trackPointNumber, Coordinate coordinate)> trackPointsInDonut = [];
 
-            Declaration targetDeclaration = ValidationHelper.GetValidDeclaration(track, GoalNumber, DeclarationValidationRules);
+            Declaration targetDeclaration = ValidationHelper.GetValidDeclaration(track, GoalNumber, DeclarationValidationRule, ValidationStrictness);
             if (targetDeclaration == null)
             {
                 Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No valid goal found for goal '#{goalNumber}'", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), GoalNumber);
@@ -214,8 +223,12 @@ namespace Competition
         /// <param name="lowerBoundary">Lower boundary of the donut in meter (optional; use double.NaN to omit)</param>
         /// <param name="upperBoundary">Upper boundary of the donut in meter (optional; use double.NaN to omit)</param>
         /// <param name="isReEntranceAllowed">Specify whether or not re-entrance in the donut is allowed (mandatory)</param>
-        /// <param name="declarationValidationRules">List of rules for declaration validation (optional; leave list empty to omit)</param>
-        public void SetupDonut(int taskNumber, int goalNumber, int numberOfDeclarations, double innerRadius, double outerRadius, double lowerBoundary, double upperBoundary, bool isReEntranceAllowed, List<IDeclarationValidationRules> declarationValidationRules)
+        /// <param name="declarationValidationRule"> Defines the rule to validate a declaration
+        /// <para>optional. use null to omit</para>
+        /// <para>use <see cref="DeclarationAndRule"/> or <see cref="DeclarationOrRule"/> to chain multiple rules together</para>
+        /// </param>
+        /// <param name="validationStrictness">Defines the strictness by which validation rules are enforced</param>
+        public void SetupDonut(int taskNumber, int goalNumber, int numberOfDeclarations, double innerRadius, double outerRadius, double lowerBoundary, double upperBoundary, bool isReEntranceAllowed, IDeclarationValidationRule declarationValidationRule,ValidationStrictnessType validationStrictness)
         {
             TaskNumber = taskNumber;
             GoalNumber = goalNumber;
@@ -225,7 +238,8 @@ namespace Competition
             LowerBoundary = lowerBoundary;
             UpperBoundary = upperBoundary;
             IsReEntranceAllowed = isReEntranceAllowed;
-            DeclarationValidationRules = declarationValidationRules;
+            DeclarationValidationRule = declarationValidationRule;
+            ValidationStrictness = validationStrictness;
         }
 
         public override string ToString()

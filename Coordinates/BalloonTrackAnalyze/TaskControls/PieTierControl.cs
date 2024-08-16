@@ -91,7 +91,7 @@ namespace BalloonTrackAnalyze.TaskControls
                     rbUpperBoundaryFeet.Checked = false;
                 }
                 lbRules.Items.Clear();
-                foreach (IDeclarationValidationRules rule in Tier.DeclarationValidationRules)
+                foreach (IDeclarationValidationRule rule in Tier.DeclarationValidationRules)
                 {
                     lbRules.Items.Add(rule);
                 }
@@ -179,10 +179,10 @@ namespace BalloonTrackAnalyze.TaskControls
             {
                 if (IsNewTier)
                     Tier = new PieTask.PieTier();
-                List<IDeclarationValidationRules> declarationValidationRules = [];
+                List<IDeclarationValidationRule> declarationValidationRules = [];
                 foreach (object item in lbRules.Items)
                 {
-                    if (item is IDeclarationValidationRules declarationValidationRule)
+                    if (item is IDeclarationValidationRule declarationValidationRule)
                         declarationValidationRules.Add(declarationValidationRule);
                 }
                 Tier.SetupPieTier(goalNumber, radius, isReentranceAllowed, multiplier, lowerBoundary, upperBoundary, declarationValidationRules);

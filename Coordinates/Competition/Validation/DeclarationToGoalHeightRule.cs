@@ -5,7 +5,7 @@ using System;
 
 namespace Competition
 {
-    public class DeclarationToGoalHeightRule : IDeclarationValidationRules
+    public class DeclarationToGoalHeightRule : IDeclarationValidationRule
     {
         #region Enum(s)
 

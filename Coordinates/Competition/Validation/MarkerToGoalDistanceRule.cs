@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Competition
 {
-    public class MarkerToGoalDistanceRule : IMarkerValidationRules
+    public class MarkerToGoalDistanceRule : IMarkerValidationRule
     {
         #region Properties
 

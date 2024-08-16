@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Competition.Validation
 {
-    public class MarkerAndRule : IMarkerValidationRules
+    public class MarkerAndRule : IMarkerValidationRule
     {
-        public List<IMarkerValidationRules> ValidationRules
+        public List<IMarkerValidationRule> ValidationRules
         {
             get; set;
         }
@@ -22,7 +22,7 @@ namespace Competition.Validation
             return isConform;
         }
 
-        public void SetupRule(List<IMarkerValidationRules> rules)
+        public void SetupRule(List<IMarkerValidationRule> rules)
         {
             ValidationRules = rules;
         }
