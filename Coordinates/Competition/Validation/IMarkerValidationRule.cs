@@ -3,10 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Competition
+namespace Competition;
+
+public interface IMarkerValidationRule
 {
-    public interface IMarkerValidationRule
-    {
-        public bool IsComplaintToRule(MarkerDrop marker);
-    }
+    public bool IsComplaintToRule(MarkerDrop marker);
 }

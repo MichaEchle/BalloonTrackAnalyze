@@ -6,36 +6,35 @@ using System;
 using System.Windows.Forms;
 using UILoggingProvider;
 
-namespace BalloonTrackAnalyze
+namespace BalloonTrackAnalyze;
+
+static class Program
 {
-    static class Program
+    /// <summary>
+    ///  The main entry point for the application.
+    /// </summary>
+    [STAThread]
+    static void Main()
     {
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        static void Main()
-        {
-            Application.SetHighDpiMode(HighDpiMode.SystemAware);
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            var uiLoggerProvider = UILoggerProvider.Instance;
-            var builder = Host.CreateDefaultBuilder()
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.AddProvider(uiLoggerProvider);
-                })
-                .ConfigureServices((_, services) =>
-                {
-                    services.AddLogging();
-                });
+        Application.SetHighDpiMode(HighDpiMode.SystemAware);
+        Application.EnableVisualStyles();
+        Application.SetCompatibleTextRenderingDefault(false);
+        var uiLoggerProvider = UILoggerProvider.Instance;
+        var builder = Host.CreateDefaultBuilder()
+            .ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                logging.AddProvider(uiLoggerProvider);
+            })
+            .ConfigureServices((_, services) =>
+            {
+                services.AddLogging();
+            });
 
-            var host = builder.Build();
+        var host = builder.Build();
 
-            var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
-            LogConnector.LoggerFactory = loggerFactory;
-            Application.Run(new Form1());
-        }
+        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+        LogConnector.LoggerFactory = loggerFactory;
+        Application.Run(new Form1());
     }
 }
