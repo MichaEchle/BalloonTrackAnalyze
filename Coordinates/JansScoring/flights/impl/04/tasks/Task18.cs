@@ -67,6 +67,7 @@ public class Task18 : TaskFON
         double distanceFromDeclarationToDeclaredGoal = CalculationHelper.Calculate2DDistance(declaration.DeclaredGoal,
             declaration.PositionAtDeclaration, Flight.getCalculationType());
 
+        comment += $"D-M: {NumberHelper.formatDoubleToStringAndRound(distanceFromMarkerToDeclaration)} | D-D: {NumberHelper.formatDoubleToStringAndRound(distanceFromDeclarationToDeclaredGoal)} | ";
         result = distanceFromMarkerToDeclaration / distanceFromDeclarationToDeclaredGoal;
     }
 
