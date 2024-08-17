@@ -1,12 +1,12 @@
 ﻿using Coordinates;
 using JansScoring.calculation;
-using JansScoring.flights.impl._03.tasks;
 using JansScoring.flights.impl._04.tasks;
+using JansScoring.flights.impl._05.tasks;
 using System;
 
-namespace JansScoring.flights.impl._04;
+namespace JansScoring.flights.impl._05;
 
-public class Flight04 : Flight
+public class Flight05 : Flight
 {
     public override int getFlightNumber()
     {
@@ -15,7 +15,7 @@ public class Flight04 : Flight
 
     public override DateTime getStartOfLaunchPeriode()
     {
-        return new DateTime(2024, 08, 16, 04, 00, 00);
+        return new DateTime(2024, 08, 17, 04, 00, 00);
     }
 
     public override int launchPeriode()
@@ -30,33 +30,22 @@ public class Flight04 : Flight
 
     public override int distanceToAllGoals()
     {
-        return 750;
+        return 1000;
     }
 
     public override string getTracksPath()
     {
-        return @"C:\Users\Jan\Documents\scoring\wieselburg_2024\flight04\tracks";
+        return @"C:\Users\Jan\Documents\scoring\wieselburg_2024\flight05\tracks";
     }
 
     public override Task[] getTasks()
     {
-        Task14 task14 = new Task14(this);
-        return new Task[]
-        {
-            task14,
-            new Task15(this, task14),
-           /*
-            *  new Task16(this),
-            *  new Task17(this),
-            */
-            new Task18(this)
-
-        };
+        return new Task[] { new Task22(this) };
     }
 
     public override CalculationType getCalculationType()
     {
-        return CalculationType.UTM;
+        return CalculationType.Haversin;
     }
 
     public override double getSeperationAltitudeFeet()
