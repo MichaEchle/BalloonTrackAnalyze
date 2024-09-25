@@ -2,6 +2,9 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using System.Linq.Expressions;
+using System.Xml.Xsl;
 using static System.Math;
 
 namespace Coordinates;
@@ -27,13 +30,13 @@ public static class CoordinateHelpers
 
 
 
-    internal static class WSG84Parameters
-    {
+    //internal static class WSG84Parameters
+    //{
 
-        internal static double SEMI_MAJOR_AXIS = 6_378_137.0;
-        internal static double EARTH_FLATTENING = 1.0 / 298.257_223_563;
-        internal static double SEMI_MINOR_AXIS = 6_356_752.314_245;
-    }
+    //    internal static double SEMI_MAJOR_AXIS = 6_378_137.0;
+    //    internal static double EARTH_FLATTENING = 1.0 / 298.257_223_563;
+    //    internal static double SEMI_MINOR_AXIS = 6_356_752.314_245;
+    //}
 
     /// <summary>
     /// Convert a part of coordinate from degree minute notation to decimal degree
@@ -599,5 +602,40 @@ public static class CoordinateHelpers
     {
         CoordinateSharp.Coordinate coordinateSharp = new(latitude, longitude);
         return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", coordinateSharp.UTM.Easting, coordinateSharp.UTM.Northing);
+    }
+
+    public static (double x, double y, double z) ConvertToCartesian(Coordinate coordinate, bool useGPSAltitude)
+    {
+        ArgumentNullException.ThrowIfNull(coordinate);
+
+        CoordinateSharp.Coordinate tempCoordiante = new(coordinate.Latitude, coordinate.Longitude);
+        CoordinateSharp.ECEF ecefCoordinate = new(tempCoordiante, new CoordinateSharp.Distance(useGPSAltitude ? coordinate.AltitudeGPS : coordinate.AltitudeBarometric, CoordinateSharp.DistanceType.Meters));
+
+
+        return (ecefCoordinate.X, ecefCoordinate.Y, ecefCoordinate.Z);
+    }
+
+    public static (double xTransform, double yTransform, double zTransform) HelmertTransformation((double x, double y, double z) input, (double tx, double ty, double tz) translation, (double sx, double sy, double sz) scaling, (double rx, double ry, double rz) rotation)
+    {
+
+        //output= input + translation + scaling * input + rotation * input
+        //where output, input, translation and scaling are vectors
+        //and rotation is a 3x3 matrix with the following values
+        //| 0 , -rz, ry|
+        //| rz,  0, -rx|
+        //|-ry, rx,  0 |
+
+        double xTransform = input.x + translation.tx + scaling.sx * input.x - rotation.rz * input.x + rotation.ry * input.x;
+        double yTransform = input.y + translation.ty + scaling.sy * input.y + rotation.rz * input.y - rotation.rx * input.y;
+        double zTransform = input.z + translation.tz + scaling.sz * input.z - rotation.ry * input.z + rotation.rx * input.z;
+
+        return (xTransform, yTransform, zTransform);
+    }
+
+    public static Coordinate ConvertToLongitudeLatitude(double x, double y, double z)
+    {
+        CoordinateSharp.ECEF ecefCoordinate = new(x, y, z);
+        CoordinateSharp.Coordinate coordinateSharp = CoordinateSharp.ECEF.ECEFToLatLong(ecefCoordinate);
+        return new Coordinate(coordinateSharp.Latitude.DecimalDegree, coordinateSharp.Longitude.DecimalDegree, ecefCoordinate.GeoDetic_Height.Meters, ecefCoordinate.GeoDetic_Height.Meters, DateTime.Now);
     }
 }
