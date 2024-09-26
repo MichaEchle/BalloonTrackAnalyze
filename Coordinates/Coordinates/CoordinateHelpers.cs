@@ -2,9 +2,6 @@
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Linq.Expressions;
-using System.Xml.Xsl;
 using static System.Math;
 
 namespace Coordinates;
@@ -604,38 +601,84 @@ public static class CoordinateHelpers
         return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", coordinateSharp.UTM.Easting, coordinateSharp.UTM.Northing);
     }
 
-    public static (double x, double y, double z) ConvertToCartesian(Coordinate coordinate, bool useGPSAltitude)
-    {
-        ArgumentNullException.ThrowIfNull(coordinate);
 
-        CoordinateSharp.Coordinate tempCoordiante = new(coordinate.Latitude, coordinate.Longitude);
-        CoordinateSharp.ECEF ecefCoordinate = new(tempCoordiante, new CoordinateSharp.Distance(useGPSAltitude ? coordinate.AltitudeGPS : coordinate.AltitudeBarometric, CoordinateSharp.DistanceType.Meters));
+    ///// <summary>
+    ///// Converts the given <paramref name="coordinate"/> to Cartesian coordinates.
+    ///// </summary>
+    ///// <param name="coordinate">The coordinate to convert.</param>
+    ///// <param name="useGPSAltitude">Specifies whether to use GPS altitude or barometric altitude.</param>
+    ///// <returns>The Cartesian coordinates (x, y, z) of the given coordinate.</returns>
+    //private static (double x, double y, double z) ConvertLongitudeLatitudeToCartesian(Coordinate coordinate, bool useGPSAltitude)
+    //{
+    //    ArgumentNullException.ThrowIfNull(coordinate);
+
+    //    CoordinateSharp.Coordinate tempCoordiante = new(coordinate.Latitude, coordinate.Longitude);
+    //    CoordinateSharp.ECEF ecefCoordinate = new(tempCoordiante, new CoordinateSharp.Distance(useGPSAltitude ? coordinate.AltitudeGPS : coordinate.AltitudeBarometric, CoordinateSharp.DistanceType.Meters));
+
+    //    return (ecefCoordinate.X, ecefCoordinate.Y, ecefCoordinate.Z);
+    //}
 
 
-        return (ecefCoordinate.X, ecefCoordinate.Y, ecefCoordinate.Z);
-    }
+    ///// <summary>
+    ///// Transforms the given <paramref name="coordinate"/> using the Helmert transformation.
+    ///// </summary>
+    ///// <param name="input">the input value</param>
+    ///// <param name="translation">the translation (shifting) to the new coordinate system</param>
+    ///// <param name="scaling">the scaling to the new coordinate system</param>
+    ///// <param name="rotation">the rotation to the new coordinate system</param>
+    ///// <returns></returns>
+    //private static (double xTransform, double yTransform, double zTransform) HelmertTransformation((double x, double y, double z) input, (double tx, double ty, double tz) translation, (double sx, double sy, double sz) scaling, (double rx, double ry, double rz) rotation)
+    //{
 
-    public static (double xTransform, double yTransform, double zTransform) HelmertTransformation((double x, double y, double z) input, (double tx, double ty, double tz) translation, (double sx, double sy, double sz) scaling, (double rx, double ry, double rz) rotation)
-    {
+    //    //output= input + translation + scaling * input + rotation * input
+    //    //where output, input, translation and scaling are vectors
+    //    //and rotation is a 3x3 matrix with the following values
+    //    //| 0 , -rz, ry|
+    //    //| rz,  0, -rx|
+    //    //|-ry, rx,  0 |
 
-        //output= input + translation + scaling * input + rotation * input
-        //where output, input, translation and scaling are vectors
-        //and rotation is a 3x3 matrix with the following values
-        //| 0 , -rz, ry|
-        //| rz,  0, -rx|
-        //|-ry, rx,  0 |
+    //    double xTransform = input.x + translation.tx + scaling.sx * input.x - rotation.rz * input.x + rotation.ry * input.x;
+    //    double yTransform = input.y + translation.ty + scaling.sy * input.y + rotation.rz * input.y - rotation.rx * input.y;
+    //    double zTransform = input.z + translation.tz + scaling.sz * input.z - rotation.ry * input.z + rotation.rx * input.z;
 
-        double xTransform = input.x + translation.tx + scaling.sx * input.x - rotation.rz * input.x + rotation.ry * input.x;
-        double yTransform = input.y + translation.ty + scaling.sy * input.y + rotation.rz * input.y - rotation.rx * input.y;
-        double zTransform = input.z + translation.tz + scaling.sz * input.z - rotation.ry * input.z + rotation.rx * input.z;
+    //    return (xTransform, yTransform, zTransform);
+    //}
 
-        return (xTransform, yTransform, zTransform);
-    }
+    ///// <summary>
+    ///// Converts the given Cartesian coordinates to longitude and latitude.
+    ///// </summary>
+    ///// <param name="x">The x-coordinate.</param>
+    ///// <param name="y">The y-coordinate.</param>
+    ///// <param name="z">The z-coordinate.</param>
+    ///// <returns>The converted <see cref="Coordinate"/> object.</returns>
+    //private static Coordinate ConvertCartesianToLongitudeLatitude(double x, double y, double z)
+    //{
+    //    CoordinateSharp.ECEF ecefCoordinate = new(x, y, z);
+    //    CoordinateSharp.Coordinate coordinateSharp = CoordinateSharp.ECEF.ECEFToLatLong(ecefCoordinate);
+    //    return new Coordinate(coordinateSharp.Latitude.DecimalDegree, coordinateSharp.Longitude.DecimalDegree, ecefCoordinate.GeoDetic_Height.Meters, ecefCoordinate.GeoDetic_Height.Meters, DateTime.Now);
+    //}
 
-    public static Coordinate ConvertToLongitudeLatitude(double x, double y, double z)
-    {
-        CoordinateSharp.ECEF ecefCoordinate = new(x, y, z);
-        CoordinateSharp.Coordinate coordinateSharp = CoordinateSharp.ECEF.ECEFToLatLong(ecefCoordinate);
-        return new Coordinate(coordinateSharp.Latitude.DecimalDegree, coordinateSharp.Longitude.DecimalDegree, ecefCoordinate.GeoDetic_Height.Meters, ecefCoordinate.GeoDetic_Height.Meters, DateTime.Now);
-    }
+    //public static Coordinate ConvertWGS84ToETRS89(Coordinate coordinate)
+    //{
+    //    ArgumentNullException.ThrowIfNull(coordinate);
+
+    //    //http://etrs89.ensg.ign.fr/pub/EUREF-TN-1-Mar-04-2024.pdf
+
+    //    int distanceToEpochReference = DateTime.Now.Year - 1989;
+
+    //    (double x, double y, double z) cartesianCoordinate = ConvertLongitudeLatitudeToCartesian(coordinate, true);
+    //    double xTranslate = (54.0 + (0.0 * distanceToEpochReference)) / 1_000;//constant + rate times years passed / 1,000 (millimeter to meter)
+    //    double yTranslate = (51.0 + (0.0 * distanceToEpochReference)) / 1_000;//constant + rate times years passed / 1,000 (millimeter to meter)
+    //    double zTranslate = (-48.0 + (0.0 * distanceToEpochReference)) / 1_000;//constant + rate times years passed / 1,000 (millimeter to meter)
+    //    double xScale = (0.0 + (0.0 * distanceToEpochReference)) / 1.0e9;//constant + rate times years passed / 1,000,000,000
+    //    double yScale = (0.0 + (0.0 * distanceToEpochReference)) / 1.0e9;//constant + rate times years passed / 1,000,000,000
+    //    double zScale = (0.0 + (0.0 * distanceToEpochReference)) / 1.0e9;//constant + rate times years passed / 1,000,000,000
+    //    double xRotation = coordinate.Latitude, (0.0 + (0.081 * distanceToEpochReference) / 1_000); // constant + rate times years passed / 1000 (milliarcseconds to arcseconds)
+    //    double yRotation = coordinate.Latitude, (0.0 + (0.49 * distanceToEpochReference)/ 1_000); // constant + rate times years passed / 1000 (milliarcseconds to arcseconds)
+    //    double zRotation = coordinate.Latitude, (0.0 + (-0.792 * distanceToEpochReference) / 1_000); // constant + rate times years passed / 1000 (milliarcseconds to arcseconds)
+    //    (double xTransform, double yTransform, double zTransform) transformedCartesianCoordinate = HelmertTransformation(cartesianCoordinate, (xTranslate, yTranslate, zTranslate), (xScale, yScale, zScale), (xRotation, yRotation, zRotation));
+    //    return ConvertCartesianToLongitudeLatitude(transformedCartesianCoordinate.xTransform, transformedCartesianCoordinate.yTransform, transformedCartesianCoordinate.zTransform);
+
+    //}
+
 }
