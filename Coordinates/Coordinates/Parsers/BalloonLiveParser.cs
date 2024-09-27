@@ -146,7 +146,7 @@ public static class BalloonLiveParser
                 if (configLine.StartsWith("LXXX BLSSN"))
                 {
                     string sensBoxSerialNumber = configLine.Split('=').Last();
-                    if (track.AdditionalPropertiesFromIGCFile.TryAdd("SensBoxSerialNumber", sensBoxSerialNumber))
+                    if (!track.AdditionalPropertiesFromIGCFile.TryAdd("SensBoxSerialNumber", sensBoxSerialNumber))
                     {
                         Logger?.LogWarning("Failed to add SensBoxSerialNumber '{SensBoxSerialNumber}' to the track", sensBoxSerialNumber);
                     }
@@ -155,7 +155,7 @@ public static class BalloonLiveParser
                 {
                     string loggerInterval = configLine.Split("=").Last();
                     if (!track.AdditionalPropertiesFromIGCFile.ContainsKey("LoggerInterval"))
-                        track.AdditionalPropertiesFromIGCFile.Add("LoggerInterval", loggerInterval.Replace("s",""));
+                        track.AdditionalPropertiesFromIGCFile.Add("LoggerInterval", loggerInterval.Replace("s", ""));
                 }
             }
 
@@ -224,12 +224,22 @@ public static class BalloonLiveParser
                 else
                 {
                     Logger?.LogWarning("Caution, change of position source detected at '{timestamp}': {sourceType}' position source '{source}' {blsSerialNumber}", timeStamp.ToString("dd-MMM-yyyy HH:mm:ss"), (isPrimarySource ? "primary" : "fallback"), (isBallonLiveSensor ? "Ballon Live Sensor" : "Phone Internal"), (isBallonLiveSensor ? $"with serial number '{blsSerialNumber}'" : ""));
-                    if (!track.AdditionalPropertiesFromIGCFile.TryAdd("Change of position source", "yes"))
-                        Logger?.LogWarning("Failed to add 'Change of position source' to the track");
+                    if (!track.AdditionalPropertiesFromIGCFile.ContainsKey("Change of position source"))
+                    {
+                        if (!track.AdditionalPropertiesFromIGCFile.TryAdd("Change of position source", "yes"))
+                        {
+                            Logger?.LogWarning("Failed to add 'Change of position source' to the track");
+                        }
+                    }
                 }
             }
-            if (!track.AdditionalPropertiesFromIGCFile.TryAdd("Change of position source", "no"))
-                Logger?.LogWarning("Failed to add 'Change of position source' to the track");
+            if (!track.AdditionalPropertiesFromIGCFile.ContainsKey("Change of position source"))
+            {
+                if (!track.AdditionalPropertiesFromIGCFile.TryAdd("Change of position source", "no"))
+                {
+                    Logger?.LogWarning("Failed to add 'Change of position source' to the track");
+                }
+            }
             string[] trackPointLines = lines.Where(x => x.StartsWith('B')).ToArray();
             foreach (string trackPointLine in trackPointLines)
             {
@@ -291,8 +301,8 @@ public static class BalloonLiveParser
             {
 
                 Declaration declaration;
-                if (!ParseGoalDeclaration(goalDeclarationLine, 
-                    date, 
+                if (!ParseGoalDeclaration(goalDeclarationLine,
+                    date,
                     declaredAltitudeIsInFeet,
                     defaultGoalAlitude,
                     referenceCoordinate,
@@ -566,7 +576,7 @@ public static class BalloonLiveParser
     /// <param name="referenceCoordinate">a reference coordinate to fill up the missing info from utm goal declaration. If the reference is null, the position of declaration will be used instead</param>
     /// <param name="declaration">output parameter. the declaration</param>
     /// <returns>true:success; false:error</returns>
-    private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet,double defaultGoalAltitude,
+    private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, double defaultGoalAltitude,
         Coordinate referenceCoordinate,
         bool declaration_HasAdditionalLatitudeDecimals,
         int declaration_StartOfAdditionalLatitudeDecimals,
