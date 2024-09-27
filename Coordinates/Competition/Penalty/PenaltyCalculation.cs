@@ -55,7 +55,8 @@ public static class PenaltyCalculation
                 double infrigmentInFeet = CoordinateHelpers.ConvertToFeet(altitude - lowerAltitudeOfBluePZ);
                 penalty += infrigmentInFeet * trackPointInterval / 100.0;
             }
-            double maxAltitudeInFeet = useGPSAltitude ? CoordinateHelpers.ConvertToFeet(violatingTrackPoints.Max(x => x.AltitudeGPS)) : CoordinateHelpers.ConvertToFeet(violatingTrackPoints.Max(x => x.AltitudeBarometric));
+
+            double maxAltitudeInFeet = useGPSAltitude ? CoordinateHelpers.ConvertToFeet(track.TrackPoints.Max(x => x.AltitudeGPS)) : CoordinateHelpers.ConvertToFeet(track.TrackPoints.Max(x => x.AltitudeBarometric));
             penalty = Math.Round(penalty / 10.0, 0, MidpointRounding.AwayFromZero) * 10.0;//Round to tens digit
             penalties.Add((track.Pilot.PilotNumber, numberOfViolatingTrackPoints, TimeSpan.FromSeconds(trackPointInterval * numberOfViolatingTrackPoints), maxAltitudeInFeet, (int)penalty));
         }
@@ -296,7 +297,7 @@ public static class PenaltyCalculation
             {
                 Logger?.LogWarning("Failed to estimate launch and landing points for pilot no. {PilotNumber}, the first and last track point will be used instead", referenceTrack.Pilot.PilotNumber);
                 referenceLaunchPoint = referenceTrack.TrackPoints[0];
-                referenceLandingPoint = referenceTrack.TrackPoints[referenceTrack.TrackPoints.Count - 1];
+                referenceLandingPoint = referenceTrack.TrackPoints[^1];
             }
             List<Coordinate> referenceCoordinates = referenceTrack.TrackPoints.Where(x => x.TimeStamp > referenceLaunchPoint.TimeStamp + gracePeriodAfterLaunch).Where(x => x.TimeStamp < referenceLandingPoint.TimeStamp - gracePeriodBeforeLanding).ToList();//Get all track points x seconds after launch and y seconds before landing
             for (int innerIndex = outerIndex + 1; innerIndex < tracks.Count; innerIndex++)
@@ -317,7 +318,7 @@ public static class PenaltyCalculation
                 {
                     List<Coordinate> coordinates = otherCoordinates.Where(x => x.TimeStamp > referenceCoordinate.TimeStamp - TimeSpan.FromSeconds(analyzeWindowInSeconds / 2))
                         .Where(x => x.TimeStamp < referenceCoordinate.TimeStamp + TimeSpan.FromSeconds(analyzeWindowInSeconds / 2)).
-                        Where(x => CoordinateHelpers.Calculate3DDistance(referenceCoordinate, x, useGPSAltitude) < 300).ToList();//get all coordinates with in the analyzing window and less than 75m distance
+                        Where(x => CoordinateHelpers.Calculate3DDistance(referenceCoordinate, x, useGPSAltitude) < 75).ToList();//get all coordinates with in the analyzing window and less than 75m distance
                     if (coordinates.Count > 0)
                     {
                         if (violations.Count == 0)
