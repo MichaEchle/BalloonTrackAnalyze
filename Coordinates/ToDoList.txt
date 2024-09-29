@@ -1,14 +1,67 @@
-Create PZ Checking (done some ground work, but defining shapes and added methods to calculate the distance with the shape)
-	yellow PZ (around power cords, check if take off and landing are not is close approximate)
-Estimate Launch and Landing Position (done but needs more testing)
-Creating Picking Tool to let user selected specific markers, declarations etc from all tracks and put into one file
-Calculate scores from results
-Define a set of validation rules where only one or more have to be met. E.g. when a goal is open at different times, marker is valid if he is within one window not all
-	For now, Marker Timing Rules have been adapted to allow multiple opening and closing (added and / or rule that allows chaining of rules, needs testing)
-Create easy to read report with information about result calculation
-Dangerous Flying 8+/- m/s for 5 consecutive seconds (done needs testing)
-Check Flying above specified altitude (done needs testing)
+Architectural Changes to be made:
+- Competition
+	- Name
+	- Pilot mapping
+	- Altitude source (GPS or barometric)
+	- Default altitude if non declared
+	- Separation altitude
+	- Flights (no singletons)
+		- Date and Date of Day (AM/PM)
+		- Flight number
+		- Launch point (estimate from track or given CLP)
+		- Start period
+		- All goals (fixed or declared)
+		- Checks (e.g. ILP to all goals, dangerous flying)
+			- Penalties
+				- Calculation method
+				- Referred rule
+				- Common naming
+		- Tasks
+			- Task number
+			- Checks (e.g. min distance declaration to declared goal)
+				- Penalties
+					- Calculation method
+					- Referred rule
+					- Common naming
+			- Scoring period
+			- Result calculation
+		- Reporting
+			- Results
+			- Scores
+			- Penalties
+			- Checks
+			- Comments from result calculation and checks
+			- git commit
+	- PZs
+		- Based on 3D shape
+		- PZ type
+			- Red
+			- Yellow
+			- Blue
+		- Is active
+		- Check if track is within PZ
+			- Return yes/no, track points in PZ, time in PZ and penalty points
 
-Balloon Track Analyze:
-State how pilot mapping should look like,
-Allow semicolon as separator as well
+
+Branching strategy:
+- Master (stable / tested branch)
+- Develop (stable / untested)
+- Feature branches (use while adding general features e.g. PZ, Scoring, Reporting) (potentially unstable)
+- Competition branches (use for each competition, allows for competition specific changes) (potentially unstable)
+
+Features to be added:
+- Estimate Launch and Landing Position (done but needs improvement)
+- Creating Picking Tool to let user selected specific markers, declarations etc from all tracks and put into one file
+- Create easy to read report with information about result calculation
+- Create PZ checking (done some ground work, like defining shapes including methods to calculate the distance within the shape)
+- Add more types of tasks
+- Add more type of checks and penalties
+- Documentation
+- Checklist what and when to setup
+- Add Unit and Integration tests
+	- Add .igc files for testing
+
+Testing:
+- Calculate scores from results (done needs further testing)
+- Added and / or rule that allows chaining of rules, needs testing
+- Dangerous Flying 8+/- m/s for 5 consecutive seconds (done needs testing)
