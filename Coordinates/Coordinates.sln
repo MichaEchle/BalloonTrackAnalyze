@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UILoggingProvider", "UILogg
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggingConnector", "LoggingConnector\LoggingConnector.csproj", "{CA6AFA97-0F01-44D6-A33A-0E5BFF89C115}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResultsToScores", "ResultsToScores\ResultsToScores.csproj", "{214B02DB-C3A2-472B-BD50-1141C2DF6D39}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -71,6 +73,10 @@ Global
 		{CA6AFA97-0F01-44D6-A33A-0E5BFF89C115}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CA6AFA97-0F01-44D6-A33A-0E5BFF89C115}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CA6AFA97-0F01-44D6-A33A-0E5BFF89C115}.Release|Any CPU.Build.0 = Release|Any CPU
+		{214B02DB-C3A2-472B-BD50-1141C2DF6D39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{214B02DB-C3A2-472B-BD50-1141C2DF6D39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{214B02DB-C3A2-472B-BD50-1141C2DF6D39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{214B02DB-C3A2-472B-BD50-1141C2DF6D39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
