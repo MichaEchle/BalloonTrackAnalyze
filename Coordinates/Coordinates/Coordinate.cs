@@ -68,16 +68,20 @@ public class Coordinate
         AltitudeBarometric = altitudeBarometric;
         TimeStamp = timeStamp;
     }
-
-    public bool SetDefaultAltitude(double defautlAltitude)
+    /// <summary>
+    /// Allows to set the default altitude for the GPS and barometric altitude if they are zero
+    /// </summary>
+    /// <param name="defaultAltitude">the default altitude to be used in meters.</param>
+    /// <returns>true:success; false:error (Altitude was already set to non zero value)</returns>
+    public bool SetDefaultAltitude(double defaultAltitude)
     {
         if (AltitudeBarometric is not 0 || AltitudeGPS is not 0)
         {
             Logger?.LogError("Setting a default altitude is not allowed as the altitudes are not zero");
             return false;
         }
-        AltitudeGPS = defautlAltitude;
-        AltitudeBarometric = defautlAltitude;
+        AltitudeGPS = defaultAltitude;
+        AltitudeBarometric = defaultAltitude;
         return true;
     }
 
