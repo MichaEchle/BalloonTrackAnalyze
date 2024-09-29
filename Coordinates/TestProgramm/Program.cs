@@ -1,10 +1,13 @@
-﻿using Coordinates;
+﻿using Competition;
+using Coordinates;
 using Coordinates.Parsers;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace TestProgramm;
 
@@ -33,6 +36,23 @@ class Program
         //track.Declarations.Remove(declaration); // remove the old declaration
         //track.Declarations.Add(new Declaration(declaration.GoalNumber, newDeclaredGoal, declaration.PositionAtDeclaration, true, declaration.OrignalEastingDeclarationUTM, declaration.OrignalNorhtingDeclarationUTM)); // add a new one with correct declared goal.
 
+        GermanCup_DM2024 germanCup_DM2024 = new();
+        germanCup_DM2024.ChecksFlight4();
+
+        //if(!BalloonLiveParser.ParseFile(@"C:\TEMP\GermanCup_DM2024\Flight4_29_09_AM\E[GC2024]F[4]P[18]-tmGjRPfw4-018.igc",out Track track,null, 2000))
+        //{
+        //    Console.WriteLine("Failed to parse track");
+        //    return;
+        //}
+        //track.Declarations.Add(new Declaration(10,CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 482000, 5417770, 2000), CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 482000, 5417770, 2000), true, 8200, 1777));
+
+        //DonutTask t11_3DT_Task = new DonutTask();
+        //t11_3DT_Task.SetupDonut(11, 10, 1, 1500, 3000, double.NaN, double.NaN, true
+        //    , null, Competition.Validation.ValidationStrictnessType.LatestValid);
+        
+        //t11_3DT_Task.CalculateResults(track, true, out double result);
+
+        //Console.WriteLine(Math.Round(result,0,MidpointRounding.AwayFromZero));
         Console.ReadLine();
         //AccuracyEvaluation_GeodTest.CalculateDistances();
         //DirectoryInfo directoryInfo = new DirectoryInfo(@"C:\temp\Donut_DM2022");
