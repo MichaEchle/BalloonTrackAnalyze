@@ -13,13 +13,21 @@ public enum InfringementActionType
     InfringementPenalizes
 }
 
-public enum EvaluationReturnType
+public enum ReturnCriteriaType
 {
     WithoutInfringement,
     WithInfringement
 }
 
-public interface IConstraint<T> where T : class?
+/// <summary>
+/// Generic interface for constraints that defines the evaluation order, the action to take in case of infringement, the criteria of the evaluation and the targets of the constraint.
+/// </summary>
+/// <para>First, WithoutInfringement, InfringementInvalidates=> checks until the first valid is found, otherwise null is returned</para>
+/// <para>First, WithoutInfringement, InfringementPenalizes=> checks until the first valid is found, otherwise null is returned </para>
+/// <para>First, WithInfringement, InfringementInvalidates=> checks only the first entry, returns it if valid otherwise null</para></para>
+/// <para>First, WithInfringement, InfringementPenalizes=> checks until the first valid is found returns it with penalties (high amount of infringement may cause entry to be considered invalid rather then valid but with penalty), otherwise null</para>
+/// <typeparam name="T"></typeparam>
+public interface IConstraint<T>
 {
     public EvaluationOrderType EvaluationOrder
     {
@@ -31,7 +39,7 @@ public interface IConstraint<T> where T : class?
         get; init;
     }
 
-    public EvaluationReturnType EvaluationReturnType
+    public ReturnCriteriaType ReturnCriteria
     {
         get; init;
     }
@@ -44,12 +52,6 @@ public interface IConstraint<T> where T : class?
     public (T? selectedOrNull, double penalty) CheckConstraint();
 }
 
-//TODO How to create an API to cover these cases:
-// Use first no matter what
-// Use last no matter what
-// Use first with no infringement
-// Use last with no infringement
-// Use first with infringement
-// Use last with infringement
+
 
 

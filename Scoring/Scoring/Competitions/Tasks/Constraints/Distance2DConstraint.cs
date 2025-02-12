@@ -2,15 +2,8 @@
 
 namespace Scoring.Competitions.Tasks.Constraints;
 
-public class Distance2DConstraint : IConstraint<Coordinate>
+public class Distance2DConstraint : BaseConstraint<Coordinate>, IConstraint<Coordinate>
 {
-
-    public required List<Coordinate> ConstraintTargets
-    {
-        get;
-        init;
-    }
-
     public required List<Coordinate> ConstraintReferences
     {
         get;
@@ -29,69 +22,54 @@ public class Distance2DConstraint : IConstraint<Coordinate>
         init;
     }
 
-    public required EvaluationOrderType EvaluationOrder
+    public override (Coordinate? selectedOrNull, double penalty) CheckConstraint()
     {
-        get; init;
+        return CheckConstraint(InfringementCheck, PenaltyCalculation);
     }
 
-    public required InfringementActionType InfringementAction
+    private (bool, double) InfringementCheck(Coordinate coordinate)
     {
-        get; init;
-    }
-
-    public required EvaluationReturnType EvaluationReturnType
-    {
-        get; init;
-    }
-
-    public (Coordinate? selectedOrNull, double penalty) CheckConstraint()
-    {
-        if (EvaluationOrder==EvaluationOrderType.Last)
+        bool hasInfringement = false;
+        double infringementAmount = 0;
+        bool isMinimumDistanceSet = !double.IsNaN(MinimumDistance);
+        bool isMaximumDistanceSet = !double.IsNaN(MaximumDistance);
+        foreach (var reference in ConstraintReferences)
         {
-            ConstraintTargets.Reverse();
-        }
-        bool minimumDistanceSet = !double.IsNaN(MinimumDistance);
-        bool maximumDistanceSet = !double.IsNaN(MaximumDistance);
-        double penalty = 0;
-        Coordinate? selectedOrNull = null;
-        for (int i = 0; i < ConstraintTargets.Count; i++)
-        {
-            //bool isValid = true;
-            penalty = 0;
-            foreach (var reference in ConstraintReferences)
+            double distance = CoordinateMath.Calculate2DDistance(coordinate, reference);
+            switch (isMinimumDistanceSet, isMaximumDistanceSet)
             {
-                var distance = CoordinateMath.Calculate2DDistance(ConstraintTargets[i], reference);
-                bool isInBounds = (minimumDistanceSet, maximumDistanceSet) switch
-                {
-                    (true, true) => distance >= MinimumDistance && distance <= MaximumDistance,
-                    (true, false) => distance >= MinimumDistance,
-                    (false, true) => distance <= MaximumDistance,
-                    (false, false) => true,
-                };
-                //if (!isInBounds && !InfringementInvalidates)
-                //{
-                //    //TODO calculate temp penalty and add to penalty
-                //}
-                //isValid &= (isInBounds) || !InfringementInvalidates;
+                //TODO: check if infringement should be in percent rather than absolute value
+                case (true, true):
+                    hasInfringement |= distance < MinimumDistance || distance > MaximumDistance;
+                    if (distance < MinimumDistance)
+                    {
+                        infringementAmount += MinimumDistance - distance;
+                    }
+                    else if (distance > MaximumDistance)
+                    {
+                        infringementAmount += distance - MaximumDistance;
+                    }
+                    break;
+                case (true, false):
+                    hasInfringement |= distance < MinimumDistance;
+                    infringementAmount += MinimumDistance - distance;
+                    break;
+                case (false, true):
+                    hasInfringement |= distance > MaximumDistance;
+                    infringementAmount += distance - MaximumDistance;
+                    break;
+                case (false, false):
+                    hasInfringement |= false;
+                    break;
             }
-            //if (((int)ConstraintEvaluation & 0b10) == 0b10) // first or last valid
-            //{
-            //    if (isValid)
-            //    {
-            //        selectedOrNull = ConstraintTargets[i];
-            //        break;
-            //    }
-            //}
-            //else // first or last
-            //{
-            //    if (isValid)
-            //    {
-            //        selectedOrNull = ConstraintTargets[i];
-            //    }
-            //    break;
-            //}
         }
-        return (selectedOrNull, penalty);
+        return (hasInfringement, infringementAmount);
+    }
+
+    private int PenaltyCalculation(double infringementAmount)
+    {
+        //TODO convert infringement to penalty
+        throw new NotImplementedException();
     }
 }
 
