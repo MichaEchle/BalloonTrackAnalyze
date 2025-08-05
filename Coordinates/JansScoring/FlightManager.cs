@@ -1,8 +1,9 @@
 ﻿using Coordinates;
 using Coordinates.Parsers;
 using JansScoring.flights;
-using JansScoring.flights.impl._01;
-using JansScoring.flights.impl._02;
+using JansScoring.flights.impl.flight01;
+using JansScoring.flights.impl.flight02;
+using JansScoring.flights.impl.flight03;
 using JansScoring.pz_rework;
 using LoggerComponent;
 using System;
@@ -10,7 +11,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
 using Console = System.Console;
 using Task = JansScoring.flights.Task;
 
@@ -31,8 +31,9 @@ public class FlightManager
 
         flights.Add(1, new Flight01());
         flights.Add(2, new Flight02());
+        flights.Add(3, new Flight03());
 
-        scoreFlight(2);
+        scoreFlight(3);
     }
 
 

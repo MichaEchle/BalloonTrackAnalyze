@@ -49,4 +49,7 @@ public abstract class Task
     /// </summary>
     /// <returns></returns>
     public abstract DateTime GetScoringPeriodUntil();
+    
+    public static bool NORMAL_CALCULATION = false;
+    public static bool NO_RESULT = true;
 }
