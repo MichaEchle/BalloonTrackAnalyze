@@ -18,7 +18,7 @@
 
 
             _flightManager = new FlightManager();
-            _flightManager.register();
+            _flightManager.Register();
         }
     }
 }

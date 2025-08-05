@@ -34,17 +34,17 @@ public abstract class TaskJDG : Task
         if (GoalChecks.Use3DScoring(Flight, markerDrop, ref comment))
         {
             Coordinate movedGoal = goal.Clone();
-            movedGoal.AltitudeBarometric = Flight.getSeperationAltitudeMeters();
-            movedGoal.AltitudeGPS = Flight.getSeperationAltitudeMeters();
+            movedGoal.AltitudeBarometric = Flight.SeperationAltitudeMeters();
+            movedGoal.AltitudeGPS = Flight.SeperationAltitudeMeters();
 
             result = CoordinateHelpers.Calculate3DDistance(movedGoal, markerDrop.MarkerLocation,
-                Flight.useGPSAltitude(),
-                Flight.getCalculationType());
+                Flight.UseGPSAltitude(),
+                Flight.CalculationType());
 
         }
         else
         {
-            result = CalculationHelper.Calculate2DDistance(goal, markerDrop.MarkerLocation, Flight.getCalculationType());
+            result = CalculationHelper.Calculate2DDistance(goal, markerDrop.MarkerLocation, Flight.CalculationType());
         }
         GoalChecks.CorrectMMAResult(MMA(), ref result, ref comment);
     }

@@ -33,14 +33,14 @@ public abstract class TaskHNH : Task
             GoalChecks.MoveGoalHeightToSeperationAltitude(Flight, ref goals);
             List<double> distanceToAllGoals = CalculationHelper.calculate3DDistanceToAllGoals(markerDrop.MarkerLocation,
                 goals,
-                Flight.useGPSAltitude(), Flight.getCalculationType());
+                Flight.UseGPSAltitude(), Flight.CalculationType());
             result = distanceToAllGoals.Min();
         }
         else
         {
             List<double> distanceToAllGoals = CalculationHelper.calculate2DDistanceToAllGoals(markerDrop.MarkerLocation,
                 Goals(track.Pilot.PilotNumber),
-                Flight.getCalculationType());
+                Flight.CalculationType());
 
             result = distanceToAllGoals.Min();
         }

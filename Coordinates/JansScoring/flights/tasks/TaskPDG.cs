@@ -35,7 +35,7 @@ public abstract class TaskPDG : Task
 
         DeclarationChecks.CheckIfDeclarationWasBeforeMarkerDrop(declaration, markerDrop, ref comment);
 
-        result = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, markerDrop.MarkerLocation, Flight.useGPSAltitude(), Flight.getCalculationType());
+        result = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, markerDrop.MarkerLocation, Flight.UseGPSAltitude(), Flight.CalculationType());
     }
 
     public override Coordinate[] Goals(int pilot)

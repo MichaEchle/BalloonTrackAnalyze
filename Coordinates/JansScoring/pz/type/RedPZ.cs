@@ -22,9 +22,9 @@ public class RedPZ : PZ
     {
         comment = "";
         double disctanceBetweenRedPZ =
-            CalculationHelper.Calculate2DDistance(coordinate, centerCoordinate, flight.getCalculationType());
+            CalculationHelper.Calculate2DDistance(coordinate, centerCoordinate, flight.CalculationType());
         if (disctanceBetweenRedPZ <= radius &&
-            (flight.useGPSAltitude() ? coordinate.AltitudeGPS : coordinate.AltitudeBarometric) <=
+            (flight.UseGPSAltitude() ? coordinate.AltitudeGPS : coordinate.AltitudeBarometric) <=
             height)
         {
             return true;
@@ -35,8 +35,8 @@ public class RedPZ : PZ
 
     public double calculatePenalty(Flight flight, Coordinate entry, Coordinate exit, out double percentage)
     {
-        double distanceHorizontal = CalculationHelper.Calculate2DDistance(entry, exit, flight.getCalculationType());
-        double averageHeigtDiffrence = Math.Abs((flight.useGPSAltitude()
+        double distanceHorizontal = CalculationHelper.Calculate2DDistance(entry, exit, flight.CalculationType());
+        double averageHeigtDiffrence = Math.Abs((flight.UseGPSAltitude()
             ? entry.AltitudeGPS + exit.AltitudeGPS
             : entry.AltitudeBarometric + exit.AltitudeBarometric) / 2);
         double horizontalPercentage = (distanceHorizontal / radius * 2) * 100;

@@ -36,7 +36,7 @@ public class MarkerChecks
 
     public static void CheckScoringPeriode(Task task, MarkerDrop markerDrop, ref string comment)
     {
-        if (markerDrop.MarkerTime > task.GetScoringPeriodUntil())
+        if (markerDrop.MarkerTime > task.ScoringPeriodUntil())
         {
             comment += $"Markerdrop  {markerDrop.MarkerNumber} outside of ScoringPeriode | ";
         }
@@ -47,7 +47,7 @@ public class MarkerChecks
     {
         double distance = CalculationHelper.Calculate2DDistance(markerDropA.MarkerLocation,
             markerDropB.MarkerLocation,
-            flight.getCalculationType());
+            flight.CalculationType());
         if (distance < minDistanceInMeters)
         {
             comment +=
@@ -59,7 +59,7 @@ public class MarkerChecks
     {
         double distance = CalculationHelper.Calculate2DDistance(markerDropA.MarkerLocation,
             markerDropB.MarkerLocation,
-            flight.getCalculationType());
+            flight.CalculationType());
         if (distance > maxDistanceInMeters)
         {
             comment +=//TODO:

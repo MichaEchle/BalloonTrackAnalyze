@@ -6,7 +6,7 @@ namespace JansScoring.flights;
 
 public abstract class Flight
 {
-    public abstract int getFlightNumber();
+    public abstract int FlightNumber();
 
 
     /// <summary>
@@ -15,49 +15,49 @@ public abstract class Flight
     /// Time need to be in UTC
     /// </summary>
     /// <returns></returns>
-    public abstract DateTime getStartOfLaunchPeriode();
+    public abstract DateTime StartOfLaunchPeriode();
 
     /// <summary>
     /// The time how long the launch-periode is. In minutes
     /// </summary>
     /// <returns></returns>
-    public abstract int launchPeriode();
+    public abstract int LaunchPeriode();
 
     /// <summary>
     /// If GPS Altituse should be used for calculations
     /// </summary>
     /// <returns></returns>
-    public abstract bool useGPSAltitude();
+    public abstract bool UseGPSAltitude();
 
     /// <summary>
     /// The distance, witch need to be between start-point and all goals
     /// </summary>
     /// <returns></returns>
-    public abstract int distanceToAllGoals();
+    public abstract int DistanceToAllGoals();
 
     /// <summary>
     /// The System Path of the tracks
     /// </summary>
     /// <returns></returns>
-    public abstract string getTracksPath();
+    public abstract string TracksPath();
 
-    public abstract Task[] getTasks();
+    public abstract Task[] Tasks();
 
-    public abstract CalculationType getCalculationType();
+    public abstract CalculationType CalculationType();
 
-    public abstract double getSeperationAltitudeFeet();
+    public abstract double SeperationAltitudeFeet();
 
-    public abstract Coordinate getBackupCoordinates();
+    public abstract Coordinate BackupCoordinates();
 
-    public abstract int getQNH();
+    public abstract int QNH();
 
-    public double getSeperationAltitudeMeters()
+    public double SeperationAltitudeMeters()
     {
-        return CoordinateHelpers.ConvertToMeter(getSeperationAltitudeFeet());
+        return CoordinateHelpers.ConvertToMeter(SeperationAltitudeFeet());
     }
-    public Task getTaskByNumber(int number)
+    public Task GetTaskByNumber(int number)
     {
-        foreach (Task task in getTasks())
+        foreach (Task task in Tasks())
         {
             if (task.TaskNumber() == number)
             {

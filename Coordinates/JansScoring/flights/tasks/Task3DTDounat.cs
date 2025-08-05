@@ -47,17 +47,17 @@ public abstract class Task3DTDounat : Task
         {
             Coordinate tp = track.TrackPoints[i - 1];
 
-            if (lastTrackpoint != null && tp.TimeStamp > GetScoringPeriodUntil())
+            if (lastTrackpoint != null && tp.TimeStamp > ScoringPeriodUntil())
             {
                 comment += $"SP-Out: {i} | ";
                 break;
             }
 
-            if (CalculationHelper.Calculate2DDistance(center, tp, Flight.getCalculationType()) >
+            if (CalculationHelper.Calculate2DDistance(center, tp, Flight.CalculationType()) >
                 InnerRadiusInMeters() &&
-                CalculationHelper.Calculate2DDistance(center, tp, Flight.getCalculationType()) < OuterRadiusMeters() &&
-                (Flight.useGPSAltitude() ? tp.AltitudeGPS : tp.AltitudeBarometric) > MinHeightInMeters() &&
-                (Flight.useGPSAltitude() ? tp.AltitudeGPS : tp.AltitudeBarometric) < MaxHeightInMeters()
+                CalculationHelper.Calculate2DDistance(center, tp, Flight.CalculationType()) < OuterRadiusMeters() &&
+                (Flight.UseGPSAltitude() ? tp.AltitudeGPS : tp.AltitudeBarometric) > MinHeightInMeters() &&
+                (Flight.UseGPSAltitude() ? tp.AltitudeGPS : tp.AltitudeBarometric) < MaxHeightInMeters()
                )
             {
                 if (entered == null) entered = tp;
@@ -65,7 +65,7 @@ public abstract class Task3DTDounat : Task
                 if (lastTrackpoint != null)
                 {
                     distances.Add(CalculationHelper.Calculate2DDistance(lastTrackpoint, tp,
-                        Flight.getCalculationType())
+                        Flight.CalculationType())
                     );
                 }
                 else

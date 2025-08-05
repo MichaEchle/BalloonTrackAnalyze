@@ -50,7 +50,7 @@ public class DeclarationChecks
     public static void CheckHeightBetweenDeclarationPointAndDeclaredGoal(Flight flight, Declaration declaration,
         double minHeightDifferenceInMetersToDeclaredPoint, ref string comment)
     {
-        double heightDifference = flight.useGPSAltitude()
+        double heightDifference = flight.UseGPSAltitude()
             ? Math.Abs(declaration.PositionAtDeclaration.AltitudeGPS - declaration.DeclaredGoal.AltitudeGPS)
             : Math.Abs(declaration.PositionAtDeclaration.AltitudeBarometric -
                        declaration.DeclaredGoal.AltitudeBarometric);
@@ -71,7 +71,7 @@ public class DeclarationChecks
     {
         double distanceToDeclarationPoint = CalculationHelper.Calculate2DDistance(declaration.DeclaredGoal,
             declaration.PositionAtDeclaration,
-            flight.getCalculationType());
+            flight.CalculationType());
         if (distanceToDeclarationPoint < minDistance)
         {
             comment +=
@@ -86,7 +86,7 @@ public class DeclarationChecks
         ref string comment)
     {
         Dictionary<Coordinate, Task> goals = new();
-        foreach (Task currentTask in flight.getTasks())
+        foreach (Task currentTask in flight.Tasks())
         {
             foreach (Coordinate coordinate in currentTask.Goals(0))
             {
@@ -98,7 +98,7 @@ public class DeclarationChecks
         foreach (Coordinate goal in goals.Keys)
         {
             double distance = CalculationHelper.Calculate2DDistance(declaration.DeclaredGoal
-                , goal, flight.getCalculationType());
+                , goal, flight.CalculationType());
             if (distance < minDistance)
             {
                 comment +=
@@ -129,7 +129,7 @@ public class DeclarationChecks
         foreach (Coordinate currentDeclaration in declarations.Keys)
         {
             double distance = CalculationHelper.Calculate2DDistance(declaration.DeclaredGoal
-                , currentDeclaration, flight.getCalculationType());
+                , currentDeclaration, flight.CalculationType());
             if (distance < minDistance)
             {
                 comment +=
@@ -160,7 +160,7 @@ public class DeclarationChecks
             Coordinate gridboarder = declaration.PositionAtDeclaration.Clone();
             gridboarder.easting = easting;
             double distance = CalculationHelper.Calculate2DDistance(declaration.PositionAtDeclaration, gridboarder,
-                flight.getCalculationType());
+                flight.CalculationType());
             comment +=
                 $"Goal was declared after east grid line {easting}. [{NumberHelper.formatDoubleToStringAndRound(distance)}m] | ";
         }
@@ -170,7 +170,7 @@ public class DeclarationChecks
         double minHeightInMeter,
         ref string comment)
     {
-        double height = flight.useGPSAltitude()
+        double height = flight.UseGPSAltitude()
             ? declaration.DeclaredGoal.AltitudeGPS
             : declaration.DeclaredGoal.AltitudeBarometric;
         if (height <= minHeightInMeter)

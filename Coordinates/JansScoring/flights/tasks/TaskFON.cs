@@ -31,7 +31,7 @@ public abstract class TaskFON : Task
 
         DeclarationChecks.CheckIfDeclarationWasBeforeMarkerDrop(declaration, markerDrop, ref comment);
 
-        result = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, markerDrop.MarkerLocation, Flight.useGPSAltitude(), Flight.getCalculationType());
+        result = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, markerDrop.MarkerLocation, Flight.UseGPSAltitude(), Flight.CalculationType());
     }
 
     protected abstract int DeclarationNumber();

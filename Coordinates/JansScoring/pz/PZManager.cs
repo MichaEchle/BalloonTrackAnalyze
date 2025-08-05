@@ -47,7 +47,7 @@ public class PZManager
                     if (lastTrackPoint != null && trackTrackPoint != null)
                     {
                         distanceInPZ += CalculationHelper.Calculate2DDistance(trackTrackPoint, lastTrackPoint,
-                            flight.getCalculationType());
+                            flight.CalculationType());
                     }
                     else
                     {

@@ -25,7 +25,7 @@ public class YellowPZ : PZ
         bool isInsite = false;
 
         Coordinate launchPoint;
-        if (!TrackHelpers.EstimateLaunchAndLandingTime(track, flight.useGPSAltitude(), out launchPoint,
+        if (!TrackHelpers.EstimateLaunchAndLandingTime(track, flight.UseGPSAltitude(), out launchPoint,
                 out _))
 
         {
@@ -33,7 +33,7 @@ public class YellowPZ : PZ
             return false;
         }
         double distanceBetweenStartAndYellowPZ =
-            CalculationHelper.Calculate2DDistance(launchPoint, center, flight.getCalculationType());
+            CalculationHelper.Calculate2DDistance(launchPoint, center, flight.CalculationType());
         if (distanceBetweenStartAndYellowPZ <= radius)
         {
             comment =
@@ -43,7 +43,7 @@ public class YellowPZ : PZ
 
         double distanceBetweenLandingAndYellowPZ =
             CalculationHelper.Calculate2DDistance(track.TrackPoints.Last(), center,
-                flight.getCalculationType());
+                flight.CalculationType());
         if (distanceBetweenLandingAndYellowPZ <= radius)
         {
             comment =

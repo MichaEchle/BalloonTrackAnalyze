@@ -24,7 +24,7 @@ public class FlightManager
     public static bool RUN_PZ_CHECKS = false;
     public static bool RUN_DESPIKER = false;
 
-    public void register()
+    public void Register()
     {
         pzManager = new PZManager();
 
@@ -34,11 +34,11 @@ public class FlightManager
         //flights.Add(4, new Flight04());
         //flights.Add(5, new Flight05());
 
-        scoreFlight(5);
+        ScoreFlight(5);
     }
 
 
-    public void scoreFlight(int flightNumber)
+    public void ScoreFlight(int flightNumber)
     {
         if (!flights.ContainsKey(flightNumber))
         {
@@ -47,7 +47,7 @@ public class FlightManager
         }
 
         Flight flight = flights[flightNumber];
-        DirectoryInfo directoryInfo = new(flight.getTracksPath());
+        DirectoryInfo directoryInfo = new(flight.TracksPath());
 
         string scoringFolderLink = $"{directoryInfo.Parent.FullName}\\scoring";
         DirectoryInfo scoringFolder = new(scoringFolderLink);
@@ -56,15 +56,15 @@ public class FlightManager
             scoringFolder.Create();
         }
 
-        List<Track> trackList = generateTrackList(directoryInfo, flight);
+        List<Track> trackList = GenerateTrackList(directoryInfo, flight);
 
 
         string scoringTime = DateTime.Now.ToString("MMddHHmmss");
 
         Console.WriteLine("Start generate Flight Report");
-        generateFlightReport(trackList, flight, scoringFolder, scoringTime, RUN_DESPIKER, RUN_PZ_CHECKS);
+        GenerateFlightReport(trackList, flight, scoringFolder, scoringTime, RUN_DESPIKER, RUN_PZ_CHECKS);
         Console.WriteLine("Finish generate Flight Report");
-        foreach (Task task in flight.getTasks())
+        foreach (Task task in flight.Tasks())
         {
             string resultsPath = $"{scoringFolderLink}\\f{flightNumber}_t{task.TaskNumber()}_Results_{scoringTime}.csv";
 
@@ -99,18 +99,18 @@ public class FlightManager
                 Console.WriteLine($"Succesful scored Task {task.TaskNumber()}");
             }
 
-            openFile(resultsPath);
+            OpenFile(resultsPath);
         }
     }
 
-    private void generateFlightReport(List<Track> tracks, Flight flight, DirectoryInfo scoringFolder,
+    private void GenerateFlightReport(List<Track> tracks, Flight flight, DirectoryInfo scoringFolder,
         string scoringTime, bool despiker, bool checkPZ)
     {
         Dictionary<Pilot, string> comments = new();
 
 
         List<Coordinate> goals = new();
-        foreach (Task task in flight.getTasks())
+        foreach (Task task in flight.Tasks())
         {
             int i = 0;
             foreach (Coordinate coordinate in task.Goals(0).ToList())
@@ -139,7 +139,7 @@ public class FlightManager
                 if (despiker)
                 {
                     Console.WriteLine($"Start despike for pilot {track.Pilot.PilotNumber}");
-                    int spikes = DeSpiker.despike(track, flight.useGPSAltitude());
+                    int spikes = DeSpiker.despike(track, flight.UseGPSAltitude());
                     if (spikes > 0)
                     {
                         comment += $"Removed {spikes} Spikes | ";
@@ -158,10 +158,10 @@ public class FlightManager
                     }
                 }
 
-                if (!TrackHelpers.CheckLaunchConstraints(track, flight.useGPSAltitude(),
-                        flight.getStartOfLaunchPeriode(),
-                        flight.getStartOfLaunchPeriode().AddMinutes(flight.launchPeriode()), goals,
-                        flight.distanceToAllGoals(), double.NaN,
+                if (!TrackHelpers.CheckLaunchConstraints(track, flight.UseGPSAltitude(),
+                        flight.StartOfLaunchPeriode(),
+                        flight.StartOfLaunchPeriode().AddMinutes(flight.LaunchPeriode()), goals,
+                        flight.DistanceToAllGoals(), double.NaN,
                         out Coordinate launchPoint,
                         out bool launchInStartPeriod, out List<double> distanceToGoals,
                         out List<bool> distanceToGoalsOk))
@@ -205,17 +205,17 @@ public class FlightManager
 
                 if (!launchInStartPeriod)
                 {
-                    if (flight.getStartOfLaunchPeriode() > launchPoint.TimeStamp)
+                    if (flight.StartOfLaunchPeriode() > launchPoint.TimeStamp)
                     {
-                        TimeSpan launchPointTimeSpan = flight.getStartOfLaunchPeriode() - launchPoint.TimeStamp;
+                        TimeSpan launchPointTimeSpan = flight.StartOfLaunchPeriode() - launchPoint.TimeStamp;
                         comment +=
                             $"Pilot started before the launch periode [{launchPointTimeSpan.ToString(@"hh\:mm\:ss")}]. Started {launchPoint.TimeStamp:dd.MM.yy HH:mm:ss} UTC | ";
                     }
                     else
                     {
                         TimeSpan launchPointTimeSpan = launchPoint.TimeStamp -
-                                                       flight.getStartOfLaunchPeriode()
-                                                           .AddMinutes(flight.launchPeriode());
+                                                       flight.StartOfLaunchPeriode()
+                                                           .AddMinutes(flight.LaunchPeriode());
                         comment +=
                             $"Pilot started after the launch periode [{launchPointTimeSpan.ToString(@"hh\:mm\:ss")}]. Started {launchPoint.TimeStamp:dd.MM.yy HH:mm:ss} UTC | ";
                     }
@@ -265,7 +265,7 @@ public class FlightManager
 
         var orderedComments = comments.OrderBy(pair => pair.Key.PilotNumber);
 
-        string path = $"{scoringFolder}\\f{flight.getFlightNumber()}_FlightReport_{scoringTime}.csv";
+        string path = $"{scoringFolder}\\f{flight.FlightNumber()}_FlightReport_{scoringTime}.csv";
 
         using (StreamWriter writer1 = new(path))
         {
@@ -277,13 +277,13 @@ public class FlightManager
             }
 
             writer1.Close();
-            Console.WriteLine($"Succesful created Report for Flight {flight.getFlightNumber()}");
+            Console.WriteLine($"Succesful created Report for Flight {flight.FlightNumber()}");
         }
 
-        openFile(path);
+        OpenFile(path);
     }
 
-    private static void openFile(String filePath)
+    private static void OpenFile(String filePath)
     {
         ProcessStartInfo psi = new();
         psi.FileName = filePath;
@@ -297,7 +297,7 @@ public class FlightManager
         Console.WriteLine($"LOG: {logSeverity.ToString()} | {text}");
     }
 
-    private List<Track> generateTrackList(DirectoryInfo directoryInfo, Flight flight)
+    private List<Track> GenerateTrackList(DirectoryInfo directoryInfo, Flight flight)
     {
         FileInfo[] files = directoryInfo.GetFiles("*.igc");
         Track track;
@@ -306,7 +306,7 @@ public class FlightManager
         foreach (FileInfo fileInfo in files)
         {
             Log(LogSeverityType.Info, $"Start loading file '{fileInfo.Name}'.");
-            if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out track, flight.getBackupCoordinates()))
+            if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out track, flight.BackupCoordinates()))
             {
                 Console.WriteLine($"Failed to parse track '{fileInfo.FullName}'");
                 continue;
@@ -315,21 +315,21 @@ public class FlightManager
             track.trackPath = fileInfo;
 
 
-            if (!flight.useGPSAltitude())
+            if (!flight.UseGPSAltitude())
             {
                 foreach (Coordinate trackPoint in track.TrackPoints)
                 {
-                    trackPoint.CorrectBarometricHeight(flight.getQNH());
+                    trackPoint.CorrectBarometricHeight(flight.QNH());
                 }
 
                 foreach (MarkerDrop markerDrop in track.MarkerDrops)
                 {
-                    markerDrop.MarkerLocation.CorrectBarometricHeight(flight.getQNH());
+                    markerDrop.MarkerLocation.CorrectBarometricHeight(flight.QNH());
                 }
 
                 foreach (Declaration decleration in track.Declarations)
                 {
-                    decleration.PositionAtDeclaration.CorrectBarometricHeight(flight.getQNH());
+                    decleration.PositionAtDeclaration.CorrectBarometricHeight(flight.QNH());
                 }
             }
 

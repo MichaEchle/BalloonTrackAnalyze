@@ -76,7 +76,7 @@ public class BluePZ : PZ
     public override bool IsInsidePz(Flight flight, Track track, Coordinate coordinate, out string comment)
     {
         comment = "";
-        double altitude = flight.useGPSAltitude() ? coordinate.AltitudeGPS : coordinate.AltitudeBarometric;
+        double altitude = flight.UseGPSAltitude() ? coordinate.AltitudeGPS : coordinate.AltitudeBarometric;
         if (altitude < minHeight || altitude > maxHeight)
         {
             comment = "Out of height";

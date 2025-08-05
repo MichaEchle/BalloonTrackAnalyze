@@ -8,9 +8,9 @@ public class GoalChecks
 {
     public static bool Use3DScoring(Flight flight, MarkerDrop markerDrop, ref string comment)
     {
-        if ((flight.useGPSAltitude()
+        if ((flight.UseGPSAltitude()
                 ? markerDrop.MarkerLocation.AltitudeGPS
-                : markerDrop.MarkerLocation.AltitudeBarometric) > flight.getSeperationAltitudeMeters())
+                : markerDrop.MarkerLocation.AltitudeBarometric) > flight.SeperationAltitudeMeters())
         {
             comment += "Calculated via 3D | ";
             return true;
@@ -35,8 +35,8 @@ public class GoalChecks
         foreach (Coordinate coordinate in goals)
         {
             Coordinate goal = coordinate.Clone();
-            goal.AltitudeGPS = flight.getSeperationAltitudeMeters();
-            goal.AltitudeBarometric = flight.getSeperationAltitudeMeters();
+            goal.AltitudeGPS = flight.SeperationAltitudeMeters();
+            goal.AltitudeBarometric = flight.SeperationAltitudeMeters();
             heightGoals.Add(goal);
         }
         goals = heightGoals.ToArray();

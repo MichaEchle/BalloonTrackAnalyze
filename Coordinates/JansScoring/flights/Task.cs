@@ -48,5 +48,5 @@ public abstract class Task
     /// Time need to be in UTC
     /// </summary>
     /// <returns></returns>
-    public abstract DateTime GetScoringPeriodUntil();
+    public abstract DateTime ScoringPeriodUntil();
 }

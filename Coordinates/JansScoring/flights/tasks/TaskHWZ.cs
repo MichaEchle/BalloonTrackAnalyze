@@ -35,19 +35,19 @@ public abstract class TaskHWZ : Task
             foreach (Coordinate coordinate in Goals(track.Pilot.PilotNumber))
             {
                 Coordinate goal = coordinate.Clone();
-                goal.AltitudeBarometric = Flight.getSeperationAltitudeMeters();
-                goal.AltitudeGPS = Flight.getSeperationAltitudeMeters();
+                goal.AltitudeBarometric = Flight.SeperationAltitudeMeters();
+                goal.AltitudeGPS = Flight.SeperationAltitudeMeters();
                 goals.Add(goal);
             }
 
-            List<double> distanceToAllGoals = CalculationHelper.calculate3DDistanceToAllGoals(markerDrop.MarkerLocation, goals.ToArray(), Flight.useGPSAltitude(),
-                Flight.getCalculationType());
+            List<double> distanceToAllGoals = CalculationHelper.calculate3DDistanceToAllGoals(markerDrop.MarkerLocation, goals.ToArray(), Flight.UseGPSAltitude(),
+                Flight.CalculationType());
 
             result = distanceToAllGoals.Min();
         }
         else
         {
-            result = CalculationHelper.calculate2DDistanceToAllGoals(markerDrop.MarkerLocation, Goals(track.Pilot.PilotNumber), Flight.getCalculationType()).Min();
+            result = CalculationHelper.calculate2DDistanceToAllGoals(markerDrop.MarkerLocation, Goals(track.Pilot.PilotNumber), Flight.CalculationType()).Min();
         }
 
         GoalChecks.CorrectMMAResult(MMA(), ref result, ref comment);
