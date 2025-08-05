@@ -7,7 +7,7 @@ namespace JansScoring.plt;
 
 public class PLTParser
 {
-    public static List<Coordinate> parse(string filePath)
+    public static List<Coordinate> Parse(string filePath)
     {
         List<Coordinate> points = new List<Coordinate>();
 

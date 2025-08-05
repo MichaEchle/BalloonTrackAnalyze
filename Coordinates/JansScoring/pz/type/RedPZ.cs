@@ -33,7 +33,7 @@ public class RedPZ : PZ
         return false;
     }
 
-    public double calculatePenalty(Flight flight, Coordinate entry, Coordinate exit, out double percentage)
+    public double CalculatePenalty(Flight flight, Coordinate entry, Coordinate exit, out double percentage)
     {
         double distanceHorizontal = CalculationHelper.Calculate2DDistance(entry, exit, flight.CalculationType());
         double averageHeigtDiffrence = Math.Abs((flight.UseGPSAltitude()

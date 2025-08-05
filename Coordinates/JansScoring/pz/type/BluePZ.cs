@@ -17,7 +17,7 @@ public class BluePZ : PZ
 
     public BluePZ(int id, String pltFilePath, double minHeight, double maxHeight) : base(id)
     {
-        polygon = PLTParser.parse(pltFilePath);
+        polygon = PLTParser.Parse(pltFilePath);
         this.minHeight = minHeight;
         this.maxHeight = maxHeight;
         Console.WriteLine($"Loaded {polygon.Count} corners from PLT-File");
