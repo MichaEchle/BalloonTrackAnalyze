@@ -51,7 +51,7 @@ public class MarkerChecks
         if (distance < minDistanceInMeters)
         {
             comment +=
-                $"The distance between marker {markerDropA.MarkerNumber} and Marker {markerDropB.MarkerNumber} is too short. [{distance}m / {minDistanceInMeters}m] | ";
+                $"The distance between marker {markerDropA.MarkerNumber} and Marker {markerDropB.MarkerNumber} is too short. [{NumberHelper.formatDoubleToStringAndRound(distance)}m / {NumberHelper.formatDoubleToStringAndRound(minDistanceInMeters)}m] [{DistanceViolationPenalties.CalculateAndFormatPenalty(distance, minDistanceInMeters, "TP")}] | ";
         }
     }
     public static void CheckMax2DDistanceBetweenMarkers(Flight flight, MarkerDrop markerDropA, MarkerDrop markerDropB,
@@ -62,8 +62,8 @@ public class MarkerChecks
             flight.getCalculationType());
         if (distance > maxDistanceInMeters)
         {
-            comment +=
-                $"The distance between marker {markerDropA.MarkerNumber} and Marker {markerDropB.MarkerNumber} is too long. [{distance}m / {maxDistanceInMeters}m] | ";
+            comment +=//TODO:
+                $"The distance between marker {markerDropA.MarkerNumber} and Marker {markerDropB.MarkerNumber} is too long. [{NumberHelper.formatDoubleToStringAndRound(distance)}m / {NumberHelper.formatDoubleToStringAndRound(maxDistanceInMeters)}m] [{DistanceViolationPenalties.CalculateAndFormatPenalty(distance, maxDistanceInMeters, "TP")}] | ";
         }
     }
 }

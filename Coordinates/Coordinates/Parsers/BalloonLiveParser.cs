@@ -610,6 +610,7 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse barometric altitude at declaration position in '{line}'");
                 return false;
             }
+            Console.WriteLine(declarationPositonAltitudeBarometric);
 
             double declarationPositionAltitudeGPS;
             if (!double.TryParse(line[35..40], out declarationPositionAltitudeGPS))
@@ -618,6 +619,8 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse GPS altitude at declaration position in '{line}'");
                 return false;
             }
+            Console.WriteLine(declarationPositionAltitudeGPS);
+
             string declarationText = line[43..^0];
             if (declarationText.Length > 2)
             {
@@ -680,8 +683,12 @@ namespace Coordinates.Parsers
                             Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse goal declaration altitude portion '{altitudePart}' in '{line}'");
                             return false;
                         }
+
                         if (declaredAltitudeIsInFeet)
+                        {
                             declaredAltitudeInMeter = CoordinateHelpers.ConvertToMeter((double)declaredAltitude);
+                            Console.WriteLine(declaredAltitude + $"ft -> {declaredAltitudeInMeter}m");
+                        }
                         else
                             declaredAltitudeInMeter = (double)declaredAltitude;
                     }

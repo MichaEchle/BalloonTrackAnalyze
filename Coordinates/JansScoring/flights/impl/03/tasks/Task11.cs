@@ -2,17 +2,17 @@
 using JansScoring.flights.tasks;
 using System;
 
-namespace JansScoring.flights.impl._02.tasks;
+namespace JansScoring.flights.impl._03.tasks;
 
-public class Task06 : TaskHWZ
+public class Task11 : TaskJDG
 {
-    public Task06(Flight flight) : base(flight)
+    public Task11(Flight flight) : base(flight)
     {
     }
 
     public override int TaskNumber()
     {
-        return 6;
+        return 11;
     }
 
     public override bool ScoringChecks(Track track, ref string comment)
@@ -22,21 +22,21 @@ public class Task06 : TaskHWZ
 
     public override Coordinate[] Goals(int pilot)
     {
-        return new Coordinate[]
+        return new[]
         {
-            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 0512643,5328526, CoordinateHelpers.ConvertToMeter(1044)),
-            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 0512590,5327734, 377),
+            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 0511650, 5328320,
+                CoordinateHelpers.ConvertToMeter(1030))
         };
     }
 
     public override DateTime GetScoringPeriodUntil()
     {
-        return new DateTime(2024,08,15,05,30,00);
+        return new DateTime(2024, 08, 15, 18, 00, 00);
     }
 
     protected override int MarkerNumber()
     {
-        return 3;
+        return 1;
     }
 
     protected override int MMA()

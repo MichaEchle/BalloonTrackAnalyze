@@ -38,7 +38,7 @@ public abstract class TaskPDG : Task
         result = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, markerDrop.MarkerLocation, Flight.useGPSAltitude(), Flight.getCalculationType());
     }
 
-    public override Coordinate[] Goals()
+    public override Coordinate[] Goals(int pilot)
     {
         return Array.Empty<Coordinate>();
     }

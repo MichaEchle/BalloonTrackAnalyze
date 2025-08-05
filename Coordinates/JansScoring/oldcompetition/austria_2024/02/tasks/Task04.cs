@@ -21,7 +21,7 @@ public class Task04 : TaskJDG
         return false;
     }
 
-    public override Coordinate[] Goals()
+    public override Coordinate[] Goals(int pilot)
     {
         return new[] { CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 0504670, 5328745, CoordinateHelpers.ConvertToMeter(907)) };
     }

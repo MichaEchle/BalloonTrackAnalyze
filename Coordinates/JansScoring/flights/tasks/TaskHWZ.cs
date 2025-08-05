@@ -15,7 +15,7 @@ public abstract class TaskHWZ : Task
 
     public override void Score(Track track, ref string comment, out double result)
     {
-        if (Goals().Length <= 0)
+        if (Goals(track.Pilot.PilotNumber).Length <= 0)
         {
             result = Double.MinValue;
             comment = "No goal available to score.";
@@ -32,7 +32,7 @@ public abstract class TaskHWZ : Task
         if (GoalChecks.Use3DScoring(Flight, markerDrop, ref comment))
         {
             List<Coordinate> goals = new();
-            foreach (Coordinate coordinate in Goals())
+            foreach (Coordinate coordinate in Goals(track.Pilot.PilotNumber))
             {
                 Coordinate goal = coordinate.Clone();
                 goal.AltitudeBarometric = Flight.getSeperationAltitudeMeters();
@@ -47,7 +47,7 @@ public abstract class TaskHWZ : Task
         }
         else
         {
-            result = CalculationHelper.calculate2DDistanceToAllGoals(markerDrop.MarkerLocation, Goals(), Flight.getCalculationType()).Min();
+            result = CalculationHelper.calculate2DDistanceToAllGoals(markerDrop.MarkerLocation, Goals(track.Pilot.PilotNumber), Flight.getCalculationType()).Min();
         }
 
         GoalChecks.CorrectMMAResult(MMA(), ref result, ref comment);

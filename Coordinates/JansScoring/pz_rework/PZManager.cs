@@ -10,7 +10,7 @@ namespace JansScoring.pz_rework;
 
 public class PZManager
 {
-    private List<PZ> pzs = new();
+    private readonly List<PZ> pzs = new();
 
     public PZManager()
     {
@@ -25,10 +25,11 @@ public class PZManager
         pzs.Add(new YellowPZ(08, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 524410, 5329570),500));
     }
 
-    public string checkPZ(Flight flight, Track track)
+    public string CheckPz(Flight flight, Track track)
     {
         String comment = "";
 
+        Console.WriteLine($"Start checking PZ for Pilot {track.Pilot.PilotNumber}.");
 
         foreach (PZ pz in pzs)
         {
@@ -80,6 +81,7 @@ public class PZManager
                     $"Pilot has {infrigements.Count} {pz.GetType().Name} infringement(s) with PZ: '{pz.ID}' [{infigement}] | ";
             }
         }
+        Console.WriteLine($"Finish checking PZ for Pilot {track.Pilot.PilotNumber}.");
 
         return comment;
     }

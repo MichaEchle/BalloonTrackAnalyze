@@ -37,7 +37,7 @@ public abstract class TaskFON : Task
     protected abstract int DeclarationNumber();
     protected abstract int MarkerNumber();
 
-    public override Coordinate[] Goals()
+    public override Coordinate[] Goals(int pilot)
     {
         return Array.Empty<Coordinate>();
     }

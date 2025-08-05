@@ -567,18 +567,26 @@ namespace Coordinates
         /// <returns>a Coordinate object</returns>
         public static Coordinate ConvertUTMToLatitudeLongitudeCoordinate(string utmZone, int easting, int northing)
         {
-            (double latitude, double longitude) latitudeLongitude =
+            (double entryLatitude, double entryLongitude) latitudeLongitude =
                 ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
-            return new Coordinate(latitudeLongitude.latitude, latitudeLongitude.longitude, double.NaN, double.NaN,
+            return new Coordinate(latitudeLongitude.entryLatitude, latitudeLongitude.entryLongitude, double.NaN, double.NaN,
                 DateTime.MinValue);
         }
-
+        /// <summary>
+        /// Convert a position from UTM format to lat/long format
+        /// <para>Please note that altitude is set to double.NaN and timestamp to DateTime.MinValue</para>
+        /// </summary>
+        /// <param name="utmZone">the UTM zone e.g. "32U"</param>
+        /// <param name="easting">the easting portion e.g. 630084</param>
+        /// <param name="northing">the northing portion e.g. 4833438</param>
+        /// <param name="altitude">the altitude in meters e.g. 100m</param>
+        /// <returns>a Coordinate object</returns>
         public static Coordinate ConvertUTMToLatitudeLongitudeCoordinate(string utmZone, int easting, int northing,
             double altitude)
         {
-            (double latitude, double longitude) latitudeLongitude =
+            (double entryLatitude, double entryLongitude) latitudeLongitude =
                 ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
-            return new Coordinate(latitudeLongitude.latitude, latitudeLongitude.longitude, altitude, altitude,
+            return new Coordinate(latitudeLongitude.entryLatitude, latitudeLongitude.entryLongitude, altitude, altitude,
                 DateTime.MinValue);
         }
 
@@ -589,7 +597,7 @@ namespace Coordinates
         /// <param name="easting">the easting portion e.g. 630084</param>
         /// <param name="northing">the northing portion e.g. 4833438</param>
         /// <returns>the latitude and longitude pair</returns>
-        public static (double latitude, double longitude) ConvertUTMToLatitudeLongitude(string utmZone, int easting,
+        public static (double entryLatitude, double entryLongitude) ConvertUTMToLatitudeLongitude(string utmZone, int easting,
             int northing)
         {
             CoordinateSharp.UniversalTransverseMercator utmCoordindate =

@@ -14,7 +14,7 @@ public abstract class TaskJDG : Task
 
     public override void Score(Track track, ref string comment, out double result)
     {
-        if (Goals().Length <= 0)
+        if (Goals(track.Pilot.PilotNumber).Length <= 0)
         {
             result = Double.MinValue;
             comment = "No goal available to score.";
@@ -29,7 +29,7 @@ public abstract class TaskJDG : Task
         }
         MarkerChecks.CheckScoringPeriode(this, markerDrop, ref comment);
 
-        Coordinate goal = Goals()[0];
+        Coordinate goal = Goals(track.Pilot.PilotNumber)[0];
 
         if (GoalChecks.Use3DScoring(Flight, markerDrop, ref comment))
         {

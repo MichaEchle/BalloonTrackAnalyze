@@ -29,7 +29,7 @@ public abstract class TaskHNH : Task
         MarkerChecks.CheckScoringPeriode(this, markerDrop, ref comment);
         if (GoalChecks.Use3DScoring(Flight, markerDrop, ref comment))
         {
-            Coordinate[] goals = Goals();
+            Coordinate[] goals = Goals(track.Pilot.PilotNumber);
             GoalChecks.MoveGoalHeightToSeperationAltitude(Flight, ref goals);
             List<double> distanceToAllGoals = CalculationHelper.calculate3DDistanceToAllGoals(markerDrop.MarkerLocation,
                 goals,
@@ -39,7 +39,7 @@ public abstract class TaskHNH : Task
         else
         {
             List<double> distanceToAllGoals = CalculationHelper.calculate2DDistanceToAllGoals(markerDrop.MarkerLocation,
-                Goals(),
+                Goals(track.Pilot.PilotNumber),
                 Flight.getCalculationType());
 
             result = distanceToAllGoals.Min();
