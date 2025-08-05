@@ -1,4 +1,4 @@
-﻿using Competition.Validation;
+using Competition.Validation;
 using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
@@ -6,12 +6,12 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Competition;
+namespace Competition.Tasks;
 
 public class DonutTask : ICompetitionTask
 {
     [JsonIgnore]
-    private readonly ILogger<DonutTask> Logger=LogConnector.LoggerFactory.CreateLogger<DonutTask>();    
+    private readonly ILogger<DonutTask> Logger = LogConnector.LoggerFactory.CreateLogger<DonutTask>();
 
     #region Properties
     /// <summary>
@@ -131,32 +131,44 @@ public class DonutTask : ICompetitionTask
         Declaration targetDeclaration = ValidationHelper.GetValidDeclaration(track, GoalNumber, DeclarationValidationRule, ValidationStrictness);
         if (targetDeclaration == null)
         {
-            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No valid goal found for goal '#{goalNumber}'", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), GoalNumber);
+            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No valid goal found for goal '#{goalNumber}'", ToString(), track.Pilot.PilotNumber, !string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "", GoalNumber);
             return false;
         }
+
         List<Coordinate> coordinates = track.TrackPoints;
         if (!double.IsNaN(LowerBoundary))
         {
             if (useGPSAltitude)
+            {
                 coordinates = coordinates.Where(x => x.AltitudeGPS >= LowerBoundary).ToList();//take all point above lower boundary
+            }
             else
+            {
                 coordinates = coordinates.Where(x => x.AltitudeBarometric >= LowerBoundary).ToList();//take all point above lower boundary
+            }
         }
+
         if (!double.IsNaN(UpperBoundary))
         {
             if (useGPSAltitude)
+            {
                 coordinates = coordinates.Where(x => x.AltitudeGPS <= UpperBoundary).ToList();//take all points below upper boundary
+            }
             else
+            {
                 coordinates = coordinates.Where(x => x.AltitudeBarometric <= UpperBoundary).ToList();//take all points below upper boundary
+            }
         }
 
         for (int index = 0; index < coordinates.Count; index++)
         {
             double distanceToGoal = CoordinateHelpers.Calculate2DDistanceHavercos(coordinates[index], targetDeclaration.DeclaredGoal);//calculate distance to goal
             if (distanceToGoal <= OuterRadius && distanceToGoal >= InnerRadius)//save all trackpoints between outer and inner radius
+            {
                 trackPointsInDonut.Add((track.TrackPoints.FindIndex(x => x == coordinates[index]), coordinates[index]));
-
+            }
         }
+
         List<List<Coordinate>> chunksInDonut = [];
         int addIndex = 0;
         chunksInDonut.Add([]);
@@ -209,6 +221,7 @@ public class DonutTask : ICompetitionTask
                 }
             }
         }
+
         return true;
     }
 
@@ -228,7 +241,7 @@ public class DonutTask : ICompetitionTask
     /// <para>use <see cref="DeclarationAndRule"/> or <see cref="DeclarationOrRule"/> to chain multiple rules together</para>
     /// </param>
     /// <param name="validationStrictness">Defines the strictness by which validation rules are enforced</param>
-    public void SetupDonut(int taskNumber, int goalNumber, int numberOfDeclarations, double innerRadius, double outerRadius, double lowerBoundary, double upperBoundary, bool isReEntranceAllowed, IDeclarationValidationRule declarationValidationRule,ValidationStrictnessType validationStrictness)
+    public void SetupDonut(int taskNumber, int goalNumber, int numberOfDeclarations, double innerRadius, double outerRadius, double lowerBoundary, double upperBoundary, bool isReEntranceAllowed, IDeclarationValidationRule declarationValidationRule, ValidationStrictnessType validationStrictness)
     {
         TaskNumber = taskNumber;
         GoalNumber = goalNumber;

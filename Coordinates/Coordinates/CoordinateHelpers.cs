@@ -1,4 +1,4 @@
-﻿using LoggingConnector;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -45,7 +45,7 @@ public static class CoordinateHelpers
     /// <returns>the part of a coordinate in decimal degree</returns>
     public static double ConvertToDecimalDegree(int degrees, int degreeMinutes, int degreeSeconds, int degreeTenthseconds, bool isNorthingOrEasting)
     {
-        return degrees + (degreeMinutes / 60.0) + (degreeSeconds / 3600.0) + (degreeTenthseconds / 36000.0) * (isNorthingOrEasting ? 1.0 : -1.0);
+        return degrees + (degreeMinutes / 60.0) + (degreeSeconds / 3600.0) + (degreeTenthseconds / 36000.0 * (isNorthingOrEasting ? 1.0 : -1.0));
     }
 
     /// <summary>
@@ -56,12 +56,20 @@ public static class CoordinateHelpers
     public static (int degrees, int degreeMinutes, int degreeSeconds, int degreeTenthSeconds) ConvertToDegreeMinutes(double decimalDegrees)
     {
         if (double.IsInfinity(decimalDegrees) || double.IsNaN(decimalDegrees))
+        {
             throw new ArgumentOutOfRangeException(nameof(decimalDegrees), "Cannot be infinity or NaN");
+        }
 
         while (decimalDegrees < -180.0)
+        {
             decimalDegrees += 360.0;
+        }
+
         while (decimalDegrees > 180.0)
+        {
             decimalDegrees -= 360.0;
+        }
+
         int degrees = (int)Floor(decimalDegrees);
         double minutes = (decimalDegrees - degrees) * 60.0;
         double seconds = (minutes - Floor(minutes)) * 60.0;
@@ -93,9 +101,9 @@ public static class CoordinateHelpers
     /// <returns>the amount of feet in meters</returns>
     public static double ConvertToMeter(double feets)
     {
-        if (double.IsInfinity(feets) || double.IsNaN(feets))
-            throw new ArgumentOutOfRangeException(nameof(feets), "Cannot be infinity or NaN");
-        return feets * FEET_TO_METER_RATIO;
+        return double.IsInfinity(feets) || double.IsNaN(feets)
+            ? throw new ArgumentOutOfRangeException(nameof(feets), "Cannot be infinity or NaN")
+            : feets * FEET_TO_METER_RATIO;
     }
 
     /// <summary>
@@ -105,9 +113,9 @@ public static class CoordinateHelpers
     /// <returns>the amount of meter in feet</returns>
     public static double ConvertToFeet(double meters)
     {
-        if (double.IsInfinity(meters) || double.IsNaN(meters))
-            throw new ArgumentOutOfRangeException(nameof(meters), "Cannot be infinity or NaN");
-        return meters / FEET_TO_METER_RATIO;
+        return double.IsInfinity(meters) || double.IsNaN(meters)
+            ? throw new ArgumentOutOfRangeException(nameof(meters), "Cannot be infinity or NaN")
+            : meters / FEET_TO_METER_RATIO;
     }
 
     /// <summary>
@@ -130,7 +138,7 @@ public static class CoordinateHelpers
         double deltaPhi = phi2 - phi1;
         double deltaLambda = lambda2 - lambda1;
 
-        double a = Pow(Sin(deltaPhi / 2.0), 2) + Cos(phi1) * Cos(phi2) * Pow(Sin(deltaLambda / 2.0), 2);
+        double a = Pow(Sin(deltaPhi / 2.0), 2) + (Cos(phi1) * Cos(phi2) * Pow(Sin(deltaLambda / 2.0), 2));
         double distance2D = 2.0 * EARTH_RADIUS_METER * Asin(Sqrt(a));
         return distance2D;
     }
@@ -186,10 +194,10 @@ public static class CoordinateHelpers
 
 
         double tanU1 = (1.0 - f) * Tan(phi1);
-        double cosU1 = 1.0 / Sqrt((1 + tanU1 * tanU1));
+        double cosU1 = 1.0 / Sqrt(1 + (tanU1 * tanU1));
         double sinU1 = tanU1 * cosU1;
         double tanU2 = (1.0 - f) * Tan(phi2);
-        double cosU2 = 1.0 / Sqrt((1 + tanU2 * tanU2));
+        double cosU2 = 1.0 / Sqrt(1 + (tanU2 * tanU2));
         double sinU2 = tanU2 * cosU2;
 
         bool antipodal = (Abs(l) > (PI / 2.0)) || (Abs(phi2 - phi1) > (PI / 2.0));
@@ -211,23 +219,28 @@ public static class CoordinateHelpers
         {
             sinLambda = Sin(lambda);
             cosLambda = Cos(lambda);
-            sinSquareSigma = Pow(cosU2 * sinLambda, 2) + Pow(cosU1 * sinU2 - sinU1 * cosU2 * cosLambda, 2);
+            sinSquareSigma = Pow(cosU2 * sinLambda, 2) + Pow((cosU1 * sinU2) - (sinU1 * cosU2 * cosLambda), 2);
 
 
             if (Abs(sinSquareSigma) < 1e-24)
+            {
                 break;  // co-incident/antipodal points (sigma < ≈0.006mm)
+            }
+
             sinSigma = Sqrt(sinSquareSigma);
-            cosSigma = sinU1 * sinU2 + cosU1 * cosU2 * cosLambda;
+            cosSigma = (sinU1 * sinU2) + (cosU1 * cosU2 * cosLambda);
             sigma = Atan2(sinSigma, cosSigma);
             double sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma;
-            cosSqureAlpha = 1.0 - sinAlpha * sinAlpha;
-            cos2Sigma_m = (Abs(cosSqureAlpha) > double.Epsilon) ? (cosSigma - 2 * sinU1 * sinU2 / cosSqureAlpha) : 0; // on equatorial line cos²α = 0 (§6)
-            double c = f / 16.0 * cosSqureAlpha * (4.0 + f * (4.0 - 3.0 * cosSqureAlpha));
+            cosSqureAlpha = 1.0 - (sinAlpha * sinAlpha);
+            cos2Sigma_m = (Abs(cosSqureAlpha) > double.Epsilon) ? (cosSigma - (2 * sinU1 * sinU2 / cosSqureAlpha)) : 0; // on equatorial line cos²α = 0 (§6)
+            double c = f / 16.0 * cosSqureAlpha * (4.0 + (f * (4.0 - (3.0 * cosSqureAlpha))));
             lambda_temp = lambda;
-            lambda = l + (1 - c) * f * sinAlpha * (sigma + c * sinSigma * (cos2Sigma_m + c * cosSigma * (-1 + 2 * cos2Sigma_m * cos2Sigma_m)));
+            lambda = l + ((1 - c) * f * sinAlpha * (sigma + (c * sinSigma * (cos2Sigma_m + (c * cosSigma * (-1 + (2 * cos2Sigma_m * cos2Sigma_m)))))));
             double iterationCheck = antipodal ? Abs(lambda) - PI : Abs(lambda);
             if (iterationCheck > PI)
+            {
                 throw new Exception("lambda > PI");
+            }
         } while (Abs(lambda - lambda_temp) > 1e-12 && ++iterations < 1000); // TV: 'iterate until negligible change in lambda' (≈0.006mm)
 
         if (iterations >= 1000)
@@ -235,10 +248,10 @@ public static class CoordinateHelpers
             Logger?.LogWarning("Vincenty did not converge in 1000 iterations, the calculated distance may not be accurate");
         }
 
-        double uSqaure = cosSqureAlpha * (a * a - b * b) / (b * b);
-        double upperA = 1.0 + uSqaure / 16384.0 * (4096.0 + uSqaure * (-768.0 + uSqaure * (320.0 - 175.0 * uSqaure)));
-        double upperB = uSqaure / 1024.0 * (256.0 + uSqaure * (-128.0 + uSqaure * (74.0 - 47.0 * uSqaure)));
-        double deltaSigma = upperB * sinSigma * (cos2Sigma_m + upperB / 4 * (cosSigma * (-1.0 + 2.0 * cos2Sigma_m * cos2Sigma_m) - upperB / 6.0 * cos2Sigma_m * (-3.0 + 4.0 * sinSigma * sinSigma) * (-3.0 + 4.0 * cos2Sigma_m * cos2Sigma_m)));
+        double uSqaure = cosSqureAlpha * ((a * a) - (b * b)) / (b * b);
+        double upperA = 1.0 + (uSqaure / 16384.0 * (4096.0 + (uSqaure * (-768.0 + (uSqaure * (320.0 - (175.0 * uSqaure)))))));
+        double upperB = uSqaure / 1024.0 * (256.0 + (uSqaure * (-128.0 + (uSqaure * (74.0 - (47.0 * uSqaure))))));
+        double deltaSigma = upperB * sinSigma * (cos2Sigma_m + (upperB / 4 * ((cosSigma * (-1.0 + (2.0 * cos2Sigma_m * cos2Sigma_m))) - (upperB / 6.0 * cos2Sigma_m * (-3.0 + (4.0 * sinSigma * sinSigma)) * (-3.0 + (4.0 * cos2Sigma_m * cos2Sigma_m))))));
 
         double distance2D = b * upperA * (sigma - deltaSigma); // s = length of the geodesic
 
@@ -309,15 +322,9 @@ public static class CoordinateHelpers
         ArgumentNullException.ThrowIfNull(coordinate2);
 
         double distance2D = Calculate2DDistanceHavercos(coordinate1, coordinate2);
-        double deltaAltitude;
-        if (useGPSAltitude)
-        {
-            deltaAltitude = coordinate1.AltitudeGPS - coordinate2.AltitudeGPS;
-        }
-        else
-        {
-            deltaAltitude = coordinate1.AltitudeBarometric - coordinate2.AltitudeBarometric;
-        }
+        double deltaAltitude = useGPSAltitude
+            ? coordinate1.AltitudeGPS - coordinate2.AltitudeGPS
+            : coordinate1.AltitudeBarometric - coordinate2.AltitudeBarometric;
 
         double distance3D = Sqrt(Pow(distance2D, 2) + Pow(deltaAltitude, 2));
         return distance3D;
@@ -338,6 +345,7 @@ public static class CoordinateHelpers
         {
             result += Calculate2DDistanceHavercos(coordinates[index], coordinates[index + 1]);
         }
+
         return result;
     }
 
@@ -355,6 +363,7 @@ public static class CoordinateHelpers
         {
             result += Calculate3DDistance(coordinates[index], coordinates[index + 1], useGPSAltitude);
         }
+
         return result;
     }
 
@@ -462,18 +471,22 @@ public static class CoordinateHelpers
         ArgumentNullException.ThrowIfNull(coordinate1);
 
         if (double.IsNaN(distanceInMeters) || double.IsInfinity(distanceInMeters))
+        {
             throw new ArgumentException("Cannot be NaN or Infinity", nameof(distanceInMeters));
+        }
 
         if (double.IsNaN(bearingInDecimalDegree) || double.IsInfinity(bearingInDecimalDegree))
+        {
             throw new ArgumentException("Cannot be NaN or Infinity", nameof(bearingInDecimalDegree));
+        }
 
         double angularDistance = Abs(distanceInMeters) / EARTH_RADIUS_METER;
         double lat1 = coordinate1.Latitude * PI / 180.0;
         double long1 = coordinate1.Longitude * PI / 180.0;
-        double bearing = (bearingInDecimalDegree % 360.0) * PI / 180.0;
+        double bearing = bearingInDecimalDegree % 360.0 * PI / 180.0;
 
-        double latitude = Asin(Sin(lat1) * Cos(angularDistance) + Cos(lat1) * Sin(angularDistance) * Cos(bearing));
-        double longitude = long1 + Atan2(Sin(bearing) * Sin(angularDistance) * Cos(lat1), Cos(angularDistance) - Sin(lat1) * Sin(latitude));
+        double latitude = Asin((Sin(lat1) * Cos(angularDistance)) + (Cos(lat1) * Sin(angularDistance) * Cos(bearing)));
+        double longitude = long1 + Atan2(Sin(bearing) * Sin(angularDistance) * Cos(lat1), Cos(angularDistance) - (Sin(lat1) * Sin(latitude)));
 
         latitude *= 180.0 / PI;
         longitude *= 180.0 / PI;
@@ -501,7 +514,7 @@ public static class CoordinateHelpers
         double lambda2 = coordinate2.Longitude * PI / 180.0;
 
         double deltaLambda = lambda2 - lambda1;
-        double bearing = Atan2(Sin(deltaLambda) * Cos(phi2), Cos(phi1) * Sin(phi2) - Sin(phi1) * Cos(phi2) * Cos(deltaLambda));
+        double bearing = Atan2(Sin(deltaLambda) * Cos(phi2), (Cos(phi1) * Sin(phi2)) - (Sin(phi1) * Cos(phi2) * Cos(deltaLambda)));
 
         bearing = ((bearing * 180.0 / PI) + 360) % 360;
 
@@ -585,7 +598,7 @@ public static class CoordinateHelpers
     public static (string utmZone, int easting, int northing) ConvertLatitudeLongitudeToUTM(double latitude, double longitude)
     {
         CoordinateSharp.Coordinate coordinateSharp = new(latitude, longitude);
-        return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", (int)(Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero)), (int)(Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero)));
+        return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", (int)Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero), (int)Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero));
     }
 
     /// <summary>

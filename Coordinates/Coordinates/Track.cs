@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Coordinates;
@@ -41,10 +41,7 @@ public class Track
     public Declaration GetLatestDeclaration(int goalNumber)
     {
         List<Declaration> declarations = Declarations.Where(x => x.GoalNumber == goalNumber).ToList();
-        if (declarations.Count == 0)
-            return null;
-        else
-            return declarations.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[0];
+        return declarations.Count == 0 ? null : declarations.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[0];
 
     }
 

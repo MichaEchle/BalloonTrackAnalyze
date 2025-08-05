@@ -1,8 +1,8 @@
-﻿using Coordinates;
+using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 
-namespace Competition;
+namespace Competition.Validation;
 
 public class MarkerTimingRule : IMarkerValidationRule
 {
@@ -20,7 +20,7 @@ public class MarkerTimingRule : IMarkerValidationRule
         get => openAtMinute;
         set
         {
-            if (value < 0 || value > 59)
+            if (value is < 0 or > 59)
             {
                 Logger.LogError("The minute value must be between 0 and 59");
                 return;
@@ -38,11 +38,12 @@ public class MarkerTimingRule : IMarkerValidationRule
         get => closeAtMinute;
         set
         {
-            if (value < 0 || value > 59)
+            if (value is < 0 or > 59)
             {
                 Logger.LogError("The minute value must be between 0 and 59");
                 return;
             }
+
             closeAtMinute = value;
         }
     }
@@ -61,19 +62,33 @@ public class MarkerTimingRule : IMarkerValidationRule
         if (OpenAtMinute < CloseAtMinute)
         {
             if (marker.MarkerLocation.TimeStamp.Minute < OpenAtMinute)
+            {
                 isConform = false;
+            }
+
             if (marker.MarkerLocation.TimeStamp.Minute > CloseAtMinute)
+            {
                 isConform = false;
+            }
+
             if (marker.MarkerLocation.TimeStamp.Minute == CloseAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
+            {
                 isConform = false;
+            }
         }
         else if (OpenAtMinute > CloseAtMinute)
         {
-            if ((marker.MarkerLocation.TimeStamp.Minute < OpenAtMinute) && (marker.MarkerLocation.TimeStamp.Minute > CloseAtMinute))
+            if (marker.MarkerLocation.TimeStamp.Minute < OpenAtMinute && marker.MarkerLocation.TimeStamp.Minute > CloseAtMinute)
+            {
                 isConform = false;
+            }
+
             if (marker.MarkerLocation.TimeStamp.Minute == CloseAtMinute && marker.MarkerLocation.TimeStamp.Second > 0)
+            {
                 isConform = false;
+            }
         }
+
         return isConform;
     }
 

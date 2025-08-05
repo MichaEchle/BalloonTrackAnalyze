@@ -1,8 +1,8 @@
-﻿using Coordinates;
+using Coordinates;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Shapes;
+namespace Shapes.Shapes2D;
 
 public abstract class Shapes2D
 {
@@ -23,17 +23,24 @@ public abstract class Shapes2D
             else
             {
                 if (isReentranceAllowed)
+                {
                     pointsWithIn.Add([]);
+                }
                 else
                 {
                     if (count > 0)
+                    {
                         break;
+                    }
                 }
 
             }
         }
+
         if (!isReentranceAllowed)
+        {
             distance = CoordinateHelpers.Calculate2DDistanceBetweenPoints(pointsWithIn[0]);
+        }
         else
         {
             for (int index = 0; index < pointsWithIn.Count; index++)

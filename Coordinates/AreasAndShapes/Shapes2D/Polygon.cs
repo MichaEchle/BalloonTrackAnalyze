@@ -1,7 +1,7 @@
-﻿using Coordinates;
+using Coordinates;
 using System.Collections.Generic;
 
-namespace Shapes;
+namespace Shapes.Shapes2D;
 
 public class Polygon : Shapes2D
 {
@@ -17,7 +17,7 @@ public class Polygon : Shapes2D
 
     private double IsLeft(Coordinate coordinate1, Coordinate coordinate2, Coordinate coordinate3)
     {
-        return (coordinate2.Longitude - coordinate1.Longitude) * (coordinate3.Latitude - coordinate1.Latitude) - (coordinate3.Longitude - coordinate1.Longitude) * (coordinate2.Latitude - coordinate1.Latitude);
+        return ((coordinate2.Longitude - coordinate1.Longitude) * (coordinate3.Latitude - coordinate1.Latitude)) - ((coordinate3.Longitude - coordinate1.Longitude) * (coordinate2.Latitude - coordinate1.Latitude));
     }
 
     private int CalculateWindingNumber(Coordinate coordinate)
@@ -30,7 +30,9 @@ public class Polygon : Shapes2D
                 if (GetPolygonPointWrappedAround(index + 1).Latitude > coordinate.Latitude)
                 {
                     if (IsLeft(GetPolygonPointWrappedAround(index), GetPolygonPointWrappedAround(index + 1), coordinate) > 0)
+                    {
                         windingNumber++;
+                    }
                 }
             }
             else
@@ -38,10 +40,13 @@ public class Polygon : Shapes2D
                 if (GetPolygonPointWrappedAround(index + 1).Latitude <= coordinate.Latitude)
                 {
                     if (IsLeft(GetPolygonPointWrappedAround(index), GetPolygonPointWrappedAround(index + 1), coordinate) < 0)
+                    {
                         windingNumber--;
+                    }
                 }
             }
         }
+
         return windingNumber;
     }
 
@@ -52,7 +57,7 @@ public class Polygon : Shapes2D
 
     public override bool IsWithin(Coordinate coordinate)
     {
-        return (CalculateWindingNumber(coordinate) != 0);
+        return CalculateWindingNumber(coordinate) != 0;
     }
 
 

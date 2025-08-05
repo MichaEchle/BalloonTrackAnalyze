@@ -1,11 +1,8 @@
-﻿using Coordinates;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Coordinates;
 
-namespace Competition;
+namespace Competition.Validation;
 
 public interface IMarkerValidationRule
 {
-    public bool IsComplaintToRule(MarkerDrop marker);
+    bool IsComplaintToRule(MarkerDrop marker);
 }

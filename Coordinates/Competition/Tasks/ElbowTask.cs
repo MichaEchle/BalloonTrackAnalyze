@@ -1,12 +1,10 @@
-﻿using Competition.Validation;
+using Competition.Validation;
 using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace Competition;
+namespace Competition.Tasks;
 
 public class ElbowTask : ICompetitionTask
 {
@@ -83,23 +81,24 @@ public class ElbowTask : ICompetitionTask
     {
         result = double.NaN;
 
-        MarkerDrop firstMarker= ValidationHelper.GetValidMarker(track, FirstMarkerNumber, MarkerValidationRule, ValidationStrictness);
+        MarkerDrop firstMarker = ValidationHelper.GetValidMarker(track, FirstMarkerNumber, MarkerValidationRule, ValidationStrictness);
         if (firstMarker is null)
         {
-            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), FirstMarkerNumber);
+            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, !string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "", FirstMarkerNumber);
             return false;
         }
+
         MarkerDrop secondMarker = ValidationHelper.GetValidMarker(track, SecondMarkerNumber, MarkerValidationRule, ValidationStrictness);
         if (secondMarker is null)
         {
-            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), SecondMarkerNumber);
+            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, !string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "", SecondMarkerNumber);
             return false;
         }
 
         MarkerDrop thirdMarker = ValidationHelper.GetValidMarker(track, ThirdMarkerNumber, MarkerValidationRule, ValidationStrictness);
         if (thirdMarker is null)
         {
-            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), ThirdMarkerNumber);
+            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, !string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "", ThirdMarkerNumber);
             return false;
         }
 
@@ -119,7 +118,7 @@ public class ElbowTask : ICompetitionTask
     /// <para>use <see cref="MarkerAndRule"/> or <see cref="MarkerOrRule"/> to chain multiple rules together</para>
     /// </param>
     /// <param name="validationStrictness">The strictness of the validation</param>
-    public void SetupElbow(int taskNumber, int firstMarkerNumber, int secondMarkerNumber, int thirdMarkerNumber,IMarkerValidationRule markerValidationRule,ValidationStrictnessType validationStrictness)
+    public void SetupElbow(int taskNumber, int firstMarkerNumber, int secondMarkerNumber, int thirdMarkerNumber, IMarkerValidationRule markerValidationRule, ValidationStrictnessType validationStrictness)
     {
         TaskNumber = taskNumber;
         FirstMarkerNumber = firstMarkerNumber;

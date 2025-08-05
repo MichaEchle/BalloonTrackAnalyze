@@ -1,4 +1,4 @@
-﻿using LoggingConnector;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 
@@ -80,6 +80,7 @@ public class Coordinate
             Logger?.LogError("Setting a default altitude is not allowed as the altitudes are not zero");
             return false;
         }
+
         AltitudeGPS = defaultAltitude;
         AltitudeBarometric = defaultAltitude;
         return true;

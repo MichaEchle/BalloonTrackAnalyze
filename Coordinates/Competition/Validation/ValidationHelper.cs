@@ -1,4 +1,4 @@
-﻿using Coordinates;
+using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -48,6 +48,7 @@ public static class ValidationHelper
                 }
             }
         }
+
         if (validDeclarations.Count == 0)
         {
             Logger?.LogWarning("No declaration of goal number '{goalNumber}' is conform to specified rules", goalNumber);
@@ -112,6 +113,7 @@ public static class ValidationHelper
                 }
             }
         }
+
         if (validMarkers.Count == 0)
         {
             Logger?.LogWarning("No marker of marker number '{markerNumber}' is conform to specified rules", markerNumber);

@@ -1,12 +1,10 @@
-﻿using Competition.Validation;
+using Competition.Validation;
 using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace Competition;
+namespace Competition.Tasks;
 
 public class LandRunTask : ICompetitionTask
 {
@@ -85,20 +83,21 @@ public class LandRunTask : ICompetitionTask
         MarkerDrop firstMarker = ValidationHelper.GetValidMarker(track, FirstMarkerNumber, MarkerValidationRule, ValidationStrictness);
         if (firstMarker is null)
         {
-            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), FirstMarkerNumber);
+            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, !string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "", FirstMarkerNumber);
             return false;
         }
+
         MarkerDrop secondMarker = ValidationHelper.GetValidMarker(track, SecondMarkerNumber, MarkerValidationRule, ValidationStrictness);
         if (secondMarker is null)
         {
-            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), SecondMarkerNumber);
+            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, !string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "", SecondMarkerNumber);
             return false;
         }
 
         MarkerDrop thirdMarker = ValidationHelper.GetValidMarker(track, ThirdMarkerNumber, MarkerValidationRule, ValidationStrictness);
         if (thirdMarker is null)
         {
-            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), ThirdMarkerNumber);
+            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, !string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "", ThirdMarkerNumber);
             return false;
         }
 

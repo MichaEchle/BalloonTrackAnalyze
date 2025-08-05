@@ -1,13 +1,10 @@
-﻿using Competition;
+using Competition;
+using Competition.Tasks;
 using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
-using OfficeOpenXml.ConditionalFormatting.Contracts;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TestProgramm;
 internal class GermanCup_DM2024
@@ -65,17 +62,19 @@ internal class GermanCup_DM2024
     internal void ChecksFlight1()
     {
         Flight.FlightNumber = 1;
-        Flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(2000));
+        _ = Flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(2000));
         if (!Flight.MapPilotNamesToTracks(@"C:\TEMP\GermanCup_DM2024\PilotMapping.csv"))
         {
             Logger.LogError("Failed to map pilot names to tracks");
             return;
         }
+
         if (!Flight.ParseTrackFiles(@"C:\TEMP\GermanCup_DM2024\Flight1_27_09_AM", true))
         {
             Logger.LogError("Failed to parse track files");
             return;
         }
+
         Flight.Tracks = Flight.Tracks.OrderBy(x => x.Pilot.PilotNumber).ToList();
         foreach (Track track in Flight.Tracks)
         {
@@ -91,52 +90,58 @@ internal class GermanCup_DM2024
             Logger.LogError("No declaration found for goal 1 for pilot {track.Pilot.PilotNumber}", track.Pilot.PilotNumber);
             return;
         }
+
         Declaration declaration2 = track.GetLatestDeclaration(2);
         if (declaration2 is null)
         {
             Logger.LogError("No declaration found for goal 2 for pilot {track.Pilot.PilotNumber}", track.Pilot.PilotNumber);
             return;
         }
+
         double distanceDeclaration1ToGoal1 = CoordinateHelpers.Calculate2DDistanceHavercos(declaration1.PositionAtDeclaration, declaration1.DeclaredGoal);
-        Logger.LogInformation("Distance from declaration 1 to goal 1 for pilot {track.Pilot.PilotNumber}: {distanceDeclartionToGoal}\t->\t{declarationValid}", track.Pilot.PilotNumber, distanceDeclaration1ToGoal1, (distanceDeclaration1ToGoal1 >= 1000 ? "OK" : "INVALID"));
+        Logger.LogInformation("Distance from declaration 1 to goal 1 for pilot {track.Pilot.PilotNumber}: {distanceDeclartionToGoal}\t->\t{declarationValid}", track.Pilot.PilotNumber, distanceDeclaration1ToGoal1, distanceDeclaration1ToGoal1 >= 1000 ? "OK" : "INVALID");
         double distanceHWZ_A = CoordinateHelpers.Calculate2DDistanceHavercos(declaration1.DeclaredGoal, T2_HWZ_A);
         double distanceHWZ_B = CoordinateHelpers.Calculate2DDistanceHavercos(declaration1.DeclaredGoal, T2_HWZ_B);
         double distanceHWZ_C = CoordinateHelpers.Calculate2DDistanceHavercos(declaration1.DeclaredGoal, T2_HWZ_C);
-        Logger.LogInformation("Distance from goal to HWZ A for pilot {track.Pilot.PilotNumber}: {distanceHWZ_A}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceHWZ_A, (distanceHWZ_A >= 1000 ? "OK" : "INVALID"));
-        Logger.LogInformation("Distance from goal to HWZ B for pilot {track.Pilot.PilotNumber}: {distanceHWZ_B}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceHWZ_B, (distanceHWZ_B >= 1000 ? "OK" : "INVALID"));
-        Logger.LogInformation("Distance from goal to HWZ C for pilot {track.Pilot.PilotNumber}: {distanceHWZ_C}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceHWZ_C, (distanceHWZ_C >= 1000 ? "OK" : "INVALID"));
+        Logger.LogInformation("Distance from goal to HWZ A for pilot {track.Pilot.PilotNumber}: {distanceHWZ_A}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceHWZ_A, distanceHWZ_A >= 1000 ? "OK" : "INVALID");
+        Logger.LogInformation("Distance from goal to HWZ B for pilot {track.Pilot.PilotNumber}: {distanceHWZ_B}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceHWZ_B, distanceHWZ_B >= 1000 ? "OK" : "INVALID");
+        Logger.LogInformation("Distance from goal to HWZ C for pilot {track.Pilot.PilotNumber}: {distanceHWZ_C}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceHWZ_C, distanceHWZ_C >= 1000 ? "OK" : "INVALID");
 
         double distanceDeclartion2ToGoal2 = CoordinateHelpers.Calculate2DDistanceHavercos(declaration2.PositionAtDeclaration, declaration2.DeclaredGoal);
-        Logger.LogInformation("Distance from declaration 2 to goal 2 for pilot {track.Pilot.PilotNumber}: {distanceDeclartionToGoal}\t->\t{declarationValid}", track.Pilot.PilotNumber, distanceDeclartion2ToGoal2, (distanceDeclartion2ToGoal2 >= 1000 ? "OK" : "INVALID"));
+        Logger.LogInformation("Distance from declaration 2 to goal 2 for pilot {track.Pilot.PilotNumber}: {distanceDeclartionToGoal}\t->\t{declarationValid}", track.Pilot.PilotNumber, distanceDeclartion2ToGoal2, distanceDeclartion2ToGoal2 >= 1000 ? "OK" : "INVALID");
 
         double distanceGoal1ToGoal2 = CoordinateHelpers.Calculate2DDistanceHavercos(declaration1.DeclaredGoal, declaration2.DeclaredGoal);
-        Logger.LogInformation("Distance from goal 1 to goal 2 for pilot {track.Pilot.PilotNumber}: {distanceGoal1ToGoal2}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceGoal1ToGoal2, (distanceGoal1ToGoal2 >= 1000 ? "OK" : "INVALID"));
+        Logger.LogInformation("Distance from goal 1 to goal 2 for pilot {track.Pilot.PilotNumber}: {distanceGoal1ToGoal2}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceGoal1ToGoal2, distanceGoal1ToGoal2 >= 1000 ? "OK" : "INVALID");
     }
 
 
     internal void ChecksFlight2()
     {
         Flight.FlightNumber = 2;
-        Flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(2000));
+        _ = Flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(2000));
         if (!Flight.MapPilotNamesToTracks(@"C:\TEMP\GermanCup_DM2024\PilotMapping.csv"))
         {
             Logger.LogError("Failed to map pilot names to tracks");
             return;
         }
+
         if (!Flight.ParseTrackFiles(@"C:\TEMP\GermanCup_DM2024\Flight2_27_09_PM", true))
         {
             Logger.LogError("Failed to parse track files");
             return;
         }
+
         Flight.Tracks = Flight.Tracks.OrderBy(x => x.Pilot.PilotNumber).ToList();
         foreach (Track track in Flight.Tracks)
         {
             CheckDistancesFlight2(track);
         }
+
         foreach (Track track in Flight.Tracks)
         {
             CalcMarkerDistanceTask5(track);
         }
+
         foreach (Track track in Flight.Tracks)
         {
             CalcMarkerDistanceTask6(track);
@@ -150,16 +155,17 @@ internal class GermanCup_DM2024
             Logger.LogError("No declaration found for goal 1 for pilot {track.Pilot.PilotNumber}", track.Pilot.PilotNumber);
             return;
         }
+
         double distanceDeclaration1ToGoal1 = CoordinateHelpers.Calculate2DDistanceHavercos(declaration1.PositionAtDeclaration, declaration1.DeclaredGoal);
-        Logger.LogInformation("Distance from declaration 1 to goal 1 for pilot {track.Pilot.PilotNumber}: {distanceDeclartionToGoal}\t->\t{declarationValid}", track.Pilot.PilotNumber, distanceDeclaration1ToGoal1, (distanceDeclaration1ToGoal1 >= 1000 ? "OK" : "INVALID"));
+        Logger.LogInformation("Distance from declaration 1 to goal 1 for pilot {track.Pilot.PilotNumber}: {distanceDeclartionToGoal}\t->\t{declarationValid}", track.Pilot.PilotNumber, distanceDeclaration1ToGoal1, distanceDeclaration1ToGoal1 >= 1000 ? "OK" : "INVALID");
         double distanceHWZ_5A = CoordinateHelpers.Calculate2DDistanceHavercos(declaration1.DeclaredGoal, T5_HWZ_A);
         double distanceHWZ_5B = CoordinateHelpers.Calculate2DDistanceHavercos(declaration1.DeclaredGoal, T5_HWZ_B);
         double distanceHWZ_6A = CoordinateHelpers.Calculate2DDistanceHavercos(declaration1.DeclaredGoal, T6_HWZ_A);
         double distanceHWZ_6B = CoordinateHelpers.Calculate2DDistanceHavercos(declaration1.DeclaredGoal, T6_HWZ_B);
-        Logger.LogInformation("Distance from goal to HWZ 5A for pilot {track.Pilot.PilotNumber}: {distanceHWZ_A}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceHWZ_5A, (distanceHWZ_5A >= 1000 ? "OK" : "INVALID"));
-        Logger.LogInformation("Distance from goal to HWZ 5B for pilot {track.Pilot.PilotNumber}: {distanceHWZ_B}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceHWZ_5B, (distanceHWZ_5B >= 1000 ? "OK" : "INVALID"));
-        Logger.LogInformation("Distance from goal to HWZ 6A for pilot {track.Pilot.PilotNumber}: {distanceHWZ_A}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceHWZ_6A, (distanceHWZ_6A >= 1000 ? "OK" : "INVALID"));
-        Logger.LogInformation("Distance from goal to HWZ 6B for pilot {track.Pilot.PilotNumber}: {distanceHWZ_B}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceHWZ_6B, (distanceHWZ_6B >= 1000 ? "OK" : "INVALID"));
+        Logger.LogInformation("Distance from goal to HWZ 5A for pilot {track.Pilot.PilotNumber}: {distanceHWZ_A}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceHWZ_5A, distanceHWZ_5A >= 1000 ? "OK" : "INVALID");
+        Logger.LogInformation("Distance from goal to HWZ 5B for pilot {track.Pilot.PilotNumber}: {distanceHWZ_B}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceHWZ_5B, distanceHWZ_5B >= 1000 ? "OK" : "INVALID");
+        Logger.LogInformation("Distance from goal to HWZ 6A for pilot {track.Pilot.PilotNumber}: {distanceHWZ_A}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceHWZ_6A, distanceHWZ_6A >= 1000 ? "OK" : "INVALID");
+        Logger.LogInformation("Distance from goal to HWZ 6B for pilot {track.Pilot.PilotNumber}: {distanceHWZ_B}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceHWZ_6B, distanceHWZ_6B >= 1000 ? "OK" : "INVALID");
     }
 
 
@@ -182,10 +188,10 @@ internal class GermanCup_DM2024
     internal void Flight2_ManualScoreP18()
     {
         //Flight2 Pilot 18 special handling
-        Declaration declaration = new Declaration(1, new Coordinate(48.9022981575426, 8.77144168565184, 487.68, 487.68, DateTime.Parse("9/27/2024  3:38:23 PM")), new Coordinate(48.888615, 8.72398333333333, 322, 322, DateTime.Parse("9/27/2024  3:38:23 PM")), true, 83250, 16620);
-        MarkerDrop marker1 = new MarkerDrop(1, new Coordinate(48.902015, 8.77164166666667, 745, 745, DateTime.Parse("9/27/2024  4:18:49 PM")));
-        MarkerDrop marker2 = new MarkerDrop(2, new Coordinate(48.9140483333333, 8.80575166666667, 507, 507, DateTime.Parse("9/27/2024  4:23:39 PM")));
-        MarkerDrop marker3 = new MarkerDrop(3, new Coordinate(48.94218, 8.884475, 291, 291, DateTime.Parse("9/27/2024  4:36:42 PM")));
+        Declaration declaration = new(1, new Coordinate(48.9022981575426, 8.77144168565184, 487.68, 487.68, DateTime.Parse("9/27/2024  3:38:23 PM")), new Coordinate(48.888615, 8.72398333333333, 322, 322, DateTime.Parse("9/27/2024  3:38:23 PM")), true, 83250, 16620);
+        MarkerDrop marker1 = new(1, new Coordinate(48.902015, 8.77164166666667, 745, 745, DateTime.Parse("9/27/2024  4:18:49 PM")));
+        MarkerDrop marker2 = new(2, new Coordinate(48.9140483333333, 8.80575166666667, 507, 507, DateTime.Parse("9/27/2024  4:23:39 PM")));
+        MarkerDrop marker3 = new(3, new Coordinate(48.94218, 8.884475, 291, 291, DateTime.Parse("9/27/2024  4:36:42 PM")));
 
         Coordinate T5_HWZ_A = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 485822, 5417828, 385);
         Coordinate T5_HWZ_B = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 485940, 5416179, CoordinateHelpers.ConvertToMeter(1075));
@@ -291,50 +297,55 @@ internal class GermanCup_DM2024
     internal void ChecksFlight3()
     {
         Flight.FlightNumber = 3;
-        Flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(2000));
+        _ = Flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(2000));
         if (!Flight.MapPilotNamesToTracks(@"C:\TEMP\GermanCup_DM2024\PilotMapping.csv"))
         {
             Logger.LogError("Failed to map pilot names to tracks");
             return;
         }
+
         if (!Flight.ParseTrackFiles(@"C:\TEMP\GermanCup_DM2024\Flight3_28_09_PM", true))
         {
             Logger.LogError("Failed to parse track files");
             return;
         }
+
         Flight.Tracks = Flight.Tracks.OrderBy(x => x.Pilot.PilotNumber).ToList();
-        foreach (var track in Flight.Tracks)
+        foreach (Track track in Flight.Tracks)
         {
             Declaration declaration = track.GetLatestDeclaration(1);
             if (TrackHelpers.EstimateLaunchAndLandingTime(track, true, out Coordinate launchPoint, out _))
             {
                 double distanceILPToGoal1 = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, T7_FIN);
-                Logger.LogInformation("Distance from ILP to goal 1 for pilot {track.Pilot.PilotNumber}: {distanceILPToGoal1}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceILPToGoal1, (distanceILPToGoal1 >= 1000 ? "OK" : "INVALID"));
+                Logger.LogInformation("Distance from ILP to goal 1 for pilot {track.Pilot.PilotNumber}: {distanceILPToGoal1}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceILPToGoal1, distanceILPToGoal1 >= 1000 ? "OK" : "INVALID");
                 double distanceILPToGoal2 = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, declaration.DeclaredGoal);
-                Logger.LogInformation("Distance from ILP to goal 2 for pilot {track.Pilot.PilotNumber}: {distanceILPToGoal2}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceILPToGoal2, (distanceILPToGoal2 >= 1000 ? "OK" : "INVALID"));
+                Logger.LogInformation("Distance from ILP to goal 2 for pilot {track.Pilot.PilotNumber}: {distanceILPToGoal2}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceILPToGoal2, distanceILPToGoal2 >= 1000 ? "OK" : "INVALID");
                 //Check Launch between 09:45 local time and 10:30 local time
-                DateTime startPeriodBegin = new DateTime(2024, 9, 28, 15, 45, 0);
-                DateTime startPeriodEnd = new DateTime(2024, 9, 28, 16, 30, 0);
-                Logger.LogInformation("Launch at {launchTime} for pilot {track.Pilot.PilotNumber}: {launchValid}", launchPoint.TimeStamp.ToString("HH:mm:ss"), track.Pilot.PilotNumber, (launchPoint.TimeStamp >= startPeriodBegin && launchPoint.TimeStamp <= startPeriodEnd ? "OK" : "INVALID"));
+                DateTime startPeriodBegin = new(2024, 9, 28, 15, 45, 0);
+                DateTime startPeriodEnd = new(2024, 9, 28, 16, 30, 0);
+                Logger.LogInformation("Launch at {launchTime} for pilot {track.Pilot.PilotNumber}: {launchValid}", launchPoint.TimeStamp.ToString("HH:mm:ss"), track.Pilot.PilotNumber, launchPoint.TimeStamp >= startPeriodBegin && launchPoint.TimeStamp <= startPeriodEnd ? "OK" : "INVALID");
             }
             else
             {
                 Logger.LogWarning("Failed to estimate launch and landing point for pilot {track.Pilot.PilotNumber}. Skipping distance checks", track.Pilot.PilotNumber);
             }
-            DateTime scoringPeriodEnd = new DateTime(2024, 9, 28, 17, 00, 0);
+
+            DateTime scoringPeriodEnd = new(2024, 9, 28, 17, 00, 0);
             foreach (MarkerDrop marker in track.MarkerDrops.OrderBy(x => x.MarkerNumber))
             {
-                Logger.LogInformation("Marker {markerNumber} at {markerTime} for pilot {track.Pilot.PilotNumber}: {markerValid}", marker.MarkerNumber, marker.MarkerLocation.TimeStamp.ToString("HH:mm:ss"), track.Pilot.PilotNumber, (marker.MarkerLocation.TimeStamp <= scoringPeriodEnd ? "OK" : "INVALID"));
+                Logger.LogInformation("Marker {markerNumber} at {markerTime} for pilot {track.Pilot.PilotNumber}: {markerValid}", marker.MarkerNumber, marker.MarkerLocation.TimeStamp.ToString("HH:mm:ss"), track.Pilot.PilotNumber, marker.MarkerLocation.TimeStamp <= scoringPeriodEnd ? "OK" : "INVALID");
             }
-            Logger.LogInformation("Marker order for pilot {track.Pilot.PilotNumber}: {markerOrderValid}", track.Pilot.PilotNumber, (track.MarkerDrops.OrderBy(x => x.MarkerLocation.TimeStamp).Select(x => x.MarkerNumber).SequenceEqual(new int[] { 1, 3 }) ? "OK" : "INVALID"));
+
+            Logger.LogInformation("Marker order for pilot {track.Pilot.PilotNumber}: {markerOrderValid}", track.Pilot.PilotNumber, track.MarkerDrops.OrderBy(x => x.MarkerLocation.TimeStamp).Select(x => x.MarkerNumber).SequenceEqual(new int[] { 1, 3 }) ? "OK" : "INVALID");
 
             double distanceDeclarationToGoal = CoordinateHelpers.Calculate2DDistanceHavercos(declaration.DeclaredGoal, declaration.PositionAtDeclaration);
-            Logger.LogInformation("Distance from declaration to goal for pilot {track.Pilot.PilotNumber}: {distanceDeclartionToGoal}\t->\t{declarationValid}", track.Pilot.PilotNumber, distanceDeclarationToGoal, (distanceDeclarationToGoal >= 1000 ? "OK" : "INVALID"));
+            Logger.LogInformation("Distance from declaration to goal for pilot {track.Pilot.PilotNumber}: {distanceDeclartionToGoal}\t->\t{declarationValid}", track.Pilot.PilotNumber, distanceDeclarationToGoal, distanceDeclarationToGoal >= 1000 ? "OK" : "INVALID");
 
             double distanceGoal1ToGoal2 = CoordinateHelpers.Calculate2DDistanceHavercos(declaration.DeclaredGoal, T7_FIN);
-            Logger.LogInformation("Distance from goal 1 to goal 2 for pilot {track.Pilot.PilotNumber}: {distanceGoal1ToGoal2}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceGoal1ToGoal2, (distanceGoal1ToGoal2 >= 1000 ? "OK" : "INVALID"));
+            Logger.LogInformation("Distance from goal 1 to goal 2 for pilot {track.Pilot.PilotNumber}: {distanceGoal1ToGoal2}\t->\t{distanceValid}", track.Pilot.PilotNumber, distanceGoal1ToGoal2, distanceGoal1ToGoal2 >= 1000 ? "OK" : "INVALID");
         }
-        foreach (var track in Flight.Tracks)
+
+        foreach (Track track in Flight.Tracks)
         {
             //Calculate Result for Task 7 using Marker 1 and Separation Altitude
             if (track.MarkerDrops.Where(x => x.MarkerNumber == 1).Count() == 0)
@@ -342,10 +353,12 @@ internal class GermanCup_DM2024
                 Logger.LogWarning("No marker 1 found for pilot {track.Pilot.PilotNumber}. Skipping distance calculation", track.Pilot.PilotNumber);
                 continue;
             }
+
             double distanceMarker1ToFIN_T7 = CoordinateHelpers.CalculateDistanceWithSeparationAltitude(T7_FIN, track.MarkerDrops.First(x => x.MarkerNumber == 1).MarkerLocation, SeparationAltitude, true);
             Logger.LogInformation("Task 7 {PilotNumber}: {result}[m]", track.Pilot.PilotNumber, Math.Round(distanceMarker1ToFIN_T7, 0, MidpointRounding.AwayFromZero));
         }
-        foreach (var track in Flight.Tracks)
+
+        foreach (Track track in Flight.Tracks)
         {
             if (track.MarkerDrops.Where(x => x.MarkerNumber == 3).Count() == 0)
             {
@@ -368,12 +381,14 @@ internal class GermanCup_DM2024
             Logger.LogError("Failed to map pilot names to tracks");
             return;
         }
+
         if (!Flight.ParseTrackFiles(@"C:\TEMP\GermanCup_DM2024\Flight4_29_09_AM", true))
         {
             Logger.LogError("Failed to parse track files");
             return;
         }
-        Flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(2000));
+
+        _ = Flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(2000));
         Flight.Tracks = Flight.Tracks.OrderBy(x => x.Pilot.PilotNumber).ToList();
         HesitationWaltzTask t10_FIN_Task = new HesitationWaltzTask();
         t10_FIN_Task.SetupHWZ(10, [T10_FIN], 1, DistanceCalculationType.WithSeparationAlitude, null, Competition.Validation.ValidationStrictnessType.LatestValid);
@@ -818,6 +833,7 @@ internal class GermanCup_DM2024
         {
             Logger.LogWarning(messageTemplate, args);
         }
+
         Console.ForegroundColor = temp;
     }
 }

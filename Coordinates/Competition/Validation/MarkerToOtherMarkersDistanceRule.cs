@@ -1,9 +1,9 @@
-﻿using Coordinates;
+using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
-namespace Competition;
+namespace Competition.Validation;
 
 public class MarkerToOtherMarkersDistanceRule : IMarkerValidationRule
 {
@@ -60,26 +60,36 @@ public class MarkerToOtherMarkersDistanceRule : IMarkerValidationRule
         foreach (MarkerDrop markerDrop in MarkerDrops)
         {
             if (marker.Equals(markerDrop))
+            {
                 continue;
+            }
+
             if (MarkerNumbers?.Count > 0)
             {
-                if(!MarkerNumbers.Contains(markerDrop.MarkerNumber))
+                if (!MarkerNumbers.Contains(markerDrop.MarkerNumber))
                 {
                     continue;
                 }
             }
+
             double distanceToOtherMarker = CoordinateHelpers.Calculate2DDistanceHavercos(marker.MarkerLocation, markerDrop.MarkerLocation);
             if (!double.IsNaN(MinimumDistance))
             {
                 if (distanceToOtherMarker < MinimumDistance)
+                {
                     isConform = false;
+                }
             }
+
             if (!double.IsNaN(MaximumDistance))
             {
                 if (distanceToOtherMarker > MaximumDistance)
+                {
                     isConform = false;
+                }
             }
         }
+
         return isConform;
     }
 

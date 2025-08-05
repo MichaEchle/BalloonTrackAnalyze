@@ -1,9 +1,9 @@
-﻿using Coordinates;
+using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 
-namespace Competition;
+namespace Competition.Validation;
 
 public class GoalToOtherGoalsDistanceRule : IDeclarationValidationRule
 {
@@ -60,10 +60,14 @@ public class GoalToOtherGoalsDistanceRule : IDeclarationValidationRule
         foreach (Declaration otherGoal in Declarations)
         {
             if (declaration.Equals(otherGoal))
+            {
                 continue;
+            }
+
             double distanceBetweenGoals = CoordinateHelpers.Calculate2DDistanceHavercos(declaration.DeclaredGoal, otherGoal.DeclaredGoal);
 
             if (!double.IsNaN(MinimumDistance))
+            {
                 if (distanceBetweenGoals < MinimumDistance)
                 {
                     double absoluteInfringement = MinimumDistance - distanceBetweenGoals;
@@ -72,7 +76,10 @@ public class GoalToOtherGoalsDistanceRule : IDeclarationValidationRule
                     isConform = false;
                     break;
                 }
+            }
+
             if (!double.IsNaN(MaximumDistance))
+            {
                 if (distanceBetweenGoals > MaximumDistance)
                 {
                     double absoluteInfringement = distanceBetweenGoals - MaximumDistance;
@@ -81,7 +88,9 @@ public class GoalToOtherGoalsDistanceRule : IDeclarationValidationRule
                     isConform = false;
                     break;
                 }
+            }
         }
+
         return isConform;
     }
 

@@ -1,4 +1,4 @@
-﻿using Coordinates;
+using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
@@ -11,7 +11,7 @@ namespace TrackReportGenerator;
 public partial class TrackReportGeneratorForm : Form
 {
     #region Properties
-    private readonly ILogger<TrackReportGeneratorForm> Logger=LogConnector.LoggerFactory.CreateLogger<TrackReportGeneratorForm>();
+    private readonly ILogger<TrackReportGeneratorForm> Logger = LogConnector.LoggerFactory.CreateLogger<TrackReportGeneratorForm>();
     private bool UseGPSAltitude = true;
     private double MaxAllowedAltitude = CoordinateHelpers.ConvertToMeter(10000);
     private bool SkipCoordinatesWithoutLocation = true;
@@ -34,7 +34,10 @@ public partial class TrackReportGeneratorForm : Form
         progressBar1.Value = 0;
         OpenFileDialog openFileDialog = new();
         if (!string.IsNullOrWhiteSpace(Properties.Settings.Default.InitalDirectory))
+        {
             openFileDialog.InitialDirectory = Properties.Settings.Default.InitalDirectory;
+        }
+
         openFileDialog.Title = "Select .igc files";
         openFileDialog.Filter = "igc files (*.igc)|*.igc";
         openFileDialog.CheckPathExists = true;
@@ -51,16 +54,23 @@ public partial class TrackReportGeneratorForm : Form
                 Properties.Settings.Default.InitalDirectory = new FileInfo(igcFiles[0]).DirectoryName;
                 Properties.Settings.Default.Save();
             }
+
             for (int index = 0; index < igcFiles.Length; index++)
             {
                 lbStatus.Text = $"{index} of {igcFiles.Length} processed ({successful} successful / {erroneous} erroneous)";
                 bool success = await ProcessFileAsync(igcFiles[index]);
                 if (success)
+                {
                     successful++;
+                }
                 else
+                {
                     erroneous++;
-                progressBar1.Value = (int)Math.Round((double)(((double)(index + 1) / igcFiles.Length) * 100), 0, MidpointRounding.AwayFromZero);
+                }
+
+                progressBar1.Value = (int)Math.Round((double)((double)(index + 1) / igcFiles.Length * 100), 0, MidpointRounding.AwayFromZero);
             }
+
             UseWaitCursor = false;
             progressBar1.Value = 100;
             lbStatus.Text = $"{igcFiles.Length} of {igcFiles.Length} processed ({successful} successful / {erroneous} erroneous)";
@@ -75,13 +85,18 @@ public partial class TrackReportGeneratorForm : Form
             if (rbBallonLiveParser.Checked)
             {
                 if (!Coordinates.Parsers.BalloonLiveParser.ParseFile(igcFile, out track))
+                {
                     return false;
+                }
             }
             else
             {
                 if (!Coordinates.Parsers.FAILoggerParser.ParseFile(igcFile, out track))
+                {
                     return false;
+                }
             }
+
             if (rbBallonLiveParser.Checked)
             {
                 if (track.AdditionalPropertiesFromIGCFile.TryGetValue("Change of position source", out string changeOfPositionSource))
@@ -93,11 +108,14 @@ public partial class TrackReportGeneratorForm : Form
                     }
                 }
             }
+
             string reportFileName = Path.Combine(Path.GetDirectoryName(igcFile), Path.GetFileNameWithoutExtension(igcFile) + ".xlsx");
             if (!File.Exists(reportFileName) || !cbSkipExistingReports.Checked)
             {
                 if (!ExcelTrackReportGenerator.GenerateTrackReport(reportFileName, track, SkipCoordinatesWithoutLocation, UseGPSAltitude, MaxAllowedAltitude))
+                {
                     return false;
+                }
             }
             else
             {
@@ -117,14 +135,9 @@ public partial class TrackReportGeneratorForm : Form
 
     private void rbMeter_CheckedChanged(object sender, EventArgs e)
     {
-        if (rbMeter.Checked)
-        {
-            tbMaxAltitude.Text = $"{MaxAllowedAltitude:0.#}";
-        }
-        else
-        {
-            tbMaxAltitude.Text = $"{Math.Round(CoordinateHelpers.ConvertToFeet(MaxAllowedAltitude), 0, MidpointRounding.AwayFromZero)}";
-        }
+        tbMaxAltitude.Text = rbMeter.Checked
+            ? $"{MaxAllowedAltitude:0.#}"
+            : $"{Math.Round(CoordinateHelpers.ConvertToFeet(MaxAllowedAltitude), 0, MidpointRounding.AwayFromZero)}";
     }
 
     private void cbSkipCoordinates_CheckedChanged(object sender, EventArgs e)
@@ -160,10 +173,8 @@ public partial class TrackReportGeneratorForm : Form
             Logger?.LogError("Failed to parse '{maxAltitude}' as double. Please enter a number", tbMaxAltitude.Text);
             return;
         }
-        if (rbMeter.Checked)
-            MaxAllowedAltitude = tempMaxAltitude;
-        else
-            MaxAllowedAltitude = CoordinateHelpers.ConvertToMeter(tempMaxAltitude);
+
+        MaxAllowedAltitude = rbMeter.Checked ? tempMaxAltitude : CoordinateHelpers.ConvertToMeter(tempMaxAltitude);
     }
     #endregion Methods
 }

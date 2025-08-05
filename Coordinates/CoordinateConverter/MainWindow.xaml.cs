@@ -1,22 +1,10 @@
-﻿using Coordinates;
-using Coordinates.Parsers;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace CoordinateConverter;
 
@@ -104,20 +92,23 @@ public partial class MainWindow : Window
     {
         if (!UTMZones.Contains(CbUTMZone.Text))
         {
-            MessageBox.Show("Please select a valid UTM Zone");
+            _ = MessageBox.Show("Please select a valid UTM Zone");
             return;
         }
+
         string utmZone = CbUTMZone.Text;
         if (!int.TryParse(TbEastingInput.Text, out int easting))
         {
-            MessageBox.Show("Please enter a valid easting value");
+            _ = MessageBox.Show("Please enter a valid easting value");
             return;
         }
+
         if (!int.TryParse(TbNorthingInput.Text, out int northing))
         {
-            MessageBox.Show("Please enter a valid northing value");
+            _ = MessageBox.Show("Please enter a valid northing value");
             return;
         }
+
         (double latitude, double longitude) = Coordinates.CoordinateHelpers.ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
         Latitude = latitude;
         Longitude = longitude;
@@ -148,18 +139,20 @@ public partial class MainWindow : Window
         {
             if (!ParseAndConvertDegreeMinuteInput(TbLatitudeInput.Text, out latitude))
             {
-                MessageBox.Show("Please provide a valid latitude");
+                _ = MessageBox.Show("Please provide a valid latitude");
                 return;
             }
         }
+
         if (!double.TryParse(TbLongitudeInput.Text, out double longitude))
         {
             if (!ParseAndConvertDegreeMinuteInput(TbLongitudeInput.Text, out longitude))
             {
-                MessageBox.Show("Please provide a valid longitude");
+                _ = MessageBox.Show("Please provide a valid longitude");
                 return;
             }
         }
+
         (string utmZone, int easting, int norhting) = Coordinates.CoordinateHelpers.ConvertLatitudeLongitudeToUTM(latitude, longitude);
         UTMZone = utmZone;
         Easting = easting;
@@ -221,10 +214,12 @@ public partial class MainWindow : Window
                     {
                         return false;
                     }
+
                     digits = "";
                 }
             }
         }
+
         decimalDegrees = Coordinates.CoordinateHelpers.ConvertToDecimalDegree(degrees, degreeMinutes, degreeSeconds, degreeTenthSeconds, true);
         return true;
     }
@@ -249,7 +244,7 @@ public partial class MainWindow : Window
             string[] parts = input.Split(" ", StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length > 2)
             {
-                int half = (parts.Length / 2);
+                int half = parts.Length / 2;
                 TbLatitudeInput.Text = string.Join("", parts[0..half]);
                 TbLongitudeInput.Text = string.Join("", parts[half..^0]);
             }
@@ -280,8 +275,9 @@ public partial class MainWindow : Window
             }
         }
         else
+        {
             BtParseLine.IsEnabled = false;
-
+        }
     }
 
     private void BtParseLine_Click(object sender, RoutedEventArgs e)
@@ -305,7 +301,7 @@ public partial class MainWindow : Window
                 if (!int.TryParse(TbLineNumber.Text, out int lineNumber))
                 {
                     TbLineContent.Text = string.Empty;
-                    MessageBox.Show("Please enter a valid line number");
+                    _ = MessageBox.Show("Please enter a valid line number");
                     BtParseLine.IsEnabled = false;
                     return;
                 }
@@ -317,7 +313,7 @@ public partial class MainWindow : Window
                 }
                 else
                 {
-                    MessageBox.Show($"IGC file doesn't have a line number {lineNumber}");
+                    _ = MessageBox.Show($"IGC file doesn't have a line number {lineNumber}");
                     BtParseLine.IsEnabled = false;
                 }
             }
@@ -329,7 +325,7 @@ public partial class MainWindow : Window
         }
         else
         {
-            MessageBox.Show("Please select and .igc file first");
+            _ = MessageBox.Show("Please select and .igc file first");
         }
     }
 }

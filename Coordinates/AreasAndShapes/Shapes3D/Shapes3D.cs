@@ -1,8 +1,8 @@
-﻿using Coordinates;
+using Coordinates;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Shapes;
+namespace Shapes.Shapes3D;
 
 public abstract class Shapes3D
 {
@@ -23,17 +23,24 @@ public abstract class Shapes3D
             else
             {
                 if (isReentranceAllowed)
+                {
                     pointsWithIn.Add([]);
+                }
                 else
                 {
                     if (count > 0)
+                    {
                         break;
+                    }
                 }
 
             }
         }
+
         if (!isReentranceAllowed)
+        {
             distance = CoordinateHelpers.Calculate3DDistanceBetweenPoints(pointsWithIn[0], useGPSAltitude);
+        }
         else
         {
             for (int index = 0; index < pointsWithIn.Count; index++)
@@ -49,13 +56,21 @@ public abstract class Shapes3D
     {
         double altitude = coordinate.AltitudeGPS;
         if (!useGPSAltitude)
+        {
             altitude = coordinate.AltitudeBarometric;
+        }
 
         bool isWithin = true;
         if (!double.IsNaN(lowerBoundary))
+        {
             isWithin &= altitude >= lowerBoundary;
+        }
+
         if (!double.IsNaN(upperBoundary))
+        {
             isWithin &= altitude <= upperBoundary;
+        }
+
         return isWithin;
 
     }

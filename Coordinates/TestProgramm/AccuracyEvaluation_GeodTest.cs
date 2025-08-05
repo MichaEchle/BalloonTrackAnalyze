@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -135,6 +135,7 @@ internal static class AccuracyEvaluation_GeodTest
                 Console.WriteLine($"Failed to parse area between geodesic and equator from {parts[9]}");
                 return false;
             }
+
             GeodTestRecord geodTestData = new()
             {
                 Latitude1 = latitude1,
@@ -150,6 +151,7 @@ internal static class AccuracyEvaluation_GeodTest
             };
             geodTestRecords.Add(geodTestData);
         }
+
         return true;
     }
 
@@ -188,6 +190,7 @@ internal static class AccuracyEvaluation_GeodTest
 
                 //Console.WriteLine($"ref distance {Math.Round(record.Geodesic_Distance, 6, MidpointRounding.AwayFromZero)}\t\t  havercos {Math.Round(distance_havercos, 6, MidpointRounding.AwayFromZero)} (error {Math.Round(record.Geodesic_Distance - distance_havercos, 6, MidpointRounding.AwayFromZero)}) \t\t vincenty {Math.Round(distance_vincenty, 6, MidpointRounding.AwayFromZero)} (error {Math.Round(record.Geodesic_Distance - distance_vincenty, 6, MidpointRounding.AwayFromZero)})");
             }
+
             stopwatch.Stop();
             Console.WriteLine($"Haversin: {stopwatch.Elapsed:mm\\:ss\\.fff}");
             //}

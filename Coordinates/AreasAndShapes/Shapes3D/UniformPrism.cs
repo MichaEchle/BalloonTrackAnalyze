@@ -1,6 +1,7 @@
-﻿using Coordinates;
+using Coordinates;
+using Shapes.Shapes2D;
 
-namespace Shapes;
+namespace Shapes.Shapes3D;
 public class UniformPrism : Shapes3D
 {
     public Polygon Polygon
@@ -27,8 +28,8 @@ public class UniformPrism : Shapes3D
 
     public override bool IsWithin(Coordinate coordinate, bool useGPSAltitude)
     {
-        if (!Polygon.IsWithin(coordinate))
-            return false;
-        return base.IsWithinAltitudeBoundary(coordinate, useGPSAltitude, LowerBoundary, UpperBoundary);
+        return !Polygon.IsWithin(coordinate)
+            ? false
+            : base.IsWithinAltitudeBoundary(coordinate, useGPSAltitude, LowerBoundary, UpperBoundary);
     }
 }

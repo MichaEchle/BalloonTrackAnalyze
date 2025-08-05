@@ -1,6 +1,6 @@
-﻿using Coordinates;
+using Coordinates;
 
-namespace Competition;
+namespace Competition.Tasks;
 
 public enum DistanceCalculationType
 {
@@ -14,7 +14,7 @@ public interface ICompetitionTask
     /// <summary>
     /// The task number
     /// </summary>
-    public int TaskNumber
+    int TaskNumber
     {
         get; set;
     }
@@ -26,7 +26,7 @@ public interface ICompetitionTask
     /// <param name="useGPSAltitude">true: use GPS altitude;false: use barometric altitude</param>
     /// <param name="result">the result of the task</param>
     /// <returns>true:success;false:error</returns>
-    public abstract bool CalculateResults(Track track, bool useGPSAltitude, out double result);
+    abstract bool CalculateResults(Track track, bool useGPSAltitude, out double result);
 
 
 

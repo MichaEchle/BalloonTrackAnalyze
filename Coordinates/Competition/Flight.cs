@@ -1,4 +1,4 @@
-﻿using Competition.Validation;
+using Competition.Tasks;
 using Coordinates;
 using Coordinates.Parsers;
 using LoggingConnector;
@@ -79,6 +79,7 @@ public class Flight
         {
             Logger?.LogError("Failed to parse track files: Directory '{path}' does not exists", path);
         }
+
         FileInfo[] trackFiles = directoryInfo.GetFiles("*.igc");
         flight.Tracks.Clear();
         foreach (FileInfo trackFile in trackFiles)
@@ -101,9 +102,13 @@ public class Flight
                     trackIsValid = false;
                 }
             }
+
             if (trackIsValid)
+            {
                 Tracks.Add(track);
+            }
         }
+
         return true;
     }
 
@@ -123,6 +128,7 @@ public class Flight
             Logger?.LogError("Failed to map pilot names to tracks: The file '{mappingFile}' does not exists", mappingFile);
             return false;
         }
+
         if (!fileInfo.Extension.Contains("csv"))
         {
             Logger?.LogError("Failed to map pilot names to tracks: The file extension '{fileExtension}' is not supported", fileInfo.Extension);
@@ -131,7 +137,7 @@ public class Flight
 
         using (StreamReader reader = new(mappingFile))
         {
-            reader.ReadLine();//ignore first line
+            _ = reader.ReadLine();//ignore first line
             while (!reader.EndOfStream)
             {
                 string line = reader.ReadLine();
@@ -142,6 +148,7 @@ public class Flight
                     Logger?.LogError("Failed to map pilot names to tracks: Failed to parse pilot number '{pilotNumber}' as integer", parts[0]);
                     return false;
                 }
+
                 string firstName = parts[1];
                 string lastName = parts[2];
                 string[] identifiers = parts[3..^0];
@@ -156,10 +163,12 @@ public class Flight
                         {
                             Logger?.LogWarning("Identifier of track matched with identifiers of '{firstName},{lastName}', but pilot numbers didn't match (Track Pilot No.'{pilotNumber}'/ File Pilot No.'{pilotNumber}'", firstName, lastName, track.Pilot.PilotNumber, pilotNumber);
                         }
+
                         found = true;
                         break;
                     }
                 }
+
                 if (!found)
                 {
                     Logger?.LogWarning("No track match found for '{firstName},{lastName}'", firstName, lastName);
@@ -167,6 +176,7 @@ public class Flight
 
             }
         }
+
         foreach (Track track in Tracks)
         {
             if (string.IsNullOrWhiteSpace(track.Pilot.FirstName))
@@ -468,8 +478,11 @@ public class Flight
                 bool isResultValid = Tasks[index].CalculateResults(track, useGPSAltitude, out double result);
                 results[index] = Math.Round(result, 3, MidpointRounding.AwayFromZero).ToString();
                 if (!isResultValid)
+                {
                     results[index] += "*";
+                }
             }
+
             writer.WriteLine(string.Join(',', track.Pilot.PilotNumber, track.Pilot.FirstName, track.Pilot.LastName, string.Join(',', results)));
         }
     }
@@ -492,7 +505,7 @@ public class Flight
                     if (declaration.DeclaredGoal.SetDefaultAltitude(defaultAltitude))
                     {
                         declarationsWithAltitude.Add((track.Pilot, declaration));
-                        Logger?.LogInformation("Default altitude set for Pilot {pilotNumber} at declaration {goalNumber}",track.Pilot.PilotNumber,declaration.GoalNumber);
+                        Logger?.LogInformation("Default altitude set for Pilot {pilotNumber} at declaration {goalNumber}", track.Pilot.PilotNumber, declaration.GoalNumber);
                     }
                     else
                     {
@@ -501,6 +514,7 @@ public class Flight
                 }
             }
         }
+
         return declarationsWithAltitude;
     }
 

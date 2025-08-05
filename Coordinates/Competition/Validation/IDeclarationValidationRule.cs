@@ -1,8 +1,8 @@
-﻿using Coordinates;
+using Coordinates;
 
-namespace Competition;
+namespace Competition.Validation;
 
 public interface IDeclarationValidationRule
 {
-    public bool IsComplaintToRule(Declaration declaration);
+    bool IsComplaintToRule(Declaration declaration);
 }

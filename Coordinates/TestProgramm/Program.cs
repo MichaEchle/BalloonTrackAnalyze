@@ -1,21 +1,14 @@
-﻿using Competition;
-using Coordinates;
-using Coordinates.Parsers;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace TestProgramm;
 
-class Program
+internal class Program
 {
 
 
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
         LogConnector.LoggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
@@ -49,11 +42,11 @@ class Program
         //DonutTask t11_3DT_Task = new DonutTask();
         //t11_3DT_Task.SetupDonut(11, 10, 1, 1500, 3000, double.NaN, double.NaN, true
         //    , null, Competition.Validation.ValidationStrictnessType.LatestValid);
-        
+
         //t11_3DT_Task.CalculateResults(track, true, out double result);
 
         //Console.WriteLine(Math.Round(result,0,MidpointRounding.AwayFromZero));
-        Console.ReadLine();
+        _ = Console.ReadLine();
         //AccuracyEvaluation_GeodTest.CalculateDistances();
         //DirectoryInfo directoryInfo = new DirectoryInfo(@"C:\temp\Donut_DM2022");
         //FileInfo[] files = directoryInfo.GetFiles("*.igc");

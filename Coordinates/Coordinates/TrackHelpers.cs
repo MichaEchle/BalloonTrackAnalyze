@@ -1,4 +1,4 @@
-﻿using LoggingConnector;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ namespace Coordinates;
 public static class TrackHelpers
 {
 
-    private readonly static ILogger Logger = LogConnector.LoggerFactory.CreateLogger(nameof(TrackHelpers));
+    private static readonly ILogger Logger = LogConnector.LoggerFactory.CreateLogger(nameof(TrackHelpers));
 
     /// <summary>
     /// Calculates the 2D distance between position of declaration and declared goal for all given declarations
@@ -23,6 +23,7 @@ public static class TrackHelpers
         {
             distance2DBetweenPositionOfDeclarationsAndDeclaredGoal.Add(CoordinateHelpers.Calculate2DDistanceHavercos(declaration.PositionAtDeclaration, declaration.DeclaredGoal));
         }
+
         return distance2DBetweenPositionOfDeclarationsAndDeclaredGoal;
     }
 
@@ -39,6 +40,7 @@ public static class TrackHelpers
         {
             distance3DBetweenPositionOfDeclarationsAndDeclaredGoal.Add(CoordinateHelpers.Calculate3DDistance(declaration.PositionAtDeclaration, declaration.DeclaredGoal, useGPSAltitude));
         }
+
         return distance3DBetweenPositionOfDeclarationsAndDeclaredGoal;
     }
 
@@ -55,15 +57,14 @@ public static class TrackHelpers
             bool useTimeStamp = declarations.Where(x => x.GoalNumber == declarations[index].GoalNumber).Count() > 1;
             for (int iterator = index + 1; iterator < declarations.Count; iterator++)
             {
-                string identifier;
-                if (useTimeStamp)
-                    identifier = $"G{declarations[index].GoalNumber}_{declarations[index].DeclaredGoal.TimeStamp:HH:mm:ss}->G{declarations[iterator].GoalNumber}_{declarations[iterator].DeclaredGoal.TimeStamp:HH:mm:ss}";
-                else
-                    identifier = $"G{declarations[index].GoalNumber}->G{declarations[iterator].GoalNumber}";
+                string identifier = useTimeStamp
+                    ? $"G{declarations[index].GoalNumber}_{declarations[index].DeclaredGoal.TimeStamp:HH:mm:ss}->G{declarations[iterator].GoalNumber}_{declarations[iterator].DeclaredGoal.TimeStamp:HH:mm:ss}"
+                    : $"G{declarations[index].GoalNumber}->G{declarations[iterator].GoalNumber}";
                 double distance = CoordinateHelpers.Calculate2DDistanceHavercos(declarations[index].DeclaredGoal, declarations[iterator].DeclaredGoal);
                 distance2DBetweenDeclaredGoals.Add((identifier, distance));
             }
         }
+
         return distance2DBetweenDeclaredGoals;
     }
 
@@ -81,15 +82,14 @@ public static class TrackHelpers
             bool useTimeStamp = declarations.Where(x => x.GoalNumber == declarations[index].GoalNumber).Count() > 1;
             for (int iterator = index + 1; iterator < declarations.Count; iterator++)
             {
-                string identifier;
-                if (useTimeStamp)
-                    identifier = $"G{declarations[index].GoalNumber}_{declarations[index].DeclaredGoal.TimeStamp:HH:mm:ss}->G{declarations[iterator].GoalNumber}_{declarations[iterator].DeclaredGoal.TimeStamp:HH:mm:ss}";
-                else
-                    identifier = $"G{declarations[index].GoalNumber}->G{declarations[iterator].GoalNumber}";
+                string identifier = useTimeStamp
+                    ? $"G{declarations[index].GoalNumber}_{declarations[index].DeclaredGoal.TimeStamp:HH:mm:ss}->G{declarations[iterator].GoalNumber}_{declarations[iterator].DeclaredGoal.TimeStamp:HH:mm:ss}"
+                    : $"G{declarations[index].GoalNumber}->G{declarations[iterator].GoalNumber}";
                 double distance = CoordinateHelpers.Calculate3DDistance(declarations[index].DeclaredGoal, declarations[iterator].DeclaredGoal, useGPSAltitude);
                 distance3DBetweenDeclaredGoals.Add((identifier, distance));
             }
         }
+
         return distance3DBetweenDeclaredGoals;
     }
 
@@ -106,15 +106,14 @@ public static class TrackHelpers
             bool useTimeStamp = markerDrops.Where(x => x.MarkerNumber == markerDrops[index].MarkerNumber).Count() > 1;
             for (int iterator = index + 1; iterator < markerDrops.Count; iterator++)
             {
-                string identifier;
-                if (useTimeStamp)
-                    identifier = $"M{markerDrops[index].MarkerNumber}_{markerDrops[index].MarkerLocation.TimeStamp:HH:mm:ss}->M{markerDrops[iterator].MarkerNumber}_{markerDrops[iterator].MarkerLocation.TimeStamp:HH:mm:ss}";
-                else
-                    identifier = $"M{markerDrops[index].MarkerNumber}->M{markerDrops[iterator].MarkerNumber}";
+                string identifier = useTimeStamp
+                    ? $"M{markerDrops[index].MarkerNumber}_{markerDrops[index].MarkerLocation.TimeStamp:HH:mm:ss}->M{markerDrops[iterator].MarkerNumber}_{markerDrops[iterator].MarkerLocation.TimeStamp:HH:mm:ss}"
+                    : $"M{markerDrops[index].MarkerNumber}->M{markerDrops[iterator].MarkerNumber}";
                 double distance = CoordinateHelpers.Calculate2DDistanceHavercos(markerDrops[index].MarkerLocation, markerDrops[iterator].MarkerLocation);
                 distance2DBetweenMarkers.Add((identifier, distance));
             }
         }
+
         return distance2DBetweenMarkers;
     }
 
@@ -132,15 +131,14 @@ public static class TrackHelpers
             bool useTimeStamp = markerDrops.Where(x => x.MarkerNumber == markerDrops[index].MarkerNumber).Count() > 1;
             for (int iterator = index + 1; iterator < markerDrops.Count; iterator++)
             {
-                string identifier;
-                if (useTimeStamp)
-                    identifier = $"M{markerDrops[index].MarkerNumber}_{markerDrops[index].MarkerLocation.TimeStamp:HH:mm:ss}->M{markerDrops[index].MarkerNumber}_{markerDrops[iterator].MarkerLocation.TimeStamp:HH:mm:ss}";
-                else
-                    identifier = $"M{markerDrops[index].MarkerNumber}->M{markerDrops[index].MarkerNumber}";
+                string identifier = useTimeStamp
+                    ? $"M{markerDrops[index].MarkerNumber}_{markerDrops[index].MarkerLocation.TimeStamp:HH:mm:ss}->M{markerDrops[index].MarkerNumber}_{markerDrops[iterator].MarkerLocation.TimeStamp:HH:mm:ss}"
+                    : $"M{markerDrops[index].MarkerNumber}->M{markerDrops[index].MarkerNumber}";
                 double distance = CoordinateHelpers.Calculate3DDistance(markerDrops[index].MarkerLocation, markerDrops[iterator].MarkerLocation, useGPSAltitude);
                 distance3DBetweenMarkers.Add((identifier, distance));
             }
         }
+
         return distance3DBetweenMarkers;
     }
 
@@ -156,6 +154,7 @@ public static class TrackHelpers
                 distance2DBetweenMarkerAndGoals.Add((identifier, distance));
             }
         }
+
         return distance2DBetweenMarkerAndGoals;
     }
 
@@ -171,6 +170,7 @@ public static class TrackHelpers
                 distance3DBetweenMarkerAndGoals.Add((identifier, distance));
             }
         }
+
         return distance3DBetweenMarkerAndGoals;
     }
 
@@ -183,6 +183,7 @@ public static class TrackHelpers
             double distance = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, declaration.DeclaredGoal);
             distance2DBetweenLaunchPointAndGoals.Add((idenifier, distance));
         }
+
         return distance2DBetweenLaunchPointAndGoals;
     }
     public static List<(string identifier, double distance)> Calculate3DDistanceBetweenLaunchPointAndGoals(Coordinate launchPoint, List<Declaration> declarations, bool useGPSAltitude)
@@ -194,6 +195,7 @@ public static class TrackHelpers
             double distance = CoordinateHelpers.Calculate3DDistance(launchPoint, declaration.DeclaredGoal, useGPSAltitude);
             distance2DBetweenLaunchPointAndGoals.Add((idenifier, distance));
         }
+
         return distance2DBetweenLaunchPointAndGoals;
     }
 
@@ -206,6 +208,7 @@ public static class TrackHelpers
             double distance = CoordinateHelpers.Calculate2DDistanceHavercos(landingPoint, declaration.DeclaredGoal);
             distance2DBetweenLandingPointAndGoals.Add((idenifier, distance));
         }
+
         return distance2DBetweenLandingPointAndGoals;
     }
     public static List<(string identifier, double distance)> Calculate3DDistanceBetweenLandingPointAndGoals(Coordinate landingPoint, List<Declaration> declarations, bool useGPSAltitude)
@@ -217,6 +220,7 @@ public static class TrackHelpers
             double distance = CoordinateHelpers.Calculate3DDistance(landingPoint, declaration.DeclaredGoal, useGPSAltitude);
             distance2DBetweenLandingPointAndGoals.Add((idenifier, distance));
         }
+
         return distance2DBetweenLandingPointAndGoals;
     }
 
@@ -229,6 +233,7 @@ public static class TrackHelpers
             double distance = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, goalCoordinate);
             distance2DBetweenLaunchPointAndGoals.Add((identifier, distance));
         }
+
         return distance2DBetweenLaunchPointAndGoals;
     }
 
@@ -241,6 +246,7 @@ public static class TrackHelpers
             double distance = CoordinateHelpers.Calculate3DDistance(launchPoint, goalCoordinate, useGPSAltitude);
             distance3DBetweenLaunchPointAndGoals.Add((identifier, distance));
         }
+
         return distance3DBetweenLaunchPointAndGoals;
     }
 
@@ -256,6 +262,7 @@ public static class TrackHelpers
                 distance2DBetweenPilotAndJudgeDeclaredGoals.Add((identifier, distance));
             }
         }
+
         return distance2DBetweenPilotAndJudgeDeclaredGoals;
     }
 
@@ -271,6 +278,7 @@ public static class TrackHelpers
                 distance3DBetweenPilotAndJudgeDeclaredGoals.Add((identifier, distance));
             }
         }
+
         return distance3DBetweenPilotAndJudgeDeclaredGoals;
     }
 
@@ -280,17 +288,25 @@ public static class TrackHelpers
         for (int index = 0; index < track.TrackPoints.Count - 1; index++)
         {
             if (Math.Abs(track.TrackPoints[index].Latitude) <= double.Epsilon || Math.Abs(track.TrackPoints[index].Longitude) <= double.Epsilon)
+            {
                 continue;
+            }
+
             if (useGPSAltitude)
             {
                 if (Math.Abs(track.TrackPoints[index + 1].AltitudeGPS - track.TrackPoints[index].AltitudeGPS) > maxAbsVeritcalVelocityConsideredReasonable)
+                {
                     continue;
+                }
             }
             else
             {
                 if (Math.Abs(track.TrackPoints[index + 1].AltitudeBarometric - track.TrackPoints[index].AltitudeBarometric) > maxAbsVeritcalVelocityConsideredReasonable)
+                {
                     continue;
+                }
             }
+
             cleanedUpTrackPoints.Add(track.TrackPoints[index]);
         }
     }
@@ -308,22 +324,28 @@ public static class TrackHelpers
 
             CleanTrackPoints(track, useGPSAltitude, 15.0, out List<Coordinate> cleanedUpTrackPoints);
 
-            if (useGPSAltitude)
-                altitudesFiltered = cleanedUpTrackPoints.Select(x => x.AltitudeGPS).ToList();
-            else
-                altitudesFiltered = cleanedUpTrackPoints.Select(x => x.AltitudeBarometric).ToList();
+            altitudesFiltered = useGPSAltitude
+                ? cleanedUpTrackPoints.Select(x => x.AltitudeGPS).ToList()
+                : cleanedUpTrackPoints.Select(x => x.AltitudeBarometric).ToList();
             int filterLength = 5;
             int halfFilterLength = filterLength / 2;//integer division is intended
             for (int index = 0; index < altitudesFiltered.Count; index++)//moving average
             {
 
                 if (index - halfFilterLength < 0)
+                {
                     continue;
+                }
+
                 if (index + halfFilterLength > altitudesFiltered.Count - 1)
+                {
                     continue;
+                }
+
                 int filterStart = index - halfFilterLength;
                 altitudesFiltered[index] = Math.Round(altitudesFiltered.GetRange(filterStart, filterLength).Average(), 0, MidpointRounding.AwayFromZero);
             }
+
             List<(int index, double altitudeDifference)> altitudeFilteredDerivative = [];
 
             for (int index = 0; index < cleanedUpTrackPoints.Count - 1; index++)
@@ -338,9 +360,14 @@ public static class TrackHelpers
             for (int index = firstPeak; index >= 1; index--)
             {
                 if ((altitudeFilteredDerivative[index].altitudeDifference <= 0) && (Math.Abs(CoordinateHelpers.Calculate2DDistanceHavercos(cleanedUpTrackPoints[altitudeFilteredDerivative[index].index], cleanedUpTrackPoints[altitudeFilteredDerivative[index].index - 1])) <= 2))
+                {
                     counter++;
+                }
                 else
+                {
                     counter = 0;
+                }
+
                 if (counter == 20)
                 {
                     launchPointIndex = altitudeFilteredDerivative[index + 20].index;
@@ -351,15 +378,23 @@ public static class TrackHelpers
             launchPoint = cleanedUpTrackPoints[launchPointIndex];
             int lastPeak = altitudeFilteredDerivative.FindLastIndex(x => x.altitudeDifference < -2.0);
             if (lastPeak == -1)
+            {
                 lastPeak = altitudeFilteredDerivative.Count - 1;
+            }
+
             counter = 0;
             int landingPointIndex = altitudeFilteredDerivative[^1].index;
             for (int index = lastPeak; index < altitudeFilteredDerivative.Count - 2; index++)
             {
                 if ((altitudeFilteredDerivative[index].altitudeDifference >= 0) && (Math.Abs(CoordinateHelpers.Calculate2DDistanceHavercos(cleanedUpTrackPoints[altitudeFilteredDerivative[index].index], cleanedUpTrackPoints[altitudeFilteredDerivative[index].index + 1])) >= 2))
+                {
                     counter++;
+                }
                 else
+                {
                     counter = 0;
+                }
+
                 if (counter == 20)
                 {
                     landingPointIndex = altitudeFilteredDerivative[index - 20].index;
@@ -374,10 +409,11 @@ public static class TrackHelpers
             Logger?.LogError(ex, "Failed to estimate launch or landing point");
             return false;
         }
+
         return true;
     }
 
-    
+
 
     public static bool CheckLaunchConstraints(Track track, bool useGPSAltitude, DateTime beginOfStartPeriod, DateTime endOfStartPeriod, List<Coordinate> goals, double min2DDistanceBetweenLaunchAndGoals, double max2DDistanceBetweenLaunchAndGoals, out Coordinate launchPoint, out bool launchInStartPeriod, out List<double> distanceToGoals, out List<bool> distanceToGoalsOk)
     {
@@ -385,9 +421,15 @@ public static class TrackHelpers
         distanceToGoals = [];
         distanceToGoalsOk = [];
         if (!EstimateLaunchAndLandingTime(track, useGPSAltitude, out launchPoint, out _))
+        {
             return false;
+        }
+
         if (launchPoint.TimeStamp >= beginOfStartPeriod && launchPoint.TimeStamp <= endOfStartPeriod)
+        {
             launchInStartPeriod = true;
+        }
+
         double distanceToGoal;
         bool distanceOk = false;
         foreach (Coordinate goal in goals)
@@ -397,15 +439,22 @@ public static class TrackHelpers
             if (!double.IsNaN(min2DDistanceBetweenLaunchAndGoals))
             {
                 if (distanceToGoal >= min2DDistanceBetweenLaunchAndGoals)
+                {
                     distanceOk = true;
+                }
             }
+
             if (!double.IsNaN(max2DDistanceBetweenLaunchAndGoals))
             {
                 if (distanceToGoal <= max2DDistanceBetweenLaunchAndGoals)
+                {
                     distanceOk &= true;
+                }
             }
+
             distanceToGoalsOk.Add(distanceOk);
         }
+
         return true;
     }
 }

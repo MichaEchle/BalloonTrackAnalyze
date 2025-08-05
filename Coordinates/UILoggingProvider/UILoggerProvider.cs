@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
 using System.Threading.Channels;
 
@@ -12,9 +12,7 @@ public class UILoggerProvider : ILoggerProvider
 
     public ChannelReader<LogItem> LogItemReader => LogItemChannel.Reader;
 
-    private static readonly UILoggerProvider _instance = new();
-
-    public static UILoggerProvider Instance => _instance;
+    public static UILoggerProvider Instance { get; } = new();
 
     private UILoggerProvider()
     {

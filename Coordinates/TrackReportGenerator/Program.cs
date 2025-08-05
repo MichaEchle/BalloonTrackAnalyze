@@ -8,31 +8,31 @@ using UILoggingProvider;
 
 namespace TrackReportGenerator;
 
-static class Program
+public static class Program
 {
     /// <summary>
     ///  The main entry point for the application.
     /// </summary>
     [STAThread]
-    static void Main()
+    public static void Main()
     {
-        Application.SetHighDpiMode(HighDpiMode.SystemAware);
+        _ = Application.SetHighDpiMode(HighDpiMode.SystemAware);
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
-        var uiLoggerProvider = UILoggerProvider.Instance;
-        var builder = Host.CreateDefaultBuilder()
+        UILoggerProvider uiLoggerProvider = UILoggerProvider.Instance;
+        IHostBuilder builder = Host.CreateDefaultBuilder()
             .ConfigureLogging(logging =>
                 {
-                    logging.ClearProviders();
-                    logging.AddProvider(uiLoggerProvider);
+                    _ = logging.ClearProviders();
+                    _ = logging.AddProvider(uiLoggerProvider);
                 })
             .ConfigureServices((_, services) =>
                 {
                     services.AddLogging();
                 });
 
-        var host = builder.Build();
-        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+        IHost host = builder.Build();
+        ILoggerFactory loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         LogConnector.LoggerFactory = loggerFactory;
         Application.Run(new TrackReportGeneratorForm());
     }

@@ -1,4 +1,4 @@
-﻿using Coordinates;
+using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System;
@@ -53,26 +53,41 @@ public class MarkerToMarkerTimingRule : IMarkerValidationRule
         foreach (MarkerDrop markerDrop in MarkerDrops)
         {
             if (marker.Equals(markerDrop))
+            {
                 continue;
+            }
+
             if (!MarkerNumbers.Contains(markerDrop.MarkerNumber))
+            {
                 continue;
+            }
+
             if (markerDrop.MarkerLocation.TimeStamp.Subtract(marker.MarkerLocation.TimeStamp) < TimeSpan.Zero)
             {
                 if (marker.MarkerLocation.TimeStamp.Subtract(markerDrop.MarkerLocation.TimeStamp) < Earliest)
+                {
                     isConform = false;
+                }
+
                 if (marker.MarkerLocation.TimeStamp.Subtract(markerDrop.MarkerLocation.TimeStamp) > Latest)
+                {
                     isConform = false;
-
-
+                }
             }
             else
             {
                 if (markerDrop.MarkerLocation.TimeStamp.Subtract(marker.MarkerLocation.TimeStamp) < Earliest)
+                {
                     isConform = false;
+                }
+
                 if (markerDrop.MarkerLocation.TimeStamp.Subtract(marker.MarkerLocation.TimeStamp) > Latest)
+                {
                     isConform = false;
+                }
             }
         }
+
         return isConform;
     }
     public void SetupRule(TimeSpan earliest, TimeSpan latest, List<int> markerNumbers)

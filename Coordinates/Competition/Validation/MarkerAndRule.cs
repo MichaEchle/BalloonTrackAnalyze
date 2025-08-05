@@ -1,4 +1,4 @@
-﻿using Coordinates;
+using Coordinates;
 using System.Collections.Generic;
 
 namespace Competition.Validation;
@@ -14,7 +14,7 @@ public class MarkerAndRule : IMarkerValidationRule
     {
         bool isConform = true;
 
-        foreach (var validationRule in ValidationRules)
+        foreach (IMarkerValidationRule validationRule in ValidationRules)
         {
             isConform &= validationRule.IsComplaintToRule(marker);
         }

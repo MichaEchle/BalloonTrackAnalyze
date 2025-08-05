@@ -1,4 +1,4 @@
-﻿using Competition.Validation;
+using Competition.Validation;
 using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Competition;
+namespace Competition.Tasks;
 
 public class HesitationWaltzTask : ICompetitionTask
 {
@@ -104,7 +104,7 @@ public class HesitationWaltzTask : ICompetitionTask
         MarkerDrop markerDrop = ValidationHelper.GetValidMarker(track, MarkerNumber, MarkerValidationRule, ValidationStrictness);
         if (markerDrop is null)
         {
-            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), MarkerNumber);
+            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, !string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "", MarkerNumber);
             return false;
         }
 
@@ -118,13 +118,13 @@ public class HesitationWaltzTask : ICompetitionTask
                 Goals = DefineGoals(track);
                 if (Goals.Count == 0)
                 {
-                    Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No goals could be calculated", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+                    Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No goals could be calculated", ToString(), track.Pilot.PilotNumber, !string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "");
                     return false;
                 }
             }
             catch (Exception ex)
             {
-                Logger?.LogError(ex, "Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}'", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+                Logger?.LogError(ex, "Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}'", ToString(), track.Pilot.PilotNumber, !string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "");
                 return false;
             }
         }
@@ -147,6 +147,7 @@ public class HesitationWaltzTask : ICompetitionTask
                     break;
             }
         }
+
         result = distances.Min();
 
         return true;

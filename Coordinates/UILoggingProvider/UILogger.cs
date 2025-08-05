@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using System.Threading.Channels;
 
 namespace UILoggingProvider;
@@ -20,7 +20,7 @@ public class UILogger : ILogger
         LogWriter = logWriter;
     }
 
-    public IDisposable BeginScope<TState>(TState state)
+    public IDisposable? BeginScope<TState>(TState state)
     {
         return null;
     }
@@ -44,6 +44,7 @@ public class UILogger : ILogger
         {
             eventText = $" [{eventId.Name}]";
         }
+
         string source = $"{CategoryName}{eventText}";
         _ = LogWriter.TryWrite(new LogItem(dateTime, logLevel, message, source));
     }
