@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 namespace JansScoring.flights.tasks;
 
-public abstract class Task3DTDounat : Task
+public abstract class Task3DDounat : Task
 {
-    protected Task3DTDounat(Flight flight) : base(flight)
+    protected Task3DDounat(Flight flight) : base(flight)
     {
     }
 
