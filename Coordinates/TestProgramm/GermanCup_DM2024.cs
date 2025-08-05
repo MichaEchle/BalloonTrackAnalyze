@@ -3,8 +3,6 @@ using Competition.Tasks;
 using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
 
 namespace TestProgramm;
 internal class GermanCup_DM2024

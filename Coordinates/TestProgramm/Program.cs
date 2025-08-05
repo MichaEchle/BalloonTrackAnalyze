@@ -1,6 +1,5 @@
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace TestProgramm;
 

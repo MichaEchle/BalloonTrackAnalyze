@@ -96,7 +96,6 @@ public class MarkerTimingRule : IMarkerValidationRule
     /// <summary>
     /// Setup all properties of the rule
     /// </summary>
-    ///<param name="timingDefinitions">List of timing definitions. Marker are considered valid if the conform with at least one timing definition</param>
     /// <para>each entry consists of two values</para>
     /// <para>first value: The first minute at which marking is valid</para>
     /// <para>second value: The first minute at which marking is no longer valid</para>

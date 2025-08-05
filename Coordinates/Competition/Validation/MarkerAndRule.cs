@@ -1,11 +1,10 @@
 using Coordinates;
-using System.Collections.Generic;
 
 namespace Competition.Validation;
 
 public class MarkerAndRule : IMarkerValidationRule
 {
-    public List<IMarkerValidationRule> ValidationRules
+    public required List<IMarkerValidationRule> ValidationRules
     {
         get; set;
     }

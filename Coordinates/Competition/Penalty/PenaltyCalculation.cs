@@ -1,9 +1,6 @@
 using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Competition.Penalty;
 
@@ -102,7 +99,7 @@ public static class PenaltyCalculation
             {
                 if (distance < minimumDistance)
                 {
-                    infringement = (1.0 - distance / minimumDistance) * 100.0;
+                    infringement = (1.0 - (distance / minimumDistance)) * 100.0;
                 }
             }
 
@@ -110,7 +107,7 @@ public static class PenaltyCalculation
             {
                 if (distance > maximumDistance)
                 {
-                    infringement = (distance / maximumDistance - 1.0) * 100.0;
+                    infringement = ((distance / maximumDistance) - 1.0) * 100.0;
                 }
             }
 
@@ -162,7 +159,7 @@ public static class PenaltyCalculation
             {
                 if (distance < minimumDistance)
                 {
-                    infringement = (1.0 - distance / minimumDistance) * 100.0;
+                    infringement = (1.0 - (distance / minimumDistance)) * 100.0;
                 }
             }
 
@@ -170,7 +167,7 @@ public static class PenaltyCalculation
             {
                 if (distance > maximumDistance)
                 {
-                    infringement = (distance / maximumDistance - 1.0) * 100.0;
+                    infringement = ((distance / maximumDistance) - 1.0) * 100.0;
                 }
             }
 
@@ -217,7 +214,7 @@ public static class PenaltyCalculation
             {
                 if (distance < minimumDistance)
                 {
-                    infringementInFeet = CoordinateHelpers.ConvertToFeet((1.0 - distance / minimumDistance) * 100.0);
+                    infringementInFeet = CoordinateHelpers.ConvertToFeet((1.0 - (distance / minimumDistance)) * 100.0);
                 }
             }
 
@@ -225,7 +222,7 @@ public static class PenaltyCalculation
             {
                 if (distance > maximumDistance)
                 {
-                    infringementInFeet = CoordinateHelpers.ConvertToFeet((distance / maximumDistance - 1.0) * 100.0);
+                    infringementInFeet = CoordinateHelpers.ConvertToFeet(((distance / maximumDistance) - 1.0) * 100.0);
                 }
             }
 

@@ -1,8 +1,5 @@
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Competition;
 public static class ScoreCalculation
@@ -19,8 +16,9 @@ public static class ScoreCalculation
     /// Calculates the scores of the pilots based on rules described in axmer 14.5 Points Formula
     /// </summary>
     /// <param name="results">the list of results mapped to the pilot number (use double.NaN when no result was achieved)</param>
+    /// <param name="resultWinning"></param>
     /// <returns>the list of scores and results, mapped to pilot number</returns>
-    public static List<(int pilotNumber, double result, int score)> CalculateScores(List<(int pilotNumber, double result)> results, ResultWinningType resultWinning)
+    public static List<(int pilotNumber, double result, int score)>? CalculateScores(List<(int pilotNumber, double result)> results, ResultWinningType resultWinning)
     {
         List<(int pilotNumber, double result, int score)> scores = [];
         List<(int pilotNumber, double result)> resultsWithValues = results.Where(x => !double.IsNaN(x.result)).ToList();

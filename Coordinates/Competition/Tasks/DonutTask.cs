@@ -3,8 +3,6 @@ using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Competition.Tasks;
 
@@ -101,7 +99,7 @@ public class DonutTask : ICompetitionTask
     /// <para>optional. use null to omit</para>
     /// <para>use <see cref="DeclarationAndRule"/> or <see cref="DeclarationOrRule"/> to chain multiple rules together</para>
     /// </summary>
-    public IDeclarationValidationRule DeclarationValidationRule
+    public IDeclarationValidationRule? DeclarationValidationRule
     {
         get; set;
     } = null;

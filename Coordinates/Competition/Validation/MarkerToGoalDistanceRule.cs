@@ -49,7 +49,7 @@ public class MarkerToGoalDistanceRule : IMarkerValidationRule
     /// <para>needs preprocessing of track</para>
     /// <see cref="GoalNumber"/>
     /// </summary>
-    public Declaration Declaration
+    public Declaration? Declaration
     {
         get; set;
     } = null;

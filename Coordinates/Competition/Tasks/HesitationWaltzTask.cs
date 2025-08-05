@@ -3,9 +3,6 @@ using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Competition.Tasks;
 
@@ -79,7 +76,7 @@ public class HesitationWaltzTask : ICompetitionTask
     /// <para>optional. use null to omit</para>
     /// <para>use <see cref="MarkerAndRule"/> or <see cref="MarkerOrRule"/> to chain multiple rules together</para>
     /// </summary>
-    public IMarkerValidationRule MarkerValidationRule
+    public IMarkerValidationRule? MarkerValidationRule
     {
         get; set;
     } = null;

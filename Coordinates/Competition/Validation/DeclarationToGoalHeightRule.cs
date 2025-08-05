@@ -1,7 +1,6 @@
 using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace Competition.Validation;
 
@@ -193,6 +192,7 @@ public class DeclarationToGoalHeightRule : IDeclarationValidationRule
     /// </summary>
     /// <param name="minimumHeightDifference">Minimum difference in height between declaration position and declared goal in meter (optional; use double.NaN to omit)</param>
     /// <param name="maximumHeightDifference">Maximum difference in height between declaration position and declared goal in meter (optional; use double.NaN to omit)</param>
+    /// <param name="heightDifference"></param>
     /// <param name="useGPSAltitude">rue: use GPS altitude;false: use barometric altitude</param>
     public void SetupRule(double minimumHeightDifference, double maximumHeightDifference, HeightDifferenceType heightDifference, bool useGPSAltitude)
     {

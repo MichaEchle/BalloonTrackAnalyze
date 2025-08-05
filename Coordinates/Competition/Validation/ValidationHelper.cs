@@ -1,8 +1,6 @@
 using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Competition.Validation;
 
@@ -28,7 +26,7 @@ public static class ValidationHelper
     /// <param name="declarationValidationRule">the rule to check if a declaration is valid. Use null to omit or use <see cref="DeclarationAndRule"/> or <see cref="DeclarationOrRule"/> to chain rules</param>
     /// <param name="validationStrictness">the strictness of the validation</param>
     /// <returns>a valid declaration if one exists, null otherwise</returns>
-    public static Declaration GetValidDeclaration(Track track, int goalNumber, IDeclarationValidationRule declarationValidationRule, ValidationStrictnessType validationStrictness)
+    public static Declaration? GetValidDeclaration(Track track, int goalNumber, IDeclarationValidationRule declarationValidationRule, ValidationStrictnessType validationStrictness)
     {
         List<Declaration> declarations = track.Declarations.Where(x => x.GoalNumber == goalNumber).OrderBy(x => x.PositionAtDeclaration.TimeStamp).ToList();
         List<Declaration> validDeclarations = [];
@@ -94,7 +92,7 @@ public static class ValidationHelper
     /// <param name="markerValidationRule">the rule to check if a declaration is valid. Use null to omit or use <see cref="MarkerAndRule"/> or <see cref="MarkerOrRule"/> to chain rules</param>
     /// <param name="validationStrictness">the strictness of the validation</param>
     /// <returns>a valid marker if one exists, null otherwise</returns>
-    public static MarkerDrop GetValidMarker(Track track, int markerNumber, IMarkerValidationRule markerValidationRule, ValidationStrictnessType validationStrictness)
+    public static MarkerDrop? GetValidMarker(Track track, int markerNumber, IMarkerValidationRule markerValidationRule, ValidationStrictnessType validationStrictness)
     {
         List<MarkerDrop> markers = track.MarkerDrops.Where(x => x.MarkerNumber == markerNumber).ToList();
         List<MarkerDrop> validMarkers = [];

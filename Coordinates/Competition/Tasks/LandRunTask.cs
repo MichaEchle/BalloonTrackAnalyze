@@ -53,7 +53,7 @@ public class LandRunTask : ICompetitionTask
     /// <para>optional. use null to omit</para>
     /// <para>use <see cref="MarkerAndRule"/> or <see cref="MarkerOrRule"/> to chain multiple rules together</para>
     /// </summary>
-    public IMarkerValidationRule MarkerValidationRule
+    public IMarkerValidationRule? MarkerValidationRule
     {
         get; set;
     } = null;
@@ -112,7 +112,8 @@ public class LandRunTask : ICompetitionTask
     /// <param name="firstMarkerNumber">The marker number of the first marker (mandatory)</param>
     /// <param name="secondMarkerNumber">The marker number of the second marker (mandatory)</param>
     /// <param name="thirdMarkerNumber">The marker number of the third marker (mandatory)</param>
-    /// <param name="markerValidationRules">List of rules for marker validation (optional; leave list empty to omit)</param>
+    /// <param name="markerValidationRule"></param>
+    /// <param name="validationStrictness"></param>
     public void SetupLandRun(int taskNumber, int firstMarkerNumber, int secondMarkerNumber, int thirdMarkerNumber, IMarkerValidationRule markerValidationRule, ValidationStrictnessType validationStrictness)
     {
         TaskNumber = taskNumber;

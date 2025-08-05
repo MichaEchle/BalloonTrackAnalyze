@@ -3,8 +3,6 @@ using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Competition.Tasks;
 
@@ -76,7 +74,7 @@ public class PieTask : ICompetitionTask
         /// <para>optional. use null to omit</para>
         /// <para>use <see cref="DeclarationAndRule"/> or <see cref="DeclarationOrRule"/> to chain multiple rules together</para>
         /// </summary>
-        public IDeclarationValidationRule DeclarationValidationRule
+        public IDeclarationValidationRule? DeclarationValidationRule
         {
             get; set;
         } = null;
@@ -215,8 +213,10 @@ public class PieTask : ICompetitionTask
         /// <param name="radius">The radius of the pie tier in meter (mandatory)</param>
         /// <param name="lowerBoundary">Lower boundary of the donut in meter (optional; use double.NaN to omit)</param>
         /// <param name="upperBoundary">Upper boundary of the donut in meter (optional; use double.NaN to omit)</param>
+        /// <param name="declarationValidationRule"></param>
+        /// <param name="validationStrictness"></param>
         /// <param name="isReEntranceAllowed">Specify whether or not re-entrance in the donut is allowed (mandatory)</param>
-        /// <param name="declarationValidationRules">List of rules for declaration validation (optional; leave list empty to omit)</param>
+        /// <param name="multiplier"></param>
         public void SetupPieTier(int goalNumber, double radius, bool isReEntranceAllowed, double multiplier, double lowerBoundary, double upperBoundary, IDeclarationValidationRule declarationValidationRule, ValidationStrictnessType validationStrictness)
         {
             GoalNumber = goalNumber;

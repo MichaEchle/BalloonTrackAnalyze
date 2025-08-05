@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 
 namespace TestProgramm;
 
@@ -10,7 +6,6 @@ internal static class AccuracyEvaluation_GeodTest
 {
     internal record GeodTestRecord
     {
-
         internal double Latitude1
         {
             get; init;

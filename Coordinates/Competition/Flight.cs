@@ -3,10 +3,6 @@ using Coordinates;
 using Coordinates.Parsers;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace Competition;
 
@@ -37,7 +33,7 @@ public class Flight
     /// <summary>
     /// private instance object
     /// </summary>
-    private static Flight flight = null;
+    private static Flight? flight = null;
 
     /// <summary>
     /// Lock object for thread safety

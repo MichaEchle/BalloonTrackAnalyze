@@ -1,5 +1,4 @@
 using Coordinates;
-using System.Collections.Generic;
 
 namespace Shapes.Shapes2D;
 

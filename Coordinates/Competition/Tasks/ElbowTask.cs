@@ -53,7 +53,7 @@ public class ElbowTask : ICompetitionTask
     /// <para>optional. use null to omit</para>
     /// <para>use <see cref="MarkerAndRule"/> or <see cref="MarkerOrRule"/> to chain multiple rules together</para>
     /// </summary>
-    public IMarkerValidationRule MarkerValidationRule
+    public IMarkerValidationRule? MarkerValidationRule
     {
         get; set;
     } = null;

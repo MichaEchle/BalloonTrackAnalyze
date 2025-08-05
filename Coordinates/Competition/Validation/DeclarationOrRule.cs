@@ -1,10 +1,9 @@
 using Coordinates;
-using System.Collections.Generic;
 
 namespace Competition.Validation;
 public class DeclarationOrRule : IDeclarationValidationRule
 {
-    public List<IDeclarationValidationRule> ValidationRules
+    public required List<IDeclarationValidationRule> ValidationRules
     {
         get; set;
     }
