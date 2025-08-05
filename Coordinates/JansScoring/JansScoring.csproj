@@ -25,16 +25,4 @@
     <ProjectReference Include="..\Coordinates\Coordinates.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Remove="oldcompetition\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Remove="oldcompetition\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="oldcompetition\**" />
-  </ItemGroup>
-
 </Project>
