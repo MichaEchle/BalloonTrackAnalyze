@@ -1,83 +1,87 @@
-﻿using Competition;
-using Coordinates;
+﻿using Coordinates;
 using JansScoring.calculation;
+using JansScoring.flights;
+using JansScoring.pz_rework.type;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using Flight = JansScoring.flights.Flight;
+using System.Security.Policy;
 
-namespace JansScoring.pz;
+namespace JansScoring.pz_rework;
 
 public class PZManager
 {
-    private List<PZ> pzs = new();
+    private readonly List<PZ> pzs = new();
 
-    public void registerPZs()
+    public PZManager()
     {
-        pzs.Add(new PZ(-1, PZType.BLUE, null, 10000, -1));
+        pzs.Add(new BluePZ(01, CoordinateHelpers.ConvertToMeter(9000), Double.MaxValue));
+        pzs.Add(new RedPZ(02, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 511130, 5327080), CoordinateHelpers.ConvertToMeter(2000), 500));
+        pzs.Add(new RedPZ(03, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 503670, 5328130), CoordinateHelpers.ConvertToMeter(1500), 200));
+        pzs.Add(new RedPZ(04, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 508870, 5327880), CoordinateHelpers.ConvertToMeter(1500), 200));
+        pzs.Add(new RedPZ(05, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 515630, 5325190), CoordinateHelpers.ConvertToMeter(2000), 300));
+
+        pzs.Add(new YellowPZ(06, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 501900, 5325070),200));
+        pzs.Add(new YellowPZ(07, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 506840, 5328380),500));
+        pzs.Add(new YellowPZ(08, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 524410, 5329570),500));
     }
 
-
-    public string checkPZ(Flight flight, Track track)
+    public string CheckPz(Flight flight, Track track)
     {
-        string comment = "";
+        String comment = "";
+
+        Console.WriteLine($"Start checking PZ for Pilot {track.Pilot.PilotNumber}.");
+
         foreach (PZ pz in pzs)
         {
-            switch (pz.pzType)
+            Coordinate lastTrackPoint = null;
+
+            List<PZInfrigement> infrigements = new List<PZInfrigement>();
+            double distanceInPZ = 0;
+
+            DateTime infrigementBegin = DateTime.MinValue;
+
+            foreach (Coordinate trackTrackPoint in track.TrackPoints)
             {
-                case PZType.BLUE:
-                    foreach (Coordinate trackPoint in track.TrackPoints)
+                if (pz.IsInsidePz(flight, track, trackTrackPoint, out String ignore))
+                {
+                    if (lastTrackPoint != null && trackTrackPoint != null)
                     {
-                        if ((flight.useGPSAltitude() ? trackPoint.AltitudeGPS : trackPoint.AltitudeBarometric) >=
-                            pz.height)
-                        {
-                            comment +=
-                                $"Pilot has a Blue-PZ infringement [{trackPoint.TimeStamp.ToString("HH:mm:ss")}] | ";
-                            break;
-                        }
-                    }
-
-                    break;
-                case PZType.RED:
-                    foreach (Coordinate trackPoint in track.TrackPoints)
-                    {
-                        double disctanceBetweenRedPZ =
-                            CalculationHelper.Calculate2DDistance(trackPoint, pz.center, flight.getCalculationType());
-                        if (disctanceBetweenRedPZ <= pz.radius &&
-                            (flight.useGPSAltitude() ? trackPoint.AltitudeGPS : trackPoint.AltitudeBarometric) <=
-                            pz.height)
-                        {
-                            comment +=
-                                $"Pilot has a Red-PZ infringement (PZ: {pz.id}) [{trackPoint.TimeStamp.ToString("HH:mm:ss")}]  | ";
-                            break;
-                        }
-                    }
-
-                    break;
-                case PZType.YELLOW:
-                    Coordinate launchPoint;
-                    if (!TrackHelpers.EstimateLaunchAndLandingTime(track, flight.useGPSAltitude(), out launchPoint,
-                            out _))
-                        break;
-                    double distanceBetweenStartAndYellowPZ =
-                        CalculationHelper.Calculate2DDistance(launchPoint, pz.center, flight.getCalculationType());
-                    if (distanceBetweenStartAndYellowPZ <= pz.radius)
-                    {
-                        comment +=
-                            $"Pilot has a Yellow-PZ infringement for starting. | ";
-                    }
-
-                    double distanceBetweenLandingAndYellowPZ =
-                        CalculationHelper.Calculate2DDistance(track.TrackPoints.Last(), pz.center,
+                        distanceInPZ += CalculationHelper.Calculate2DDistance(trackTrackPoint, lastTrackPoint,
                             flight.getCalculationType());
-                    if (distanceBetweenLandingAndYellowPZ <= pz.radius)
+                    }
+                    else
                     {
-                        comment +=
-                            $"Pilot has a Yellow-PZ infringement for landing. | ";
+                        infrigementBegin = trackTrackPoint.TimeStamp;
                     }
 
-                    break;
+                    lastTrackPoint = trackTrackPoint;
+                }
+                else
+                {
+                    if (lastTrackPoint != null)
+                    {
+                        infrigements.Add(new PZInfrigement(infrigementBegin, trackTrackPoint.TimeStamp, distanceInPZ));
+                        lastTrackPoint = null;
+                        infrigementBegin = DateTime.MinValue;
+                        distanceInPZ = 0;
+                    }
+                }
+            }
+
+            if (infrigements.Count != 0)
+            {
+                String infigement = "";
+                foreach (PZInfrigement pzInfrigement in infrigements)
+                {
+                    infigement += pzInfrigement.infrigementBegin + " " + pzInfrigement.infrigementEnd + " " +
+                                  NumberHelper.formatDoubleToStringAndRound(pzInfrigement.distance) + "m | ";
+                }
+
+                comment +=
+                    $"Pilot has {infrigements.Count} {pz.GetType().Name} infringement(s) with PZ: '{pz.ID}' [{infigement}] | ";
             }
         }
+        Console.WriteLine($"Finish checking PZ for Pilot {track.Pilot.PilotNumber}.");
 
         return comment;
     }

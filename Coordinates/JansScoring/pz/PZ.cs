@@ -1,37 +1,24 @@
 ﻿using Coordinates;
+using JansScoring.flights;
+using System;
+using System.IO;
 
-namespace JansScoring.pz;
+namespace JansScoring.pz_rework;
 
-public class PZ
+public abstract class PZ
 {
     /// <summary>
     /// The ID of the PZ
     /// </summary>
-    public int id;
-
-    public PZType pzType;
-
-    /// <summary>
-    /// Only important, if not whole map
-    /// </summary>
-    public Coordinate center;
-
-    /// <summary>
-    /// Only important if Blue and whole Map
-    /// </summary>
-    public int height;
-
-    /// <summary>
-    /// Not work with a Blue PZ
-    /// </summary>
-    public int radius;
-
-    public PZ(int id, PZType pzType, Coordinate center, int height, int radius)
+    public int ID
     {
-        this.id = id;
-        this.pzType = pzType;
-        this.center = center;
-        this.height = height;
-        this.radius = radius;
+        get;
     }
+
+    protected PZ(int ID)
+    {
+        this.ID = ID;
+    }
+
+    public abstract bool IsInsidePz(Flight flight, Track track, Coordinate coordinate, out String comment);
 }
