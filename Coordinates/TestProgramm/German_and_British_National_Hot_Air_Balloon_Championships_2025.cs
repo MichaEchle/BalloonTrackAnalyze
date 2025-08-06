@@ -1,6 +1,7 @@
 using Competition;
 using Competition.Penalty;
 using Competition.Tasks;
+using Competition.Validation;
 using Coordinates;
 using OfficeOpenXml;
 using System.Drawing;
@@ -271,7 +272,9 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
     private void ChecksAndResultsTask6(Flight flight)
     {
         DonutTask donutTask = new();
-        donutTask.SetupDonut(6, 3, 1, 1000, 3000, 0, 10000, true, null, Competition.Validation.ValidationStrictnessType.LatestValid);
+        int goalNumber = 3;
+
+        donutTask.SetupDonut(6, goalNumber, 1, 1000, 3000, 0, 10000, true, null, ValidationStrictnessType.LatestValid);
 
         foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
         {
@@ -283,7 +286,6 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             {
                 Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to estimate launch and landing");
             }
-            int goalNumber = 3;
             int goalCount = track.Declarations.Where(x => x.GoalNumber == goalNumber).Count();
             if (goalCount == 0)
             {
@@ -303,11 +305,11 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 int northing;
                 if (declaration.PositionAtDeclaration.TimeStamp < launchPoint.TimeStamp)
                 {
-                    (utmZone, easting, northing) = Coordinates.CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM(launchPoint);
+                    (utmZone, easting, northing) = CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM(launchPoint);
                 }
                 else
                 {
-                    (utmZone, easting, northing) = Coordinates.CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM(declaration.PositionAtDeclaration);
+                    (utmZone, easting, northing) = CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM(declaration.PositionAtDeclaration);
                 }
                 if (easting <= 623000)
                 {
@@ -333,7 +335,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to calculate results for track 6");
                 continue;
             }
-            Console.WriteLine($"{track.Pilot.PilotNumber}: Result for track 6: {Math.Round(result, 0, MidpointRounding.AwayFromZero)} [m]");
+            Console.WriteLine($"{track.Pilot.PilotNumber}: Result for task 6: {Math.Round(result, 0, MidpointRounding.AwayFromZero)} [m]");
         }
     }
 
