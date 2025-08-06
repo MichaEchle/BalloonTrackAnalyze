@@ -51,10 +51,21 @@ public partial class TrackReportGeneratorForm : Form
                 Properties.Settings.Default.Save();
             }
 
+            if (!double.TryParse(tbDefAlt.Text, out double defaultAltitude))
+            {
+                Logger?.LogWarning("Failed to parse '{defaultAltitude}' as double. Please enter a number", tbDefAlt.Text);
+                return;
+            }
+
+            if(rbDefAltFeet.Checked)
+            {
+                defaultAltitude = CoordinateHelpers.ConvertToMeter(defaultAltitude);
+            }
+
             for (int index = 0; index < igcFiles.Length; index++)
             {
                 lbStatus.Text = $"{index} of {igcFiles.Length} processed ({successful} successful / {erroneous} erroneous)";
-                bool success = await ProcessFileAsync(igcFiles[index]);
+                bool success = await ProcessFileAsync(igcFiles[index], defaultAltitude);
                 if (success)
                 {
                     successful++;
@@ -73,21 +84,21 @@ public partial class TrackReportGeneratorForm : Form
         }
     }
 
-    private async Task<bool> ProcessFileAsync(string igcFile)
+    private async Task<bool> ProcessFileAsync(string igcFile, double defaultAltitude)
     {
         return await Task<bool>.Run(() =>
         {
             Track track;
             if (rbBallonLiveParser.Checked)
             {
-                if (!Coordinates.Parsers.BalloonLiveParser.ParseFile(igcFile, out track))
+                if (!Coordinates.Parsers.BalloonLiveParser.ParseFile(igcFile, out track, defaultGoalAlitude:defaultAltitude))
                 {
                     return false;
                 }
             }
             else
             {
-                if (!Coordinates.Parsers.FAILoggerParser.ParseFile(igcFile, out track))
+                if (!Coordinates.Parsers.FAILoggerParser.ParseFile(igcFile, out track, defaultGoalAltitude:defaultAltitude))
                 {
                     return false;
                 }
@@ -131,7 +142,7 @@ public partial class TrackReportGeneratorForm : Form
 
     private void rbMeter_CheckedChanged(object sender, EventArgs e)
     {
-        tbMaxAltitude.Text = rbMeter.Checked
+        tbMaxAltitude.Text = rbMaxAltMeter.Checked
             ? $"{MaxAllowedAltitude:0.#}"
             : $"{Math.Round(CoordinateHelpers.ConvertToFeet(MaxAllowedAltitude), 0, MidpointRounding.AwayFromZero)}";
     }
@@ -148,17 +159,17 @@ public partial class TrackReportGeneratorForm : Form
             tbMaxAltitude.Text = "10000";
             MaxAllowedAltitude = CoordinateHelpers.ConvertToMeter(10000);
             tbMaxAltitude.Enabled = true;
-            rbFeet.Enabled = true;
-            rbFeet.Checked = true;
-            rbMeter.Enabled = true;
+            rbMaxAltFeet.Enabled = true;
+            rbMaxAltFeet.Checked = true;
+            rbMaxAltMeter.Enabled = true;
         }
         else
         {
             MaxAllowedAltitude = double.NaN;
             tbMaxAltitude.Text = "";
             tbMaxAltitude.Enabled = false;
-            rbFeet.Enabled = false;
-            rbMeter.Enabled = false;
+            rbMaxAltFeet.Enabled = false;
+            rbMaxAltMeter.Enabled = false;
         }
     }
 
@@ -170,7 +181,7 @@ public partial class TrackReportGeneratorForm : Form
             return;
         }
 
-        MaxAllowedAltitude = rbMeter.Checked ? tempMaxAltitude : CoordinateHelpers.ConvertToMeter(tempMaxAltitude);
+        MaxAllowedAltitude = rbMaxAltMeter.Checked ? tempMaxAltitude : CoordinateHelpers.ConvertToMeter(tempMaxAltitude);
     }
     #endregion Methods
 }

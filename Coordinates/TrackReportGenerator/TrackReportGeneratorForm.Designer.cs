@@ -44,14 +44,20 @@ namespace TrackReportGenerator
             label2 = new Label();
             tbMaxAltitude = new TextBox();
             flowLayoutPanel2 = new FlowLayoutPanel();
-            rbMeter = new RadioButton();
-            rbFeet = new RadioButton();
+            rbMaxAltMeter = new RadioButton();
+            rbMaxAltFeet = new RadioButton();
             cbSkipCoordinates = new CheckBox();
             cbSkipExistingReports = new CheckBox();
             winFormsLogList1 = new WinFormsLoggerControl.WinFormsLogList();
+            flowLayoutPanel3 = new FlowLayoutPanel();
+            rbDefAltMeter = new RadioButton();
+            rbDefAltFeet = new RadioButton();
+            tbDefAlt = new TextBox();
+            label3 = new Label();
             panel1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
             flowLayoutPanel2.SuspendLayout();
+            flowLayoutPanel3.SuspendLayout();
             SuspendLayout();
             // 
             // btSelectFiles
@@ -192,38 +198,38 @@ namespace TrackReportGenerator
             // 
             // flowLayoutPanel2
             // 
-            flowLayoutPanel2.Controls.Add(rbMeter);
-            flowLayoutPanel2.Controls.Add(rbFeet);
+            flowLayoutPanel2.Controls.Add(rbMaxAltMeter);
+            flowLayoutPanel2.Controls.Add(rbMaxAltFeet);
             flowLayoutPanel2.Location = new Point(361, 60);
             flowLayoutPanel2.Margin = new Padding(3, 2, 3, 2);
             flowLayoutPanel2.Name = "flowLayoutPanel2";
             flowLayoutPanel2.Size = new Size(102, 24);
             flowLayoutPanel2.TabIndex = 11;
             // 
-            // rbMeter
+            // rbMaxAltMeter
             // 
-            rbMeter.AutoSize = true;
-            rbMeter.Location = new Point(3, 2);
-            rbMeter.Margin = new Padding(3, 2, 3, 2);
-            rbMeter.Name = "rbMeter";
-            rbMeter.Size = new Size(44, 19);
-            rbMeter.TabIndex = 0;
-            rbMeter.Text = "[m]";
-            rbMeter.UseVisualStyleBackColor = true;
-            rbMeter.CheckedChanged += rbMeter_CheckedChanged;
+            rbMaxAltMeter.AutoSize = true;
+            rbMaxAltMeter.Location = new Point(3, 2);
+            rbMaxAltMeter.Margin = new Padding(3, 2, 3, 2);
+            rbMaxAltMeter.Name = "rbMaxAltMeter";
+            rbMaxAltMeter.Size = new Size(44, 19);
+            rbMaxAltMeter.TabIndex = 0;
+            rbMaxAltMeter.Text = "[m]";
+            rbMaxAltMeter.UseVisualStyleBackColor = true;
+            rbMaxAltMeter.CheckedChanged += rbMeter_CheckedChanged;
             // 
-            // rbFeet
+            // rbMaxAltFeet
             // 
-            rbFeet.AutoSize = true;
-            rbFeet.Checked = true;
-            rbFeet.Location = new Point(53, 2);
-            rbFeet.Margin = new Padding(3, 2, 3, 2);
-            rbFeet.Name = "rbFeet";
-            rbFeet.Size = new Size(41, 19);
-            rbFeet.TabIndex = 1;
-            rbFeet.TabStop = true;
-            rbFeet.Text = "[ft]";
-            rbFeet.UseVisualStyleBackColor = true;
+            rbMaxAltFeet.AutoSize = true;
+            rbMaxAltFeet.Checked = true;
+            rbMaxAltFeet.Location = new Point(53, 2);
+            rbMaxAltFeet.Margin = new Padding(3, 2, 3, 2);
+            rbMaxAltFeet.Name = "rbMaxAltFeet";
+            rbMaxAltFeet.Size = new Size(41, 19);
+            rbMaxAltFeet.TabIndex = 1;
+            rbMaxAltFeet.TabStop = true;
+            rbMaxAltFeet.Text = "[ft]";
+            rbMaxAltFeet.UseVisualStyleBackColor = true;
             // 
             // cbSkipCoordinates
             // 
@@ -256,16 +262,72 @@ namespace TrackReportGenerator
             // 
             winFormsLogList1.Dock = DockStyle.Bottom;
             winFormsLogList1.Location = new Point(0, 147);
-            winFormsLogList1.Margin = new Padding(1, 1, 1, 1);
+            winFormsLogList1.Margin = new Padding(1);
             winFormsLogList1.Name = "winFormsLogList1";
             winFormsLogList1.Size = new Size(1049, 190);
             winFormsLogList1.TabIndex = 14;
+            // 
+            // flowLayoutPanel3
+            // 
+            flowLayoutPanel3.Controls.Add(rbDefAltMeter);
+            flowLayoutPanel3.Controls.Add(rbDefAltFeet);
+            flowLayoutPanel3.Location = new Point(917, 58);
+            flowLayoutPanel3.Margin = new Padding(3, 2, 3, 2);
+            flowLayoutPanel3.Name = "flowLayoutPanel3";
+            flowLayoutPanel3.Size = new Size(102, 24);
+            flowLayoutPanel3.TabIndex = 17;
+            // 
+            // rbDefAltMeter
+            // 
+            rbDefAltMeter.AutoSize = true;
+            rbDefAltMeter.Location = new Point(3, 2);
+            rbDefAltMeter.Margin = new Padding(3, 2, 3, 2);
+            rbDefAltMeter.Name = "rbDefAltMeter";
+            rbDefAltMeter.Size = new Size(44, 19);
+            rbDefAltMeter.TabIndex = 0;
+            rbDefAltMeter.Text = "[m]";
+            rbDefAltMeter.UseVisualStyleBackColor = true;
+            // 
+            // rbDefAltFeet
+            // 
+            rbDefAltFeet.AutoSize = true;
+            rbDefAltFeet.Checked = true;
+            rbDefAltFeet.Location = new Point(53, 2);
+            rbDefAltFeet.Margin = new Padding(3, 2, 3, 2);
+            rbDefAltFeet.Name = "rbDefAltFeet";
+            rbDefAltFeet.Size = new Size(41, 19);
+            rbDefAltFeet.TabIndex = 1;
+            rbDefAltFeet.TabStop = true;
+            rbDefAltFeet.Text = "[ft]";
+            rbDefAltFeet.UseVisualStyleBackColor = true;
+            // 
+            // tbDefAlt
+            // 
+            tbDefAlt.Location = new Point(846, 61);
+            tbDefAlt.Margin = new Padding(3, 2, 3, 2);
+            tbDefAlt.Name = "tbDefAlt";
+            tbDefAlt.PlaceholderText = "max Altitude";
+            tbDefAlt.Size = new Size(63, 23);
+            tbDefAlt.TabIndex = 16;
+            tbDefAlt.Text = "2000";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(711, 64);
+            label3.Name = "label3";
+            label3.Size = new Size(114, 15);
+            label3.TabIndex = 15;
+            label3.Text = "Default goal altitude";
             // 
             // TrackReportGeneratorForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1049, 337);
+            Controls.Add(flowLayoutPanel3);
+            Controls.Add(tbDefAlt);
+            Controls.Add(label3);
             Controls.Add(winFormsLogList1);
             Controls.Add(cbSkipExistingReports);
             Controls.Add(cbSkipCoordinates);
@@ -288,6 +350,8 @@ namespace TrackReportGenerator
             flowLayoutPanel1.PerformLayout();
             flowLayoutPanel2.ResumeLayout(false);
             flowLayoutPanel2.PerformLayout();
+            flowLayoutPanel3.ResumeLayout(false);
+            flowLayoutPanel3.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -308,11 +372,16 @@ namespace TrackReportGenerator
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox tbMaxAltitude;
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
-        private System.Windows.Forms.RadioButton rbMeter;
-        private System.Windows.Forms.RadioButton rbFeet;
+        private System.Windows.Forms.RadioButton rbMaxAltMeter;
+        private System.Windows.Forms.RadioButton rbMaxAltFeet;
         private System.Windows.Forms.CheckBox cbSkipCoordinates;
         private System.Windows.Forms.CheckBox cbSkipExistingReports;
         private WinFormsLoggerControl.WinFormsLogList winFormsLogList1;
+        private FlowLayoutPanel flowLayoutPanel3;
+        private RadioButton rbDefAltMeter;
+        private RadioButton rbDefAltFeet;
+        private TextBox tbDefAlt;
+        private Label label3;
     }
 }
 
