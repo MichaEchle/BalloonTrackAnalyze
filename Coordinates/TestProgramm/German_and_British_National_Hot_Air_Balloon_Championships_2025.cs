@@ -2,8 +2,6 @@ using Competition;
 using Competition.Penalty;
 using Competition.Tasks;
 using Coordinates;
-using OfficeOpenXml;
-using System.Drawing;
 
 namespace TestProgramm;
 
@@ -20,7 +18,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
         {
             Console.WriteLine("Failed to parse track files for flight 1");
         }
-        _ = flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToFeet(1800));
+        _ = flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(1800));
 
         //ChecksTask1(flight);
         //ResultsTask2(flight);
@@ -77,8 +75,8 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             }
 
             //TODO Check if declaration is before takeoff 
-            bool status = TrackHelpers.EstimateLaunchAndLandingTime(track, true, out Coordinate? launchCoordinate,
-                out Coordinate? landingCoordinate);
+            bool status = TrackHelpers.EstimateLaunchAndLandingTime(track, true, out Coordinate launchCoordinate,
+                out Coordinate landingCoordinate);
 
             if (!status)
             {
@@ -221,7 +219,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
 
             for (int index = 0; index < GetDirectorGoalsFlight1().Length; index++)
             {
-                Coordinate directorGoal = GetDirectorGoalsFlight1()[index];
+                Coordinates.Coordinate directorGoal = GetDirectorGoalsFlight1()[index];
 
                 bool success3 =
                    PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
@@ -237,6 +235,19 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                     Console.WriteLine(
                         $"{track.Pilot.PilotNumber}:declaration has infringement. has a distance of {distanceBetweenDeclarationAndDirectorGoal}m between declaration point and declared goal {(index + 1)}. ({distanceInfringementBetweenDeclarationAndDirectorGoal}% -> {penaltyAtDistanceBetweenDeclarationAndDirectorGoal} pts)");
                 }
+            }
+
+            //check if in task 6 donut
+            Declaration decT6 = track.GetLatestDeclaration(3);
+            if (decT6 is null)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: No declaration in goal 3");
+                continue;
+            }
+            Shapes.Shapes2D.Circle circle = new (decT6.DeclaredGoal, 3000);
+            if (circle.IsWithin(lastDeclaration.DeclaredGoal))
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Goal declared in {lastDeclaration.GoalNumber} in within the Donut");
             }
         }
     }
@@ -282,7 +293,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 {
                     (utmZone, easting, northing) = Coordinates.CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM(declaration.PositionAtDeclaration);
                 }
-                if (easting <= 2300)
+                if (easting <= 623000)
                 {
                     Console.WriteLine($"{track.Pilot.PilotNumber}: Declaration is valid: Declared goal before NS 2300 and on NS 2800");
                 }
@@ -328,7 +339,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             }
             double distance = CoordinateHelpers.CalculateDistanceWithSeparationAltitude(targetCoordinate, markerDrop.MarkerLocation, CoordinateHelpers.ConvertToMeter(1800), true);
 
-            Console.WriteLine($"{track.Pilot.PilotNumber}: Electronic result Task2: ({(distance < 50 ? $"50[m] ({Math.Round(distance, 0, MidpointRounding.AwayFromZero)}" : $"{Math.Round(distance, 0, MidpointRounding.AwayFromZero)}[m]")}");
+            Console.WriteLine($"{track.Pilot.PilotNumber}: Electronic result Task2: {(distance < 50 ? $"50[m] ({Math.Round(distance, 0, MidpointRounding.AwayFromZero)})" : $"{Math.Round(distance, 0, MidpointRounding.AwayFromZero)}[m]")}");
         }
     }
 
@@ -350,7 +361,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             }
             double distance = CoordinateHelpers.CalculateDistanceWithSeparationAltitude(targetCoordinate, markerDrop.MarkerLocation, CoordinateHelpers.ConvertToMeter(1800), true);
 
-            Console.WriteLine($"{track.Pilot.PilotNumber}: Electronic result Task3: ({(distance < 50 ? $"50[m] ({Math.Round(distance, 0, MidpointRounding.AwayFromZero)}" : $"{Math.Round(distance, 0, MidpointRounding.AwayFromZero)}[m]")}");
+            Console.WriteLine($"{track.Pilot.PilotNumber}: Electronic result Task3: {(distance < 50 ? $"50[m] ({Math.Round(distance, 0, MidpointRounding.AwayFromZero)})" : $"{Math.Round(distance, 0, MidpointRounding.AwayFromZero)}[m]")}");
         }
     }
 
@@ -367,7 +378,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             targetCoordinateC
         ];
         HesitationWaltzTask hesitationWaltzTask = new();
-        hesitationWaltzTask.SetupHWZ(5, targetCoordinates, 3, DistanceCalculationType.WithSeparationAlitude, null, Competition.Validation.ValidationStrictnessType.LatestValid);
+        hesitationWaltzTask.SetupHWZ(4, targetCoordinates, 4, DistanceCalculationType.WithSeparationAlitude, null, Competition.Validation.ValidationStrictnessType.LatestValid);
         hesitationWaltzTask.SeparationAltitude = CoordinateHelpers.ConvertToMeter(1800);
 
 
@@ -383,7 +394,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 continue;
             }
 
-            Console.WriteLine($"{track.Pilot.PilotNumber}:Electronic result Task 4: ({(result < 50 ? $"50[m] ({Math.Round(result, 0, MidpointRounding.AwayFromZero)}" : $"{Math.Round(result, 0, MidpointRounding.AwayFromZero)}[m]")}");
+            Console.WriteLine($"{track.Pilot.PilotNumber}:Electronic result Task 4: {(result < 50 ? $"50[m] ({Math.Round(result, 0, MidpointRounding.AwayFromZero)})" : $"{Math.Round(result, 0, MidpointRounding.AwayFromZero)}[m]")}");
         }
     }
 }
