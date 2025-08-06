@@ -5,6 +5,7 @@ using Competition.Validation;
 using Coordinates;
 using OfficeOpenXml;
 using System.Drawing;
+using System.Security.Cryptography;
 
 namespace TestProgramm;
 
@@ -16,10 +17,13 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
     {
         Flight flight = Flight.GetInstance();
         flight.FlightNumber = 1;
-        _ = flight.MapPilotNamesToTracks(@".\PilotsMapping.csv");
         if (!flight.ParseTrackFiles(Path.Combine(root_path, Path.Combine(flight_path, @"tracks\scoring")), true))
         {
             Console.WriteLine("Failed to parse track files for flight 1");
+        }
+        if (!flight.MapPilotNamesToTracks(@".\PilotsMapping.csv"))
+        {
+            Console.WriteLine("Failed to map pilot names to tracks");
         }
         _ = flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(1800));
 
@@ -30,6 +34,8 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
         //ChecksAndResultTask5(flight);
         ChecksAndResultsTask6(flight);
     }
+
+
 
     private Coordinate[] GetDirectorGoalsFlight1()
     {
@@ -415,5 +421,117 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
 
             Console.WriteLine($"{track.Pilot.PilotNumber}:Electronic result Task 4: {(result < 50 ? $"50[m] ({Math.Round(result, 0, MidpointRounding.AwayFromZero)})" : $"{Math.Round(result, 0, MidpointRounding.AwayFromZero)}[m]")}");
         }
+    }
+
+
+    internal void Flight2()
+    {
+        Flight flight = Flight.GetInstance();
+        flight.FlightNumber = 2;
+        if (!flight.ParseTrackFiles(Path.Combine(root_path, Path.Combine(flight_path, @"tracks\scoring")), true))
+        {
+            Console.WriteLine("Failed to parse track files for flight 1");
+        }
+        if (!flight.MapPilotNamesToTracks(@".\PilotsMapping.csv"))
+        {
+            Console.WriteLine("Failed to map pilot names to tracks");
+        }
+        _ = flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(1800));
+
+        Dictionary<string, Coordinate> goals = Flight2Targets();
+        HesitationWaltzTask task7 = new();
+        task7.SetupHWZ(7, [.. goals.Values], 1, DistanceCalculationType.WithSeparationAlitude, null, ValidationStrictnessType.LatestValid);
+        task7.SeparationAltitude = CoordinateHelpers.ConvertToMeter(1800);
+
+        HesitationWaltzTask task8 = new();
+        task8.SetupHWZ(8, [.. goals.Values], 2, DistanceCalculationType.WithSeparationAlitude, null, ValidationStrictnessType.LatestValid);
+        task8.SeparationAltitude = CoordinateHelpers.ConvertToMeter(1800);
+
+        foreach (Track track in flight.Tracks.OrderBy(x=>x.Pilot.PilotNumber))
+        {
+            if (!TrackHelpers.CheckLaunchConstraints(track, true, new DateTime(2025, 08, 06, 05, 00, 00), new DateTime(2025, 08, 06, 06, 00, 00), Flight2Targets().Values.ToList(), 1000, double.NaN, out Coordinate launchPoint, out bool launchedInStartPeriod, out List<double> distanceToGoals, out List<bool> distancesToGoalsOk))
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to check launch constraints");
+            }
+            else
+            {
+                if (!launchedInStartPeriod)
+                {
+                    Console.WriteLine($"{track.Pilot.PilotNumber}: not launched in start period");
+                }
+                if (!distancesToGoalsOk.Any())
+                {
+                    for (int i = 0; i < distancesToGoalsOk.Count; i++)
+                    {
+                        if (!distancesToGoalsOk[i])
+                        {
+                            Console.WriteLine($"{track.Pilot.PilotNumber}: distance violation. distance between launch and goal is {distanceToGoals[i]}");
+                        }
+                    }
+                }
+            }
+
+           
+            if (!task7.CalculateResults(track, true, out double resultT7))
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: failed to calculate result for Task 7");
+            }
+            else
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Result T7 {Math.Round(resultT7,0,MidpointRounding.AwayFromZero)}");
+            }
+
+            foreach (var goal in goals)
+            {
+                MarkerDrop? marker1 = track.MarkerDrops.FirstOrDefault(x=>x.MarkerNumber==1);
+                if (marker1 is null)
+                {
+                    break;
+                }
+                double distance = CoordinateHelpers.CalculateDistanceWithSeparationAltitude(goal.Value, marker1.MarkerLocation, CoordinateHelpers.ConvertToMeter(1800), true);
+                if (Math.Abs(distance - resultT7) < 1.0)
+                {
+                    Console.WriteLine($"{track.Pilot.PilotNumber}: Task 7 was scored against {goal.Key}");
+                }
+            }
+
+
+            if (!task8.CalculateResults(track, true, out double resultT8))
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: failed to calculate result for Task 8");
+            }
+            else
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Result T8 {Math.Round(resultT8, 0, MidpointRounding.AwayFromZero)}");
+            }
+
+            foreach (var goal in goals)
+            {
+                MarkerDrop? marker2 = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == 2);
+                if (marker2 is null)
+                {
+                    break;
+                }
+                double distance = CoordinateHelpers.CalculateDistanceWithSeparationAltitude(goal.Value, marker2.MarkerLocation, CoordinateHelpers.ConvertToMeter(1800), true);
+                if (Math.Abs(distance - resultT8) < 1.0)
+                {
+                    Console.WriteLine($"{track.Pilot.PilotNumber}: Task 8 was scored against {goal.Key}");
+                }
+            }
+
+        }
+    }
+
+    private Dictionary<string,Coordinate> Flight2Targets()
+    {
+        return new Dictionary<string, Coordinate>
+        {
+            ["T7/8A"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 623741, 5520990,CoordinateHelpers.ConvertToMeter(864)),
+            ["T7/8B"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 622470, 5520952, 292),
+            ["T7/8C"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 620453, 5520241, CoordinateHelpers.ConvertToMeter(756)),
+            ["T7/8D"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 622571, 5519901, CoordinateHelpers.ConvertToMeter(925)),
+            ["T7/8E"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 621436, 5519536, CoordinateHelpers.ConvertToMeter(949)),
+            ["T7/8F"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 621890, 5518934, CoordinateHelpers.ConvertToMeter(796)),
+        };
     }
 }
