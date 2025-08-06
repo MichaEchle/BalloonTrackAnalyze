@@ -1,4 +1,4 @@
-﻿using Coordinates;
+using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 
@@ -81,8 +81,9 @@ public static class PenaltyCalculation
     /// True if the infringement is successfully calculated, otherwise false, such as when either coordinate is null.
     /// </returns>
     public static bool CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(Coordinate referenceCoordinate,
-        Coordinate calculationCoordinate, double minimumDistance, double maximumDistance, out double infringement, out double penalty, out double distance)
+        Coordinate calculationCoordinate, double minimumDistance, double maximumDistance,out bool hasInfringement, out double infringement, out double penalty, out double distance)
     {
+        hasInfringement = false;
         if (referenceCoordinate is null)
         {
             distance = -1;
@@ -123,10 +124,11 @@ public static class PenaltyCalculation
 
         if (infringement > 25)
         {
-            penalty = Double.MaxValue;
+            penalty = Double.PositiveInfinity;
         }
         
-        return infringement >= 0.0;
+        hasInfringement= infringement > 0.0;
+        return true;
     }
 
 
