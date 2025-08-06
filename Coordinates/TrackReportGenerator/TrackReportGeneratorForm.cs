@@ -9,7 +9,8 @@ public partial class TrackReportGeneratorForm : Form
     #region Properties
     private readonly ILogger<TrackReportGeneratorForm> Logger = LogConnector.LoggerFactory.CreateLogger<TrackReportGeneratorForm>();
     private bool UseGPSAltitude = true;
-    private double MaxAllowedAltitude = CoordinateHelpers.ConvertToMeter(10000);
+    private double MaxAllowedAltitude;
+    private double DefaultAltitude;
     private bool SkipCoordinatesWithoutLocation = true;
     #endregion Properties
 
@@ -51,21 +52,10 @@ public partial class TrackReportGeneratorForm : Form
                 Properties.Settings.Default.Save();
             }
 
-            if (!double.TryParse(tbDefAlt.Text, out double defaultAltitude))
-            {
-                Logger?.LogWarning("Failed to parse '{defaultAltitude}' as double. Please enter a number", tbDefAlt.Text);
-                return;
-            }
-
-            if(rbDefAltFeet.Checked)
-            {
-                defaultAltitude = CoordinateHelpers.ConvertToMeter(defaultAltitude);
-            }
-
             for (int index = 0; index < igcFiles.Length; index++)
             {
                 lbStatus.Text = $"{index} of {igcFiles.Length} processed ({successful} successful / {erroneous} erroneous)";
-                bool success = await ProcessFileAsync(igcFiles[index], defaultAltitude);
+                bool success = await ProcessFileAsync(igcFiles[index]);
                 if (success)
                 {
                     successful++;
@@ -84,21 +74,21 @@ public partial class TrackReportGeneratorForm : Form
         }
     }
 
-    private async Task<bool> ProcessFileAsync(string igcFile, double defaultAltitude)
+    private async Task<bool> ProcessFileAsync(string igcFile)
     {
         return await Task<bool>.Run(() =>
         {
             Track track;
             if (rbBallonLiveParser.Checked)
             {
-                if (!Coordinates.Parsers.BalloonLiveParser.ParseFile(igcFile, out track, defaultGoalAlitude:defaultAltitude))
+                if (!Coordinates.Parsers.BalloonLiveParser.ParseFile(igcFile, out track, defaultGoalAlitude: DefaultAltitude))
                 {
                     return false;
                 }
             }
             else
             {
-                if (!Coordinates.Parsers.FAILoggerParser.ParseFile(igcFile, out track, defaultGoalAltitude:defaultAltitude))
+                if (!Coordinates.Parsers.FAILoggerParser.ParseFile(igcFile, out track, defaultGoalAltitude: DefaultAltitude))
                 {
                     return false;
                 }
@@ -182,6 +172,28 @@ public partial class TrackReportGeneratorForm : Form
         }
 
         MaxAllowedAltitude = rbMaxAltMeter.Checked ? tempMaxAltitude : CoordinateHelpers.ConvertToMeter(tempMaxAltitude);
+        Properties.Settings.Default.MaxAltitude = CoordinateHelpers.ConvertToFeet(MaxAllowedAltitude);
+        Properties.Settings.Default.Save();
     }
     #endregion Methods
+
+    private void TrackReportGeneratorForm_Load(object sender, EventArgs e)
+    {
+        MaxAllowedAltitude = Math.Round(Properties.Settings.Default.MaxAltitude,0,MidpointRounding.AwayFromZero);
+        DefaultAltitude = Math.Round(Properties.Settings.Default.DefaultAltitude,0,MidpointRounding.AwayFromZero);
+        tbMaxAltitude.Text = MaxAllowedAltitude.ToString();
+        tbDefaultAltitude.Text = DefaultAltitude.ToString();
+    }
+
+    private void tbDefaultAltitude_Leave(object sender, EventArgs e)
+    {
+        if (!double.TryParse(tbDefaultAltitude.Text, out double tempDefaultAltitude))
+        {
+            Logger?.LogWarning("Failed to parse '{defaultAltitude}' as double. Please enter a number", tbDefaultAltitude.Text);
+            return;
+        }
+        DefaultAltitude = rbDefaultAltitudeMeter.Checked ? tempDefaultAltitude : CoordinateHelpers.ConvertToMeter(tempDefaultAltitude);
+        Properties.Settings.Default.DefaultAltitude = CoordinateHelpers.ConvertToFeet(DefaultAltitude);
+        Properties.Settings.Default.Save();
+    }
 }

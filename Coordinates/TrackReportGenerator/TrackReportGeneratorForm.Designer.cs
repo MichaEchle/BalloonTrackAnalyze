@@ -50,9 +50,9 @@ namespace TrackReportGenerator
             cbSkipExistingReports = new CheckBox();
             winFormsLogList1 = new WinFormsLoggerControl.WinFormsLogList();
             flowLayoutPanel3 = new FlowLayoutPanel();
-            rbDefAltMeter = new RadioButton();
-            rbDefAltFeet = new RadioButton();
-            tbDefAlt = new TextBox();
+            rbDefaultAltitudeMeter = new RadioButton();
+            rbDefaultAltitudeFeet = new RadioButton();
+            tbDefaultAltitude = new TextBox();
             label3 = new Label();
             panel1.SuspendLayout();
             flowLayoutPanel1.SuspendLayout();
@@ -269,47 +269,48 @@ namespace TrackReportGenerator
             // 
             // flowLayoutPanel3
             // 
-            flowLayoutPanel3.Controls.Add(rbDefAltMeter);
-            flowLayoutPanel3.Controls.Add(rbDefAltFeet);
+            flowLayoutPanel3.Controls.Add(rbDefaultAltitudeMeter);
+            flowLayoutPanel3.Controls.Add(rbDefaultAltitudeFeet);
             flowLayoutPanel3.Location = new Point(917, 58);
             flowLayoutPanel3.Margin = new Padding(3, 2, 3, 2);
             flowLayoutPanel3.Name = "flowLayoutPanel3";
             flowLayoutPanel3.Size = new Size(102, 24);
             flowLayoutPanel3.TabIndex = 17;
             // 
-            // rbDefAltMeter
+            // rbDefaultAltitudeMeter
             // 
-            rbDefAltMeter.AutoSize = true;
-            rbDefAltMeter.Location = new Point(3, 2);
-            rbDefAltMeter.Margin = new Padding(3, 2, 3, 2);
-            rbDefAltMeter.Name = "rbDefAltMeter";
-            rbDefAltMeter.Size = new Size(44, 19);
-            rbDefAltMeter.TabIndex = 0;
-            rbDefAltMeter.Text = "[m]";
-            rbDefAltMeter.UseVisualStyleBackColor = true;
+            rbDefaultAltitudeMeter.AutoSize = true;
+            rbDefaultAltitudeMeter.Location = new Point(3, 2);
+            rbDefaultAltitudeMeter.Margin = new Padding(3, 2, 3, 2);
+            rbDefaultAltitudeMeter.Name = "rbDefaultAltitudeMeter";
+            rbDefaultAltitudeMeter.Size = new Size(44, 19);
+            rbDefaultAltitudeMeter.TabIndex = 0;
+            rbDefaultAltitudeMeter.Text = "[m]";
+            rbDefaultAltitudeMeter.UseVisualStyleBackColor = true;
             // 
-            // rbDefAltFeet
+            // rbDefaultAltitudeFeet
             // 
-            rbDefAltFeet.AutoSize = true;
-            rbDefAltFeet.Checked = true;
-            rbDefAltFeet.Location = new Point(53, 2);
-            rbDefAltFeet.Margin = new Padding(3, 2, 3, 2);
-            rbDefAltFeet.Name = "rbDefAltFeet";
-            rbDefAltFeet.Size = new Size(41, 19);
-            rbDefAltFeet.TabIndex = 1;
-            rbDefAltFeet.TabStop = true;
-            rbDefAltFeet.Text = "[ft]";
-            rbDefAltFeet.UseVisualStyleBackColor = true;
+            rbDefaultAltitudeFeet.AutoSize = true;
+            rbDefaultAltitudeFeet.Checked = true;
+            rbDefaultAltitudeFeet.Location = new Point(53, 2);
+            rbDefaultAltitudeFeet.Margin = new Padding(3, 2, 3, 2);
+            rbDefaultAltitudeFeet.Name = "rbDefaultAltitudeFeet";
+            rbDefaultAltitudeFeet.Size = new Size(41, 19);
+            rbDefaultAltitudeFeet.TabIndex = 1;
+            rbDefaultAltitudeFeet.TabStop = true;
+            rbDefaultAltitudeFeet.Text = "[ft]";
+            rbDefaultAltitudeFeet.UseVisualStyleBackColor = true;
             // 
-            // tbDefAlt
+            // tbDefaultAltitude
             // 
-            tbDefAlt.Location = new Point(846, 61);
-            tbDefAlt.Margin = new Padding(3, 2, 3, 2);
-            tbDefAlt.Name = "tbDefAlt";
-            tbDefAlt.PlaceholderText = "max Altitude";
-            tbDefAlt.Size = new Size(63, 23);
-            tbDefAlt.TabIndex = 16;
-            tbDefAlt.Text = "2000";
+            tbDefaultAltitude.Location = new Point(846, 61);
+            tbDefaultAltitude.Margin = new Padding(3, 2, 3, 2);
+            tbDefaultAltitude.Name = "tbDefaultAltitude";
+            tbDefaultAltitude.PlaceholderText = "max Altitude";
+            tbDefaultAltitude.Size = new Size(63, 23);
+            tbDefaultAltitude.TabIndex = 16;
+            tbDefaultAltitude.Text = "2000";
+            tbDefaultAltitude.Leave += tbDefaultAltitude_Leave;
             // 
             // label3
             // 
@@ -326,7 +327,7 @@ namespace TrackReportGenerator
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1049, 337);
             Controls.Add(flowLayoutPanel3);
-            Controls.Add(tbDefAlt);
+            Controls.Add(tbDefaultAltitude);
             Controls.Add(label3);
             Controls.Add(winFormsLogList1);
             Controls.Add(cbSkipExistingReports);
@@ -344,6 +345,7 @@ namespace TrackReportGenerator
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "TrackReportGeneratorForm";
             Text = "Track Report Generator";
+            Load += TrackReportGeneratorForm_Load;
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
             flowLayoutPanel1.ResumeLayout(false);
@@ -378,9 +380,9 @@ namespace TrackReportGenerator
         private System.Windows.Forms.CheckBox cbSkipExistingReports;
         private WinFormsLoggerControl.WinFormsLogList winFormsLogList1;
         private FlowLayoutPanel flowLayoutPanel3;
-        private RadioButton rbDefAltMeter;
-        private RadioButton rbDefAltFeet;
-        private TextBox tbDefAlt;
+        private RadioButton rbDefaultAltitudeMeter;
+        private RadioButton rbDefaultAltitudeFeet;
+        private TextBox tbDefaultAltitude;
         private Label label3;
     }
 }
