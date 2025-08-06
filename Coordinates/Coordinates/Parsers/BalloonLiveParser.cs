@@ -86,27 +86,30 @@ public static class BalloonLiveParser
                 identifierLine = lines.Where(x => x.StartsWith("AXXX")).ToArray();
                 if (identifierLine.Length == 0)
                 {
-                    Logger?.LogError("Failed to parse the file '{filePathAndName}': Line with Pilot Identifier 'AXBL' or 'AXXX' is missing", fileNameAndPath);
-                    return false;
-                }
-
-                if (identifierLine.Length > 1)
-                {
-                    Logger?.LogWarning("More the one line with Pilot Identifier ('AXXX') were found. First occurrence will be used.");
+                    Logger?.LogWarning("Failed to parse the file '{filePathAndName}': Line with Pilot Identifier 'AXBL' or 'AXXX' is missing", fileNameAndPath);
                 }
                 else
                 {
-                    pilotIdentifier = identifierLine[0].Replace("AXXX", "").Replace("BalloonLive", "");
+                    if (identifierLine.Length > 1)
+                    {
+                        Logger?.LogWarning("More the one line with Pilot Identifier ('AXXX') were found. First occurrence will be used.");
+                    }
+                    else
+                    {
+                        pilotIdentifier = identifierLine[0].Replace("AXXX", "").Replace("BalloonLive", "");
+                    }
                 }
-            }
-
-            if (identifierLine.Length > 1)
-            {
-                Logger?.LogWarning("More the one line with Pilot Identifier ('AXBL') were found. First occurrence will be used.");
             }
             else
             {
-                pilotIdentifier = identifierLine[0][4..12];
+                if (identifierLine.Length > 1)
+                {
+                    Logger?.LogWarning("More the one line with Pilot Identifier ('AXBL') were found. First occurrence will be used.");
+                }
+                else
+                {
+                    pilotIdentifier = identifierLine[0][4..12];
+                }
             }
 
 
