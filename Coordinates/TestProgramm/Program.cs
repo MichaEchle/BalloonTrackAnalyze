@@ -11,6 +11,9 @@ internal class Program
     {
         LogConnector.LoggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
+        German_and_British_National_Hot_Air_Balloon_Championships_2025 competition = new German_and_British_National_Hot_Air_Balloon_Championships_2025();
+        competition.Flight1();
+
         //C:\Users\micechle\source\repos\MichaEchle\BalloonTrackAnalyze\TestTrack\5AD_f003_p002_l0.igc
         //\..\..\..\..\..\TestTrack\5AD_f003_p002_l0.igc
 
@@ -28,8 +31,8 @@ internal class Program
         //track.Declarations.Remove(declaration); // remove the old declaration
         //track.Declarations.Add(new Declaration(declaration.GoalNumber, newDeclaredGoal, declaration.PositionAtDeclaration, true, declaration.OrignalEastingDeclarationUTM, declaration.OrignalNorhtingDeclarationUTM)); // add a new one with correct declared goal.
 
-        GermanCup_DM2024 germanCup_DM2024 = new();
-        germanCup_DM2024.ChecksFlight4();
+        //GermanCup_DM2024 germanCup_DM2024 = new();
+        //germanCup_DM2024.ChecksFlight4();
 
         //if(!BalloonLiveParser.ParseFile(@"C:\TEMP\GermanCup_DM2024\Flight4_29_09_AM\E[GC2024]F[4]P[18]-tmGjRPfw4-018.igc",out Track track,null, 2000))
         //{
