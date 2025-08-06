@@ -42,7 +42,7 @@ public class Track
             .LastOrDefault();
     }
 
-    public MarkerDrop? GetLatestMarkerDrop(int markerNumber)
+    public MarkerDrop? GetFirstMarkerDrop(int markerNumber)
     {
         return MarkerDrops.OrderBy(x=>x.MarkerLocation.TimeStamp).FirstOrDefault(x => x.MarkerNumber == markerNumber);
     }
