@@ -78,8 +78,8 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             }
 
             //TODO Check if declaration is before takeoff 
-            bool status = TrackHelpers.EstimateLaunchAndLandingTime(track, true, out Coordinate? launchCoordinate,
-                out Coordinate? landingCoordinate);
+            bool status = TrackHelpers.EstimateLaunchAndLandingTime(track, true, out Coordinate launchCoordinate,
+                out Coordinate landingCoordinate);
 
             if (!status)
             {
@@ -247,8 +247,23 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 }
             }
             
+
+            //check if in task 6 donut
+            Declaration decT6 = track.GetLatestDeclaration(3);
+            if (decT6 is null)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: No declaration in goal 3");
+                continue;
+            }
+            Shapes.Shapes2D.Circle circle = new (decT6.DeclaredGoal, 3000);
+            if (circle.IsWithin(lastDeclaration.DeclaredGoal))
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Goal declared in {lastDeclaration.GoalNumber} in within the Donut");
+            }
+            
             double result = CoordinateHelpers.Calculate3DDistance(lastDeclaration.DeclaredGoal,markerDrop.MarkerLocation, true);
             csvOutput += $"{track.Pilot.PilotNumber},{Math.Round(result, 2, MidpointRounding.AwayFromZero).ToString().Replace("," , ".")}\n";
+
         }
         File.WriteAllText(Path.Combine(root_path, Path.Combine(flight_path , "results")) + @$"\task05-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}.csv", csvOutput);
     }
@@ -294,7 +309,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 {
                     (utmZone, easting, northing) = Coordinates.CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM(declaration.PositionAtDeclaration);
                 }
-                if (easting <= 2300)
+                if (easting <= 623000)
                 {
                     Console.WriteLine($"{track.Pilot.PilotNumber}: Declaration is valid: Declared goal before NS 2300 and on NS 2800");
                 }
@@ -340,7 +355,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             }
             double distance = CoordinateHelpers.CalculateDistanceWithSeparationAltitude(targetCoordinate, markerDrop.MarkerLocation, CoordinateHelpers.ConvertToMeter(1800), true);
 
-            Console.WriteLine($"{track.Pilot.PilotNumber}: Electronic result Task2: ({(distance < 50 ? $"50[m] ({Math.Round(distance, 0, MidpointRounding.AwayFromZero)}" : $"{Math.Round(distance, 0, MidpointRounding.AwayFromZero)}[m]")}");
+            Console.WriteLine($"{track.Pilot.PilotNumber}: Electronic result Task2: {(distance < 50 ? $"50[m] ({Math.Round(distance, 0, MidpointRounding.AwayFromZero)})" : $"{Math.Round(distance, 0, MidpointRounding.AwayFromZero)}[m]")}");
         }
     }
 
@@ -362,7 +377,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             }
             double distance = CoordinateHelpers.CalculateDistanceWithSeparationAltitude(targetCoordinate, markerDrop.MarkerLocation, CoordinateHelpers.ConvertToMeter(1800), true);
 
-            Console.WriteLine($"{track.Pilot.PilotNumber}: Electronic result Task3: ({(distance < 50 ? $"50[m] ({Math.Round(distance, 0, MidpointRounding.AwayFromZero)}" : $"{Math.Round(distance, 0, MidpointRounding.AwayFromZero)}[m]")}");
+            Console.WriteLine($"{track.Pilot.PilotNumber}: Electronic result Task3: {(distance < 50 ? $"50[m] ({Math.Round(distance, 0, MidpointRounding.AwayFromZero)})" : $"{Math.Round(distance, 0, MidpointRounding.AwayFromZero)}[m]")}");
         }
     }
 
@@ -379,7 +394,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             targetCoordinateC
         ];
         HesitationWaltzTask hesitationWaltzTask = new();
-        hesitationWaltzTask.SetupHWZ(5, targetCoordinates, 3, DistanceCalculationType.WithSeparationAlitude, null, Competition.Validation.ValidationStrictnessType.LatestValid);
+        hesitationWaltzTask.SetupHWZ(4, targetCoordinates, 4, DistanceCalculationType.WithSeparationAlitude, null, Competition.Validation.ValidationStrictnessType.LatestValid);
         hesitationWaltzTask.SeparationAltitude = CoordinateHelpers.ConvertToMeter(1800);
 
 
@@ -395,7 +410,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 continue;
             }
 
-            Console.WriteLine($"{track.Pilot.PilotNumber}:Electronic result Task 4: ({(result < 50 ? $"50[m] ({Math.Round(result, 0, MidpointRounding.AwayFromZero)}" : $"{Math.Round(result, 0, MidpointRounding.AwayFromZero)}[m]")}");
+            Console.WriteLine($"{track.Pilot.PilotNumber}:Electronic result Task 4: {(result < 50 ? $"50[m] ({Math.Round(result, 0, MidpointRounding.AwayFromZero)})" : $"{Math.Round(result, 0, MidpointRounding.AwayFromZero)}[m]")}");
         }
     }
 }
