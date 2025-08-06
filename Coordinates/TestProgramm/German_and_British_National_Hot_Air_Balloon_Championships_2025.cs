@@ -9,7 +9,7 @@ namespace TestProgramm;
 
 internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
 {
-    private readonly string root_path = @"C:\Users\Jan\Nextcloud2\shared\Ballonveranstaltungen\";
+    private readonly string root_path = @"C:\Users\micechle\Nextcloud\";
     private readonly string flight_path = @"2025 DM Burgebrach\scoring\flights\Flight_01\";
     internal void Flight1()
     {
@@ -150,25 +150,25 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             {
                 continue;
             }
-
+            int goalNumber = 2;
             Declaration? lastDeclaration;
-            if (track.Declarations.FindAll(declaration => declaration.GoalNumber == 2).Count > 3)
+            if (track.Declarations.FindAll(declaration => declaration.GoalNumber == goalNumber).Count > 3)
             {
                 Console.WriteLine(
-                    $"{track.Pilot.PilotNumber}: has more than 3 declaration in goal 2.");
+                    $"{track.Pilot.PilotNumber}: has more than 3 declaration in goal {goalNumber}.");
 
-                lastDeclaration = track.Declarations.FindAll(declaration => declaration.GoalNumber == 2)[2];
+                lastDeclaration = track.Declarations.FindAll(declaration => declaration.GoalNumber == goalNumber)[2];
             }
             else
             {
-                lastDeclaration = track.GetLatestDeclaration(2);
+                lastDeclaration = track.GetLatestDeclaration(goalNumber);
             }
 
 
             if (lastDeclaration == null)
             {
                 Console.WriteLine(
-                    $"{track.Pilot.PilotNumber}: has no declaration in goal 2.");
+                    $"{track.Pilot.PilotNumber}: has no declaration in goal {goalNumber}.");
                 continue;
             }
 
@@ -177,7 +177,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             if (markerDrop == null)
             {
                 Console.WriteLine(
-                    $"{track.Pilot.PilotNumber}: has no marker drop in goal 2.");
+                    $"{track.Pilot.PilotNumber}: has no marker drop in goal {goalNumber}.");
                 continue;
             }
 
@@ -246,13 +246,14 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                         $"{track.Pilot.PilotNumber}:declaration has infringement. has a distance of {distanceBetweenDeclarationAndDirectorGoal}m between declaration point and declared goal {(index + 1)}. ({distanceInfringementBetweenDeclarationAndDirectorGoal}% -> {penaltyAtDistanceBetweenDeclarationAndDirectorGoal} pts)");
                 }
             }
-            
+
 
             //check if in task 6 donut
-            Declaration decT6 = track.GetLatestDeclaration(3);
+            int goalNumberTask6 = 3;
+                Declaration decT6 = track.GetLatestDeclaration(goalNumberTask6);
             if (decT6 is null)
             {
-                Console.WriteLine($"{track.Pilot.PilotNumber}: No declaration in goal 3");
+                Console.WriteLine($"{track.Pilot.PilotNumber}: No declaration in goal {goalNumberTask6}");
                 continue;
             }
             Shapes.Shapes2D.Circle circle = new (decT6.DeclaredGoal, 3000);
@@ -326,7 +327,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             }
 
             //remove all track points after 2025-08-06 06:30:00 (UTC)
-            track.TrackPoints.RemoveAll(x => x.TimeStamp > new DateTime(2025, 08, 06, 06, 30, 0));
+            int removed=track.TrackPoints.RemoveAll(x => x.TimeStamp > new DateTime(2025, 08, 06, 06, 30, 0));
 
             if (!donutTask.CalculateResults(track, true, out double result))
             {
