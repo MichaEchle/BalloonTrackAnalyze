@@ -172,17 +172,17 @@ public partial class TrackReportGeneratorForm : Form
         }
 
         MaxAllowedAltitude = rbMaxAltMeter.Checked ? tempMaxAltitude : CoordinateHelpers.ConvertToMeter(tempMaxAltitude);
-        Properties.Settings.Default.MaxAltitude = CoordinateHelpers.ConvertToFeet(MaxAllowedAltitude);
+        Properties.Settings.Default.MaxAltitude = MaxAllowedAltitude;
         Properties.Settings.Default.Save();
     }
     #endregion Methods
 
     private void TrackReportGeneratorForm_Load(object sender, EventArgs e)
     {
-        MaxAllowedAltitude = Math.Round(Properties.Settings.Default.MaxAltitude,0,MidpointRounding.AwayFromZero);
-        DefaultAltitude = Math.Round(Properties.Settings.Default.DefaultAltitude,0,MidpointRounding.AwayFromZero);
-        tbMaxAltitude.Text = MaxAllowedAltitude.ToString();
-        tbDefaultAltitude.Text = DefaultAltitude.ToString();
+        MaxAllowedAltitude = Properties.Settings.Default.MaxAltitude;
+        DefaultAltitude = Properties.Settings.Default.DefaultAltitude;
+        tbMaxAltitude.Text = Math.Round(CoordinateHelpers.ConvertToFeet(MaxAllowedAltitude), 0, MidpointRounding.AwayFromZero).ToString();
+        tbDefaultAltitude.Text = Math.Round(CoordinateHelpers.ConvertToFeet(DefaultAltitude), 0, MidpointRounding.AwayFromZero).ToString();
     }
 
     private void tbDefaultAltitude_Leave(object sender, EventArgs e)
@@ -193,7 +193,7 @@ public partial class TrackReportGeneratorForm : Form
             return;
         }
         DefaultAltitude = rbDefaultAltitudeMeter.Checked ? tempDefaultAltitude : CoordinateHelpers.ConvertToMeter(tempDefaultAltitude);
-        Properties.Settings.Default.DefaultAltitude = CoordinateHelpers.ConvertToFeet(DefaultAltitude);
+        Properties.Settings.Default.DefaultAltitude = DefaultAltitude;
         Properties.Settings.Default.Save();
     }
 }
