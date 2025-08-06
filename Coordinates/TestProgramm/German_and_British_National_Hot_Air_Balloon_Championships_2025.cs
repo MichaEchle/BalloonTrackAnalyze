@@ -3,9 +3,6 @@ using Competition.Penalty;
 using Competition.Tasks;
 using Competition.Validation;
 using Coordinates;
-using OfficeOpenXml;
-using System.Drawing;
-using System.Security.Cryptography;
 
 namespace TestProgramm;
 
@@ -531,7 +528,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             ["T7/8C"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 620452, 5520241, CoordinateHelpers.ConvertToMeter(908)),
             ["T7/8D"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 622571, 5519901, CoordinateHelpers.ConvertToMeter(925)),
             ["T7/8E"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 621436, 5519536, CoordinateHelpers.ConvertToMeter(949)),
-            ["T7/8F"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 621890, 5518934, CoordinateHelpers.ConvertToMeter(796)),
+            ["T7/8F"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 621887, 5518926, CoordinateHelpers.ConvertToMeter(954)),
         };
     }
 }
