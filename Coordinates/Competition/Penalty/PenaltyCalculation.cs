@@ -1,4 +1,4 @@
-using Coordinates;
+﻿using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 
@@ -58,6 +58,77 @@ public static class PenaltyCalculation
         }
     }
 
+    /// <summary>
+    /// Checks for a single 2D distance infringement between a reference coordinate and a calculation coordinate,
+    /// and calculates the associated penalty points.
+    /// <para>
+    /// The distance between the reference coordinate and calculation coordinate is calculated using the Vincenty formula.
+    /// If the distance is less than the minimum distance, the infringement is calculated as a percentage based on how much the
+    /// distance is below the minimum. If the distance is greater than the maximum distance, the infringement is calculated
+    /// as a percentage based on how much the distance exceeds the maximum.
+    /// </para>
+    /// <para>
+    /// The penalty is computed as the rounded infringement percentage multiplied by a constant factor of 20.
+    /// </para>
+    /// </summary>
+    /// <param name="referenceCoordinate">The reference coordinate to check against.</param>
+    /// <param name="calculationCoordinate">The coordinate used for the comparison.</param>
+    /// <param name="minimumDistance">The minimum allowable 2D distance between the two coordinates.</param>
+    /// <param name="maximumDistance">The maximum allowable 2D distance between the two coordinates.</param>
+    /// <param name="infringement">Output parameter. The calculated infringement percentage based on the distance check.</param>
+    /// <param name="penalty">Output parameter. The calculated penalty points based on the infringement.</param>
+    /// <returns>
+    /// True if the infringement is successfully calculated, otherwise false, such as when either coordinate is null.
+    /// </returns>
+    public static bool CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(Coordinate referenceCoordinate,
+        Coordinate calculationCoordinate, double minimumDistance, double maximumDistance, out double infringement, out double penalty, out double distance)
+    {
+        if (referenceCoordinate is null)
+        {
+            distance = -1;
+            infringement = -1;
+            penalty = -1;
+            Logger?.LogError("Reference coordinate cannot be null");
+            return false;
+        }
+        if (calculationCoordinate is null)
+        {
+            distance = -1;
+            infringement = -1;
+            penalty = -1;
+            Logger?.LogError("Reference coordinate cannot be null");
+            return false;
+        }
+        
+        infringement = 0.0;
+        
+        distance = CoordinateHelpers.Calculate2DDistanceHavercos(referenceCoordinate, calculationCoordinate);
+        if (!double.IsNaN(minimumDistance))
+        {
+            if (distance < minimumDistance)
+            {
+                infringement = (1.0 - (distance / minimumDistance)) * 100.0;
+            }
+        }
+
+        if (!double.IsNaN(maximumDistance))
+        {
+            if (distance > maximumDistance)
+            {
+                infringement = ((distance / maximumDistance) - 1.0) * 100.0;
+            }
+        }
+
+        penalty = Math.Round(infringement, 0, MidpointRounding.AwayFromZero) * 20.0;
+
+        if (infringement > 25)
+        {
+            penalty = Double.MaxValue;
+        }
+        
+        return infringement >= 0.0;
+    }
+
 
     /// <summary>
     /// Checks for 2D distance infringements of minimum or maximum allowed distances
@@ -94,7 +165,7 @@ public static class PenaltyCalculation
         foreach ((int pilotNumber, Coordinate coordinate) coordinate in coordinatesToCheck)
         {
             infringement = 0.0;
-            distance = CoordinateHelpers.Calculate2DDistanceVincentyWSG84(referenceCoordinate, coordinate.coordinate);
+            distance = CoordinateHelpers.Calculate2DDistanceHavercos(referenceCoordinate, coordinate.coordinate);
             if (!double.IsNaN(minimumDistance))
             {
                 if (distance < minimumDistance)
