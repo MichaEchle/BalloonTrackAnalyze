@@ -9,25 +9,25 @@ namespace TestProgramm;
 
 internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
 {
+    private readonly string root_path = @"C:\Users\Jan\Nextcloud2\shared\Ballonveranstaltungen\";
+    private readonly string flight_path = @"2025 DM Burgebrach\scoring\flights\Flight_01\";
     internal void Flight1()
     {
-        string root = @"C:\Users\micechle\";
-        string relativePath = @"Nextcloud\2025 DM Burgebrach\scoring\flights\Flight_01\tracks\scoring";
         Flight flight = Flight.GetInstance();
         flight.FlightNumber = 1;
         _ = flight.MapPilotNamesToTracks(@".\PilotsMapping.csv");
-        if (!flight.ParseTrackFiles(Path.Combine(root, relativePath), true))
+        if (!flight.ParseTrackFiles(Path.Combine(root_path, Path.Combine(flight_path, @"tracks\scoring")), true))
         {
             Console.WriteLine("Failed to parse track files for flight 1");
         }
-        _ = flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToFeet(1800));
+        _ = flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(1800));
 
-        //ChecksTask1(flight);
+        //ChecksAndResultsTask1(flight);
         //ResultsTask2(flight);
         //ResultsTask3(flight);
         //ResultsTask4(flight);
-        ChecksTask5(flight);
-        //ChecksAndResultsTask6(flight);
+        //ChecksAndResultTask5(flight);
+        ChecksAndResultsTask6(flight);
     }
 
     private Coordinate[] GetDirectorGoalsFlight1()
@@ -52,8 +52,9 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
         ];
     }
 
-    private void ChecksTask1(Flight flight)
+    private void ChecksAndResultsTask1(Flight flight)
     {
+        String csvOutput = "pilot number, result\n";
         foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
         {
             if (track is null)
@@ -131,11 +132,18 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                         $"{track.Pilot.PilotNumber}: has a distance of {distanceBetweenDeclarationAndDirectorGoal}m between declaration point and declared goal {(index + 1)}. ({distanceInfringementBetweenDeclarationAndDirectorGoal}% -> {penaltyAtDistanceBetweenDeclarationAndDirectorGoal} pts)");
                 }
             }
+
+
+            double result = CoordinateHelpers.Calculate3DDistance(lastDeclaration.DeclaredGoal,lastMarker.MarkerLocation, true);
+            csvOutput += $"{track.Pilot.PilotNumber},{Math.Round(result, 2, MidpointRounding.AwayFromZero).ToString().Replace("," , ".")}\n";
         }
+        File.WriteAllText(Path.Combine(root_path, Path.Combine(flight_path , "results")) + @$"\task01-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}.csv", csvOutput);
     }
 
-    private void ChecksTask5(Flight flight)
+    private void ChecksAndResultTask5(Flight flight)
     {
+        String csvOutput = "pilot number, result\n";
+
         foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
         {
             if (track is null)
@@ -238,7 +246,11 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                         $"{track.Pilot.PilotNumber}:declaration has infringement. has a distance of {distanceBetweenDeclarationAndDirectorGoal}m between declaration point and declared goal {(index + 1)}. ({distanceInfringementBetweenDeclarationAndDirectorGoal}% -> {penaltyAtDistanceBetweenDeclarationAndDirectorGoal} pts)");
                 }
             }
+            
+            double result = CoordinateHelpers.Calculate3DDistance(lastDeclaration.DeclaredGoal,markerDrop.MarkerLocation, true);
+            csvOutput += $"{track.Pilot.PilotNumber},{Math.Round(result, 2, MidpointRounding.AwayFromZero).ToString().Replace("," , ".")}\n";
         }
+        File.WriteAllText(Path.Combine(root_path, Path.Combine(flight_path , "results")) + @$"\task05-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}.csv", csvOutput);
     }
 
     private void ChecksAndResultsTask6(Flight flight)

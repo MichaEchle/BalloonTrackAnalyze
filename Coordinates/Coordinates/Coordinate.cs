@@ -1,4 +1,4 @@
-using LoggingConnector;
+﻿using LoggingConnector;
 using Microsoft.Extensions.Logging;
 
 namespace Coordinates;
@@ -85,4 +85,9 @@ public class Coordinate
         return true;
     }
 
+    public override string ToString()
+    {
+        return
+            $"Coordinate: LAT({Latitude}) LONG({Longitude}) ALT. GPS({AltitudeGPS})  ALT. BAROMETRIC ({AltitudeBarometric})  TIMESTAMP ({TimeStamp})";
+    }
 }
