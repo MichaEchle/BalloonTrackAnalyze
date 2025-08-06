@@ -35,22 +35,27 @@ public class Track
 
     }
 
-    public Declaration GetLatestDeclaration(int goalNumber)
+    public Declaration? GetLatestDeclaration(int goalNumber)
     {
-        List<Declaration> declarations = Declarations.Where(x => x.GoalNumber == goalNumber).ToList();
-        return declarations.Count == 0 ? null : declarations.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[0];
+        return Declarations.OrderBy(x=>x.PositionAtDeclaration.TimeStamp)
+            .Where(x => x.GoalNumber == goalNumber)
+            .LastOrDefault();
+    }
 
+    public MarkerDrop? GetLatestMarkerDrop(int markerNumber)
+    {
+        return MarkerDrops.OrderBy(x=>x.MarkerLocation.TimeStamp).FirstOrDefault(x => x.MarkerNumber == markerNumber);
     }
 
     public List<int> GetAllGoalNumbers()
     {
-        List<int> allGoalNumbers = Declarations.Select(x => x.GoalNumber).Distinct().ToList();
+        List<int> allGoalNumbers = [.. Declarations.Select(x => x.GoalNumber).Distinct()];
         return allGoalNumbers;
     }
 
     public List<int> GetAllMarkerNumbers()
     {
-        List<int> allMarkerNumbers = MarkerDrops.Select(x => x.MarkerNumber).Distinct().ToList();
+        List<int> allMarkerNumbers = [.. MarkerDrops.Select(x => x.MarkerNumber).Distinct()];
         return allMarkerNumbers;
     }
 
