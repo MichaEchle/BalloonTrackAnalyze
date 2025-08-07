@@ -3,6 +3,7 @@ using Competition.Penalty;
 using Competition.Tasks;
 using Competition.Validation;
 using Coordinates;
+using Shapes.Shapes2D;
 
 namespace TestProgramm;
 
@@ -759,7 +760,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
     {
         foreach (var boxFromCoordinate in GetBoxCoordinates())
         {
-            if (CoordinateHelpers.IsInSquare(boxFromCoordinate.Value[0], boxFromCoordinate.Value[1], coordinate))
+            if (new Rectangle(boxFromCoordinate.Value[0], boxFromCoordinate.Value[1]).IsWithin(coordinate))
             {
                 return boxFromCoordinate.Key;
             }
@@ -804,8 +805,8 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             ],
         };
     }
-    
-        private void ChecksTask13(Flight flight)
+
+    private void ChecksTask13(Flight flight)
     {
         foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
         {
