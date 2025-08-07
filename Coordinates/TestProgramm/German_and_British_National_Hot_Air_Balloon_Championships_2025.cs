@@ -633,7 +633,14 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             Console.WriteLine("Failed to map pilot names to tracks");
         }
 
-        _ = flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(1800));
+        List<(Pilot pilot, Declaration declaration)> correctedDeclarations = flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(1800));
+        foreach ((Pilot pilot, Declaration declaration) in correctedDeclarations)
+        {
+            if (declaration.GoalNumber == 1)
+            {
+                Console.WriteLine($"{ pilot.PilotNumber}: Did not declared height for goal {declaration.GoalNumber}");
+            }
+        }
     }
 
     private void CheckTask09(Flight flight)
@@ -647,17 +654,22 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
 
             int declarationGoalNumber = 1;
             Declaration? declaration;
-            if (track.Declarations.FindAll(declaration => declaration.GoalNumber == declarationGoalNumber).Count > 3)
-            {
-                Console.WriteLine(
-                    $"{track.Pilot.PilotNumber}: has more than 3 declaration in goal {declarationGoalNumber}.");
+            //if (track.Declarations.FindAll(declaration => declaration.GoalNumber == declarationGoalNumber).Count > 3)
+            //{
+            //    Console.WriteLine(
+            //        $"{track.Pilot.PilotNumber}: has more than 3 declaration in goal {declarationGoalNumber}.");
 
-                declaration =
-                    track.Declarations.FindAll(declaration => declaration.GoalNumber == declarationGoalNumber)[2];
-            }
-            else
+            //    declaration =
+            //        track.Declarations.FindAll(declaration => declaration.GoalNumber == declarationGoalNumber)[2];
+            //}
+            //else
+            //{
+            declaration = track.GetLatestDeclaration(declarationGoalNumber);
+            //}
+            if (declaration == null)
             {
-                declaration = track.GetLatestDeclaration(declarationGoalNumber);
+                Console.WriteLine($"{track.Pilot.PilotNumber}: has no declaration in goal {declarationGoalNumber}.");
+                continue;
             }
 
             //TODO Check Minimum and maximum distances between declaration point and declared goal
@@ -676,7 +688,6 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                     $"{track.Pilot.PilotNumber}:declaration has infringement. has a distance of {distanceBetweenPositionAtDeclarationAndDeclaredGoal}m between declaration point and declared goal. ({distanceInfringementAtPositionAtDeclarationAndDeclaredGoal}% -> {penaltyAtPositionAtDeclarationAndDeclaredGoal} pts)");
             }
 
-            //TODO Check minimum distance from goals to the director goals
 
             foreach (var keyValuePair in Flight3Targets())
             {
@@ -699,7 +710,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
 
     private void CheckAndResultTask12(Flight flight)
     {
-        String csvOutput = "pilot number, result\n";
+        string csvOutput = "pilot number, result\n";
         foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
         {
             if (track is null)
@@ -707,14 +718,14 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 continue;
             }
 
-            MarkerDrop? firstMarker = track.MarkerDrops.FirstOrDefault(x => x.MarkerNumber == 4);
+            MarkerDrop? firstMarker = track.GetFirstMarkerDrop(4);
             if (firstMarker is null)
             {
                 Console.WriteLine($"{track.Pilot.PilotNumber}: No marker drop for marker 4");
                 continue;
             }
 
-            MarkerDrop? secondMarker = track.MarkerDrops.LastOrDefault(x => x.MarkerNumber == 5);
+            MarkerDrop? secondMarker = track.GetFirstMarkerDrop(5);
 
             if (secondMarker is null)
             {
@@ -748,7 +759,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             double result =
                 CoordinateHelpers.Calculate2DDistanceHavercos(firstMarker.MarkerLocation, secondMarker.MarkerLocation);
             csvOutput +=
-                $"{track.Pilot.PilotNumber},{Math.Round(result, 0, MidpointRounding.AwayFromZero).ToString().Replace(",", ".")}\n";
+                $"{track.Pilot.PilotNumber},{Math.Round(result, 0, MidpointRounding.AwayFromZero)}\n";
         }
 
         File.WriteAllText(
@@ -785,7 +796,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             ],
             ["a3"] =
             [
-                CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 627000, 5528000, 0),
+                CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 627000, 5520000, 0),
                 CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 628000, 5519000, 0)
             ],
             ["a4"] =
@@ -896,13 +907,13 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
     private Dictionary<string, Coordinate> Flight3Targets()
     {
         return new Dictionary<string, Coordinate>
-        {
+        {   
             ["T10"] =
-                CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 623741, 5520990,
-                    CoordinateHelpers.ConvertToMeter(864)),
-            ["T11/a"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 622470, 5520952, 292),
-            ["T11/b"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 622470, 5520952, 292),
-            ["T11/c"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 622470, 5520952, 292),
+                CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 630738, 5515301,
+                    CoordinateHelpers.ConvertToMeter(903)),
+            ["T11a"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 626625, 5516716, CoordinateHelpers.ConvertToMeter(1074)),
+            ["T11b"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 627024, 5517875, 317),
+            ["T11c"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 627270, 5518021, 315),
         };
     }
 
