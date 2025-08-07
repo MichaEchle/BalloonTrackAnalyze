@@ -638,7 +638,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
         {
             if (declaration.GoalNumber == 1)
             {
-                Console.WriteLine($"{ pilot.PilotNumber}: Did not declared height for goal {declaration.GoalNumber}");
+                Console.WriteLine($"{pilot.PilotNumber}: Did not declared height for goal {declaration.GoalNumber}");
             }
         }
     }
@@ -717,19 +717,19 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             {
                 continue;
             }
-
-            MarkerDrop? firstMarker = track.GetFirstMarkerDrop(4);
+            int fristGoalNumber = 4;
+            MarkerDrop? firstMarker = track.GetFirstMarkerDrop(fristGoalNumber);
             if (firstMarker is null)
             {
-                Console.WriteLine($"{track.Pilot.PilotNumber}: No marker drop for marker 4");
+                Console.WriteLine($"{track.Pilot.PilotNumber}: No marker drop for marker {fristGoalNumber}");
                 continue;
             }
-
-            MarkerDrop? secondMarker = track.GetFirstMarkerDrop(5);
+            int secondGoalNumber = 5;
+            MarkerDrop? secondMarker = track.GetFirstMarkerDrop(secondGoalNumber);
 
             if (secondMarker is null)
             {
-                Console.WriteLine($"{track.Pilot.PilotNumber}: No marker drop for marker 5");
+                Console.WriteLine($"{track.Pilot.PilotNumber}: No marker drop for marker {secondGoalNumber}");
                 continue;
             }
 
@@ -771,7 +771,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
     {
         foreach (var boxFromCoordinate in GetBoxCoordinates())
         {
-            if (new Rectangle(boxFromCoordinate.Value[0], boxFromCoordinate.Value[1]).IsWithin(coordinate))
+            if (boxFromCoordinate.Value.IsWithin(coordinate))
             {
                 return boxFromCoordinate.Key;
             }
@@ -780,40 +780,40 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
         return null;
     }
 
-    private Dictionary<string, Coordinate[]> GetBoxCoordinates()
+    private Dictionary<string, Rectangle> GetBoxCoordinates()
     {
-        return new Dictionary<string, Coordinate[]>
+        return new Dictionary<string, Rectangle>
         {
-            ["a1"] =
-            [
+            ["Area1"] = new Rectangle(
+
                 CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 625000, 5518000, 0),
-                CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 626000, 5517000, 0)
-            ],
-            ["a2"] =
-            [
+                CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 626000, 5517000, 0))
+            ,
+            ["Area2"] =
+            new Rectangle(
                 CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 625000, 5520000, 0),
                 CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 626000, 5519000, 0)
-            ],
-            ["a3"] =
-            [
+            ),
+            ["Area3"] =
+            new Rectangle(
                 CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 627000, 5520000, 0),
                 CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 628000, 5519000, 0)
-            ],
-            ["a4"] =
-            [
+            ),
+            ["Area4"] =
+            new Rectangle(
                 CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 624000, 5523000, 0),
                 CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 625000, 5522000, 0)
-            ],
-            ["a5"] =
-            [
+            ),
+            ["Area5"] =
+          new Rectangle(
                 CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 622000, 5524000, 0),
                 CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 623000, 5523000, 0)
-            ],
-            ["a6"] =
-            [
+            ),
+            ["Area6"] =
+            new Rectangle(
                 CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 619000, 5525000, 0),
                 CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 620000, 5524000, 0)
-            ],
+            ),
         };
     }
 
@@ -903,11 +903,73 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
         }
     }
 
+    private void ChecksAndResultTask14(Flight flight)
+    {
+        foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
+        {
+            if (track is null)
+            {
+                continue;
+            }
+            int firstGoalNumber = 6;
+            MarkerDrop? marker6 = track.GetFirstMarkerDrop(firstGoalNumber);
+            if (marker6 is null)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: No goal {firstGoalNumber} declared");
+                continue;
+            }
+            int secondGoalNumber = 7;
+            MarkerDrop? marker7 = track.GetFirstMarkerDrop(secondGoalNumber);
+            if (marker7 is null)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: No goal {secondGoalNumber} declared");
+                continue;
+            }
+            if (!PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
+                marker6.MarkerLocation, marker7.MarkerLocation, 2000, 4000,
+                out bool hasInfringement,
+                out double distanceInfringementBetweenMarker6AndMarker7,
+                out double penaltyAtDistanceBetweenMarker6AndMarker7,
+                out double distanceBetweenMarker6AndMarker7
+            ))
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to check distance infringement between {firstGoalNumber} and {secondGoalNumber}");
+            }
+            else
+            {
+                if (hasInfringement)
+                {
+                    Console.WriteLine($"{track.Pilot.PilotNumber}: Distance infringement between {firstGoalNumber} and {secondGoalNumber}: Distance {Math.Round(distanceBetweenMarker6AndMarker7, 0, MidpointRounding.AwayFromZero)}[m] / Infringement {distanceInfringementBetweenMarker6AndMarker7}% / Penalty {penaltyAtDistanceBetweenMarker6AndMarker7}pts");
+                }
+            }
+
+            DateTime endOfScoringPeriod = new(2025, 08, 07, 06, 30, 0);
+            if (marker6.MarkerLocation.TimeStamp > endOfScoringPeriod)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Marker 6 is after the end of the scoring period");
+                continue;
+            }
+            if (marker7.MarkerLocation.TimeStamp > endOfScoringPeriod)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Marker 7 is after the end of the scoring period");
+                continue;
+            }
+
+            Coordinate referenceCoordinate = CoordinateHelpers.CalculatePointWithDistanceAndBearing(
+                marker6.MarkerLocation, 2000, 20);
+
+            double angle = CoordinateHelpers.CalculateInteriorAngle(
+                referenceCoordinate, marker6.MarkerLocation, marker7.MarkerLocation);
+
+            Console.WriteLine($"{track.Pilot.PilotNumber}: Angle in Task14 {Math.Round(angle,2,MidpointRounding.AwayFromZero)}[°]");
+        }
+    }
+
 
     private Dictionary<string, Coordinate> Flight3Targets()
     {
         return new Dictionary<string, Coordinate>
-        {   
+        {
             ["T10"] =
                 CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 630738, 5515301,
                     CoordinateHelpers.ConvertToMeter(903)),
