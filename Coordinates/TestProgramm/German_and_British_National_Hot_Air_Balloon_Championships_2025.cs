@@ -1032,11 +1032,10 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
     {
         return new Dictionary<string, Coordinate>
         {
-            //TODO change coordinates to actual onces
             ["T15"] =
-                CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 625960, 5520930,
-                    CoordinateHelpers.ConvertToMeter(903)),
-            ["T16a"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 627180, 5522660, CoordinateHelpers.ConvertToMeter(1074)),
+                CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 625959, 5520929,
+                    CoordinateHelpers.ConvertToMeter(864)),
+            ["T16a"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 627183, 5522659, CoordinateHelpers.ConvertToMeter(924)),
             ["T16b"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 627629, 5522464, 286),
             ["T16c"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 628107, 5522117, 277),
             ["T16d"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 628519, 5521939, CoordinateHelpers.ConvertToMeter(904)),
