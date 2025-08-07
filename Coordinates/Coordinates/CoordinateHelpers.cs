@@ -1,4 +1,4 @@
-using LoggingConnector;
+﻿using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using static System.Math;
 
@@ -612,6 +612,27 @@ public static class CoordinateHelpers
         return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", coordinateSharp.UTM.Easting, coordinateSharp.UTM.Northing);
     }
 
+
+    /// <summary>
+    /// Determines if the current coordinate is within the bounds of a square defined by two corner coordinates.
+    /// </summary>
+    /// <param name="corner1">The first corner of the square.</param>
+    /// <param name="corner2">The second corner of the square.</param>
+    /// <returns>True if the current coordinate is within the square; otherwise, false.</returns>
+    public static bool IsInSquare(Coordinate corner1, Coordinate corner2, Coordinate point)
+    {
+        double minLat = Math.Min(corner1.Latitude, corner2.Latitude);
+        double maxLat = Math.Max(corner1.Latitude, corner2.Latitude);
+
+        double minLong = Math.Min(corner1.Longitude, corner2.Longitude);
+        double maxLong = Math.Max(corner1.Longitude, corner2.Longitude);
+
+        bool isLatWithinRange = point.Latitude >= minLat && point.Latitude <= maxLat;
+
+        bool isLongWithinRange = point.Longitude >= minLong && point.Longitude <= maxLong;
+
+        return isLatWithinRange && isLongWithinRange;
+    }
 
     ///// <summary>
     ///// Converts the given <paramref name="coordinate"/> to Cartesian coordinates.
