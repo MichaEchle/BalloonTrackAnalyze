@@ -641,6 +641,44 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 Console.WriteLine($"{pilot.PilotNumber}: Did not declared height for goal {declaration.GoalNumber}");
             }
         }
+
+        foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
+        {
+            if (track is null)
+            {
+                continue;
+            }
+
+            if (!TrackHelpers.CheckLaunchConstraints(track, true, new DateTime(2025, 08, 07, 04, 00, 00), new DateTime(2025, 08, 07, 05, 00, 00),
+                Flight3Targets().Values.ToList(), 1500, double.NaN, out Coordinate launchPoint,
+                out bool launchedInStartPeriod, out List<double> distanceToGoals, out List<bool> distancesToGoalsOk))
+            {
+
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to check launch constraints");
+            }
+            else
+            {
+                if (!launchedInStartPeriod)
+                {
+                    Console.WriteLine($"{track.Pilot.PilotNumber}: not launched in start period");
+                }
+
+                if (!distancesToGoalsOk.Any())
+                {
+                    for (int i = 0; i < distancesToGoalsOk.Count; i++)
+                    {
+                        if (!distancesToGoalsOk[i])
+                        {
+                            Console.WriteLine(
+                                $"{track.Pilot.PilotNumber}: distance violation. distance between launch and goal {i + 1} is {distanceToGoals[i]}");
+                        }
+                    }
+                }
+            }
+        }
+
+
+        ChecksTask13(flight);
     }
 
     private void CheckTask09(Flight flight)
@@ -763,7 +801,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
         }
 
         File.WriteAllText(
-            Path.Combine(root_path, Path.Combine(flight_path, "results")) +
+            Path.Combine(root_path, Path.Combine(flight3_path, "results")) +
             @$"\task12-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}.csv", csvOutput);
     }
 
@@ -848,6 +886,13 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 continue;
             }
 
+            if (lastDeclaration.OrignalEastingDeclarationUTM < 1800)
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: invalid declaration. OrignalEastingDeclarationUTM is west of 1800.");
+                continue;
+            }
+
             MarkerDrop? markerDrop = track.MarkerDrops.FirstOrDefault(markerDrop => markerDrop.MarkerNumber == 6);
 
             if (markerDrop == null)
@@ -897,7 +942,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 if (success3 && hasInfringement3)
                 {
                     Console.WriteLine(
-                        $"{track.Pilot.PilotNumber}:declaration has infringement. has a distance of {distanceBetweenDeclarationAndDirectorGoal}m between declaration point and declared goal {keyValuePair.Key}. ({distanceInfringementBetweenDeclarationAndDirectorGoal}% -> {penaltyAtDistanceBetweenDeclarationAndDirectorGoal} pts)");
+                        $"{track.Pilot.PilotNumber}:declaration has infringement. has a distance of {distanceBetweenDeclarationAndDirectorGoal}m between declaration point and set goal {keyValuePair.Key}. ({distanceInfringementBetweenDeclarationAndDirectorGoal}% -> {penaltyAtDistanceBetweenDeclarationAndDirectorGoal} pts)");
                 }
             }
         }
@@ -961,7 +1006,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             double angle = CoordinateHelpers.CalculateInteriorAngle(
                 referenceCoordinate, marker6.MarkerLocation, marker7.MarkerLocation);
 
-            Console.WriteLine($"{track.Pilot.PilotNumber}: Angle in Task14 {Math.Round(angle,2,MidpointRounding.AwayFromZero)}[°]");
+            Console.WriteLine($"{track.Pilot.PilotNumber}: Angle in Task14 {Math.Round(angle, 2, MidpointRounding.AwayFromZero)}[°]");
         }
     }
 
@@ -977,6 +1022,97 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             ["T11b"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 627024, 5517875, 317),
             ["T11c"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 627270, 5518021, 315),
         };
+    }
+
+    #endregion
+
+    #region Flight04
+
+    private Dictionary<string, Coordinate> Flight4Targets()
+    {
+        return new Dictionary<string, Coordinate>
+        {
+            //TODO change coordinates to actual onces
+            ["T15"] =
+                CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 625960, 5520930,
+                    CoordinateHelpers.ConvertToMeter(903)),
+            ["T16a"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 627180, 5522660, CoordinateHelpers.ConvertToMeter(1074)),
+            ["T16b"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 627629, 5522464, 286),
+            ["T16c"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 628107, 5522117, 277),
+            ["T16d"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 628519, 5521939, CoordinateHelpers.ConvertToMeter(904)),
+        };
+    }
+
+    private readonly string flight4_path = @"2025 DM Burgebrach\scoring\flights\Flight_04\";
+    internal void Flight4()
+    {
+        Flight flight = Flight.GetInstance();
+        flight.FlightNumber = 4;
+
+        if (!flight.ParseTrackFiles(Path.Combine(root_path, Path.Combine(flight4_path, @"tracks\scoring")), true))
+        {
+            Console.WriteLine("Failed to parse track files for flight 1");
+        }
+
+        if (!flight.MapPilotNamesToTracks(@".\PilotsMapping.csv"))
+        {
+            Console.WriteLine("Failed to map pilot names to tracks");
+        }
+
+        List<(Pilot pilot, Declaration declaration)> correctedDeclarations = flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(1800));
+        foreach ((Pilot pilot, Declaration declaration) in correctedDeclarations)
+        {
+            if (declaration.GoalNumber == 1)
+            {
+                Console.WriteLine($"{pilot.PilotNumber}: Did not declared height for goal {declaration.GoalNumber}");
+            }
+        }
+
+        foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
+        {
+            if (track is null)
+            {
+                continue;
+            }
+
+            if (!TrackHelpers.CheckLaunchConstraints(track, true, new DateTime(2025, 08, 07, 17, 00, 00), new DateTime(2025, 08, 07, 18, 00, 00),
+                Flight4Targets().Values.ToList(), 1500, double.NaN, out Coordinate launchPoint,
+                out bool launchedInStartPeriod, out List<double> distanceToGoals, out List<bool> distancesToGoalsOk))
+            {
+
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to check launch constraints");
+            }
+            else
+            {
+                if (!launchedInStartPeriod)
+                {
+                    Console.WriteLine($"{track.Pilot.PilotNumber}: not launched in start period");
+                }
+
+                if (!distancesToGoalsOk.Any())
+                {
+                    for (int i = 0; i < distancesToGoalsOk.Count; i++)
+                    {
+                        if (!distancesToGoalsOk[i])
+                        {
+                            Console.WriteLine(
+                                $"{track.Pilot.PilotNumber}: distance violation. distance between launch and goal {i + 1} is {distanceToGoals[i]}");
+                        }
+                    }
+                }
+            }
+            DateTime endOfScoringPeriod = new(2025, 08, 07, 18, 30, 0);
+            MarkerDrop? markerDrop1= track.GetFirstMarkerDrop(1);
+            if (markerDrop1?.MarkerLocation.TimeStamp > endOfScoringPeriod)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Marker 1 dropped after scoring period {(markerDrop1?.MarkerLocation.TimeStamp)} ");
+            }
+            MarkerDrop? markerDrop2 = track.GetFirstMarkerDrop(2);
+            if (markerDrop2?.MarkerLocation.TimeStamp > endOfScoringPeriod)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Marker 2 dropped after scoring period {(markerDrop2?.MarkerLocation.TimeStamp)} ");
+            }
+        }
     }
 
     #endregion
