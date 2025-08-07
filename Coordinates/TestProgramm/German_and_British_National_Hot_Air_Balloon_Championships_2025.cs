@@ -804,6 +804,93 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             ],
         };
     }
+    
+        private void ChecksTask13(Flight flight)
+    {
+        foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
+        {
+            if (track is null)
+            {
+                continue;
+            }
+
+            int goalNumber = 2;
+            Declaration? lastDeclaration;
+            if (track.Declarations.FindAll(declaration => declaration.GoalNumber == goalNumber).Count > 3)
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: has more than 3 declaration in goal {goalNumber}.");
+
+                lastDeclaration = track.Declarations.FindAll(declaration => declaration.GoalNumber == goalNumber)[2];
+            }
+            else
+            {
+                lastDeclaration = track.GetLatestDeclaration(goalNumber);
+            }
+
+
+            if (lastDeclaration == null)
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: has no declaration in goal {goalNumber}.");
+                continue;
+            }
+
+            MarkerDrop? markerDrop = track.MarkerDrops.FirstOrDefault(markerDrop => markerDrop.MarkerNumber == 6);
+
+            if (markerDrop == null)
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: has no marker drop in goal {goalNumber}.");
+                continue;
+            }
+
+            if (lastDeclaration.PositionAtDeclaration.TimeStamp > markerDrop.MarkerLocation.TimeStamp)
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: invalid declaration. Declaration after marker drop.");
+            }
+
+            //TODO Check minimum distance between declaration point and declared goals
+
+            bool success2 =
+                PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
+                    lastDeclaration.PositionAtDeclaration, lastDeclaration.DeclaredGoal, 2000, Double.NaN,
+                    out bool hasInfringement2,
+                    out double distanceInfringementAtPositionAtDeclarationAndDeclaredGoal,
+                    out double penaltyAtPositionAtDeclarationAndDeclaredGoal,
+                    out double distanceBetweenPositionAtDeclarationAndDeclaredGoal);
+
+            if (success2 && hasInfringement2)
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}:declaration has infringement. has a distance of {distanceBetweenPositionAtDeclarationAndDeclaredGoal}m between declaration point and declared goal. ({distanceInfringementAtPositionAtDeclarationAndDeclaredGoal}% -> {penaltyAtPositionAtDeclarationAndDeclaredGoal} pts)");
+            }
+
+            //TODO Check minimum distance between declared goals and director set goals
+
+            foreach (var keyValuePair in Flight3Targets())
+            {
+                Coordinate directorGoal = keyValuePair.Value;
+
+                bool success3 =
+                    PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
+                        lastDeclaration.DeclaredGoal, directorGoal, 1000, Double.NaN,
+                        out bool hasInfringement3,
+                        out double distanceInfringementBetweenDeclarationAndDirectorGoal,
+                        out double penaltyAtDistanceBetweenDeclarationAndDirectorGoal,
+                        out double distanceBetweenDeclarationAndDirectorGoal
+                    );
+
+                if (success3 && hasInfringement3)
+                {
+                    Console.WriteLine(
+                        $"{track.Pilot.PilotNumber}:declaration has infringement. has a distance of {distanceBetweenDeclarationAndDirectorGoal}m between declaration point and declared goal {keyValuePair.Key}. ({distanceInfringementBetweenDeclarationAndDirectorGoal}% -> {penaltyAtDistanceBetweenDeclarationAndDirectorGoal} pts)");
+                }
+            }
+        }
+    }
+
 
     private Dictionary<string, Coordinate> Flight3Targets()
     {
