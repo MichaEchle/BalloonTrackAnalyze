@@ -1,5 +1,6 @@
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
+using System.Globalization;
 
 namespace TestProgramm;
 
@@ -9,6 +10,9 @@ internal class Program
 
     private static void Main(string[] args)
     {
+        Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
+        Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+
         LogConnector.LoggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
         German_and_British_National_Hot_Air_Balloon_Championships_2025 competition = new German_and_British_National_Hot_Air_Balloon_Championships_2025();
