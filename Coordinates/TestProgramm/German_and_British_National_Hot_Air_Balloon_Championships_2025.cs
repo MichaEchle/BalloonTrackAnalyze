@@ -35,29 +35,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
         //ChecksAndResultTask5(flight);
         ChecksAndResultsTask6(flight);
     }
-
-
-    private Coordinate[] GetDirectorGoalsFlight1()
-    {
-        return
-        [
-            //Task 2: JDG
-            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 615641, 5526272,
-                CoordinateHelpers.ConvertToMeter(942)),
-
-            //Task 3: JDG
-            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 618949, 5524732,
-                CoordinateHelpers.ConvertToMeter(889)),
-
-            //Task 4: HWZ
-            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 623329, 5523086,
-                CoordinateHelpers.ConvertToMeter(918)), //Height may be incorrect
-            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 624480, 5521727,
-                CoordinateHelpers.ConvertToMeter(939)),
-            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 624169, 5520741,
-                CoordinateHelpers.ConvertToMeter(750)) //Height may be incorrect
-        ];
-    }
+    
 
     #region Flight01
 
@@ -86,7 +64,8 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 continue;
             }
 
-            //TODO Check if declaration is before takeoff 
+            //CHECK Check if declaration is before takeoff 
+            
             bool status = TrackHelpers.EstimateLaunchAndLandingTime(track, true, out Coordinate launchCoordinate,
                 out Coordinate landingCoordinate);
 
@@ -104,7 +83,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 }
             }
 
-            //TODO Check min distance from dec point to dec
+            //CHECK Check min distance from dec point to dec
 
             bool success =
                 PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
@@ -121,7 +100,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             }
 
 
-            //TODO Check minimum distance from any goals set by director
+            //CHECK Check minimum distance from any goals set by director
 
 
             for (int index = 0; index < GetDirectorGoalsFlight1().Length; index++)
@@ -204,7 +183,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                     $"{track.Pilot.PilotNumber}: invalid declaration. Declaration after marker drop.");
             }
 
-            //TODO Check minimum distance between previous marker and declared goal
+            //CHECK Check minimum distance between previous marker and declared goal
 
             MarkerDrop? previousMarker = track.MarkerDrops
                 .FindAll(drop => drop.MarkerLocation.TimeStamp < markerDrop.MarkerLocation.TimeStamp)
@@ -226,7 +205,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 }
             }
 
-            //TODO Check minimum distance between declaration point and declared goals
+            //CHECK Check minimum distance between declaration point and declared goals
 
             bool success2 =
                 PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
@@ -242,7 +221,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                     $"{track.Pilot.PilotNumber}:declaration has infringement. has a distance of {distanceBetweenPositionAtDeclarationAndDeclaredGoal}m between declaration point and declared goal. ({distanceInfringementAtPositionAtDeclarationAndDeclaredGoal}% -> {penaltyAtPositionAtDeclarationAndDeclaredGoal} pts)");
             }
 
-            //TODO Check minimum distance between declared goals and director set goals
+            //CHECK Check minimum distance between declared goals and director set goals
 
             for (int index = 0; index < GetDirectorGoalsFlight1().Length; index++)
             {
@@ -470,6 +449,28 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
         }
     }
 
+    private Coordinate[] GetDirectorGoalsFlight1()
+    {
+        return
+        [
+            //Task 2: JDG
+            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 615641, 5526272,
+                CoordinateHelpers.ConvertToMeter(942)),
+
+            //Task 3: JDG
+            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 618949, 5524732,
+                CoordinateHelpers.ConvertToMeter(889)),
+
+            //Task 4: HWZ
+            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 623329, 5523086,
+                CoordinateHelpers.ConvertToMeter(918)), //Height may be incorrect
+            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 624480, 5521727,
+                CoordinateHelpers.ConvertToMeter(939)),
+            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 624169, 5520741,
+                CoordinateHelpers.ConvertToMeter(750)) //Height may be incorrect
+        ];
+    }
+    
     #endregion
 
 
@@ -710,7 +711,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 continue;
             }
 
-            //TODO Check Minimum and maximum distances between declaration point and declared goal
+            //CHECK Check Minimum and maximum distances between declaration point and declared goal
 
             bool success2 =
                 PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
@@ -771,7 +772,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 continue;
             }
 
-            //TODO Add check if the markers are in the areas and if yes if there are in the same areas
+            //CHECK Add check if the markers are in the areas and if yes if there are in the same areas
 
             string? boxKey = GetBoxFromCoordinate(firstMarker.MarkerLocation);
             string? boxKey2 = GetBoxFromCoordinate(secondMarker.MarkerLocation);
@@ -908,7 +909,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                     $"{track.Pilot.PilotNumber}: invalid declaration. Declaration after marker drop.");
             }
 
-            //TODO Check minimum distance between declaration point and declared goals
+            //CHECK Check minimum distance between declaration point and declared goals
 
             bool success2 =
                 PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
@@ -924,7 +925,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                     $"{track.Pilot.PilotNumber}:declaration has infringement. has a distance of {distanceBetweenPositionAtDeclarationAndDeclaredGoal}m between declaration point and declared goal. ({distanceInfringementAtPositionAtDeclarationAndDeclaredGoal}% -> {penaltyAtPositionAtDeclarationAndDeclaredGoal} pts)");
             }
 
-            //TODO Check minimum distance between declared goals and director set goals
+            //CHECK Check minimum distance between declared goals and director set goals
 
             foreach (var keyValuePair in Flight3Targets())
             {
@@ -1032,7 +1033,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
     {
         return new Dictionary<string, Coordinate>
         {
-            //TODO change coordinates to actual onces
+            //CHECK change coordinates to actual onces
             ["T15"] =
                 CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 625960, 5520930,
                     CoordinateHelpers.ConvertToMeter(903)),
