@@ -4,19 +4,19 @@ namespace Competition.Tasks;
 
 public class PizzaTaskHelper
 {
-    public Coordinate centerLocation
+    public Coordinate CenterLocation
     {
         get;
         private set;
     }
 
-    public int numberOfSlices
+    public int NumberOfSlices
     {
         get;
         private set;
     }
 
-    public double startAngleDegree
+    public double StartAngleDegree
     {
         get;
         private set;
@@ -25,9 +25,9 @@ public class PizzaTaskHelper
 
     public void SetupHelper(Coordinate centerLocation, int numberOfSlices, double startAngleDegree = 0.0)
     {
-        this.centerLocation = centerLocation;
-        this.numberOfSlices = numberOfSlices;
-        this.startAngleDegree = startAngleDegree;
+        CenterLocation = centerLocation;
+        NumberOfSlices = numberOfSlices;
+        StartAngleDegree = startAngleDegree;
 
         if (numberOfSlices <= 0)
         {
@@ -42,26 +42,22 @@ public class PizzaTaskHelper
     /// <returns>The slice number corresponding to the provided coordinate.</returns>
     public int GetSliceNumber(Coordinate coordinate)
     {
-        double deltaLongitude = coordinate.Longitude - centerLocation.Longitude;
-        double deltaLatitude = coordinate.Latitude - centerLocation.Latitude;
-
-        double angleRadians = Math.Atan2(deltaLongitude, deltaLatitude);
-
-        double angleDegrees = angleRadians * (180.0 / Math.PI);
+        double angleDegrees = CoordinateHelpers.CalculateInitialBearing(CenterLocation, coordinate);
 
         if (angleDegrees < 0)
         {
             angleDegrees += 360;
         }
 
-        double effectiveAngleDegrees = angleDegrees - startAngleDegree;
+        double effectiveAngleDegrees = angleDegrees - StartAngleDegree;
 
         if (effectiveAngleDegrees < 0)
         {
             effectiveAngleDegrees += 360;
         }
 
-        double degreesPerSlice = 360.0 / numberOfSlices;
+        double degreesPerSlice = 360.0 / NumberOfSlices;
+        
 
         int slice = (int)Math.Floor(effectiveAngleDegrees / degreesPerSlice) + 1;
         return slice;
@@ -91,13 +87,13 @@ public class PizzaTaskHelper
         int clockwise = slice2 - slice1;
         if (clockwise < 0)
         {
-            clockwise += numberOfSlices; 
+            clockwise += NumberOfSlices; 
         }
 
         int counterClockwise = slice1 - slice2;
         if (counterClockwise < 0)
         {
-            counterClockwise += numberOfSlices; 
+            counterClockwise += NumberOfSlices; 
         }
 
         return Math.Min(clockwise, counterClockwise);
