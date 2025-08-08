@@ -1192,40 +1192,143 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 }
             }
         }
-        
+
         ChecksAndResultTask17(flight);
         ChecksAndResultTask21(flight);
     }
 
     private void ChecksAndResultTask17(Flight flight)
     {
+        DateTime endOfScoringPeriod = new(2025, 08, 08, 06, 00, 0);
+
+        String csvOutput = "pilot number, result\n";
+
         foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
         {
             if (track is null)
             {
                 continue;
             }
+
+            if (!CalculateLandRun(17, endOfScoringPeriod, 1,2,3, track, out double result))
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to calculate land run");
+                continue;
+            }
+            csvOutput +=
+                $"{track.Pilot.PilotNumber},{Math.Round(result, 2, MidpointRounding.AwayFromZero)}\n";
         }
 
+        File.WriteAllText(
+            Path.Combine(root_path, Path.Combine(flight_path, "results")) +
+            @$"\task17-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}.csv", csvOutput);
     }
 
     private void ChecksAndResultTask21(Flight flight)
     {
+        DateTime endOfScoringPeriod = new(2025, 08, 08, 07, 00, 0);
+
+        String csvOutput = "pilot number, result\n";
+
         foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
         {
             if (track is null)
             {
                 continue;
             }
+
+            if (!CalculateLandRun(21, endOfScoringPeriod, 7, 8, 9, track, out double result))
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to calculate land run");
+                continue;
+            }
+            csvOutput +=
+                $"{track.Pilot.PilotNumber},{Math.Round(result, 2, MidpointRounding.AwayFromZero)}\n";
         }
+
+        File.WriteAllText(
+            Path.Combine(root_path, Path.Combine(flight_path, "results")) +
+            @$"\task21-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}.csv", csvOutput);
     }
-    
-    
+
+
+    private bool CalculateLandRun(int taskNumber, DateTime endOfScoringPeriod, int pointAMarkerNumber,
+        int pointBMarkerNumber, int pointCMarkerNumber, Track track, out double result)
+    {
+        result = -1;
+        MarkerDrop? pointA = track.GetFirstMarkerDrop(pointAMarkerNumber);
+        MarkerDrop? pointB = track.GetFirstMarkerDrop(pointBMarkerNumber);
+        MarkerDrop? pointC = track.GetFirstMarkerDrop(pointCMarkerNumber);
+
+        if (pointA is null)
+        {
+            Console.WriteLine($"{track.Pilot.PilotNumber}: No marker {pointAMarkerNumber} (A) pressed.");
+            return false;
+        }
+
+        if (pointB is null)
+        {
+            Console.WriteLine($"{track.Pilot.PilotNumber}: No marker {pointAMarkerNumber} (B) pressed.");
+            return false;
+        }
+
+        if (pointC is null)
+        {
+            Console.WriteLine($"{track.Pilot.PilotNumber}: No marker {pointAMarkerNumber} (C) pressed.");
+            return false;
+        }
+
+        if (pointA.MarkerLocation.TimeStamp > endOfScoringPeriod)
+        {
+            Console.WriteLine(
+                $"{track.Pilot.PilotNumber}: Marker {pointAMarkerNumber} (A) dropped after scoring period {(pointA.MarkerLocation.TimeStamp)} ");
+            return false;
+        }
+
+        if (pointB.MarkerLocation.TimeStamp > endOfScoringPeriod)
+        {
+            Console.WriteLine(
+                $"{track.Pilot.PilotNumber}: Marker {pointAMarkerNumber} (B) dropped after scoring period {(pointB.MarkerLocation.TimeStamp)} ");
+            return false;
+        }
+
+        if (pointC.MarkerLocation.TimeStamp > endOfScoringPeriod)
+        {
+            Console.WriteLine(
+                $"{track.Pilot.PilotNumber}: Marker {pointAMarkerNumber} (C) dropped after scoring period {(pointC.MarkerLocation.TimeStamp)} ");
+        }
+
+        if (pointA.MarkerLocation.TimeStamp > pointB.MarkerLocation.TimeStamp)
+        {
+            Console.WriteLine(
+                $"{track.Pilot.PilotNumber}: Marker {pointAMarkerNumber} (A) pressed after marker {pointBMarkerNumber} (B).");
+            return false;
+        }
+
+        if (pointB.MarkerLocation.TimeStamp > pointC.MarkerLocation.TimeStamp)
+        {
+            Console.WriteLine(
+                $"{track.Pilot.PilotNumber}: Marker {pointBMarkerNumber} (B) pressed after marker {pointCMarkerNumber} (C).");
+            return false;
+        }
+
+        LandRunTask landRunTask = new();
+        MarkerToMarkerTimingRule validationRule = new();
+        validationRule.SetupRule(pointA.MarkerLocation.TimeStamp.TimeOfDay,
+            pointA.MarkerLocation.TimeStamp.AddMinutes(20).TimeOfDay,
+            new List<int> { pointBMarkerNumber, pointCMarkerNumber });
+        landRunTask.SetupLandRun(taskNumber, pointAMarkerNumber, pointBMarkerNumber, pointCMarkerNumber, validationRule,
+            ValidationStrictnessType.First);
+
+        landRunTask.CalculateResults(track, true, out result);
+        return true;
+    }
+
+
     private Dictionary<string, Coordinate> Flight5Targets()
     {
-        return new Dictionary<string, Coordinate>
-        {
-      };
+        return new Dictionary<string, Coordinate> { };
     }
+
     #endregion
 }
