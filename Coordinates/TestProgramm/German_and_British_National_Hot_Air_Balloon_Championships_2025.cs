@@ -1427,6 +1427,21 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 625561, 5521181, 263), 8);
     }
 
+    private void TestPizzaCode()
+    {
+        Coordinate coordinate = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 624498, 5521217);
+        Coordinate coordinate2 = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 626858, 5522037);
+        Coordinate coordinate3 = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 626779, 5520569);
+
+        int sliceIndex = Task22Pizza.GetSliceNumber(coordinate);
+        int sliceIndex2 = Task22Pizza.GetSliceNumber(coordinate2);
+        int sliceIndex3 = Task22Pizza.GetSliceNumber(coordinate3);
+
+        Console.WriteLine(sliceIndex); // 7
+        Console.WriteLine(sliceIndex2); // 2
+        Console.WriteLine(sliceIndex3); // 3
+    }
+
     private readonly PizzaTaskHelper Task22Pizza = new();
 
     private void ChecksAndResultTask22(Flight flight)
