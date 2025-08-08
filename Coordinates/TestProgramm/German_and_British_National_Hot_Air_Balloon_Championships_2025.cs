@@ -1141,16 +1141,18 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
 
     #region Flight05
 
-
     private Dictionary<string, Coordinate> Flight5Targets()
     {
         return new Dictionary<string, Coordinate>
         {
             ["T18"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 617504, 5519868, 284),
-            ["T19a"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 621014, 5520814, CoordinateHelpers.ConvertToMeter(994)),
+            ["T19a"] =
+                CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 621014, 5520814,
+                    CoordinateHelpers.ConvertToMeter(994)),
             ["T19b"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 621221, 5520641, 296),
             ["T20a"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 623771, 5521780, 285),
-            ["T20b"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 623876, 5521351, CoordinateHelpers.ConvertToMeter(937)),
+            ["T20b"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 623876, 5521351,
+                CoordinateHelpers.ConvertToMeter(937)),
         };
     }
 
@@ -1169,7 +1171,8 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             Console.WriteLine("Failed to map pilot names to tracks");
         }
 
-        List<(Pilot pilot, Declaration declaration)> correctedDeclarations = flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(1800));
+        List<(Pilot pilot, Declaration declaration)> correctedDeclarations =
+            flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(1800));
         foreach ((Pilot pilot, Declaration declaration) in correctedDeclarations)
         {
             if (declaration.GoalNumber == 1)
@@ -1178,7 +1181,6 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             }
         }
 
-        
 
         //GeneralChecksFlight5(flight);
         ChecksAndResultTask17(flight);
@@ -1194,11 +1196,12 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 continue;
             }
 
-            if (!TrackHelpers.CheckLaunchConstraints(track, true, new DateTime(2025, 08, 08, 04, 00, 00), new DateTime(2025, 08, 08, 05, 30, 00),
-                Flight5Targets().Values.ToList(), 1500, double.NaN, out Coordinate launchPoint,
-                out bool launchedInStartPeriod, out List<double> distanceToGoals, out List<bool> distancesToGoalsOk))
+            if (!TrackHelpers.CheckLaunchConstraints(track, true, new DateTime(2025, 08, 08, 04, 00, 00),
+                    new DateTime(2025, 08, 08, 05, 30, 00),
+                    Flight5Targets().Values.ToList(), 1500, double.NaN, out Coordinate launchPoint,
+                    out bool launchedInStartPeriod, out List<double> distanceToGoals,
+                    out List<bool> distancesToGoalsOk))
             {
-
                 Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to check launch constraints");
             }
             else
@@ -1229,7 +1232,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
 
             int firstMarkerNumber = 1;
             int thirdMarkerNumber = 3;
-            int seventhMarkerNumber =7;
+            int seventhMarkerNumber = 7;
 
             int lastMarkerNumber = 9;
 
@@ -1251,7 +1254,9 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 Console.WriteLine($"{track.Pilot.PilotNumber}: Third marker {thirdMarkerNumber} not found");
                 continue;
             }
-            Console.WriteLine($"{track.Pilot.PilotNumber}: Marker 3 <-> Marker 1 : {thirdMarker.MarkerLocation.TimeStamp.Subtract(firstMaker.MarkerLocation.TimeStamp)}");
+
+            Console.WriteLine(
+                $"{track.Pilot.PilotNumber}: Marker 3 <-> Marker 1 : {thirdMarker.MarkerLocation.TimeStamp.Subtract(firstMaker.MarkerLocation.TimeStamp)}");
 
 
             MarkerDrop? seventhMarker = track.GetFirstMarkerDrop(seventhMarkerNumber);
@@ -1269,14 +1274,14 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 continue;
             }
 
-            Console.WriteLine($"{track.Pilot.PilotNumber}: Marker 9 <-> Marker 7 : {lastMarker.MarkerLocation.TimeStamp.Subtract(seventhMarker.MarkerLocation.TimeStamp)}");
+            Console.WriteLine(
+                $"{track.Pilot.PilotNumber}: Marker 9 <-> Marker 7 : {lastMarker.MarkerLocation.TimeStamp.Subtract(seventhMarker.MarkerLocation.TimeStamp)}");
 
             //if (lastMarker.MarkerLocation.TimeStamp > landingPoint.TimeStamp)
             //{
             //    Console.WriteLine($"{track.Pilot.PilotNumber}: Last marker {lastMarkerNumber} is after landing time");
             //    continue;
             //}
-
         }
     }
 
@@ -1293,11 +1298,12 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 continue;
             }
 
-            if (!CalculateLandRun(17, endOfScoringPeriod, 1,2,3, track, out double result))
+            if (!CalculateLandRun(17, endOfScoringPeriod, 1, 2, 3, track, out double result))
             {
                 Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to calculate land run");
                 continue;
             }
+
             csvOutput +=
                 $"{track.Pilot.PilotNumber},{Math.Round(result, 2, MidpointRounding.AwayFromZero)}\n";
         }
@@ -1325,6 +1331,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to calculate land run");
                 continue;
             }
+
             csvOutput +=
                 $"{track.Pilot.PilotNumber},{Math.Round(result, 2, MidpointRounding.AwayFromZero)}\n";
         }
@@ -1399,14 +1406,88 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
         MarkerToMarkerTimingRule validationRule = new();
         validationRule.SetupRule(TimeSpan.Zero,
             TimeSpan.FromMinutes(20),
-            [ pointCMarkerNumber ]);
+            [pointCMarkerNumber]);
         landRunTask.SetupLandRun(taskNumber, pointAMarkerNumber, pointBMarkerNumber, pointCMarkerNumber, validationRule,
             ValidationStrictnessType.First);
 
         landRunTask.CalculateResults(track, true, out result);
         return true;
     }
+
+    #endregion
+
+    #region Flight06
     
-   
+    private readonly string flight5_path = @"2025 DM Burgebrach\scoring\flights\Flight_05\";
+
+
+    internal void Flight6()
+    {
+        Task22Pizza.SetupHelper(
+            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 625561, 5521181, 263), 8);
+    }
+
+    private readonly PizzaTaskHelper Task22Pizza = new();
+
+    private void ChecksAndResultTask22(Flight flight)
+    {
+        String csvOutput = "pilot number, result\n";
+
+        foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
+        {
+            if (track is null)
+            {
+                continue;
+            }
+
+            int firstMarkerNumber = 1;
+            int secondMarkerNumber = 2;
+
+            MarkerDrop? firstMarker = track.GetFirstMarkerDrop(firstMarkerNumber);
+            MarkerDrop? secondMarker = track.GetFirstMarkerDrop(secondMarkerNumber);
+
+            if (firstMarker is null)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: No marker {firstMarkerNumber} (1) pressed.");
+                continue;
+            }
+
+            if (secondMarker is null)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: No marker {secondMarkerNumber} (2) pressed.");
+                continue;
+            }
+
+            int slicesBetweenCoordinates = Task22Pizza.GetSlicesBetweenCoordinates(firstMarker.MarkerLocation,
+                secondMarker.MarkerLocation);
+
+            if (slicesBetweenCoordinates == -1)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to calculate slices between coordinates");
+                continue;
+            }
+
+            if (slicesBetweenCoordinates <= 1)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Same or slice next to each other. Slices between coordinates is {slicesBetweenCoordinates}");
+                continue;
+            }
+
+            int firstMarkerSliceIndex = Task22Pizza.GetSliceNumber(firstMarker.MarkerLocation);
+            int secondMarkerSliceIndex = Task22Pizza.GetSliceNumber(secondMarker.MarkerLocation);
+            Console.WriteLine($"{track.Pilot.PilotNumber}: Marker {firstMarkerNumber}: {firstMarkerSliceIndex} | Marker {secondMarkerNumber}: {secondMarkerSliceIndex}");
+           
+            
+            double result =
+                CoordinateHelpers.Calculate3DDistance(firstMarker.MarkerLocation, secondMarker.MarkerLocation, true);
+            csvOutput +=
+                $"{track.Pilot.PilotNumber},{Math.Round(result, 2, MidpointRounding.AwayFromZero)}\n";
+        }
+
+        File.WriteAllText(
+            Path.Combine(root_path, Path.Combine(flight5_path, "results")) +
+            @$"\task01-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}.csv", csvOutput);
+    }
+
     #endregion
 }
