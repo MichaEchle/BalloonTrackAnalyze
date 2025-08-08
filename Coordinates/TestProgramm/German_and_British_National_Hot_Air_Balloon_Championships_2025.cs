@@ -1141,61 +1141,6 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
 
     #region Flight05
 
-    private readonly string flight5_path = @"2025 DM Burgebrach\scoring\flights\Flight_05\";
-
-
-    internal void Flight5()
-    {
-        Flight flight = Flight.GetInstance();
-        flight.FlightNumber = 5;
-        if (!flight.ParseTrackFiles(Path.Combine(root_path, Path.Combine(flight5_path, @"tracks\scoring")), true))
-        {
-            Console.WriteLine("Failed to parse track files for flight 1");
-        }
-
-        if (!flight.MapPilotNamesToTracks(@".\PilotsMapping.csv"))
-        {
-            Console.WriteLine("Failed to map pilot names to tracks");
-        }
-
-        _ = flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(1800));
-
-        Dictionary<string, Coordinate> goals = Flight2Targets();
-
-
-        foreach (Track track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
-        {
-            if (!TrackHelpers.CheckLaunchConstraints(track, true, new DateTime(2025, 08, 08, 04, 00, 00),
-                    new DateTime(2025, 08, 08, 05, 30, 00), Flight5Targets().Values.ToList(), 1500, double.NaN,
-                    out Coordinate launchPoint, out bool launchedInStartPeriod, out List<double> distanceToGoals,
-                    out List<bool> distancesToGoalsOk))
-            {
-                Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to check launch constraints");
-            }
-            else
-            {
-                if (!launchedInStartPeriod)
-                {
-                    Console.WriteLine($"{track.Pilot.PilotNumber}: not launched in start period");
-                }
-
-                if (!distancesToGoalsOk.Any())
-                {
-                    for (int i = 0; i < distancesToGoalsOk.Count; i++)
-                    {
-                        if (!distancesToGoalsOk[i])
-                        {
-                            Console.WriteLine(
-                                $"{track.Pilot.PilotNumber}: distance violation. distance between launch and goal {i + 1} is {distanceToGoals[i]}");
-                        }
-                    }
-                }
-            }
-        }
-        
-        ChecksAndResultTask17(flight);
-        ChecksAndResultTask21(flight);
-    }
 
     private void ChecksAndResultTask17(Flight flight)
     {
@@ -1220,12 +1165,6 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
         }
     }
     
-    
-    private Dictionary<string, Coordinate> Flight5Targets()
-    {
-        return new Dictionary<string, Coordinate>
-        {
-      };
-    }
+   
     #endregion
 }
