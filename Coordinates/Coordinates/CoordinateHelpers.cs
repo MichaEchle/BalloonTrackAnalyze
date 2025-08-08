@@ -499,7 +499,7 @@ public static class CoordinateHelpers
     /// <param name="coordinate1">first coordinate</param>
     /// <param name="coordinate2">second coordinate</param>
     /// <returns>the initial bearing in degrees</returns>
-    public static double CalculateInitalBearing(Coordinate coordinate1, Coordinate coordinate2)
+    public static double CalculateInitialBearing(Coordinate coordinate1, Coordinate coordinate2)
     {
         ArgumentNullException.ThrowIfNull(coordinate1);
 
