@@ -1142,6 +1142,118 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
     #region Flight05
 
 
+    private Dictionary<string, Coordinate> Flight5Targets()
+    {
+        return new Dictionary<string, Coordinate>
+        {
+            ["T18"] =
+                CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 617504, 5519868,
+                    284),
+            ["T19a"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 621014, 5520818, CoordinateHelpers.ConvertToMeter(994)),
+            ["T19b"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 621221, 5520641, 296),
+            ["T20a"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 623771, 5521780, 285),
+            ["T20b"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 623876, 5521351, CoordinateHelpers.ConvertToMeter(937)),
+        };
+    }
+
+    internal void Flight5()
+    {
+        Flight flight = Flight.GetInstance();
+        flight.FlightNumber = 5;
+        string flightPath = $@"2025 DM Burgebrach\scoring\flights\Flight_{flight.FlightNumber:D2}\";
+        if (!flight.ParseTrackFiles(Path.Combine(root_path, Path.Combine(flightPath, @"tracks\scoring")), true))
+        {
+            Console.WriteLine("Failed to parse track files for flight 1");
+        }
+
+        if (!flight.MapPilotNamesToTracks(@".\PilotsMapping.csv"))
+        {
+            Console.WriteLine("Failed to map pilot names to tracks");
+        }
+
+        List<(Pilot pilot, Declaration declaration)> correctedDeclarations = flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(1800));
+        foreach ((Pilot pilot, Declaration declaration) in correctedDeclarations)
+        {
+            if (declaration.GoalNumber == 1)
+            {
+                Console.WriteLine($"{pilot.PilotNumber}: Did not declared height for goal {declaration.GoalNumber}");
+            }
+        }
+
+        GeneralChecksFlight5(flight);
+    }
+
+    private void GeneralChecksFlight5(Flight flight)
+    {
+        foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
+        {
+            if (track is null)
+            {
+                continue;
+            }
+
+            if (!TrackHelpers.CheckLaunchConstraints(track, true, new DateTime(2025, 08, 08, 04, 00, 00), new DateTime(2025, 08, 08, 05, 30, 00),
+                Flight5Targets().Values.ToList(), 1500, double.NaN, out Coordinate launchPoint,
+                out bool launchedInStartPeriod, out List<double> distanceToGoals, out List<bool> distancesToGoalsOk))
+            {
+
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to check launch constraints");
+            }
+            else
+            {
+                if (!launchedInStartPeriod)
+                {
+                    Console.WriteLine($"{track.Pilot.PilotNumber}: not launched in start period");
+                }
+
+                if (!distancesToGoalsOk.Any())
+                {
+                    for (int i = 0; i < distancesToGoalsOk.Count; i++)
+                    {
+                        if (!distancesToGoalsOk[i])
+                        {
+                            Console.WriteLine(
+                                $"{track.Pilot.PilotNumber}: distance violation. distance between launch and goal {i + 1} is {distanceToGoals[i]}");
+                        }
+                    }
+                }
+            }
+
+            if (!TrackHelpers.EstimateLaunchAndLandingTime(track, true, out _, out Coordinate landingPoint))
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to estimate launch and landing time");
+                continue;
+            }
+
+            int firstMarkerNumber = 1;
+            int lastMarkerNumber = 9;
+            MarkerDrop? firstMaker = track.GetFirstMarkerDrop(firstMarkerNumber);
+            if (firstMaker is null)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: First marker {firstMarkerNumber} not found");
+                continue;
+            }
+            if (firstMaker.MarkerLocation.TimeStamp < launchPoint.TimeStamp)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: First marker {firstMarkerNumber} is before launch time");
+                continue;
+            }
+
+            MarkerDrop? lastMarker = track.GetFirstMarkerDrop(lastMarkerNumber);
+            if (lastMarker is null)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Last marker {lastMarkerNumber} not found");
+                continue;
+            }
+            if (lastMarker.MarkerLocation.TimeStamp > landingPoint.TimeStamp)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Last marker {lastMarkerNumber} is after landing time");
+                continue;
+            }
+
+        }
+    }
+
     private void ChecksAndResultTask17(Flight flight)
     {
         DateTime endOfScoringPeriod = new(2025, 08, 08, 06, 00, 0);
@@ -1173,7 +1285,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
     {
         DateTime endOfScoringPeriod = new(2025, 08, 08, 07, 00, 0);
 
-        String csvOutput = "pilot number, result\n";
+        string csvOutput = "pilot number, result\n";
 
         foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
         {
@@ -1259,9 +1371,9 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
 
         LandRunTask landRunTask = new();
         MarkerToMarkerTimingRule validationRule = new();
-        validationRule.SetupRule(pointA.MarkerLocation.TimeStamp.TimeOfDay,
-            pointA.MarkerLocation.TimeStamp.AddMinutes(20).TimeOfDay,
-            new List<int> { pointBMarkerNumber, pointCMarkerNumber });
+        validationRule.SetupRule(TimeSpan.Zero,
+            TimeSpan.FromMinutes(20),
+            [ pointCMarkerNumber ]);
         landRunTask.SetupLandRun(taskNumber, pointAMarkerNumber, pointBMarkerNumber, pointCMarkerNumber, validationRule,
             ValidationStrictnessType.First);
 
