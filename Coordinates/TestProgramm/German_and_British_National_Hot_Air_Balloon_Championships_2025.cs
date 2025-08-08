@@ -1146,10 +1146,8 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
     {
         return new Dictionary<string, Coordinate>
         {
-            ["T18"] =
-                CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 617504, 5519868,
-                    284),
-            ["T19a"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 621014, 5520818, CoordinateHelpers.ConvertToMeter(994)),
+            ["T18"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 617504, 5519868, 284),
+            ["T19a"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 621014, 5520814, CoordinateHelpers.ConvertToMeter(994)),
             ["T19b"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 621221, 5520641, 296),
             ["T20a"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 623771, 5521780, 285),
             ["T20b"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 623876, 5521351, CoordinateHelpers.ConvertToMeter(937)),
