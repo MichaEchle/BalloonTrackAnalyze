@@ -1347,6 +1347,9 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
     {
         result = -1;
         MarkerDrop? pointA = track.GetFirstMarkerDrop(pointAMarkerNumber);
+        //special for P2: insert a marker drop for point A
+        //MarkerDrop? pointA = new MarkerDrop(1,new Coordinate(49.810966667, 10.431416667,0,0,new DateTime(2025,8,8,04,48,01)));
+        //track.MarkerDrops.Add(pointA);
         MarkerDrop? pointB = track.GetFirstMarkerDrop(pointBMarkerNumber);
         MarkerDrop? pointC = track.GetFirstMarkerDrop(pointCMarkerNumber);
 
@@ -1417,22 +1420,89 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
     #endregion
 
     #region Flight06
-    
-    private readonly string flight5_path = @"2025 DM Burgebrach\scoring\flights\Flight_05\";
 
+    //private readonly string flight5_path = @"2025 DM Burgebrach\scoring\flights\Flight_05\";
 
+    private Dictionary<string, Coordinate> Flight6Targets()
+    {
+        return new Dictionary<string, Coordinate>
+        {
+            ["T22"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 625561, 5521181, 263),
+        };
+    }
     internal void Flight6()
     {
-        Task22Pizza.SetupHelper(
-            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 625561, 5521181, 263), 8);
+        Flight flight = Flight.GetInstance();
+        flight.FlightNumber = 6;
+        string flightPath = $@"2025 DM Burgebrach\scoring\flights\Flight_{flight.FlightNumber:D2}\";
+        if (!flight.ParseTrackFiles(Path.Combine(root_path, Path.Combine(flightPath, @"tracks\scoring")), true))
+        {
+            Console.WriteLine("Failed to parse track files for flight 1");
+        }
+
+        if (!flight.MapPilotNamesToTracks(@".\PilotsMapping.csv"))
+        {
+            Console.WriteLine("Failed to map pilot names to tracks");
+        }
+
+        List<(Pilot pilot, Declaration declaration)> correctedDeclarations =
+            flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(1800));
+        foreach ((Pilot pilot, Declaration declaration) in correctedDeclarations)
+        {
+            if (declaration.GoalNumber == 1)
+            {
+                Console.WriteLine($"{pilot.PilotNumber}: Did not declared height for goal {declaration.GoalNumber}");
+            }
+        }
+
+        foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
+        {
+            if (track is null)
+            {
+                continue;
+            }
+
+            if (!TrackHelpers.CheckLaunchConstraints(track, true, new DateTime(2025, 08, 08, 17, 30, 00),
+                    new DateTime(2025, 08, 08, 06, 30, 00),
+                    Flight6Targets().Values.ToList(), 1000, double.NaN, out Coordinate launchPoint,
+                    out bool launchedInStartPeriod, out List<double> distanceToGoals,
+                    out List<bool> distancesToGoalsOk))
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to check launch constraints");
+            }
+            else
+            {
+                if (!launchedInStartPeriod)
+                {
+                    Console.WriteLine($"{track.Pilot.PilotNumber}: not launched in start period");
+                }
+
+                if (!distancesToGoalsOk.Any())
+                {
+                    for (int i = 0; i < distancesToGoalsOk.Count; i++)
+                    {
+                        if (!distancesToGoalsOk[i])
+                        {
+                            Console.WriteLine(
+                                $"{track.Pilot.PilotNumber}: distance violation. distance between launch and goal {i + 1} is {distanceToGoals[i]}");
+                        }
+                    }
+                }
+            }
+        }
+
+        ChecksAndResultTask22(flight, flightPath);
     }
 
-    private readonly PizzaTaskHelper Task22Pizza = new();
 
-    private void ChecksAndResultTask22(Flight flight)
+
+    private void ChecksAndResultTask22(Flight flight, string resultsPath)
     {
         String csvOutput = "pilot number, result\n";
 
+        PizzaTaskHelper task22Pizza = new();
+        task22Pizza.SetupHelper(Flight6Targets()["T22"]
+            , 8);
         foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
         {
             if (track is null)
@@ -1458,7 +1528,7 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 continue;
             }
 
-            int slicesBetweenCoordinates = Task22Pizza.GetSlicesBetweenCoordinates(firstMarker.MarkerLocation,
+            int slicesBetweenCoordinates = task22Pizza.GetSlicesBetweenCoordinates(firstMarker.MarkerLocation,
                 secondMarker.MarkerLocation);
 
             if (slicesBetweenCoordinates == -1)
@@ -1473,20 +1543,31 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 continue;
             }
 
-            int firstMarkerSliceIndex = Task22Pizza.GetSliceNumber(firstMarker.MarkerLocation);
-            int secondMarkerSliceIndex = Task22Pizza.GetSliceNumber(secondMarker.MarkerLocation);
+            int firstMarkerSliceIndex = task22Pizza.GetSliceNumber(firstMarker.MarkerLocation);
+            int secondMarkerSliceIndex = task22Pizza.GetSliceNumber(secondMarker.MarkerLocation);
             Console.WriteLine($"{track.Pilot.PilotNumber}: Marker {firstMarkerNumber}: {firstMarkerSliceIndex} | Marker {secondMarkerNumber}: {secondMarkerSliceIndex}");
-           
-            
+
+
             double result =
-                CoordinateHelpers.Calculate3DDistance(firstMarker.MarkerLocation, secondMarker.MarkerLocation, true);
+                CoordinateHelpers.Calculate2DDistanceHavercos(firstMarker.MarkerLocation, secondMarker.MarkerLocation);
             csvOutput +=
                 $"{track.Pilot.PilotNumber},{Math.Round(result, 2, MidpointRounding.AwayFromZero)}\n";
         }
 
         File.WriteAllText(
-            Path.Combine(root_path, Path.Combine(flight5_path, "results")) +
+            Path.Combine(root_path, Path.Combine(resultsPath, "results")) +
             @$"\task01-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}.csv", csvOutput);
+    }
+
+    private void ChecksTask33(Flight flight)
+    {
+        foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
+        {
+            if (track is null)
+            {
+                continue;
+            }
+        }
     }
 
     #endregion
