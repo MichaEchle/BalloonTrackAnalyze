@@ -1518,12 +1518,14 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
 
             if (firstMarker is null)
             {
+                csvOutput += $"{track.Pilot.PilotNumber},NR\n";
                 Console.WriteLine($"{track.Pilot.PilotNumber}: No marker {firstMarkerNumber} (1) pressed.");
                 continue;
             }
 
             if (secondMarker is null)
             {
+                csvOutput += $"{track.Pilot.PilotNumber},NR\n";
                 Console.WriteLine($"{track.Pilot.PilotNumber}: No marker {secondMarkerNumber} (2) pressed.");
                 continue;
             }
@@ -1533,12 +1535,14 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
 
             if (slicesBetweenCoordinates == -1)
             {
+                csvOutput += $"{track.Pilot.PilotNumber},NR\n";
                 Console.WriteLine($"{track.Pilot.PilotNumber}: Failed to calculate slices between coordinates");
                 continue;
             }
 
             if (slicesBetweenCoordinates <= 1)
             {
+                csvOutput += $"{track.Pilot.PilotNumber},NR\n";
                 Console.WriteLine($"{track.Pilot.PilotNumber}: Same or slice next to each other. Slices between coordinates is {slicesBetweenCoordinates}");
                 continue;
             }
@@ -1552,12 +1556,14 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
 
             if (distanceToCenterForFirstMarker < 50)
             {
+                csvOutput += $"{track.Pilot.PilotNumber},NR\n";
                 Console.WriteLine($"{track.Pilot.PilotNumber}: First marker is too close to center");
                 continue;
             }
             
             if (distanceToCenterForSecondMarker < 50)
             {
+                csvOutput += $"{track.Pilot.PilotNumber},NR\n";
                 Console.WriteLine($"{track.Pilot.PilotNumber}: Second marker is too close to center");
                 continue;
             }
