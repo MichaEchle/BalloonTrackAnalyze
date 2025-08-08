@@ -1547,9 +1547,31 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             int secondMarkerSliceIndex = task22Pizza.GetSliceNumber(secondMarker.MarkerLocation);
             Console.WriteLine($"{track.Pilot.PilotNumber}: Marker {firstMarkerNumber}: {firstMarkerSliceIndex} | Marker {secondMarkerNumber}: {secondMarkerSliceIndex}");
 
+            double distanceToCenterForFirstMarker = CoordinateHelpers.Calculate2DDistanceHavercos(Flight6Targets()["T22"], firstMarker.MarkerLocation);
+            double distanceToCenterForSecondMarker = CoordinateHelpers.Calculate2DDistanceHavercos(Flight6Targets()["T22"], secondMarker.MarkerLocation);
 
+            if (distanceToCenterForFirstMarker < 50)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: First marker is too close to center");
+                continue;
+            }
+            
+            if (distanceToCenterForSecondMarker < 50)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Second marker is too close to center");
+                continue;
+            }
+            
+            
             double result =
                 CoordinateHelpers.Calculate2DDistanceHavercos(firstMarker.MarkerLocation, secondMarker.MarkerLocation);
+
+            if (result < 100)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: The result was smaller than 100m. ({Math.Round(result, 2, MidpointRounding.AwayFromZero)}m)");
+                result = 100;
+            }
+            
             csvOutput +=
                 $"{track.Pilot.PilotNumber},{Math.Round(result, 2, MidpointRounding.AwayFromZero)}\n";
         }
