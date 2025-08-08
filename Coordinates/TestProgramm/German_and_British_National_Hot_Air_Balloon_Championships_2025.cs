@@ -1180,7 +1180,11 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             }
         }
 
-        GeneralChecksFlight5(flight);
+        
+
+        //GeneralChecksFlight5(flight);
+        ChecksAndResultTask17(flight);
+        //ChecksAndResultTask21(flight);
     }
 
     private void GeneralChecksFlight5(Flight flight)
@@ -1226,18 +1230,39 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
             }
 
             int firstMarkerNumber = 1;
+            int thirdMarkerNumber = 3;
+            int seventhMarkerNumber =7;
+
             int lastMarkerNumber = 9;
+
             MarkerDrop? firstMaker = track.GetFirstMarkerDrop(firstMarkerNumber);
             if (firstMaker is null)
             {
                 Console.WriteLine($"{track.Pilot.PilotNumber}: First marker {firstMarkerNumber} not found");
                 continue;
             }
-            if (firstMaker.MarkerLocation.TimeStamp < launchPoint.TimeStamp)
+            //if (firstMaker.MarkerLocation.TimeStamp < launchPoint.TimeStamp)
+            //{
+            //    Console.WriteLine($"{track.Pilot.PilotNumber}: First marker {firstMarkerNumber} is before launch time");
+            //    continue;
+            //}
+
+            MarkerDrop? thirdMarker = track.GetFirstMarkerDrop(thirdMarkerNumber);
+            if (thirdMarker is null)
             {
-                Console.WriteLine($"{track.Pilot.PilotNumber}: First marker {firstMarkerNumber} is before launch time");
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Third marker {thirdMarkerNumber} not found");
                 continue;
             }
+            Console.WriteLine($"{track.Pilot.PilotNumber}: Marker 3 <-> Marker 1 : {thirdMarker.MarkerLocation.TimeStamp.Subtract(firstMaker.MarkerLocation.TimeStamp)}");
+
+
+            MarkerDrop? seventhMarker = track.GetFirstMarkerDrop(seventhMarkerNumber);
+            if (seventhMarker is null)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Seventh marker {seventhMarkerNumber} not found");
+                continue;
+            }
+
 
             MarkerDrop? lastMarker = track.GetFirstMarkerDrop(lastMarkerNumber);
             if (lastMarker is null)
@@ -1245,11 +1270,14 @@ internal class German_and_British_National_Hot_Air_Balloon_Championships_2025
                 Console.WriteLine($"{track.Pilot.PilotNumber}: Last marker {lastMarkerNumber} not found");
                 continue;
             }
-            if (lastMarker.MarkerLocation.TimeStamp > landingPoint.TimeStamp)
-            {
-                Console.WriteLine($"{track.Pilot.PilotNumber}: Last marker {lastMarkerNumber} is after landing time");
-                continue;
-            }
+
+            Console.WriteLine($"{track.Pilot.PilotNumber}: Marker 9 <-> Marker 7 : {lastMarker.MarkerLocation.TimeStamp.Subtract(seventhMarker.MarkerLocation.TimeStamp)}");
+
+            //if (lastMarker.MarkerLocation.TimeStamp > landingPoint.TimeStamp)
+            //{
+            //    Console.WriteLine($"{track.Pilot.PilotNumber}: Last marker {lastMarkerNumber} is after landing time");
+            //    continue;
+            //}
 
         }
     }
