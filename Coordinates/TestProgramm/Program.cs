@@ -17,7 +17,7 @@ internal class Program
 
         German_and_British_National_Hot_Air_Balloon_Championships_2025 competition = new German_and_British_National_Hot_Air_Balloon_Championships_2025();
         
-        competition.Flight6();
+        competition.Flight7();
         
         
         //competition.Flight5();
