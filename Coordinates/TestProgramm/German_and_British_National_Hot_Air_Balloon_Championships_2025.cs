@@ -1885,7 +1885,7 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
 
             double result =
                 CoordinateHelpers.Calculate3DDistance(lastDeclaration.DeclaredGoal, markerDrop.MarkerLocation, true);
-            Console.WriteLine($"{track.Pilot.PilotNumber}: {Math.Round(result,0,MidpointRounding.AwayFromZero)}[m]");
+            Console.WriteLine($"{track.Pilot.PilotNumber}: {Math.Round(result, 0, MidpointRounding.AwayFromZero)}[m]");
         }
     }
 
@@ -2030,7 +2030,7 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
                 Console.WriteLine(
                     $"{track.Pilot.PilotNumber}: Declaration has infringement. has a distance of {distanceBetweenDeclarationAndDirectorGoal}m between declaration point and declared goal. ({distanceInfringementBetweenDeclarationAndDirectorGoal}% -> {penaltyAtDistanceBetweenDeclarationAndDirectorGoal} pts)");
             }
-            int removed=track.TrackPoints.RemoveAll(x=>x.TimeStamp>endOfScoringPeriod);
+            int removed = track.TrackPoints.RemoveAll(x => x.TimeStamp > endOfScoringPeriod);
             donut.CalculateResults(track, true, out double result);
             Console.WriteLine(
                 $"{track.Pilot.PilotNumber}: The distance in the donut is {Math.Round(result, 0, MidpointRounding.AwayFromZero)}[m].");
@@ -2083,18 +2083,22 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
                 Console.WriteLine($"{pilot.PilotNumber}: Did not declared height for goal {declaration.GoalNumber}");
             }
         }
+
+        ChecksAndResultsTask30(flight);
+        ChecksAndResultsTask31(flight);
+
     }
 
     private void ChecksAndResultsTask30(Flight flight)
     {
         //TODO: Enter valid data
-        DateTime greenFlag = new DateTime(2025, 08, 09, 17, 30, 00);
+        DateTime greenFlag = new DateTime(2025, 08, 09, 18, 00, 01);
 
-        
+
         DateTime endOfScoringPeriod = new DateTime(2025, 08, 09, 18, 45, 00);
         int firstDecSlot = 1;
         int secondDecSlot = 2;
-        int markerNumber = 1;
+        int markerNumber = 4;
         foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
         {
             if (track is null)
@@ -2102,6 +2106,13 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
                 continue;
             }
 
+            //Special code for P21
+            //MarkerDrop marker = new MarkerDrop(4, new Coordinate(49.834083333, 10.765983333, 404, 404, new DateTime(2025, 8, 9, 18, 08, 12)));
+            //track.MarkerDrops.Add(marker);
+
+            //Special code for P6
+            MarkerDrop marker = new MarkerDrop(4, new Coordinate(49.832266667, 10.7638, 558, 558, new DateTime(2025, 8, 9, 18, 15, 24)));
+            track.MarkerDrops.Add(marker);
             Declaration? firstDeclaration = track.GetLatestDeclaration(firstDecSlot);
             Declaration? secondDeclaration = track.GetLatestDeclaration(secondDecSlot);
             MarkerDrop? markerDrop = track.GetFirstMarkerDrop(markerNumber);
@@ -2140,7 +2151,7 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
                     .Where(x => x.GoalNumber == firstDecSlot)
                     .Where(x => x.HasPilotDelaredGoalAltitude)
                     .MaxBy(x => x.PositionAtDeclaration.TimeStamp);
-                
+
                 bool success =
                     PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
                         firstDeclaration.PositionAtDeclaration, firstDeclaration.DeclaredGoal, 1000, double.NaN,
@@ -2158,16 +2169,18 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
                 {
                     Console.WriteLine(
                         $"{track.Pilot.PilotNumber}: has a declaration in goal {firstDecSlot} after the green flag.");
-                    continue;
+                    firstDistance = double.MaxValue;
                 }
-
-                firstDistance = CoordinateHelpers.Calculate3DDistance(markerDrop.MarkerLocation,
-                    firstDeclaration.DeclaredGoal, true);
+                else
+                {
+                    firstDistance = CoordinateHelpers.Calculate3DDistance(markerDrop.MarkerLocation,
+                        firstDeclaration.DeclaredGoal, true);
+                }
             }
 
             if (secondDeclaration is null)
             {
-                Console.WriteLine($"{track.Pilot.PilotNumber}: has no declaration in goal {secondDeclaration}.");
+                Console.WriteLine($"{track.Pilot.PilotNumber}: has no declaration in goal {secondDecSlot}.");
             }
             else
             {
@@ -2191,18 +2204,21 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
                 if (secondDeclaration.PositionAtDeclaration.TimeStamp > greenFlag)
                 {
                     Console.WriteLine(
-                        $"{track.Pilot.PilotNumber}: has a declaration in goal {secondDistance} after the green flag.");
-                    continue;
+                        $"{track.Pilot.PilotNumber}: has a declaration in goal {secondDecSlot} after the green flag.");
+                    secondDistance = double.MaxValue;
                 }
-
-                secondDistance = CoordinateHelpers.Calculate3DDistance(markerDrop.MarkerLocation,
-                    secondDeclaration.DeclaredGoal, true);
+                else
+                {
+                    secondDistance = CoordinateHelpers.Calculate3DDistance(markerDrop.MarkerLocation,
+                        secondDeclaration.DeclaredGoal, true);
+                }
             }
 
             Console.WriteLine(
-                $"{track.Pilot.PilotNumber}: has a distance of {Math.Round(Math.Min(firstDistance, secondDistance),0,MidpointRounding.AwayFromZero)}[m] ([goal 1]: {firstDistance}[m] and [goal 2]: {secondDeclaration}[m] between declaration and marker drop)");
+                $"{track.Pilot.PilotNumber}: has a distance of {Math.Round(Math.Min(firstDistance, secondDistance), 0, MidpointRounding.AwayFromZero)}[m] ([goal 1]: {firstDistance}[m] and [goal 2]: {secondDistance}[m] between declaration and marker drop)");
         }
     }
+
     private void ChecksAndResultsTask31(Flight flight)
     {
         foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
@@ -2212,7 +2228,7 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
                 continue;
             }
             int goalNumber = 3;
-            int markerNumber = 2;
+            int markerNumber = 5;
             DateTime endOfScoringPeriod = new(2025, 08, 09, 18, 45, 0);
 
             Declaration? declaration = track.Declarations
@@ -2226,7 +2242,15 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
                 continue;
             }
 
-            //check positon at declaration against declared goal
+            //Special code for P21
+            //MarkerDrop marker = new MarkerDrop(5, new Coordinate(49.836833333, 10.78335, 395, 395, new DateTime(2025, 08, 09, 18, 12, 23)));
+            //track.MarkerDrops.Add(marker);
+
+            //Special code for P6
+            MarkerDrop marker = new MarkerDrop(5, new Coordinate(49.837883333, 10.863233333, 907, 907, new DateTime(2025, 08, 09, 18, 30, 06)));
+            track.MarkerDrops.Add(marker);
+
+            //check position at declaration against declared goal
             bool success = PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
     declaration.PositionAtDeclaration, declaration.DeclaredGoal, 1000, double.NaN,
              out bool hasInfringement,
