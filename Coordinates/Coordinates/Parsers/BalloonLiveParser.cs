@@ -731,14 +731,14 @@ public static class BalloonLiveParser
                 {
                     hasPilotDelaredGoalAltitude = false;
                     declaredAltitudeInMeter = defaultGoalAltitude;
-                    Logger?.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed", goalNumber);
+                    Logger?.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of {defaultAltitude} will be assumed", goalNumber,defaultGoalAltitude);
                 }
             }
             else
             {
                 hasPilotDelaredGoalAltitude = false;
                 declaredAltitudeInMeter = defaultGoalAltitude;
-                Logger?.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed", goalNumber);
+                Logger?.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of {defaultAltitude} will be assumed", goalNumber,defaultGoalAltitude);
             }
 
             CoordinateSharp.Coordinate coordinateSharp;

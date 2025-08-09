@@ -306,7 +306,7 @@ public static class FAILoggerParser
     /// <param name="referenceCoordinate">a reference coordinate to fill up the missing info from utm goal declaration. If the reference is null, the position of declaration will be used instead</param>
     /// <param name="declaration">output parameter. the declared goal</param>
     /// <returns>true:success; false:error</returns>
-    private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, double defaultGoalAltiude, int northingDigits, int eastingDigits, Coordinate referenceCoordinate, Coordinate positionAtDeclaration, out Declaration declaration)
+    private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, double defaultGoalAltitude, int northingDigits, int eastingDigits, Coordinate referenceCoordinate, Coordinate positionAtDeclaration, out Declaration declaration)
     {
         declaration = null;
 
@@ -356,15 +356,15 @@ public static class FAILoggerParser
             else
             {
                 hasPilotDeclaredGoalAltitude = false;
-                declaredAltitudeInMeter = defaultGoalAltiude;
-                Logger?.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed", goalNumber);
+                declaredAltitudeInMeter = defaultGoalAltitude;
+                Logger?.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of {defaultAltitude} will be assumed", goalNumber,defaultGoalAltitude);
             }
         }
         else
         {
             hasPilotDeclaredGoalAltitude = false;
-            declaredAltitudeInMeter = defaultGoalAltiude;
-            Logger?.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed", goalNumber);
+            declaredAltitudeInMeter = defaultGoalAltitude;
+            Logger?.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of {defaultAltitude} will be assumed", goalNumber,defaultGoalAltitude);
         }
 
 
