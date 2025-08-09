@@ -2065,7 +2065,7 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
         DateTime greenFlag = new DateTime(2025, 08, 09, 06, 30, 00);
 
         
-        DateTime endOfScoringPeriod = new DateTime(2025, 08, 09, 18, 30, 00);
+        DateTime endOfScoringPeriod = new DateTime(2025, 08, 09, 18, 45, 00);
         int firstDecSlot = 1;
         int secondDecSlot = 2;
         int markerNumber = 1;
@@ -2110,6 +2110,11 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
             }
             else
             {
+                firstDeclaration = track.Declarations
+                    .Where(x => x.GoalNumber == firstDecSlot)
+                    .Where(x => x.HasPilotDelaredGoalAltitude)
+                    .MaxBy(x => x.PositionAtDeclaration.TimeStamp);
+                
                 bool success =
                     PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
                         firstDeclaration.PositionAtDeclaration, firstDeclaration.DeclaredGoal, 1000, Double.NaN,
@@ -2140,6 +2145,10 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
             }
             else
             {
+                secondDeclaration = track.Declarations
+                    .Where(x => x.GoalNumber == secondDecSlot)
+                    .Where(x => x.HasPilotDelaredGoalAltitude)
+                    .MaxBy(x => x.PositionAtDeclaration.TimeStamp);
                 bool success2 =
                     PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
                         secondDeclaration.PositionAtDeclaration, secondDeclaration.DeclaredGoal, 1000, Double.NaN,
