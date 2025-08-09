@@ -2059,10 +2059,36 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
 
     #region Flight08
 
-    public void ChecksAndResultsTask30(Flight flight)
+    internal void Flight8()
+    {
+        Flight flight = Flight.GetInstance();
+        flight.FlightNumber = 8;
+        string flightPath = $@"2025 DM Burgebrach\scoring\flights\Flight_{flight.FlightNumber:D2}\";
+        if (!flight.ParseTrackFiles(Path.Combine(root_path, Path.Combine(flightPath, @"tracks\scoring")), true))
+        {
+            Console.WriteLine($"Failed to parse track files for flight {flight.FlightNumber}");
+        }
+
+        if (!flight.MapPilotNamesToTracks(@".\PilotsMapping.csv"))
+        {
+            Console.WriteLine("Failed to map pilot names to tracks");
+        }
+
+        List<(Pilot pilot, Declaration declaration)> correctedDeclarations =
+            flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(1800));
+        foreach ((Pilot pilot, Declaration declaration) in correctedDeclarations)
+        {
+            if (declaration.GoalNumber == 1)
+            {
+                Console.WriteLine($"{pilot.PilotNumber}: Did not declared height for goal {declaration.GoalNumber}");
+            }
+        }
+    }
+
+    private void ChecksAndResultsTask30(Flight flight)
     {
         //TODO: Enter valid data
-        DateTime greenFlag = new DateTime(2025, 08, 09, 06, 30, 00);
+        DateTime greenFlag = new DateTime(2025, 08, 09, 17, 30, 00);
 
         
         DateTime endOfScoringPeriod = new DateTime(2025, 08, 09, 18, 45, 00);
@@ -2101,8 +2127,8 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
                 continue;
             }
 
-            double firstDistance = Double.MaxValue;
-            double secondDistance = Double.MaxValue;
+            double firstDistance = double.MaxValue;
+            double secondDistance = double.MaxValue;
 
             if (firstDeclaration is null)
             {
@@ -2117,7 +2143,7 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
                 
                 bool success =
                     PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
-                        firstDeclaration.PositionAtDeclaration, firstDeclaration.DeclaredGoal, 1000, Double.NaN,
+                        firstDeclaration.PositionAtDeclaration, firstDeclaration.DeclaredGoal, 1000, double.NaN,
                         out bool hasInfringement,
                         out double distanceInfringementAtPositionAtDeclarationAndDeclaredGoal,
                         out double penaltyAtPositionAtDeclarationAndDeclaredGoal,
@@ -2151,7 +2177,7 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
                     .MaxBy(x => x.PositionAtDeclaration.TimeStamp);
                 bool success2 =
                     PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
-                        secondDeclaration.PositionAtDeclaration, secondDeclaration.DeclaredGoal, 1000, Double.NaN,
+                        secondDeclaration.PositionAtDeclaration, secondDeclaration.DeclaredGoal, 1000, double.NaN,
                         out bool hasInfringement2,
                         out double distanceInfringementAtPositionAtDeclarationAndDeclaredGoal,
                         out double penaltyAtPositionAtDeclarationAndDeclaredGoal,
@@ -2173,11 +2199,76 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
                     secondDeclaration.DeclaredGoal, true);
             }
 
-            double roundedFirstDistance = Math.Round(firstDistance, 0, MidpointRounding.AwayFromZero);
-            double roundedSecondDistance = Math.Round(secondDistance, 0, MidpointRounding.AwayFromZero);
             Console.WriteLine(
-                $"{track.Pilot.PilotNumber}: has a distance of {Math.Min(roundedFirstDistance, roundedSecondDistance)}[m]\t|\t[1] {roundedFirstDistance}[m] and [2] {roundedSecondDistance}[m] between declaration and marker drop.");
+                $"{track.Pilot.PilotNumber}: has a distance of {Math.Round(Math.Min(firstDistance, secondDistance),0,MidpointRounding.AwayFromZero)}[m] ([goal 1]: {firstDistance}[m] and [goal 2]: {secondDeclaration}[m] between declaration and marker drop)");
         }
+    }
+    private void ChecksAndResultsTask31(Flight flight)
+    {
+        foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
+        {
+            if (track is null)
+            {
+                continue;
+            }
+            int goalNumber = 3;
+            int markerNumber = 2;
+            DateTime endOfScoringPeriod = new(2025, 08, 09, 18, 45, 0);
+
+            Declaration? declaration = track.Declarations
+                .Where(x => x.GoalNumber == goalNumber)
+                .Where(x => x.HasPilotDelaredGoalAltitude)
+                .MaxBy(x => x.PositionAtDeclaration.TimeStamp);
+
+            if (declaration is null)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: No or no valid goal declared for {goalNumber}");
+                continue;
+            }
+
+            //check positon at declaration against declared goal
+            bool success = PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
+    declaration.PositionAtDeclaration, declaration.DeclaredGoal, 1000, double.NaN,
+             out bool hasInfringement,
+             out double distanceInfringement,
+             out double penaltyAtPosition,
+             out double distanceBetweenPosition);
+            if (success && hasInfringement)
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: distance infringement, distance of {distanceBetweenPosition}m between declared goal and position at declaration. ({distanceInfringement}% -> {penaltyAtPosition} pts)");
+            }
+
+            //check against previous mark
+            MarkerDrop? previousMark = track.GetFirstMarkerDrop(1);
+            if (previousMark is not null)
+            {
+                success = PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
+    previousMark.MarkerLocation, declaration.DeclaredGoal, 1000, double.NaN,
+                      out hasInfringement,
+                      out distanceInfringement,
+                      out penaltyAtPosition,
+                      out distanceBetweenPosition);
+                if (success && hasInfringement)
+                {
+                    Console.WriteLine(
+                        $"{track.Pilot.PilotNumber}: distance infringement, distance of {distanceBetweenPosition}m between declared goal and prev. mark. ({distanceInfringement}% -> {penaltyAtPosition} pts)");
+                }
+            }
+
+            MarkerDrop? markerDrop = track.GetFirstMarkerDrop(markerNumber);
+            if (markerDrop is null)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: No marker drop for {markerNumber}");
+                continue;
+            }
+
+            double result = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, markerDrop.MarkerLocation, true);
+
+            Console.WriteLine($"{track.Pilot.PilotNumber}: Result {Math.Round(result, 0, MidpointRounding.AwayFromZero)}[m]");
+
+        }
+
     }
 
     #endregion
