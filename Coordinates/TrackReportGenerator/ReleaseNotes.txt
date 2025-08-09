@@ -1,4 +1,8 @@
-﻿V1.0.0.0 29-May
+V1.0.1.0 9-Aug-2025:
+- Adds ability to specify a default goal altitude when the pilot did not declared one
+- Max allowed altitude and default goal altitude are now persisted in the settings file
+
+V1.0.0.0 29-May
 - BalloonLiveParser: Parse LXXX BLSSN and add to track
 - BalloonLiveParser: Parse E records of type XS0 and XS1
 - BalloonLiveParser: aAdd to the track if a change of position source has been detected
