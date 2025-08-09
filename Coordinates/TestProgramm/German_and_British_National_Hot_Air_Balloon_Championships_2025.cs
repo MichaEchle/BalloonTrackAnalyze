@@ -2102,8 +2102,14 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
                 continue;
             }
 
-            Declaration? firstDeclaration = track.GetLatestDeclaration(firstDecSlot);
-            Declaration? secondDeclaration = track.GetLatestDeclaration(secondDecSlot);
+            Declaration? firstDeclaration = track.Declarations
+                .Where(x => x.GoalNumber == firstDecSlot)
+                .Where(x => x.HasPilotDelaredGoalAltitude)
+                .MaxBy(x => x.PositionAtDeclaration.TimeStamp);
+            Declaration? secondDeclaration = track.Declarations
+                .Where(x => x.GoalNumber == secondDecSlot)
+                .Where(x => x.HasPilotDelaredGoalAltitude)
+                .MaxBy(x => x.PositionAtDeclaration.TimeStamp);
             MarkerDrop? markerDrop = track.GetFirstMarkerDrop(markerNumber);
 
             if (firstDeclaration is null && secondDeclaration is null)
@@ -2136,11 +2142,6 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
             }
             else
             {
-                firstDeclaration = track.Declarations
-                    .Where(x => x.GoalNumber == firstDecSlot)
-                    .Where(x => x.HasPilotDelaredGoalAltitude)
-                    .MaxBy(x => x.PositionAtDeclaration.TimeStamp);
-                
                 bool success =
                     PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
                         firstDeclaration.PositionAtDeclaration, firstDeclaration.DeclaredGoal, 1000, double.NaN,
@@ -2171,10 +2172,6 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
             }
             else
             {
-                secondDeclaration = track.Declarations
-                    .Where(x => x.GoalNumber == secondDecSlot)
-                    .Where(x => x.HasPilotDelaredGoalAltitude)
-                    .MaxBy(x => x.PositionAtDeclaration.TimeStamp);
                 bool success2 =
                     PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
                         secondDeclaration.PositionAtDeclaration, secondDeclaration.DeclaredGoal, 1000, double.NaN,
