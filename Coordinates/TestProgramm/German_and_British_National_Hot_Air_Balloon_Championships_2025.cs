@@ -1674,7 +1674,7 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
     #endregion
 
     #region Flight07
-    internal void Flight07()
+    internal void Flight7()
     {
         Flight flight = Flight.GetInstance();
         flight.FlightNumber = 7;
@@ -1734,6 +1734,13 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
                 }
             }
         }
+
+        //CheckAndResultsTask24(flight);
+        ChecksTask25(flight);
+        //CheckAndResultsTask26(flight);
+        //CheckTask27(flight);
+        //CheckTask28(flight);
+        //CheckAndResultsTask29(flight);
     }
 
     private void CheckAndResultsTask24(Flight flight)
@@ -1766,7 +1773,7 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
             double distance =
                 CoordinateHelpers.CalculateDistanceWithSeparationAltitude(firstMarkerDrop.MarkerLocation, Flight7Targets()["T24"], CoordinateHelpers.ConvertToMeter(1800), true);
             Console.WriteLine(
-                $"{track.Pilot.PilotNumber}: Marker {markerNumber} was dropped at {firstMarkerDrop.MarkerLocation} with a distance of {Math.Round(distance, 0, MidpointRounding.AwayFromZero)}[m].");
+                $"{track.Pilot.PilotNumber}: Result with Marker {markerNumber} : {Math.Round(distance, 0, MidpointRounding.AwayFromZero)}[m].");
         }
     }
 
@@ -1782,6 +1789,15 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
             int goalNumber = 1;
             int markerNumber = 2;
 
+            //Special code for P27
+            //Coordinate decGoal = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 624490, 5516790, CoordinateHelpers.ConvertToMeter(1900));
+            //Coordinate decPos = new Coordinate(49.765066667, 10.7083, 578, 578, new DateTime(2025, 08, 09, 04, 47, 22));
+            //Declaration declaration = new Declaration(7, decGoal, decPos, true, 2449, 1679);
+
+            //track.Declarations.Add(declaration);
+
+            //MarkerDrop marker8 = new MarkerDrop(8, new Coordinate(49.790566667, 10.72965, 587, 587, new DateTime(2025, 8, 9, 4, 57, 55)));
+            //track.MarkerDrops.Add(marker8);
 
             Declaration? lastDeclaration = track.Declarations
                 .Where(x => x.GoalNumber == goalNumber)
@@ -1866,6 +1882,10 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
                         $"{track.Pilot.PilotNumber}: declaration has infringement. has a distance of {distanceBetweenDeclarationAndDirectorGoal}m between declaration point and set goal {keyValuePair.Key}. ({distanceInfringementBetweenDeclarationAndDirectorGoal}% -> {penaltyAtDistanceBetweenDeclarationAndDirectorGoal} pts)");
                 }
             }
+
+            double result =
+                CoordinateHelpers.Calculate3DDistance(lastDeclaration.DeclaredGoal, markerDrop.MarkerLocation, true);
+            Console.WriteLine($"{track.Pilot.PilotNumber}: {Math.Round(result,0,MidpointRounding.AwayFromZero)}[m]");
         }
     }
 
@@ -1900,7 +1920,7 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
             double distance =
                 CoordinateHelpers.CalculateDistanceWithSeparationAltitude(firstMarkerDrop.MarkerLocation, Flight7Targets()["T26"], CoordinateHelpers.ConvertToMeter(1800), true);
             Console.WriteLine(
-                $"{track.Pilot.PilotNumber}: Marker {markerNumber} was dropped at {firstMarkerDrop.MarkerLocation} with a distance of {Math.Round(distance, 0, MidpointRounding.AwayFromZero)}[m].");
+                $"{track.Pilot.PilotNumber}: Marker {markerNumber} : {Math.Round(distance, 0, MidpointRounding.AwayFromZero)}[m].");
         }
     }
 
@@ -1968,7 +1988,7 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
         int declarationNumber = 2;
         DonutTask donut = new DonutTask();
         donut.SetupDonut(29, declarationNumber, int.MaxValue, 1000, 2000, 0, 10000, true,
-            null, ValidationStrictnessType.FirstValid);
+            null, ValidationStrictnessType.LatestValid);
 
         DateTime endOfScoringPeriod = new DateTime(2025, 08, 09, 06, 30, 00);
         foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
@@ -1977,6 +1997,12 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
             {
                 continue;
             }
+            //Special for P27: insert a declaration
+            //Coordinate decGoal=CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 629620, 5525000, 0);
+            //Coordinate posAtDec=new Coordinate(49.831116667, 10.75085,544,544, new DateTime(2025, 08, 09, 05, 18, 30));
+            //Declaration dec = new Declaration(5, decGoal,posAtDec, true, 2962, 2500);
+
+            //track.Declarations.Add(dec);
 
             Declaration? declaration = track.Declarations
                 .Where(x => x.GoalNumber == declarationNumber)
@@ -2004,7 +2030,7 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
                 Console.WriteLine(
                     $"{track.Pilot.PilotNumber}: Declaration has infringement. has a distance of {distanceBetweenDeclarationAndDirectorGoal}m between declaration point and declared goal. ({distanceInfringementBetweenDeclarationAndDirectorGoal}% -> {penaltyAtDistanceBetweenDeclarationAndDirectorGoal} pts)");
             }
-
+            int removed=track.TrackPoints.RemoveAll(x=>x.TimeStamp>endOfScoringPeriod);
             donut.CalculateResults(track, true, out double result);
             Console.WriteLine(
                 $"{track.Pilot.PilotNumber}: The distance in the donut is {Math.Round(result, 0, MidpointRounding.AwayFromZero)}[m].");
