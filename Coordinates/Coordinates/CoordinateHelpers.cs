@@ -1,4 +1,4 @@
-﻿using LoggingConnector;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using static System.Math;
 
@@ -518,6 +518,26 @@ public static class CoordinateHelpers
 
         return bearing;
 
+    }
+
+    /// <summary>
+    /// Calculate the initial bearing (forward azimuth) between the two UTM coordinates 
+    /// </summary>
+    /// <param name="coordinate1">first coordinate</param>
+    /// <param name="coordinate2">second coordinate</param>
+    /// <returns>the initial bearing in degrees</returns>
+    /// <exception cref="ArgumentException">throws if different utmZones are provided</exception>
+    public static double CalculateInitialBearingUTM((string utmZone, int easting, int northing) coordinate1, (string utmZone, int easting, int northing) coordinate2)
+    {
+        if(coordinate1.utmZone != coordinate2.utmZone)
+        {
+            throw new ArgumentException("Both coordinates must be in the same UTM zone");
+        }
+        double deltaEasting = coordinate2.easting - coordinate1.easting;
+        double deltaNorthing = coordinate2.northing - coordinate1.northing;
+        double angleRadians = Math.Atan2(deltaEasting, deltaNorthing);
+        double angleDegrees = angleRadians * (180.0 / Math.PI);
+        return (angleDegrees + 360) % 360; // Normalize to [0, 360)
     }
 
     /// <summary>
