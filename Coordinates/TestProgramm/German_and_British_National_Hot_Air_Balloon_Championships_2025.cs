@@ -2184,10 +2184,6 @@ declarationToBeUsed.PositionAtDeclaration, declarationToBeUsed.DeclaredGoal, 100
             }
             else
             {
-                secondDeclaration = track.Declarations
-                    .Where(x => x.GoalNumber == secondDecSlot)
-                    .Where(x => x.HasPilotDelaredGoalAltitude)
-                    .MaxBy(x => x.PositionAtDeclaration.TimeStamp);
                 bool success2 =
                     PenaltyCalculation.CheckForSingle2DDistanceInfringementAndCalculatePenaltyPoints(
                         secondDeclaration.PositionAtDeclaration, secondDeclaration.DeclaredGoal, 1000, double.NaN,
