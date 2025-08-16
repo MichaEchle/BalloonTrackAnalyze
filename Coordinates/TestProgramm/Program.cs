@@ -15,9 +15,9 @@ internal class Program
 
         LogConnector.LoggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
-        German_and_British_National_Hot_Air_Balloon_Championships_2025 competition = new German_and_British_National_Hot_Air_Balloon_Championships_2025();
+        EuropeansWieselburg2025 competition = new();
         
-        competition.Flight8();
+        competition.Score(true, 2);
         
         
         //competition.Flight5();
