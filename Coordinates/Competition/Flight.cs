@@ -68,7 +68,7 @@ public class Flight
     /// <param name="path">the directory of the .igc files</param>
     /// <param name="useBalloonLiveParse">true: use balloon live parser; false: use FAI parser </param>
     /// <returns>true: success; false: error</returns>
-    public bool ParseTrackFiles(string path, bool useBalloonLiveParse)
+    public bool ParseTrackFiles(string path, bool useBalloonLiveParse, Coordinate referenceCoordinate = null)
     {
         DirectoryInfo directoryInfo = new($@"{path}");
         if (!directoryInfo.Exists)
@@ -84,7 +84,7 @@ public class Flight
             bool trackIsValid = true;
             if (useBalloonLiveParse)
             {
-                if (!BalloonLiveParser.ParseFile(trackFile.FullName, out track))
+                if (!BalloonLiveParser.ParseFile(trackFile.FullName, out track, referenceCoordinate))
                 {
                     Logger?.LogError("Failed to parse track file '{trackFile}' and won't be used for further processing", trackFile.FullName);
                     trackIsValid = false;
@@ -92,7 +92,7 @@ public class Flight
             }
             else
             {
-                if (!FAILoggerParser.ParseFile(trackFile.FullName, out track))
+                if (!FAILoggerParser.ParseFile(trackFile.FullName, out track, referenceCoordinate))
                 {
                     Logger?.LogError("Failed to parse track file '{trackFile}' and won't be used for further processing", trackFile.FullName);
                     trackIsValid = false;
