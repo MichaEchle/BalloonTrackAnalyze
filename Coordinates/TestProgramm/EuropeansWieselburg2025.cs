@@ -9,8 +9,8 @@ namespace TestProgramm;
 public class EuropeansWieselburg2025
 {
     private readonly bool useGPSAltitude = false;
-    private readonly string root_path =
-        @"C:\Users\Jan\Nextcloud2\shared\Ballonveranstaltungen\2025 Wieselburg\scoring\flights";
+    private readonly string root_path = @"C:\Users\Jan\Nextcloud2\shared\Ballonveranstaltungen\2025 Wieselburg\scoring\flights";
+    private readonly Coordinate referencePoint = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 507272, 5326702, CoordinateHelpers.ConvertToMeter(873));
 
     public void Score(bool practiseFlight, int flightNo)
     {
@@ -20,11 +20,13 @@ public class EuropeansWieselburg2025
         var flightPath = Path.Combine(root_path,
             "flight_" + (practiseFlight ? "practise_" : "") + flightNo.ToString("D2"));
 
-        if (!flight.ParseTrackFiles(Path.Combine(root_path, Path.Combine(flightPath, @"tracks\scoring")), true))
+        if (!flight.ParseTrackFiles(Path.Combine(root_path, Path.Combine(flightPath, @"tracks\scoring")), true, referencePoint))
         {
             Console.WriteLine("Failed to parse track files for " + (practiseFlight ? "trainings " : "") + "flight " +
                               flightNo);
         }
+
+        
 
         if (!flight.MapPilotNamesToTracks(@".\PilotsMapping.csv"))
         {
