@@ -39,7 +39,7 @@ public class Coordinate
     /// </summary>
     public double AltitudeBarometric
     {
-        get; private set;
+        get; set;
     }
 
     /// <summary>
@@ -84,6 +84,7 @@ public class Coordinate
         AltitudeBarometric = defaultAltitude;
         return true;
     }
+    
 
     public override string ToString()
     {

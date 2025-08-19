@@ -10,7 +10,6 @@ namespace Coordinates;
 /// </summary>
 public static class CoordinateHelpers
 {
-
     private static readonly ILogger Logger = LogConnector.LoggerFactory.CreateLogger(nameof(CoordinateHelpers));
 
     /// <summary>
@@ -22,7 +21,6 @@ public static class CoordinateHelpers
     /// the earths radius in meter
     /// </summary>
     public const double EARTH_RADIUS_METER = 6_371.0e3;
-
 
 
     //internal static class WSG84Parameters
@@ -41,9 +39,11 @@ public static class CoordinateHelpers
     /// <param name="degreeSeconds">the integer degree seconds</param>
     /// <param name="isNorthingOrEasting">true: is northing or easting; false: is southing or westing </param>
     /// <returns>the part of a coordinate in decimal degree</returns>
-    public static double ConvertToDecimalDegree(int degrees, int degreeMinutes, int degreeSeconds, int degreeTenthseconds, bool isNorthingOrEasting)
+    public static double ConvertToDecimalDegree(int degrees, int degreeMinutes, int degreeSeconds,
+        int degreeTenthseconds, bool isNorthingOrEasting)
     {
-        return degrees + (degreeMinutes / 60.0) + (degreeSeconds / 3600.0) + (degreeTenthseconds / 36000.0 * (isNorthingOrEasting ? 1.0 : -1.0));
+        return degrees + (degreeMinutes / 60.0) + (degreeSeconds / 3600.0) +
+               (degreeTenthseconds / 36000.0 * (isNorthingOrEasting ? 1.0 : -1.0));
     }
 
     /// <summary>
@@ -51,7 +51,8 @@ public static class CoordinateHelpers
     /// </summary>
     /// <param name="decimalDegrees">the decimal degree value to be converted</param>
     /// <returns>degrees, minutes, seconds and tenth of seconds</returns>
-    public static (int degrees, int degreeMinutes, int degreeSeconds, int degreeTenthSeconds) ConvertToDegreeMinutes(double decimalDegrees)
+    public static (int degrees, int degreeMinutes, int degreeSeconds, int degreeTenthSeconds) ConvertToDegreeMinutes(
+        double decimalDegrees)
     {
         if (double.IsInfinity(decimalDegrees) || double.IsNaN(decimalDegrees))
         {
@@ -88,10 +89,12 @@ public static class CoordinateHelpers
     /// <param name="degreeSeconds">the degree seconds</param>
     /// <param name="degreeTenthSeconds">the tenth of degree seconds</param>
     /// <returns>beautified string using the input values</returns>
-    public static string BeautifyDegreeMinutes(int degrees, int degreeMinutes, int degreeSeconds, int degreeTenthSeconds)
+    public static string BeautifyDegreeMinutes(int degrees, int degreeMinutes, int degreeSeconds,
+        int degreeTenthSeconds)
     {
         return $"{degrees}° {degreeMinutes}ʹ {degreeSeconds}ʺ {degreeTenthSeconds}ʺʹ";
     }
+
     /// <summary>
     /// Convert feet into meters
     /// </summary>
@@ -159,7 +162,9 @@ public static class CoordinateHelpers
         double lambda2 = coordinate2.Longitude * PI / 180.0;
         double deltaPhi = Abs(phi2 - phi1);
         double deltaLambda = Abs(lambda2 - lambda1);
-        double deltaSigma = 2.0 * Asin(Sqrt(Pow(Sin(deltaPhi / 2.0), 2) + ((1 - Pow(Sin(deltaPhi / 2.0), 2) - Pow(Sin((phi1 + phi2) / 2.0), 2)) * Pow(Sin(deltaLambda / 2.0), 2))));
+        double deltaSigma = 2.0 * Asin(Sqrt(Pow(Sin(deltaPhi / 2.0), 2) +
+                                            ((1 - Pow(Sin(deltaPhi / 2.0), 2) - Pow(Sin((phi1 + phi2) / 2.0), 2)) *
+                                             Pow(Sin(deltaLambda / 2.0), 2))));
         double distance2D = EARTH_RADIUS_METER * deltaSigma;
         return distance2D;
     }
@@ -208,8 +213,9 @@ public static class CoordinateHelpers
         double cosSigma = antipodal ? -1.0 : 1.0;
         double sinSquareSigma;
 
-        double cos2Sigma_m = 1.0;                      // sigmaₘ = angular distance on the sphere from the equator to the midpoint of the line
-        double cosSqureAlpha = 1.0;                      // α = azimuth of the geodesic at the equator
+        double
+            cos2Sigma_m = 1.0; // sigmaₘ = angular distance on the sphere from the equator to the midpoint of the line
+        double cosSqureAlpha = 1.0; // α = azimuth of the geodesic at the equator
         double lambda_temp;
         int iterations = 0;
 
@@ -222,7 +228,7 @@ public static class CoordinateHelpers
 
             if (Abs(sinSquareSigma) < 1e-24)
             {
-                break;  // co-incident/antipodal points (sigma < ≈0.006mm)
+                break; // co-incident/antipodal points (sigma < ≈0.006mm)
             }
 
             sinSigma = Sqrt(sinSquareSigma);
@@ -230,26 +236,39 @@ public static class CoordinateHelpers
             sigma = Atan2(sinSigma, cosSigma);
             double sinAlpha = cosU1 * cosU2 * sinLambda / sinSigma;
             cosSqureAlpha = 1.0 - (sinAlpha * sinAlpha);
-            cos2Sigma_m = (Abs(cosSqureAlpha) > double.Epsilon) ? (cosSigma - (2 * sinU1 * sinU2 / cosSqureAlpha)) : 0; // on equatorial line cos²α = 0 (§6)
+            cos2Sigma_m = (Abs(cosSqureAlpha) > double.Epsilon)
+                ? (cosSigma - (2 * sinU1 * sinU2 / cosSqureAlpha))
+                : 0; // on equatorial line cos²α = 0 (§6)
             double c = f / 16.0 * cosSqureAlpha * (4.0 + (f * (4.0 - (3.0 * cosSqureAlpha))));
             lambda_temp = lambda;
-            lambda = l + ((1 - c) * f * sinAlpha * (sigma + (c * sinSigma * (cos2Sigma_m + (c * cosSigma * (-1 + (2 * cos2Sigma_m * cos2Sigma_m)))))));
+            lambda = l + ((1 - c) * f * sinAlpha *
+                          (sigma + (c * sinSigma *
+                                    (cos2Sigma_m + (c * cosSigma * (-1 + (2 * cos2Sigma_m * cos2Sigma_m)))))));
             double iterationCheck = antipodal ? Abs(lambda) - PI : Abs(lambda);
             if (iterationCheck > PI)
             {
                 throw new Exception("lambda > PI");
             }
-        } while (Abs(lambda - lambda_temp) > 1e-12 && ++iterations < 1000); // TV: 'iterate until negligible change in lambda' (≈0.006mm)
+        } while
+            (Abs(lambda - lambda_temp) > 1e-12 &&
+             ++iterations < 1000); // TV: 'iterate until negligible change in lambda' (≈0.006mm)
 
         if (iterations >= 1000)
         {
-            Logger?.LogWarning("Vincenty did not converge in 1000 iterations, the calculated distance may not be accurate");
+            Logger?.LogWarning(
+                "Vincenty did not converge in 1000 iterations, the calculated distance may not be accurate");
         }
 
         double uSqaure = cosSqureAlpha * ((a * a) - (b * b)) / (b * b);
-        double upperA = 1.0 + (uSqaure / 16384.0 * (4096.0 + (uSqaure * (-768.0 + (uSqaure * (320.0 - (175.0 * uSqaure)))))));
+        double upperA = 1.0 +
+                        (uSqaure / 16384.0 * (4096.0 + (uSqaure * (-768.0 + (uSqaure * (320.0 - (175.0 * uSqaure)))))));
         double upperB = uSqaure / 1024.0 * (256.0 + (uSqaure * (-128.0 + (uSqaure * (74.0 - (47.0 * uSqaure))))));
-        double deltaSigma = upperB * sinSigma * (cos2Sigma_m + (upperB / 4 * ((cosSigma * (-1.0 + (2.0 * cos2Sigma_m * cos2Sigma_m))) - (upperB / 6.0 * cos2Sigma_m * (-3.0 + (4.0 * sinSigma * sinSigma)) * (-3.0 + (4.0 * cos2Sigma_m * cos2Sigma_m))))));
+        double deltaSigma = upperB * sinSigma * (cos2Sigma_m + (upperB / 4 *
+                                                                ((cosSigma *
+                                                                  (-1.0 + (2.0 * cos2Sigma_m * cos2Sigma_m))) -
+                                                                 (upperB / 6.0 * cos2Sigma_m *
+                                                                  (-3.0 + (4.0 * sinSigma * sinSigma)) *
+                                                                  (-3.0 + (4.0 * cos2Sigma_m * cos2Sigma_m))))));
 
         double distance2D = b * upperA * (sigma - deltaSigma); // s = length of the geodesic
 
@@ -261,8 +280,6 @@ public static class CoordinateHelpers
         //double alpha2= Abs(sinSquareSigma) < double.Epsilon ? PI : Atan2(cosU1 * sinLambda, -sinU1 * cosU2 + cosU1 * sinU2 * cosLambda);
 
         return distance2D;
-
-
     }
 
     /// <summary>
@@ -301,7 +318,8 @@ public static class CoordinateHelpers
 
 
         (_, double easting, double northing) = ConvertLatitudeLongitudeCoordinateToUTM_Precise(coordinate1);
-        (string zone, double easting, double northing) coordinate2UTM = ConvertLatitudeLongitudeCoordinateToUTM_Precise(coordinate2);
+        (string zone, double easting, double northing) coordinate2UTM =
+            ConvertLatitudeLongitudeCoordinateToUTM_Precise(coordinate2);
 
         return Sqrt(Pow(easting - coordinate2UTM.easting, 2) + Pow(northing - coordinate2UTM.northing, 2));
     }
@@ -323,6 +341,7 @@ public static class CoordinateHelpers
         double deltaAltitude = useGPSAltitude
             ? coordinate1.AltitudeGPS - coordinate2.AltitudeGPS
             : coordinate1.AltitudeBarometric - coordinate2.AltitudeBarometric;
+
 
         double distance3D = Sqrt(Pow(distance2D, 2) + Pow(deltaAltitude, 2));
         return distance3D;
@@ -375,7 +394,8 @@ public static class CoordinateHelpers
     /// <param name="separationAltitude">the separation altitude in [m]</param>
     /// <param name="useGPSAltitude">true: use GPS altitude; false: use barometric altitude</param>
     /// <returns>the distance in [m]</returns>
-    public static double CalculateDistanceWithSeparationAltitude(Coordinate targetCoordinate, Coordinate coordinate, double separationAltitude, bool useGPSAltitude)
+    public static double CalculateDistanceWithSeparationAltitude(Coordinate targetCoordinate, Coordinate coordinate,
+        double separationAltitude, bool useGPSAltitude)
     {
         ArgumentNullException.ThrowIfNull(targetCoordinate);
 
@@ -385,7 +405,8 @@ public static class CoordinateHelpers
         {
             if (coordinate.AltitudeGPS > separationAltitude)
             {
-                Coordinate tempCoordinate = new(targetCoordinate.Latitude, targetCoordinate.Longitude, separationAltitude, separationAltitude, targetCoordinate.TimeStamp);
+                Coordinate tempCoordinate = new(targetCoordinate.Latitude, targetCoordinate.Longitude,
+                    separationAltitude, separationAltitude, targetCoordinate.TimeStamp);
                 return Calculate3DDistance(tempCoordinate, coordinate, true);
             }
             else
@@ -397,7 +418,8 @@ public static class CoordinateHelpers
         {
             if (coordinate.AltitudeBarometric > separationAltitude)
             {
-                Coordinate tempCoordinate = new(targetCoordinate.Latitude, targetCoordinate.Longitude, separationAltitude, separationAltitude, targetCoordinate.TimeStamp);
+                Coordinate tempCoordinate = new(targetCoordinate.Latitude, targetCoordinate.Longitude,
+                    separationAltitude, separationAltitude, targetCoordinate.TimeStamp);
                 return Calculate3DDistance(tempCoordinate, coordinate, false);
             }
             else
@@ -450,7 +472,8 @@ public static class CoordinateHelpers
 
         double halfOfCircumference = (a + b + c) / 2.0;
 
-        double area = Sqrt(halfOfCircumference * (halfOfCircumference - a) * (halfOfCircumference - b) * (halfOfCircumference - c));
+        double area = Sqrt(halfOfCircumference * (halfOfCircumference - a) * (halfOfCircumference - b) *
+                           (halfOfCircumference - c));
         double result = area;
 
         return result;
@@ -464,7 +487,8 @@ public static class CoordinateHelpers
     /// <param name="distanceInMeters">the distance in meters</param>
     /// <param name="bearingInDecimalDegree">the bearing in decimal degree</param>
     /// <returns>a target coordinate</returns>
-    public static Coordinate CalculatePointWithDistanceAndBearing(Coordinate coordinate1, double distanceInMeters, double bearingInDecimalDegree)
+    public static Coordinate CalculatePointWithDistanceAndBearing(Coordinate coordinate1, double distanceInMeters,
+        double bearingInDecimalDegree)
     {
         ArgumentNullException.ThrowIfNull(coordinate1);
 
@@ -484,11 +508,13 @@ public static class CoordinateHelpers
         double bearing = bearingInDecimalDegree % 360.0 * PI / 180.0;
 
         double latitude = Asin((Sin(lat1) * Cos(angularDistance)) + (Cos(lat1) * Sin(angularDistance) * Cos(bearing)));
-        double longitude = long1 + Atan2(Sin(bearing) * Sin(angularDistance) * Cos(lat1), Cos(angularDistance) - (Sin(lat1) * Sin(latitude)));
+        double longitude = long1 + Atan2(Sin(bearing) * Sin(angularDistance) * Cos(lat1),
+            Cos(angularDistance) - (Sin(lat1) * Sin(latitude)));
 
         latitude *= 180.0 / PI;
         longitude *= 180.0 / PI;
-        Coordinate coordinate = new(latitude, longitude, coordinate1.AltitudeGPS, coordinate1.AltitudeBarometric, DateTime.UtcNow);
+        Coordinate coordinate = new(latitude, longitude, coordinate1.AltitudeGPS, coordinate1.AltitudeBarometric,
+            DateTime.UtcNow);
 
         return coordinate;
     }
@@ -512,12 +538,12 @@ public static class CoordinateHelpers
         double lambda2 = coordinate2.Longitude * PI / 180.0;
 
         double deltaLambda = lambda2 - lambda1;
-        double bearing = Atan2(Sin(deltaLambda) * Cos(phi2), (Cos(phi1) * Sin(phi2)) - (Sin(phi1) * Cos(phi2) * Cos(deltaLambda)));
+        double bearing = Atan2(Sin(deltaLambda) * Cos(phi2),
+            (Cos(phi1) * Sin(phi2)) - (Sin(phi1) * Cos(phi2) * Cos(deltaLambda)));
 
         bearing = ((bearing * 180.0 / PI) + 360) % 360;
 
         return bearing;
-
     }
 
     /// <summary>
@@ -527,12 +553,14 @@ public static class CoordinateHelpers
     /// <param name="coordinate2">second coordinate</param>
     /// <returns>the initial bearing in degrees</returns>
     /// <exception cref="ArgumentException">throws if different utmZones are provided</exception>
-    public static double CalculateInitialBearingUTM((string utmZone, int easting, int northing) coordinate1, (string utmZone, int easting, int northing) coordinate2)
+    public static double CalculateInitialBearingUTM((string utmZone, int easting, int northing) coordinate1,
+        (string utmZone, int easting, int northing) coordinate2)
     {
-        if(coordinate1.utmZone != coordinate2.utmZone)
+        if (coordinate1.utmZone != coordinate2.utmZone)
         {
             throw new ArgumentException("Both coordinates must be in the same UTM zone");
         }
+
         double deltaEasting = coordinate2.easting - coordinate1.easting;
         double deltaNorthing = coordinate2.northing - coordinate1.northing;
         double angleRadians = Math.Atan2(deltaEasting, deltaNorthing);
@@ -563,7 +591,8 @@ public static class CoordinateHelpers
     /// <param name="northing">the northing portion e.g. 4833438</param>
     /// <param name="altitude">the altitude in meters</param>
     /// <returns>a Coordinate object</returns>
-    public static Coordinate ConvertUTMToLatitudeLongitudeCoordinate(string utmZone, int easting, int northing, double altitude)
+    public static Coordinate ConvertUTMToLatitudeLongitudeCoordinate(string utmZone, int easting, int northing,
+        double altitude)
     {
         (double latitude, double longitude) = ConvertUTMToLatitudeLongitude(utmZone, easting, northing);
         return new Coordinate(latitude, longitude, altitude, altitude, DateTime.MinValue);
@@ -576,10 +605,12 @@ public static class CoordinateHelpers
     /// <param name="easting">the easting portion e.g. 630084</param>
     /// <param name="northing">the northing portion e.g. 4833438</param>
     /// <returns>the latitude and longitude pair</returns>
-    public static (double latitude, double longitude) ConvertUTMToLatitudeLongitude(string utmZone, int easting, int northing)
+    public static (double latitude, double longitude) ConvertUTMToLatitudeLongitude(string utmZone, int easting,
+        int northing)
     {
         CoordinateSharp.UniversalTransverseMercator utmCoordindate = new(utmZone, easting, northing);
-        CoordinateSharp.Coordinate coordinateSharp = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmCoordindate);
+        CoordinateSharp.Coordinate coordinateSharp =
+            CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utmCoordindate);
         return (coordinateSharp.Latitude.DecimalDegree, coordinateSharp.Longitude.DecimalDegree);
     }
 
@@ -588,7 +619,8 @@ public static class CoordinateHelpers
     /// </summary>
     /// <param name="coordinate">the coordinate</param>
     /// <returns>UTM zone, easting and northing rounded to the next integer</returns>
-    public static (string utmZone, int easting, int northing) ConvertLatitudeLongitudeCoordinateToUTM(Coordinate coordinate)
+    public static (string utmZone, int easting, int northing) ConvertLatitudeLongitudeCoordinateToUTM(
+        Coordinate coordinate)
     {
         return ConvertLatitudeLongitudeToUTM(coordinate.Latitude, coordinate.Longitude);
     }
@@ -598,10 +630,10 @@ public static class CoordinateHelpers
     /// </summary>
     /// <param name="coordinate">the coordinate</param>
     /// <returns>UTM zone and easting / northing using double</returns>
-    public static (string utmZone, double easting, double northing) ConvertLatitudeLongitudeCoordinateToUTM_Precise(Coordinate coordinate)
+    public static (string utmZone, double easting, double northing) ConvertLatitudeLongitudeCoordinateToUTM_Precise(
+        Coordinate coordinate)
     {
         ArgumentNullException.ThrowIfNull(coordinate);
-
 
         return ConvertLatitudeLongitudeToUTM_Presice(coordinate.Latitude, coordinate.Longitude);
     }
@@ -613,10 +645,13 @@ public static class CoordinateHelpers
     /// <param name="latitude">the latitude in decimal degrees</param>
     /// <param name="longitude">the longitude in decimal degrees</param>
     /// <returns>UTM zone,easting and northing rounded to the next integer</returns>
-    public static (string utmZone, int easting, int northing) ConvertLatitudeLongitudeToUTM(double latitude, double longitude)
+    public static (string utmZone, int easting, int northing) ConvertLatitudeLongitudeToUTM(double latitude,
+        double longitude)
     {
         CoordinateSharp.Coordinate coordinateSharp = new(latitude, longitude);
-        return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", (int)Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero), (int)Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero));
+        return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}",
+            (int)Round(coordinateSharp.UTM.Easting, 0, MidpointRounding.AwayFromZero),
+            (int)Round(coordinateSharp.UTM.Northing, 0, MidpointRounding.AwayFromZero));
     }
 
     /// <summary>
@@ -626,13 +661,37 @@ public static class CoordinateHelpers
     /// <param name="latitude">the latitude in decimal degrees</param>
     /// <param name="longitude">the longitude in decimal degrees</param>
     /// <returns>UTM zone and easting / northing using double</returns>
-    public static (string utmZone, double easting, double northing) ConvertLatitudeLongitudeToUTM_Presice(double latitude, double longitude)
+    public static (string utmZone, double easting, double northing) ConvertLatitudeLongitudeToUTM_Presice(
+        double latitude, double longitude)
     {
         CoordinateSharp.Coordinate coordinateSharp = new(latitude, longitude);
-        return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", coordinateSharp.UTM.Easting, coordinateSharp.UTM.Northing);
+        return ($"{coordinateSharp.UTM.LongZone}{coordinateSharp.UTM.LatZone}", coordinateSharp.UTM.Easting,
+            coordinateSharp.UTM.Northing);
     }
 
-    
+    /// <summary>
+    /// Converts the barometric altitude to an adjusted height based on the QNH (atmospheric pressure at sea level).
+    /// </summary>
+    /// <param name="altitude">The observed altitude in meters.</param>
+    /// <param name="qnh">The atmospheric pressure at sea level in hPa (hectopascal).</param>
+    /// <returns>The adjusted barometric height in meters.</returns>
+    public static double ConvertBarometricHeight(double altitude, double qnh)
+    {
+        double adjustment = (1013.25d - qnh) * ConvertToMeter(29.105);
+
+        return altitude - adjustment;
+    }
+
+
+    public static double ConvertAltitudeQNH(double altQNE, double qnh)
+    {
+        const double PRESSURE_STDQNH = 1013.25;
+
+        const double T0lambda = 44330.7692;
+        const double alpha = 0.190295;
+
+        return (1 - Pow(Pow(1 - altQNE / T0lambda, 1 / alpha) + 1 - qnh / PRESSURE_STDQNH, alpha)) * T0lambda;
+    }
 
     ///// <summary>
     ///// Converts the given <paramref name="coordinate"/> to Cartesian coordinates.
@@ -712,5 +771,4 @@ public static class CoordinateHelpers
     //    return ConvertCartesianToLongitudeLatitude(transformedCartesianCoordinate.xTransform, transformedCartesianCoordinate.yTransform, transformedCartesianCoordinate.zTransform);
 
     //}
-
 }
