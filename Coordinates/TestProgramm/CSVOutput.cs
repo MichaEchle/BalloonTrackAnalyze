@@ -20,7 +20,12 @@ public class CSVOutput
 
     public void Save()
     {
-        File.WriteAllText(
-            filePath, csvString);
+        if (!File.Exists(filePath))
+        {
+            File.Create(filePath);
+        }
+
+
+        File.WriteAllText(filePath, csvString);
     }
 }

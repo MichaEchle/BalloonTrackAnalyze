@@ -17,7 +17,7 @@ internal class Program
 
         EuropeansWieselburg2025 competition = new();
         
-        competition.Score(true, 2);
+        competition.Score(false, 4,1017);
         
         
         //competition.Flight5();
@@ -56,7 +56,7 @@ internal class Program
         //t11_3DT_Task.CalculateResults(track, true, out double result);
 
         //Console.WriteLine(Math.Round(result,0,MidpointRounding.AwayFromZero));
-        _ = Console.ReadLine();
+        //_ = Console.ReadLine();
         //AccuracyEvaluation_GeodTest.CalculateDistances();
         //DirectoryInfo directoryInfo = new DirectoryInfo(@"C:\temp\Donut_DM2022");
         //FileInfo[] files = directoryInfo.GetFiles("*.igc");
