@@ -136,7 +136,7 @@ public class AltitudeProfileTask : ICompetitionTask
                 return false;
             }
 
-            var relevantPoints = GetRelevantCoordinates(track, startPoint, useGPSAltitude);
+            var relevantPoints = GetRelevantCoordinates(track, startPoint);
             if (!relevantPoints.Any())
             {
                 Logger?.LogWarning("No relevant track points found after task start for '{task}' and Pilot '#{pilotNumber}{pilotName}'", 
@@ -267,14 +267,21 @@ public class AltitudeProfileTask : ICompetitionTask
         return TaskStart.CustomCondition?.Invoke(track);
     }
 
-    private List<Coordinate> GetRelevantCoordinates(Track track, Coordinate startPoint, bool useGPSAltitude)
+    private List<Coordinate> GetRelevantCoordinates(Track track, Coordinate startPoint)
     {
+        Console.WriteLine(track.TrackPoints.Count);
+
         var points = track.TrackPoints.Where(tp => tp.TimeStamp >= startPoint.TimeStamp).ToList();
         
         if (MaxTaskDuration.HasValue)
         {
+            Console.WriteLine("Max duration: " + MaxTaskDuration.Value);
+            Console.WriteLine("Start: " +startPoint.TimeStamp);
             var endTime = startPoint.TimeStamp.AddSeconds(MaxTaskDuration.Value);
+            Console.WriteLine("end: " + endTime);
+            Console.WriteLine(points.Count);
             points = points.Where(tp => tp.TimeStamp <= endTime).ToList();
+            Console.WriteLine(points.Count);
         }
         
         return points;
@@ -286,7 +293,11 @@ public class AltitudeProfileTask : ICompetitionTask
 
         double totalScore = 0.0;
         Coordinate? previousPoint = null;
+        
+        Dictionary<double, double> timeByMultiplicator = new();
 
+        int points = 0;
+        int totalPoints = Coordinates.Count;
         foreach (var point in Coordinates)
         {
             if (previousPoint == null)
@@ -298,27 +309,44 @@ public class AltitudeProfileTask : ICompetitionTask
             double stepValue = CalculateStepValue(previousPoint, point, startPoint);
             double timeInSeconds = (point.TimeStamp - previousPoint.TimeStamp).TotalSeconds;
             double altitude = useGPSAltitude ? point.AltitudeGPS : point.AltitudeBarometric;
-
+            
+            AltitudeBands.Sort((b1, b2) => b2.Multiplier.CompareTo(b1.Multiplier));
+            
             foreach (var band in AltitudeBands)
             {
+                timeByMultiplicator.TryAdd(band.Multiplier, 0);
+                
                 if (!IsWithinGeographicBounds(point, band.GeographicBounds))
                     continue;
 
                 var altitudeRange = GetAltitudeRangeForStep(band, stepValue);
+                Console.WriteLine(
+                    $"{stepValue}: {band.Multiplier}x {altitudeRange.MinAltitude} - {altitudeRange.MaxAltitude}  <- {altitude}");
                 if (altitudeRange != null && altitude >= altitudeRange.MinAltitude && altitude <= altitudeRange.MaxAltitude)
                 {
+                    points++;
                     totalScore += timeInSeconds * band.Multiplier;
+                    timeByMultiplicator[band.Multiplier] += timeInSeconds;
+                    break;
                 }
             }
 
             previousPoint = point;
         }
-
+        
+        foreach (var keyValuePair in timeByMultiplicator)
+        {
+            Console.WriteLine($"{keyValuePair.Key}x {keyValuePair.Value}s");
+        }
+        Console.WriteLine($"Total: {totalScore}s after {points} ({totalPoints}) points.");
+            
         return totalScore;
     }
 
     private bool IsWithinGeographicBounds(Coordinate point, GeographicBoundary bounds)
     {
+        if(bounds == null)
+            return true;
         return bounds.Type switch
         {
             GeographicBoundaryType.None => true,
