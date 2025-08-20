@@ -1,7 +1,9 @@
 ﻿using Competition;
 using Competition.Penalty;
+using Competition.Tasks;
 using Coordinates;
 using CoordinateSharp.Formatters;
+using System.Data;
 using System.Drawing.Printing;
 
 namespace TestProgramm;
@@ -18,15 +20,21 @@ public class EuropeansWieselburg2025
         CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 507272, 5326702,
             CoordinateHelpers.ConvertToMeter(873));
 
-    public void Score(bool practiseFlight, int flightNo, int qnh)
+    public void Score(bool practiseFlight, int flightNo, int qnh, string? path = null)
     {
+        Thread.Sleep(1000);
         Flight flight = Flight.GetInstance();
         flight.FlightNumber = flightNo;
 
         var flightPath = Path.Combine(root_path,
             "flight_" + (practiseFlight ? "practise_" : "") + flightNo.ToString("D2"));
 
-        if (!flight.ParseTrackFiles(Path.Combine(root_path, Path.Combine(flightPath, @"tracks\scoring")), true,
+        string trackPath = Path.Combine(root_path, Path.Combine(flightPath, @"tracks\scoring"));
+
+        if (path is not null)
+            trackPath = path;
+
+        if (!flight.ParseTrackFiles(trackPath, true,
                 referencePoint))
         {
             Console.WriteLine("Failed to parse track files for " + (practiseFlight ? "trainings " : "") + "flight " +
@@ -103,6 +111,15 @@ public class EuropeansWieselburg2025
             case 4:
                 Console.WriteLine("Flight 4");
                 CheckTask14And15(flight);
+                break;
+            case 5:
+                Console.WriteLine("Flight 5");
+                CheckAndResultTask19(flight);
+                break;
+            case 6:
+                Console.WriteLine("Flight 6");
+                CheckTask21And22(flight);
+                //CheckAndResultTask25(flight);
                 break;
         }
     }
@@ -267,7 +284,6 @@ public class EuropeansWieselburg2025
     }
 
     #endregion
-
 
     #region Flight2
 
@@ -638,12 +654,12 @@ public class EuropeansWieselburg2025
 
     #region Flight4
 
-    private readonly DateTime task14EndOfScoringPeriode = new DateTime(2025, 08, 19, 8, 00, 00);
-    private readonly DateTime task15EndOfScoringPeriode = new DateTime(2025, 08, 19, 8, 00, 00);
+    private readonly DateTime task14EndOfScoringPeriode = new(2025, 08, 19, 8, 00, 00);
+    private readonly DateTime task15EndOfScoringPeriode = new(2025, 08, 19, 8, 00, 00);
 
     private readonly int task14Marker = 3;
     private readonly int task15Marker = 4;
-    
+
     public void CheckTask14And15(Flight flight)
     {
         foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
@@ -652,7 +668,7 @@ public class EuropeansWieselburg2025
             {
                 continue;
             }
-            
+
             MarkerDrop? markerDrop1 = track.GetFirstMarkerDrop(task14Marker);
             MarkerDrop? markerDrop2 = track.GetFirstMarkerDrop(task15Marker);
 
@@ -717,20 +733,435 @@ public class EuropeansWieselburg2025
 
             if (goalMarker1.Equals(goalMarker2))
             {
-                Console.WriteLine($"{track.Pilot.PilotNumber}: Logger Mark #{task14Marker} and #{task15Marker} are at the same goal #{goalMarker1}");
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: Logger Mark #{task14Marker} and #{task15Marker} are at the same goal #{goalMarker1}");
             }
         }
     }
-    
+
     private Dictionary<string, Coordinate> Flight4HWZTargets()
     {
         return new Dictionary<string, Coordinate>
         {
-            ["1"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 0507149, 5326599, CoordinateHelpers.ConvertToMeter(933)),
+            ["1"] =
+                CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 0507149, 5326599,
+                    CoordinateHelpers.ConvertToMeter(933)),
             ["2"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 0507569, 5326096, 283),
-            ["3"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 0506201, 5325996, CoordinateHelpers.ConvertToMeter(960)),
-            ["4"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 0504874, 5327058, CoordinateHelpers.ConvertToMeter(1100))
+            ["3"] =
+                CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 0506201, 5325996,
+                    CoordinateHelpers.ConvertToMeter(960)),
+            ["4"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 0504874, 5327058,
+                CoordinateHelpers.ConvertToMeter(1100))
         };
     }
+
+    #endregion
+
+    #region Flight5
+
+    public void CheckAndResultTask19(Flight flight)
+    {
+        CSVOutput output = new(Path.Combine(root_path, @"flight_05\results\result_t19.csv"), true);
+
+        foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
+        {
+            if (track is null)
+            {
+                continue;
+            }
+
+            Coordinate firstTrackpointAfterGridlineCrossing = null;
+            foreach (Coordinate trackPoint in track.TrackPoints)
+            {
+                (string _, int easting, int _) = CoordinateHelpers.ConvertLatitudeLongitudeCoordinateToUTM(trackPoint);
+                if (easting < 485000) //Remove 0|0 spike
+                {
+                    continue;
+                }
+
+                if (easting < gridline)
+                {
+                    firstTrackpointAfterGridlineCrossing = trackPoint;
+                    break;
+                }
+            }
+
+            if (firstTrackpointAfterGridlineCrossing is null)
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: No trackpoint after gridline crossing.");
+                output.AppendResult(track.Pilot.PilotNumber, "NR");
+                continue;
+            }
+
+            Console.WriteLine(
+                $"{track.Pilot.PilotNumber}: First trackpoint after gridline crossing: {firstTrackpointAfterGridlineCrossing.ToString()}");
+
+            DateTime endOffMDT = firstTrackpointAfterGridlineCrossing.TimeStamp.AddMinutes(25);
+            Coordinate firstTrackpointAfter25Minutes = null;
+            foreach (Coordinate trackPoint in track.TrackPoints)
+            {
+                if (trackPoint.TimeStamp > endOffMDT)
+                {
+                    firstTrackpointAfter25Minutes = trackPoint;
+                    break;
+                }
+            }
+
+            if (firstTrackpointAfter25Minutes is null)
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: No trackpoint after 25 minutes.");
+                output.AppendResult(track.Pilot.PilotNumber, "NR");
+                continue;
+            }
+
+            TrackHelpers.EstimateLaunchAndLandingTime(track, useGPSAltitude, out Coordinate? _,
+                out Coordinate? landing);
+            Console.WriteLine($"{track.Pilot.PilotNumber}: Landing: " + landing.ToString());
+            ;
+            if (firstTrackpointAfter25Minutes.TimeStamp > landing.TimeStamp)
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: First trackpoint after 25 minutes is after landing.");
+            }
+
+            if (firstTrackpointAfter25Minutes.TimeStamp > task19EndOfScoringPeriode)
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: Trackpoint after 25 minutes is after end of scoring period: {firstTrackpointAfter25Minutes.ToString()}");
+                output.AppendResult(track.Pilot.PilotNumber, "NR");
+                continue;
+            }
+
+            MarkerDrop? markerDrop = track.GetFirstMarkerDrop(1);
+            if (markerDrop is not null &&
+                markerDrop.MarkerLocation.TimeStamp < firstTrackpointAfter25Minutes.TimeStamp &&
+                markerDrop.MarkerLocation.TimeStamp > firstTrackpointAfterGridlineCrossing.TimeStamp)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Markerdrop #1 in 25 min. " + markerDrop.MarkerLocation);
+                ;
+            }
+
+            Console.WriteLine(
+                $"{track.Pilot.PilotNumber}: First trackpoint after 25 minutes: {firstTrackpointAfter25Minutes.ToString()}");
+
+            double distance =
+                CoordinateHelpers.Calculate2DDistanceHavercos(task19ReferencePoint, firstTrackpointAfter25Minutes);
+            Console.WriteLine(
+                $"{track.Pilot.PilotNumber}: Distance: {distance.Round(2)}m");
+            output.AppendResult(track.Pilot.PilotNumber, distance.Round(2).ToString());
+        }
+
+        output.Save();
+    }
+
+    private double gridline = 504000;
+    private readonly DateTime task19EndOfScoringPeriode = new DateTime(2025, 08, 19, 18, 00, 00);
+
+    private readonly Coordinate task19ReferencePoint =
+        CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 508615, 5328338, 0);
+
+    #endregion
+
+    #region Flight6
+
+    private readonly DateTime task21EndOfScoringPeriode = new(2025, 08, 20, 06, 00, 00);
+    private readonly DateTime task22EndOfScoringPeriode = new(2025, 08, 20, 06, 00, 00);
+
+    private readonly int task21Marker = 2;
+    private readonly int task22Marker = 3;
+
+    public void CheckTask21And22(Flight flight)
+    {
+        foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
+        {
+            if (track is null)
+            {
+                continue;
+            }
+
+            MarkerDrop? markerDrop1 = track.GetFirstMarkerDrop(task21Marker);
+            MarkerDrop? markerDrop2 = track.GetFirstMarkerDrop(task22Marker);
+
+            if (markerDrop1 is null)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: no marker drop in goal #{task21Marker}");
+                continue;
+            }
+
+            if (markerDrop1.MarkerLocation.TimeStamp > task21EndOfScoringPeriode)
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: marker drop after end of scoring period. Marker drop: {markerDrop1.MarkerLocation.TimeStamp.ToString("HH:mm:ss")}");
+                continue;
+            }
+            
+            Console.WriteLine($"{track.Pilot.PilotNumber}: Marker drop 1: " + markerDrop1.MarkerLocation.TimeStamp);
+
+            if (markerDrop2 is null)
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: no marker drop in goal #{task22Marker}");
+                continue;
+            }
+
+            if (markerDrop2.MarkerLocation.TimeStamp > task22EndOfScoringPeriode)
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: marker drop after end of scoring period. Marker drop: {markerDrop2.MarkerLocation.TimeStamp.ToString("HH:mm:ss")}");
+                continue;
+            }
+            Console.WriteLine($"{track.Pilot.PilotNumber}: Marker drop 2: " + markerDrop2.MarkerLocation.TimeStamp);
+
+            if (markerDrop2.MarkerLocation.TimeStamp < markerDrop1.MarkerLocation.TimeStamp)
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: marker drop 2 is before marker drop 1. Marker drop 2: {markerDrop2.MarkerLocation.TimeStamp.ToString("HH:mm:ss")} Marker drop 1: {markerDrop1.MarkerLocation.TimeStamp.ToString("HH:mm:ss")}");
+            }
+
+            
+            
+            string goalMarker1 = "N/A";
+            double distanceMarker1 = Double.MaxValue;
+            string goalMarker2 = "N/A";
+            double distanceMarker2 = Double.MaxValue;
+
+            double distance;
+            foreach (var targets in Flight6HWZTargets())
+            {
+                distance = CoordinateHelpers.Calculate2DDistanceHavercos(targets.Value, markerDrop1.MarkerLocation);
+                if (distance < distanceMarker1)
+                {
+                    goalMarker1 = targets.Key;
+                    distanceMarker1 = distance;
+                }
+
+                distance = CoordinateHelpers.Calculate2DDistanceHavercos(targets.Value, markerDrop2.MarkerLocation);
+                if (distance < distanceMarker2)
+                {
+                    goalMarker2 = targets.Key;
+                    distanceMarker2 = distance;
+                }
+            }
+
+            if (goalMarker1.Equals("N/A"))
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Logger Mark #{task21Marker} is not at any goal.");
+            }
+
+            if (goalMarker2.Equals("N/A"))
+            {
+                Console.WriteLine($"{track.Pilot.PilotNumber}: Logger Mark #{task22Marker} is not at any goal.");
+            }
+
+            if (goalMarker1.Equals(goalMarker2))
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: Logger Mark #{task21Marker} and #{task22Marker} are at the same goal #{goalMarker1}");
+            }
+        }
+    }
+
+    private Dictionary<string, Coordinate> Flight6HWZTargets()
+    {
+        return new Dictionary<string, Coordinate>
+        {
+            ["a"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 509228, 5331981, CoordinateHelpers.ConvertToMeter(1064)), 
+            ["b"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 508080, 5332013, CoordinateHelpers.ConvertToMeter(936)), 
+            ["c"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 508037, 5330889, CoordinateHelpers.ConvertToMeter(986)), 
+            ["d"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 511331, 5330551, 263),
+            ["e"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 512760, 5330859, CoordinateHelpers.ConvertToMeter(892)),
+            ["f"] = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 513321, 5330762, CoordinateHelpers.ConvertToMeter(995)) 
+        };
+    }
+    
+    
+    public void CheckAndResultTask25(Flight flight)
+    {
+        var innerBand = new AltitudeProfileTask.AltitudeBand
+        {
+            Type = AltitudeProfileTask.BandType.Inner, Multiplier = 2.0, Profile = CreateInnerBandProfile()
+        };
+
+        var outerBand = new AltitudeProfileTask.AltitudeBand
+        {
+            Type = AltitudeProfileTask.BandType.Outer, Multiplier = 1.0, Profile = CreateOuterBandProfile()
+        };
+
+
+        var task = new AltitudeProfileTask();
+        task.SetupTimeBasedAPT(
+            taskNumber: 25,
+            startCondition: new AltitudeProfileTask.StartCondition
+            {
+                Type = AltitudeProfileTask.StartConditionType.MarkerDrop, MarkerNumber = 7
+            },
+            timeIntervalSeconds: 60,
+            bands:
+            [
+                innerBand, outerBand
+            ],
+            maxDurationSeconds: 120
+        );
+
+        CSVOutput output = new(Path.Combine(root_path, @"flight_06\results\result_t25.csv"), true);
+
+        foreach (Track? track in flight.Tracks.OrderBy(x => x.Pilot.PilotNumber))
+        {
+            if (track is null)
+            {
+                continue;
+            }
+
+            bool success = task.CalculateResults(track, useGPSAltitude, out double result);
+
+            if (!success)
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: Task 25 calc failed.");
+                output.AppendResult(track.Pilot.PilotNumber, "NR");
+                continue;
+            }
+
+            output.AppendResult(track.Pilot.PilotNumber, result.Round(0).ToString());
+        }
+
+        output.Save();
+    }
+    
+    private static List<AltitudeProfileTask.AltitudePoint> CreateInnerBandProfile()
+    {
+        return new List<AltitudeProfileTask.AltitudePoint>
+        {
+            new()
+            {
+                Step = 0,
+                MinAltitude = CoordinateHelpers.ConvertToMeter(4950),
+                MaxAltitude = CoordinateHelpers.ConvertToMeter(5050)
+            },
+            new()
+            {
+                Step = 1,
+                MinAltitude = CoordinateHelpers.ConvertToMeter(4950),
+                MaxAltitude = CoordinateHelpers.ConvertToMeter(5050)
+            },
+            new()
+            {
+                Step = 2,
+                MinAltitude = CoordinateHelpers.ConvertToMeter(5450),
+                MaxAltitude = CoordinateHelpers.ConvertToMeter(5550)
+            },
+           //new()
+           //{
+           //    Step = 3,
+           //    MinAltitude = CoordinateHelpers.ConvertToMeter(2450),
+           //    MaxAltitude = CoordinateHelpers.ConvertToMeter(5550)
+           //},
+           //new()
+           //{
+           //    Step = 5,
+           //    MinAltitude = CoordinateHelpers.ConvertToMeter(6450),
+           //    MaxAltitude = CoordinateHelpers.ConvertToMeter(6550)
+           //},
+           //new()
+           //{
+           //    Step = 6,
+           //    MinAltitude = CoordinateHelpers.ConvertToMeter(6700),
+           //    MaxAltitude = CoordinateHelpers.ConvertToMeter(6800)
+           //},
+           //new()
+           //{
+           //    Step = 7,
+           //    MinAltitude = CoordinateHelpers.ConvertToMeter(6700),
+           //    MaxAltitude = CoordinateHelpers.ConvertToMeter(6800)
+           //},
+           //new()
+           //{
+           //    Step = 8,
+           //    MinAltitude = CoordinateHelpers.ConvertToMeter(6450),
+           //    MaxAltitude = CoordinateHelpers.ConvertToMeter(6550)
+           //},
+           //new()
+           //{
+           //    Step = 9,
+           //    MinAltitude = CoordinateHelpers.ConvertToMeter(6450),
+           //    MaxAltitude = CoordinateHelpers.ConvertToMeter(6550)
+           //},
+           //new()
+           //{
+           //    Step = 11,
+           //    MinAltitude = CoordinateHelpers.ConvertToMeter(5450),
+           //    MaxAltitude = CoordinateHelpers.ConvertToMeter(5550)
+           //},
+        };
+    }
+
+    private static List<AltitudeProfileTask.AltitudePoint> CreateOuterBandProfile()
+    {
+        return new List<AltitudeProfileTask.AltitudePoint>
+        {
+            new()
+            {
+                Step = 0,
+                MinAltitude = CoordinateHelpers.ConvertToMeter(4900),
+                MaxAltitude = CoordinateHelpers.ConvertToMeter(5100)
+            },
+            new()
+            {
+                Step = 1,
+                MinAltitude = CoordinateHelpers.ConvertToMeter(4900),
+                MaxAltitude = CoordinateHelpers.ConvertToMeter(5100)
+            },
+            new()
+            {
+                Step = 2,
+                MinAltitude = CoordinateHelpers.ConvertToMeter(5400),
+                MaxAltitude = CoordinateHelpers.ConvertToMeter(5600)
+            },
+            //new()
+            //{
+            //    Step = 3,
+            //    MinAltitude = CoordinateHelpers.ConvertToMeter(2400),
+            //    MaxAltitude = CoordinateHelpers.ConvertToMeter(5600)
+            //},
+            //new()
+            //{
+            //    Step = 5,
+            //    MinAltitude = CoordinateHelpers.ConvertToMeter(6400),
+            //    MaxAltitude = CoordinateHelpers.ConvertToMeter(6600)
+            //},
+            //new()
+            //{
+            //    Step = 6,
+            //    MinAltitude = CoordinateHelpers.ConvertToMeter(6650),
+            //    MaxAltitude = CoordinateHelpers.ConvertToMeter(6850)
+            //},
+            //new()
+            //{
+            //    Step = 7,
+            //    MinAltitude = CoordinateHelpers.ConvertToMeter(6650),
+            //    MaxAltitude = CoordinateHelpers.ConvertToMeter(6850)
+            //},
+            //new()
+            //{
+            //    Step = 8,
+            //    MinAltitude = CoordinateHelpers.ConvertToMeter(6400),
+            //    MaxAltitude = CoordinateHelpers.ConvertToMeter(6600)
+            //},
+            //new()
+            //{
+            //    Step = 9,
+            //    MinAltitude = CoordinateHelpers.ConvertToMeter(6400),
+            //    MaxAltitude = CoordinateHelpers.ConvertToMeter(6600)
+            //},
+            //new()
+            //{
+            //    Step = 11,
+            //    MinAltitude = CoordinateHelpers.ConvertToMeter(5400),
+            //    MaxAltitude = CoordinateHelpers.ConvertToMeter(5600)
+            //},
+        };
+    }
+
     #endregion
 }
