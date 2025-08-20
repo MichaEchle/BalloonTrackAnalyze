@@ -20,12 +20,10 @@ public class CSVOutput
 
     public void Save()
     {
-        if (!File.Exists(filePath))
+        using (StreamWriter writer = new StreamWriter(filePath))
         {
-            File.Create(filePath);
+            writer.Write(csvString);
         }
-
-
-        File.WriteAllText(filePath, csvString);
+        
     }
 }
