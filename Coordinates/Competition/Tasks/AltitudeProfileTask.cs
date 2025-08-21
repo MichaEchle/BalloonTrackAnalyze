@@ -321,7 +321,7 @@ public class AltitudeProfileTask : ICompetitionTask
 
                 var altitudeRange = GetAltitudeRangeForStep(band, stepValue);
                 Console.WriteLine(
-                    $"{stepValue}: {band.Multiplier}x {altitudeRange.MinAltitude} - {altitudeRange.MaxAltitude}  <- {altitude}");
+                    $"{stepValue}: {band.Multiplier}x {CoordinateHelpers.ConvertToFeet(altitudeRange.MinAltitude)}ft - {CoordinateHelpers.ConvertToFeet(altitudeRange.MaxAltitude)}ft  <- {CoordinateHelpers.ConvertToFeet(altitude)}ft");
                 if (altitudeRange != null && altitude >= altitudeRange.MinAltitude && altitude <= altitudeRange.MaxAltitude)
                 {
                     points++;
@@ -488,6 +488,7 @@ public class AltitudeProfileTask : ICompetitionTask
         if (lowerBound != null && upperBound != null && Math.Abs(upperBound.Step - lowerBound.Step) > 0.001)
         {
             double ratio = (stepValue - lowerBound.Step) / (upperBound.Step - lowerBound.Step);
+            Console.WriteLine($"{stepValue}: {ratio} ratio");
             return new AltitudePoint
             {
                 Step = stepValue,
