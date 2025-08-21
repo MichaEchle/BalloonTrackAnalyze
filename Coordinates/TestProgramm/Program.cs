@@ -19,7 +19,7 @@ internal class Program
 
         EuropeansWieselburg2025 competition = new();
         
-        competition.Score(false, 6,1010);
+        competition.Score(false, 8,1005);
         //competition.Score(false, 6,1010, @"C:\Users\Jan\Nextcloud2\shared\Ballonveranstaltungen\2025 Wieselburg\scoring\flights\flight_06\tracks\special");
         
     }
