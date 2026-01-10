@@ -15,8 +15,7 @@ public class PLTParser
         {
             using (StreamReader reader = new StreamReader(filePath))
             {
-                string line;
-                while ((line = reader.ReadLine()) != null)
+                while (reader.ReadLine() is { } line)
                 {
                     if (!line.StartsWith("  "))
                     {

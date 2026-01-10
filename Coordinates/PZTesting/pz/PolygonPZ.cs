@@ -1,12 +1,9 @@
 ﻿using Coordinates;
-using JansScoring.flights;
 using JansScoring.plt;
-using System;
-using System.Collections.Generic;
 
-namespace JansScoring.pz_rework.type;
+namespace PZTesting;
 
-public class BluePZ : PZ
+public class PolygonPZ : PZ
 {
     private List<Coordinate> polygon;
 
@@ -15,7 +12,7 @@ public class BluePZ : PZ
 
     private double northernmost, easternmost, southernmost, westernmost;
 
-    public BluePZ(int id, String pltFilePath, double minHeight, double maxHeight) : base(id)
+    public PolygonPZ(String pltFilePath, double minHeight, double maxHeight)
     {
         polygon = PLTParser.Parse(pltFilePath);
         this.minHeight = minHeight;
@@ -56,20 +53,19 @@ public class BluePZ : PZ
     }
 
 
-    public override bool IsInsidePz(Flight flight, Track track, Coordinate coordinate, out string comment)
+    public bool IsInsidePz(bool useGPSAltitude, Coordinate coordinate, out double infringement)
     {
-        comment = "";
-        double altitude = flight.UseGPSAltitude() ? coordinate.AltitudeGPS : coordinate.AltitudeBarometric;
+        double altitude = useGPSAltitude ? coordinate.AltitudeGPS : coordinate.AltitudeBarometric;
         if (altitude < minHeight || altitude > maxHeight)
         {
-            comment = "Out of height";
+            infringement = 0;
             return false;
         }
 
         if (coordinate.Longitude > easternmost || coordinate.Longitude < westernmost ||
             coordinate.Latitude > northernmost || coordinate.Latitude < southernmost)
         {
-            comment = "Out of box";
+            infringement = 0;
             return false;
         }
 
@@ -94,6 +90,7 @@ public class BluePZ : PZ
             j = i;
         }
 
+        infringement = 0;
         return oddNodes;
     }
 }
