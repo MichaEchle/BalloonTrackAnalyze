@@ -34,6 +34,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoordinateConverter", "Coor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JansScoring", "JansScoring\JansScoring.csproj", "{0C227361-AEE9-4644-8E5F-0117699FA574}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PZTesting", "PZTesting\PZTesting.csproj", "{515AA63D-18ED-4775-8A79-378E43098FB1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -80,6 +82,10 @@ Global
 		{0C227361-AEE9-4644-8E5F-0117699FA574}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C227361-AEE9-4644-8E5F-0117699FA574}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C227361-AEE9-4644-8E5F-0117699FA574}.Release|Any CPU.Build.0 = Release|Any CPU
+		{515AA63D-18ED-4775-8A79-378E43098FB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{515AA63D-18ED-4775-8A79-378E43098FB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{515AA63D-18ED-4775-8A79-378E43098FB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{515AA63D-18ED-4775-8A79-378E43098FB1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
