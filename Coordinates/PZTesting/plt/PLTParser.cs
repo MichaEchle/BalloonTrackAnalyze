@@ -9,11 +9,11 @@ public class PLTParser
 {
     public static List<Coordinate> Parse(string filePath)
     {
-        List<Coordinate> points = new List<Coordinate>();
+        List<Coordinate> points = new();
 
         try
         {
-            using (StreamReader reader = new StreamReader(filePath))
+            using (StreamReader reader = new(filePath))
             {
                 while (reader.ReadLine() is { } line)
                 {
@@ -32,7 +32,7 @@ public class PLTParser
                     {
                         (string utmZone, int easting, int northing) =
                             CoordinateHelpers.ConvertLatitudeLongitudeToUTM(latitude, longitude);
-                        Coordinate coordinate = new Coordinate(latitude, longitude, altitude, altitude, new DateTime());
+                        Coordinate coordinate = new(latitude, longitude, altitude, altitude, new DateTime());
                         coordinate.utmZone = utmZone;
                         coordinate.easting = easting;
                         coordinate.northing = northing;

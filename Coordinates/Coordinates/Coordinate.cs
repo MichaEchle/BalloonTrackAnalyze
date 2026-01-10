@@ -83,6 +83,18 @@ namespace Coordinates
             return new Coordinate(Latitude, Longitude, AltitudeGPS, AltitudeBarometric, TimeStamp);
         }
 
+        public Coordinate FillCoordinate()
+        {
+            if (northing == 0 || easting == 0 || utmZone == null)
+            {
+                (string utmZone, int easting, int northing) convertLatitudeLongitudeToUtm = CoordinateHelpers.ConvertLatitudeLongitudeToUTM(Latitude, Longitude);
+                utmZone = convertLatitudeLongitudeToUtm.utmZone;
+                easting = convertLatitudeLongitudeToUtm.easting;
+                northing = convertLatitudeLongitudeToUtm.northing;
+            }
+            return this;
+        }
+
         public void CorrectBarometricHeight(double qnh)
         {
             AltitudeBarometric = CoordinateHelpers.ConvertBarometricHeight(AltitudeBarometric, qnh);

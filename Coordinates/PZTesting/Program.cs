@@ -1,8 +1,10 @@
 ﻿using ABI.System.Windows.Input;
 using Coordinates;
 using Coordinates.Parsers;
+using JansScoring.calculation;
 using JansScoring.pz_rework.type;
 using OfficeOpenXml;
+using System.Drawing.Drawing2D;
 using System.Text;
 using WinRT.Interop;
 
@@ -55,7 +57,7 @@ namespace PZTesting
 
             if (inputBarometricMode)
             {
-                RequestQNH();
+                RequestQnh();
             }
 
             RequestBackupCoordinate();
@@ -119,12 +121,12 @@ namespace PZTesting
 
             Console.WriteLine($"Backup coordinate: {zoneString} {easting} {northing}");
             BackupCoordinate = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate(zoneString, easting, northing);
-            RequestPZ();
+            RequestPz();
         }
 
         private static Coordinate? BackupCoordinate = null;
 
-        private static void RequestQNH()
+        private static void RequestQnh()
         {
             Console.WriteLine("Please enter the qnh (in hPa).");
             Console.Write("> ");
@@ -132,20 +134,20 @@ namespace PZTesting
             if (string.IsNullOrWhiteSpace(qnhString))
             {
                 ShowError("No QNH given.");
-                RequestQNH();
+                RequestQnh();
                 return;
             }
 
             try
             {
-                int inputQNH = Convert.ToInt32(qnhString);
-                Console.WriteLine($"QNH: {inputQNH}");
-                Qnh = inputQNH;
+                int inputQnh = Convert.ToInt32(qnhString);
+                Console.WriteLine($"QNH: {inputQnh}");
+                Qnh = inputQnh;
             }
             catch (Exception e)
             {
                 ShowError($"Invalid QNH given: {e.Message}");
-                RequestQNH();
+                RequestQnh();
             }
         }
 
@@ -153,7 +155,7 @@ namespace PZTesting
         private static int? Qnh = null;
 
 
-        private static void RequestPZ()
+        private static void RequestPz()
         {
             Console.WriteLine("Please enter the type of the pz. (circular/polygonal)");
             Console.Write("> ");
@@ -161,7 +163,7 @@ namespace PZTesting
             if (string.IsNullOrWhiteSpace(pzTypeString))
             {
                 ShowError("No pz type given.");
-                RequestPZ();
+                RequestPz();
                 return;
             }
 
@@ -170,7 +172,7 @@ namespace PZTesting
             if (!inputCircularPz && !inputPolygonalPz)
             {
                 ShowError("Invalid pz type given.");
-                RequestPZ();
+                RequestPz();
                 return;
             }
 
@@ -184,7 +186,7 @@ namespace PZTesting
                 if (string.IsNullOrWhiteSpace(radiusString))
                 {
                     ShowError("No radius given.");
-                    RequestPZ();
+                    RequestPz();
                     return;
                 }
 
@@ -196,7 +198,7 @@ namespace PZTesting
                 catch (Exception e)
                 {
                     ShowError($"Invalid radius given: {e.Message}");
-                    RequestPZ();
+                    RequestPz();
                     return;
                 }
 
@@ -207,7 +209,7 @@ namespace PZTesting
                 if (string.IsNullOrWhiteSpace(zoneString))
                 {
                     ShowError("No zone given.");
-                    RequestPZ();
+                    RequestPz();
                     return;
                 }
 
@@ -217,7 +219,7 @@ namespace PZTesting
                 if (string.IsNullOrWhiteSpace(eastingString))
                 {
                     ShowError("No easing given.");
-                    RequestPZ();
+                    RequestPz();
                     return;
                 }
 
@@ -229,7 +231,7 @@ namespace PZTesting
                 catch (Exception e)
                 {
                     ShowError($"Invalid easting given: {e.Message}");
-                    RequestPZ();
+                    RequestPz();
                     return;
                 }
 
@@ -239,7 +241,7 @@ namespace PZTesting
                 if (string.IsNullOrWhiteSpace(nothingString))
                 {
                     ShowError("No nothing given.");
-                    RequestPZ();
+                    RequestPz();
                     return;
                 }
 
@@ -251,7 +253,7 @@ namespace PZTesting
                 catch (Exception e)
                 {
                     ShowError($"Invalid nothing given: {e.Message}");
-                    RequestPZ();
+                    RequestPz();
                     return;
                 }
 
@@ -265,7 +267,7 @@ namespace PZTesting
                 if (string.IsNullOrWhiteSpace(heightString))
                 {
                     ShowError("No height given.");
-                    RequestPZ();
+                    RequestPz();
                     return;
                 }
 
@@ -277,12 +279,12 @@ namespace PZTesting
                 catch (Exception e)
                 {
                     ShowError($"Invalid height given: {e.Message}");
-                    RequestPZ();
+                    RequestPz();
                     return;
                 }
 
                 Console.WriteLine($"PZ: {centerCoordinate} with height {height}m and radius {radius}m");
-                PZ = new CirclePZ(centerCoordinate, height, radius);
+                Pz = new CirclePZ(centerCoordinate, height, radius);
             }
             else if (inputPolygonalPz)
             {
@@ -292,7 +294,7 @@ namespace PZTesting
                 if (string.IsNullOrWhiteSpace(polygonalPzPath))
                 {
                     ShowError("No path given.");
-                    RequestPZ();
+                    RequestPz();
                     return;
                 }
 
@@ -300,14 +302,14 @@ namespace PZTesting
                 if (!isFile)
                 {
                     ShowError("File does not exits.");
-                    RequestPZ();
+                    RequestPz();
                     return;
                 }
 
                 if (!polygonalPzPath.ToLower().EndsWith(".plt"))
                 {
                     ShowError("File is not a plt file.");
-                    RequestPZ();
+                    RequestPz();
                     return;
                 }
 
@@ -317,7 +319,7 @@ namespace PZTesting
                 if (string.IsNullOrWhiteSpace(minHeightString))
                 {
                     ShowError("No min height given.");
-                    RequestPZ();
+                    RequestPz();
                     return;
                 }
 
@@ -329,7 +331,7 @@ namespace PZTesting
                 catch (Exception e)
                 {
                     ShowError($"Invalid min height given: {e.Message}");
-                    RequestPZ();
+                    RequestPz();
                     return;
                 }
 
@@ -339,7 +341,7 @@ namespace PZTesting
                 if (string.IsNullOrWhiteSpace(maxHeightString))
                 {
                     ShowError("No height given.");
-                    RequestPZ();
+                    RequestPz();
                     return;
                 }
 
@@ -351,16 +353,16 @@ namespace PZTesting
                 catch (Exception e)
                 {
                     ShowError($"Invalid max height given: {e.Message}");
-                    RequestPZ();
+                    RequestPz();
                     return;
                 }
 
-                PZ = new PolygonPZ(polygonalPzPath, minHeight, maxHeight);
+                Pz = new PolygonPz(polygonalPzPath, minHeight, maxHeight);
             }
             else
             {
                 ShowError("Invalid pz type given.");
-                RequestPZ();
+                RequestPz();
                 return;
             }
 
@@ -368,7 +370,7 @@ namespace PZTesting
             RequestFileOrFolder();
         }
 
-        private static PZ? PZ = null;
+        private static IPz? Pz = null;
 
         private static void RequestFileOrFolder()
         {
@@ -432,7 +434,7 @@ namespace PZTesting
                 return;
             }
 
-            if (PZ == null)
+            if (Pz == null)
             {
                 ShowError("Invalid state: No pz given.");
                 return;
@@ -484,33 +486,65 @@ namespace PZTesting
             Console.WriteLine($"Loaded {tracks.Count} from {files.Count} IGC-Files");
 
 
+            string genericCsvExport =
+                "pilot;entry position zone;entry position easting;entry position northing;entry time;exit position zone;exit position easting;exit position northing;exit time;affected points:penalty by penalty calculation 1;penalty by penalty calculation 2;penalty by penalty calculation 3a;penalty by penalty calculation 3b;penalty by penalty calculation 3c;penalty by penalty calculation 4a;penalty by penalty calculation 4b;penalty by penalty calculation 5";
 
             foreach (Track track in tracks)
             {
-                bool isInsidePZ = false;
+                bool isInsidePz = false;
                 List<Coordinate> pointsInPz = new();
                 foreach (Coordinate trackPoint in track.TrackPoints)
                 {
-                    if (PZ.IsInsidePz(GpsMode.Value, trackPoint, out double infringement))
+                    if (Pz.IsInsidePz(GpsMode.Value, trackPoint, out double infringement))
                     {
-                        isInsidePZ = true;
+                        isInsidePz = true;
                         pointsInPz.Add(trackPoint);
                     }
                 }
 
-                if (!isInsidePZ)
+                if (!isInsidePz)
                 {
                     Console.WriteLine($"No points inside pz by track of pilot #{track.Pilot.PilotNumber}.");
                     continue;
                 }
 
                 pointsInPz = pointsInPz.OrderBy(x => x.TimeStamp).ToList();
-                Console.WriteLine($"Found {pointsInPz.Count} points inside pz by track of pilot #{track.Pilot.PilotNumber}.");
-                Coordinate entryPoint = pointsInPz.First();
-                Console.WriteLine($"Entry: {entryPoint.utmZone} {entryPoint.easting} {entryPoint.northing} at {entryPoint.TimeStamp}" );
-                Coordinate exitPoint = pointsInPz.Last();
-                Console.WriteLine($"Exit: {exitPoint.utmZone} {exitPoint.easting} {exitPoint.northing} at {exitPoint.TimeStamp}");
+                Console.WriteLine(
+                    $"Found {pointsInPz.Count} points inside pz by track of pilot #{track.Pilot.PilotNumber}.");
+                Coordinate entryPoint = pointsInPz.First().FillCoordinate();
+                Console.WriteLine(
+                    $"Entry: {entryPoint.utmZone} {entryPoint.easting} {entryPoint.northing} at {entryPoint.TimeStamp}");
+                Coordinate exitPoint = pointsInPz.Last().FillCoordinate();
+                Console.WriteLine(
+                    $"Exit: {exitPoint.utmZone} {exitPoint.easting} {exitPoint.northing} at {exitPoint.TimeStamp}");
 
+                Pz.CalculatePenaltyVariant1(GpsMode.Value, pointsInPz, out double penaltyV1);
+                Pz.CalculatePenaltyVariant2(GpsMode.Value, pointsInPz, out double penaltyV2);
+                Pz.CalculatePenaltyVariant3A(GpsMode.Value, pointsInPz, out double penaltyV3A);
+                Pz.CalculatePenaltyVariant3B(GpsMode.Value, pointsInPz, out double penaltyV3B);
+                Pz.CalculatePenaltyVariant3C(GpsMode.Value, pointsInPz, out double penaltyV3C);
+                Pz.CalculatePenaltyVariant4A(GpsMode.Value, pointsInPz, out double penaltyV4A);
+                Pz.CalculatePenaltyVariant4B(GpsMode.Value, pointsInPz, out double penaltyV4B);
+                Pz.CalculatePenaltyVariant5(GpsMode.Value, pointsInPz, out double penaltyV5);
+
+
+                genericCsvExport +=
+                    $"\n{track.Pilot.PilotNumber};{entryPoint.utmZone};{entryPoint.easting};{entryPoint.northing};{entryPoint.TimeStamp};{exitPoint.utmZone};{exitPoint.easting};{exitPoint.northing};{exitPoint.TimeStamp};{pointsInPz.Count};{penaltyV1};{penaltyV2};{penaltyV3A};{penaltyV3B};{penaltyV3C};{penaltyV4A};{penaltyV4B};{penaltyV5}";
+
+                Console.WriteLine($"Finished pilot #{track.Pilot.PilotNumber}.");
+            }
+
+            string? envTemp =
+                Environment.GetEnvironmentVariable(
+                    OperatingSystem.IsWindows() ? "TEMP" : "TMPDIR"
+                )
+                ?? "/tmp";
+            using (StreamWriter writer1 = new(Path.Combine(envTemp, DateTime.Now.ToString("yyyyMMddHHmmss") + ".csv"),
+                       false))
+            {
+                writer1.Write(genericCsvExport);
+                writer1.Close();
+                Console.WriteLine($"Successful created penalty calculation.");
             }
         }
 
@@ -534,7 +568,7 @@ namespace PZTesting
                 return;
             }
 
-            if (PZ == null)
+            if (Pz == null)
             {
                 ShowError("Invalid state: No pz given.");
                 return;
@@ -574,30 +608,32 @@ namespace PZTesting
             Console.WriteLine($"Loaded IGC-File");
 
 
-            bool isInsidePZ = false;
+            bool isInsidePz = false;
             List<Coordinate> pointsInPz = new();
             foreach (Coordinate trackPoint in track.TrackPoints)
             {
-                if (PZ.IsInsidePz(GpsMode.Value, trackPoint, out double infringement))
+                if (Pz.IsInsidePz(GpsMode.Value, trackPoint, out double infringement))
                 {
-                    isInsidePZ = true;
+                    isInsidePz = true;
                     pointsInPz.Add(trackPoint);
                 }
             }
 
-            if (!isInsidePZ)
+            if (!isInsidePz)
             {
                 Console.WriteLine("No points inside pz.");
                 return;
             }
 
             pointsInPz = pointsInPz.OrderBy(x => x.TimeStamp).ToList();
-            Console.WriteLine($"Found {pointsInPz.Count} points inside pz by track of pilot #{track.Pilot.PilotNumber}.");
+            Console.WriteLine(
+                $"Found {pointsInPz.Count} points inside pz by track of pilot #{track.Pilot.PilotNumber}.");
             Coordinate entryPoint = pointsInPz.First();
-            Console.WriteLine($"Entry: {entryPoint.utmZone} {entryPoint.easting} {entryPoint.northing} at {entryPoint.TimeStamp}" );
+            Console.WriteLine(
+                $"Entry: {entryPoint.utmZone} {entryPoint.easting} {entryPoint.northing} at {entryPoint.TimeStamp}");
             Coordinate exitPoint = pointsInPz.Last();
-            Console.WriteLine($"Exit: {exitPoint.utmZone} {exitPoint.easting} {exitPoint.northing} at {exitPoint.TimeStamp}");
-
+            Console.WriteLine(
+                $"Exit: {exitPoint.utmZone} {exitPoint.easting} {exitPoint.northing} at {exitPoint.TimeStamp}");
         }
 
 
@@ -606,7 +642,7 @@ namespace PZTesting
             Console.OutputEncoding = Encoding.UTF8;
 
             int width = Math.Max(60, Console.WindowWidth);
-            string pad(int n) => new(' ', n);
+            string Pad(int n) => new(' ', n);
 
             string left = "┏";
             string right = "┓";
@@ -622,13 +658,13 @@ namespace PZTesting
             int rightPad = titlePad - leftPad;
 
             Console.WriteLine(left + new string(horiz[0], inner) + right);
-            Console.WriteLine(vert + pad(leftPad) + centeredTitle + pad(rightPad) + vert);
+            Console.WriteLine(vert + Pad(leftPad) + centeredTitle + Pad(rightPad) + vert);
 
             string info = $" {DateTime.Now:yyyy-MM-dd HH:mm} • Jan Meinl ";
             int infoPad = Math.Max(0, inner - info.Length);
             int infoLeft = infoPad / 2;
             int infoRight = infoPad - infoLeft;
-            Console.WriteLine(vert + pad(infoLeft) + info + pad(infoRight) + vert);
+            Console.WriteLine(vert + Pad(infoLeft) + info + Pad(infoRight) + vert);
 
             Console.WriteLine(leftMid + new string(horiz[0], inner) + rightMid);
         }
