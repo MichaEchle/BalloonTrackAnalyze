@@ -95,9 +95,35 @@ namespace Coordinates
             return this;
         }
 
+        public void CorrectBarometricHeightSwitch(double qnh)
+        {
+            CorrectBarometricHeight1(qnh);
+        }
+
         public void CorrectBarometricHeight(double qnh)
         {
+            if(CorrectedBarometric) return;
             AltitudeBarometric = CoordinateHelpers.ConvertBarometricHeight(AltitudeBarometric, qnh);
+            CorrectedBarometric = true;
+        }
+
+        public void CorrectBarometricHeight1(double qnh)
+        {
+            if(CorrectedBarometric) return;
+            const double PRESSURE_STDQHN = 1013.25;
+
+            const double T0lambda = 44330.7692;
+            const double alpha = 0.190295;
+
+            AltitudeBarometric = (1 - Math.Pow(Math.Pow(1 - AltitudeBarometric / T0lambda, 1 / alpha) + 1 - qnh / PRESSURE_STDQHN, alpha)) * T0lambda;
+            CorrectedBarometric = true;
+        }
+
+        public void CorrectBarometricHeight2(double qnh)
+        {
+            if(CorrectedBarometric) return;
+
+            AltitudeBarometric = AltitudeHelpers.CorrectAltitudeWithQnh(AltitudeBarometric, qnh);
             CorrectedBarometric = true;
         }
     }

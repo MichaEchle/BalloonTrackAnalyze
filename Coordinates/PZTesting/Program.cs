@@ -24,8 +24,15 @@ namespace PZTesting
             RequestCompetitionDetails();
 
             Console.WriteLine();
-            Console.WriteLine("Press any key to exit...");
-            Console.ReadKey();
+
+            Console.WriteLine("Press r to restart and any other key to exit...");
+            ConsoleKeyInfo input = Console.ReadKey();
+            if (input.Key == ConsoleKey.R)
+            {
+                Console.WriteLine("Restarting...");
+                Console.WriteLine();
+                RequestFileOrFolder();
+            }
         }
 
 
@@ -140,7 +147,7 @@ namespace PZTesting
 
             try
             {
-                int inputQnh = Convert.ToInt32(qnhString);
+                double inputQnh = Convert.ToDouble(qnhString);
                 Console.WriteLine($"QNH: {inputQnh}");
                 Qnh = inputQnh;
             }
@@ -152,7 +159,7 @@ namespace PZTesting
         }
 
         private static bool? GpsMode = null;
-        private static int? Qnh = null;
+        private static double? Qnh = null;
 
 
         private static void RequestPz()
@@ -458,17 +465,17 @@ namespace PZTesting
                 {
                     foreach (Coordinate trackPoint in track.TrackPoints)
                     {
-                        trackPoint.CorrectBarometricHeight(Qnh.Value);
+                        trackPoint.CorrectBarometricHeightSwitch(Qnh.Value);
                     }
 
                     foreach (MarkerDrop markerDrop in track.MarkerDrops)
                     {
-                        markerDrop.MarkerLocation.CorrectBarometricHeight(Qnh.Value);
+                        markerDrop.MarkerLocation.CorrectBarometricHeightSwitch(Qnh.Value);
                     }
 
                     foreach (Declaration decleration in track.Declarations)
                     {
-                        decleration.PositionAtDeclaration.CorrectBarometricHeight(Qnh.Value);
+                        decleration.PositionAtDeclaration.CorrectBarometricHeightSwitch(Qnh.Value);
                     }
                 }
 
@@ -487,20 +494,81 @@ namespace PZTesting
 
 
             string genericCsvExport =
-                "pilot;entry position zone;entry position easting;entry position northing;entry time;exit position zone;exit position easting;exit position northing;exit time;affected points:penalty by penalty calculation 1;penalty by penalty calculation 2;penalty by penalty calculation 3a;penalty by penalty calculation 3b;penalty by penalty calculation 3c;penalty by penalty calculation 4a;penalty by penalty calculation 4b;penalty by penalty calculation 5";
+                "pilot;entry position zone;entry position easting;entry position northing;entry time;exit position zone;exit position easting;exit position northing;exit time;affected points;penalty by penalty calculation 1;penalty by penalty calculation 2;penalty by penalty calculation 3a;penalty by penalty calculation 3b;penalty by penalty calculation 3c;penalty by penalty calculation 4a;penalty by penalty calculation 4b;penalty by penalty calculation 5";
+            string pilotCsvExportTitle =
+                "position zone;position easting;position northing;alt m;alt ft;time;is in;infringement;penalty by penalty calculation 1;penalty by penalty calculation 2;penalty by penalty calculation 3a;penalty by penalty calculation 3b;penalty by penalty calculation 3c;penalty by penalty calculation 4a;penalty by penalty calculation 4b;penalty by penalty calculation 5";
 
+            Dictionary<int, string> pilotExports = new();
             foreach (Track track in tracks)
             {
+                string pilotExport = pilotCsvExportTitle;
                 bool isInsidePz = false;
                 List<Coordinate> pointsInPz = new();
+
+                bool wasInPz = false;
                 foreach (Coordinate trackPoint in track.TrackPoints)
                 {
                     if (Pz.IsInsidePz(GpsMode.Value, trackPoint, out double infringement))
                     {
+                        if (!wasInPz)
+                        {
+                            var index = track.TrackPoints.IndexOf(trackPoint);
+                            if (index > 5)
+                            {
+                                for (int i = 5; i > 0; i--)
+                                {
+                                    var prevTpCoords = track.TrackPoints[index - i].FillCoordinate();
+                                    pilotExport +=
+                                        $"\n{prevTpCoords.utmZone};{prevTpCoords.easting};{prevTpCoords.northing};{(GpsMode.Value ? prevTpCoords.AltitudeGPS : prevTpCoords.AltitudeBarometric)};{CoordinateHelpers.ConvertToFeet((GpsMode.Value ? prevTpCoords.AltitudeGPS : prevTpCoords.AltitudeBarometric))};{prevTpCoords.TimeStamp};no";
+                                }
+                            }
+
+                            wasInPz = true;
+                        }
+
+                        var tpCoords = trackPoint.FillCoordinate();
+                        Pz.CalculatePenaltyVariant1(GpsMode.Value, new List<Coordinate> { tpCoords },
+                            out double singlePenaltyV1);
+                        Pz.CalculatePenaltyVariant2(GpsMode.Value, new List<Coordinate> { tpCoords },
+                            out double singlePenaltyV2);
+                        Pz.CalculatePenaltyVariant3A(GpsMode.Value, new List<Coordinate> { tpCoords },
+                            out double singlePenaltyV3A);
+                        Pz.CalculatePenaltyVariant3B(GpsMode.Value, new List<Coordinate> { tpCoords },
+                            out double singlePenaltyV3B);
+                        Pz.CalculatePenaltyVariant3C(GpsMode.Value, new List<Coordinate> { tpCoords },
+                            out double singlePenaltyV3C);
+                        Pz.CalculatePenaltyVariant4A(GpsMode.Value, new List<Coordinate> { tpCoords },
+                            out double singlePenaltyV4A);
+                        Pz.CalculatePenaltyVariant4B(GpsMode.Value, new List<Coordinate> { tpCoords },
+                            out double singlePenaltyV4B);
+                        Pz.CalculatePenaltyVariant5(GpsMode.Value, new List<Coordinate> { tpCoords },
+                            out double singlePenaltyV5);
+                        pilotExport +=
+                            $"\n{tpCoords.utmZone};{tpCoords.easting};{tpCoords.northing};{(GpsMode.Value ? tpCoords.AltitudeGPS : tpCoords.AltitudeBarometric)};{CoordinateHelpers.ConvertToFeet((GpsMode.Value ? tpCoords.AltitudeGPS : tpCoords.AltitudeBarometric))};{tpCoords.TimeStamp};yes;{infringement};{singlePenaltyV1};{singlePenaltyV2};{singlePenaltyV3A};{singlePenaltyV3B};{singlePenaltyV3C};{singlePenaltyV4A};{singlePenaltyV4B};{singlePenaltyV5}";
                         isInsidePz = true;
                         pointsInPz.Add(trackPoint);
                     }
+                    else
+                    {
+                        if (wasInPz)
+                        {
+                            var index = track.TrackPoints.IndexOf(trackPoint);
+                            if (index + 5 < track.TrackPoints.Count)
+                            {
+                                for (int i = 1; i <= 5; i++)
+                                {
+                                    var afterTpCoords = track.TrackPoints[index + i].FillCoordinate();
+                                    pilotExport +=
+                                        $"\n{afterTpCoords.utmZone};{afterTpCoords.easting};{afterTpCoords.northing};{(GpsMode.Value ? afterTpCoords.AltitudeGPS : afterTpCoords.AltitudeBarometric)};{CoordinateHelpers.ConvertToFeet((GpsMode.Value ? afterTpCoords.AltitudeGPS : afterTpCoords.AltitudeBarometric))};{afterTpCoords.TimeStamp};no";
+                                }
+                            }
+
+                            wasInPz = false;
+                        }
+                    }
                 }
+
+                pilotExports.Add(track.Pilot.PilotNumber, pilotExport);
 
                 if (!isInsidePz)
                 {
@@ -539,12 +607,26 @@ namespace PZTesting
                     OperatingSystem.IsWindows() ? "TEMP" : "TMPDIR"
                 )
                 ?? "/tmp";
-            using (StreamWriter writer1 = new(Path.Combine(envTemp, DateTime.Now.ToString("yyyyMMddHHmmss") + ".csv"),
-                       false))
+            var folder = Path.Combine(envTemp, "PZTesting_" + DateTime.Now.ToString("yyyyMMddHHmmss"));
+            Directory.CreateDirectory(folder);
+            string sumFilePath = Path.Combine(folder, "sum.csv");
+            using (StreamWriter writer1 = new(sumFilePath, false))
             {
                 writer1.Write(genericCsvExport);
                 writer1.Close();
-                Console.WriteLine($"Successful created penalty calculation.");
+                Console.WriteLine($"Successful written sumfile to penalty calculation: {sumFilePath}");
+            }
+
+            foreach (var keyValuePair in pilotExports)
+            {
+                string pilotPath = Path.Combine(folder, $"p_{keyValuePair.Key}.csv");
+                using (StreamWriter writer1 = new(pilotPath, false))
+                {
+                    writer1.Write(keyValuePair.Value);
+                    writer1.Close();
+                    Console.WriteLine(
+                        $"Successful created penalty calculation for pilot #{keyValuePair.Key}: {pilotPath}.");
+                }
             }
         }
 
@@ -591,17 +673,17 @@ namespace PZTesting
             {
                 foreach (Coordinate trackPoint in track.TrackPoints)
                 {
-                    trackPoint.CorrectBarometricHeight(Qnh.Value);
+                    trackPoint.CorrectBarometricHeightSwitch(Qnh.Value);
                 }
 
                 foreach (MarkerDrop markerDrop in track.MarkerDrops)
                 {
-                    markerDrop.MarkerLocation.CorrectBarometricHeight(Qnh.Value);
+                    markerDrop.MarkerLocation.CorrectBarometricHeightSwitch(Qnh.Value);
                 }
 
                 foreach (Declaration decleration in track.Declarations)
                 {
-                    decleration.PositionAtDeclaration.CorrectBarometricHeight(Qnh.Value);
+                    decleration.PositionAtDeclaration.CorrectBarometricHeightSwitch(Qnh.Value);
                 }
             }
 
