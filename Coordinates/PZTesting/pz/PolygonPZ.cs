@@ -1,6 +1,7 @@
 ﻿using Coordinates;
 using JansScoring.calculation;
 using JansScoring.plt;
+using PZTesting.pz;
 
 namespace PZTesting;
 
@@ -128,6 +129,7 @@ public class PolygonPz : IPz
         double verticalPercentage = 100 - ((averageHeightDifference / _maxHeight) * 100);
         var percentage = (verticalPercentage + horizontalPercentage) / 2;
         penalty =  percentage * 500;
+        penalty *= CorrectionFactor.VARIANT_1;
     }
 
 
@@ -141,6 +143,7 @@ public class PolygonPz : IPz
             summDeltaHeight += deltaHeight;
         }
         penalty = CoordinateHelpers.ConvertToFeet(summDeltaHeight);
+        penalty *= CorrectionFactor.VARIANT_2;
     }
 
 
@@ -154,6 +157,7 @@ public class PolygonPz : IPz
             summDeltaHeight += (deltaHeight * deltaHeight);
         }
         penalty = CoordinateHelpers.ConvertToFeet(summDeltaHeight);
+        penalty *= CorrectionFactor.VARIANT_3a;
     }
 
     public void CalculatePenaltyVariant3B(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty)
@@ -166,6 +170,7 @@ public class PolygonPz : IPz
             summDeltaHeight += (deltaHeight * 2);
         }
         penalty = CoordinateHelpers.ConvertToFeet(summDeltaHeight);
+        penalty *= CorrectionFactor.VARIANT_3b;
     }
 
     public void CalculatePenaltyVariant3C(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty)
@@ -178,6 +183,7 @@ public class PolygonPz : IPz
             summDeltaHeight += (deltaHeight * 1.2);
         }
         penalty = CoordinateHelpers.ConvertToFeet(summDeltaHeight);
+        penalty *= CorrectionFactor.VARIANT_3c;
     }
 
     public void CalculatePenaltyVariant4A(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty)
@@ -191,6 +197,7 @@ public class PolygonPz : IPz
             summDeltaHeight += (deltaHeight / deltaDistance);
         }
         penalty = CoordinateHelpers.ConvertToFeet(summDeltaHeight);
+        penalty *= CorrectionFactor.VARIANT_4a;
     }
 
     public void CalculatePenaltyVariant4B(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty)
@@ -204,6 +211,7 @@ public class PolygonPz : IPz
             summDeltaHeight += (deltaHeight / deltaDistance);
         }
         penalty = CoordinateHelpers.ConvertToFeet(summDeltaHeight);
+        penalty *= CorrectionFactor.VARIANT_4b;
     }
 
     public void CalculatePenaltyVariant5(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty)
@@ -217,5 +225,6 @@ public class PolygonPz : IPz
         double horizontalPercentage = (distanceHorizontal / _maxDistanceInPz) * 100;
         double verticalPercentage = 100 - (verticalPercentageDecimal * 100);
         penalty = ((verticalPercentage + horizontalPercentage) / 2) * 500;
+        penalty *= CorrectionFactor.VARIANT_5;
     }
 }
