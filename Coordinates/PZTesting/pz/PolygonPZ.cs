@@ -122,13 +122,13 @@ public class PolygonPz : IPz
         Coordinate entry = pointsInPz.First();
         Coordinate exit = pointsInPz.Last();
         double distanceHorizontal = CalculationHelper.Calculate2DDistance(entry, exit, CalculationType.UTM);
-        double averageHeightDifference = Math.Abs((useGPSAltitude
-            ? entry.AltitudeGPS + exit.AltitudeGPS
-            : entry.AltitudeBarometric + exit.AltitudeBarometric) / 2);
-        double horizontalPercentage = (distanceHorizontal / _maxDistanceInPz) * 100;
-        double verticalPercentage = 100 - ((averageHeightDifference / _maxHeight) * 100);
-        var percentage = (verticalPercentage + horizontalPercentage) / 2;
-        penalty =  percentage * 500;
+        double averageHeightDifference = (Math.Abs(useGPSAltitude
+            ? entry.AltitudeGPS - exit.AltitudeGPS
+            : entry.AltitudeBarometric - exit.AltitudeBarometric) / 2);
+        
+        var horizontalInf = distanceHorizontal / _maxDistanceInPz * 100;
+        var verticalInf = averageHeightDifference / _maxHeight* 100;
+        penalty = ((horizontalInf + verticalInf) / 2 /100) * 500;
         penalty *= CorrectionFactor.VARIANT_1;
     }
 
