@@ -1,4 +1,5 @@
-﻿using Coordinates;
+﻿using ABI.Windows.Security.Authentication.Web.Provider;
+using Coordinates;
 using Coordinates.Parsers;
 using JansScoring.pz_rework.type;
 using System.Text;
@@ -8,6 +9,8 @@ namespace PZTesting
     class Program
     {
         public static readonly string Version = "0.0.1";
+        //public double horizontalInfringement;
+        //public double verticalInfringement;
 
         static void Main(string[] args)
         {
@@ -366,7 +369,29 @@ namespace PZTesting
                     return;
                 }
 
-                Pz = new PolygonPz(polygonalPzPath, minHeight, maxHeight);
+                Console.WriteLine("Please enter the height of the virtual pz center in m.");
+                Console.Write("> ");
+                string? virtualCenterHeightString = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(virtualCenterHeightString))
+                {
+                    ShowError("No height given.");
+                    RequestPz();
+                    return;
+                }
+
+                int virtualCenterHeight;
+                try
+                {
+                    virtualCenterHeight = Convert.ToInt32(virtualCenterHeightString);
+                }
+                catch (Exception e)
+                {
+                    ShowError($"Invalid max height given: {e.Message}");
+                    RequestPz();
+                    return;
+                }
+
+                Pz = new PolygonPz(polygonalPzPath, minHeight, maxHeight, virtualCenterHeight);
             }
             else
             {
@@ -406,7 +431,8 @@ namespace PZTesting
             if (isFile)
             {
                 Console.WriteLine("File detected. Parsing...");
-                ParseFile(path);
+                //ParseFile(path);
+                ParseFolder(Directory.GetFiles(Path.GetDirectoryName(path)).ToList().FindAll(s => s.ToLower().EndsWith(".igc")));
             }
             else if (isDirectory)
             {
@@ -494,12 +520,30 @@ namespace PZTesting
             tracks = tracks.OrderBy(x => x.Pilot.PilotNumber).ToList();
             Console.WriteLine($"Loaded {tracks.Count} from {files.Count} IGC-Files");
 
-
+            //SUMMARY
             string genericCsvExport =
-                "pilot;entry position zone;entry position easting;entry position northing;entry time;exit position zone;exit position easting;exit position northing;exit time;affected points;pen calc 1;pen calc 2;pen calc 3a;pen calc 3b;pen calc 3c;pen calc 4a;pen calc 4b;pen calc 5";
+                "pilot;entry position zone;entry position easting;entry position northing;entry time;exit position zone;exit position easting;exit position northing;exit time;affected points;" +
+                "pen calc 1;hor inf 1; ver inf 1;" +
+                "pen calc 2;hor inf 2; ver inf 2;" +
+                "pen calc 3a;hor inf 3a; ver inf 3a;" +
+                "pen calc 3b;hor inf 3b; ver inf 3b;" +
+                "pen calc 3c;hor inf 3c; ver inf 3c;" +
+                "pen calc 4a;hor inf 4a; ver inf 4a;" +
+                "pen calc 4b;hor inf 4b; ver inf 4b;" +
+                "pen calc 5;hor inf 5; ver inf 5;";
             //"pilot;entry position zone;entry position easting;entry position northing;entry time;exit position zone;exit position easting;exit position northing;exit time;affected points;penalty by penalty calculation 1;penalty by penalty calculation 2;penalty by penalty calculation 3a;penalty by penalty calculation 3b;penalty by penalty calculation 3c;penalty by penalty calculation 4a;penalty by penalty calculation 4b;penalty by penalty calculation 5";
+            
+            //PILOT SUMMARY
             string pilotCsvExportTitle =
-                "position zone;position easting;position northing;alt m;alt ft;time;is in;horiz infr;pen calc 1;pen calc 2;pen calc 3a;pen calc 3b;pen calc 3c;pen calc 4a;pen calc 4b;pen calc 5";
+                "position zone;position easting;position northing;alt m;alt ft;time;is in;" +
+                "pen calc 1;hor inf 1; ver inf 1;" +
+                "pen calc 2;hor inf 2; ver inf 2;" +
+                "pen calc 3a;hor inf 3a; ver inf 3a;" +
+                "pen calc 3b;hor inf 3b; ver inf 3b;" +
+                "pen calc 3c;hor inf 3c; ver inf 3c;" +
+                "pen calc 4a;hor inf 4a; ver inf 4a;" +
+                "pen calc 4b;hor inf 4b; ver inf 4b;" +
+                "pen calc 5;hor inf 5; ver inf 5;";
 
             Dictionary<int, string> pilotExports = new();
             foreach (Track track in tracks)
@@ -511,8 +555,7 @@ namespace PZTesting
                 bool wasInPz = false;
                 foreach (Coordinate trackPoint in track.TrackPoints)
                 {
-                    //if (Pz.IsInsidePz(GpsMode.Value, trackPoint, out double infringement))
-                    if (Pz.IsInsidePz(GpsMode.Value, trackPoint, out double horizontalInfringement))
+                    if (Pz.IsInsidePz(GpsMode.Value, trackPoint, out double horizontalInfringement, out double verticalInfringement))
                     {
                         if (!wasInPz)
                         {
@@ -531,25 +574,15 @@ namespace PZTesting
                         }
 
                         var tpCoords = trackPoint.FillCoordinate();
-                        Pz.CalculatePenaltyVariant1(GpsMode.Value, new List<Coordinate> { tpCoords },
-                            out double singlePenaltyV1);
-                        //Console.WriteLine("1xxxxx V1 single penalty: " + singlePenaltyV1);
-                        Pz.CalculatePenaltyVariant2(GpsMode.Value, new List<Coordinate> { tpCoords },
-                            out double singlePenaltyV2);
-                        //Console.WriteLine("1xxxxx V2 single penalty: " + singlePenaltyV2);
-                        Pz.CalculatePenaltyVariant3A(GpsMode.Value, new List<Coordinate> { tpCoords },
-                            out double singlePenaltyV3A);
-                        Pz.CalculatePenaltyVariant3B(GpsMode.Value, new List<Coordinate> { tpCoords },
-                            out double singlePenaltyV3B);
-                        Pz.CalculatePenaltyVariant3C(GpsMode.Value, new List<Coordinate> { tpCoords },
-                            out double singlePenaltyV3C);
-                        Pz.CalculatePenaltyVariant4A(GpsMode.Value, new List<Coordinate> { tpCoords },
-                            out double singlePenaltyV4A);
-                        Pz.CalculatePenaltyVariant4B(GpsMode.Value, new List<Coordinate> { tpCoords },
-                            out double singlePenaltyV4B);
-                        Pz.CalculatePenaltyVariant5(GpsMode.Value, new List<Coordinate> { tpCoords },
-                            out double singlePenaltyV5);
-                        //Console.WriteLine("V1 single penalty: " + singlePenaltyV1);
+                        Pz.CalculatePenaltyVariant1(GpsMode.Value, new List<Coordinate> { tpCoords }, out double singlePenaltyV01,  out double horizontalInfringementV01, out double verticalInfringementV01);
+                        Pz.CalculatePenaltyVariant2(GpsMode.Value, new List<Coordinate> { tpCoords }, out double singlePenaltyV02,  out double horizontalInfringementV02, out double verticalInfringementV02);
+                        Pz.CalculatePenaltyVariant3A(GpsMode.Value, new List<Coordinate> { tpCoords }, out double singlePenaltyV3A, out double horizontalInfringementV3A, out double verticalInfringementV3A);
+                        Pz.CalculatePenaltyVariant3B(GpsMode.Value, new List<Coordinate> { tpCoords }, out double singlePenaltyV3B, out double horizontalInfringementV3B, out double verticalInfringementV3B);
+                        Pz.CalculatePenaltyVariant3C(GpsMode.Value, new List<Coordinate> { tpCoords }, out double singlePenaltyV3C, out double horizontalInfringementV3C, out double verticalInfringementV3C);
+                        Pz.CalculatePenaltyVariant4A(GpsMode.Value, new List<Coordinate> { tpCoords }, out double singlePenaltyV4A, out double horizontalInfringementV4A, out double verticalInfringementV4A);
+                        Pz.CalculatePenaltyVariant4B(GpsMode.Value, new List<Coordinate> { tpCoords }, out double singlePenaltyV4B, out double horizontalInfringementV4B, out double verticalInfringementV4B);
+                        Pz.CalculatePenaltyVariant5(GpsMode.Value, new List<Coordinate> { tpCoords }, out double singlePenaltyV05,  out double horizontalInfringementV05, out double verticalInfringementV05);
+                        //Console.WriteLine("V1 single double penalty: " double + singlePenaltyV1);
                         //Console.WriteLine("V2 single penalty: " + singlePenaltyV2);
                         //Console.WriteLine("V3A single penalty: " + singlePenaltyV3A);
                         //Console.WriteLine("V3B single penalty: " + singlePenaltyV3B);
@@ -557,11 +590,21 @@ namespace PZTesting
                         //Console.WriteLine("V4A single penalty: " + singlePenaltyV4A);
                         //Console.WriteLine("V4B single penalty: " + singlePenaltyV4B);
                         //Console.WriteLine("V5 single penalty: " + singlePenaltyV5);
-                        pilotExport +=
-                            $"\n{tpCoords.utmZone};{tpCoords.easting};{tpCoords.northing};{(GpsMode.Value ? tpCoords.AltitudeGPS : tpCoords.AltitudeBarometric)};{CoordinateHelpers.ConvertToFeet((GpsMode.Value ? tpCoords.AltitudeGPS : tpCoords.AltitudeBarometric))};{tpCoords.TimeStamp};yes;{horizontalInfringement};{singlePenaltyV1};{singlePenaltyV2};{singlePenaltyV3A};{singlePenaltyV3B};{singlePenaltyV3C};{singlePenaltyV4A};{singlePenaltyV4B};{singlePenaltyV5}";
                         
                         //pilotExport +=
-                        //    $"\n{tpCoords.utmZone};{tpCoords.easting};{tpCoords.northing};{(GpsMode.Value ? tpCoords.AltitudeGPS : tpCoords.AltitudeBarometric)};{CoordinateHelpers.ConvertToFeet((GpsMode.Value ? tpCoords.AltitudeGPS : tpCoords.AltitudeBarometric))};{tpCoords.TimeStamp};yes;{infringement};{singlePenaltyV1};{singlePenaltyV2};{singlePenaltyV3A};{singlePenaltyV3B};{singlePenaltyV3C};{singlePenaltyV4A};{singlePenaltyV4B};{singlePenaltyV5}";
+                        //    $"\n{tpCoords.utmZone};{tpCoords.easting};{tpCoords.northing};{(GpsMode.Value ? tpCoords.AltitudeGPS : tpCoords.AltitudeBarometric)};{CoordinateHelpers.ConvertToFeet((GpsMode.Value ? tpCoords.AltitudeGPS : tpCoords.AltitudeBarometric))};{tpCoords.TimeStamp};yes;{horizontalInfringement};{verticalInfringement};{singlePenaltyV1};{singlePenaltyV2};{singlePenaltyV3A};{singlePenaltyV3B};{singlePenaltyV3C};{singlePenaltyV4A};{singlePenaltyV4B};{singlePenaltyV5}";
+
+                        //PILOT SUMMARY
+                        pilotExport +=
+                            $"\n{tpCoords.utmZone};{tpCoords.easting};{tpCoords.northing};{(GpsMode.Value ? tpCoords.AltitudeGPS : tpCoords.AltitudeBarometric)};{CoordinateHelpers.ConvertToFeet((GpsMode.Value ? tpCoords.AltitudeGPS : tpCoords.AltitudeBarometric))};{tpCoords.TimeStamp};yes;" +
+                            $"{singlePenaltyV01};{horizontalInfringementV01};{verticalInfringementV01};" +
+                            $"{singlePenaltyV02};{horizontalInfringementV02};{verticalInfringementV02};" +
+                            $"{singlePenaltyV3A};{horizontalInfringementV3A};{verticalInfringementV3A};" +
+                            $"{singlePenaltyV3B};{horizontalInfringementV3B};{verticalInfringementV3B};" +
+                            $"{singlePenaltyV3C};{horizontalInfringementV3C};{verticalInfringementV3C};" +
+                            $"{singlePenaltyV4A};{horizontalInfringementV4A};{verticalInfringementV4A};" +
+                            $"{singlePenaltyV4B};{horizontalInfringementV4B};{verticalInfringementV4B};" +
+                            $"{singlePenaltyV05};{horizontalInfringementV05};{verticalInfringementV05};";
                         isInsidePz = true;
                         pointsInPz.Add(trackPoint);
                     }
@@ -576,7 +619,7 @@ namespace PZTesting
                                 {
                                     var afterTpCoords = track.TrackPoints[index + i].FillCoordinate();
                                     pilotExport +=
-                                        $"\n{afterTpCoords.utmZone};{afterTpCoords.easting};{afterTpCoords.northing};{(GpsMode.Value ? afterTpCoords.AltitudeGPS : afterTpCoords.AltitudeBarometric)};{CoordinateHelpers.ConvertToFeet((GpsMode.Value ? afterTpCoords.AltitudeGPS : afterTpCoords.AltitudeBarometric))};{afterTpCoords.TimeStamp};no";
+                                        $"\n{afterTpCoords.utmZone};{afterTpCoords.easting};{afterTpCoords.northing};{(GpsMode.Value ? afterTpCoords.AltitudeGPS : afterTpCoords.AltitudeBarometric)};{CoordinateHelpers.ConvertToFeet((GpsMode.Value ? afterTpCoords.AltitudeGPS : afterTpCoords.AltitudeBarometric))};{afterTpCoords.TimeStamp};no"; //;{horizontalInfringement};{verticalInfringement}";
                                 }
                             }
 
@@ -603,16 +646,18 @@ namespace PZTesting
                 Console.WriteLine(
                     $"Exit: {exitPoint.utmZone} {exitPoint.easting} {exitPoint.northing} at {exitPoint.TimeStamp}");
 
-                Pz.CalculatePenaltyVariant1(GpsMode.Value, pointsInPz, out double penaltyV1);
-                //Pz.CalculatePenaltyVariant1(GpsMode.Value, pointsInPz, out double penaltyV1, out double distanceHorizontal, out double averageHeightDifference);
-                Pz.CalculatePenaltyVariant2(GpsMode.Value, pointsInPz, out double penaltyV2);
-                //Console.WriteLine("2xxxxxV2 penalty: " + penaltyV2);
-                Pz.CalculatePenaltyVariant3A(GpsMode.Value, pointsInPz, out double penaltyV3A);
-                Pz.CalculatePenaltyVariant3B(GpsMode.Value, pointsInPz, out double penaltyV3B);
-                Pz.CalculatePenaltyVariant3C(GpsMode.Value, pointsInPz, out double penaltyV3C);
-                Pz.CalculatePenaltyVariant4A(GpsMode.Value, pointsInPz, out double penaltyV4A);
-                Pz.CalculatePenaltyVariant4B(GpsMode.Value, pointsInPz, out double penaltyV4B);
-                Pz.CalculatePenaltyVariant5(GpsMode.Value, pointsInPz, out double penaltyV5);
+                //horizontalInfringement = 9999;
+                
+//CALCULATING FOR SUMMARY
+                Pz.CalculatePenaltyVariant1(GpsMode.Value, pointsInPz, out double penaltyV1 , out double distanceHorizontalV1, out double verticalHeightDifferenceV1); //, out horizontalInfringement, out verticalInfringement);
+                Pz.CalculatePenaltyVariant2(GpsMode.Value, pointsInPz, out double penaltyV2, out double distanceHorizontalV2, out double verticalHeightDifferenceV2); //, out horizontInfr, out verticInfr);
+                Pz.CalculatePenaltyVariant3A(GpsMode.Value, pointsInPz, out double penaltyV3A, out double distanceHorizontalV3A, out double verticalHeightDifferenceV3A); //, out horizontInfr, out verticInfr);
+                Pz.CalculatePenaltyVariant3B(GpsMode.Value, pointsInPz, out double penaltyV3B, out double distanceHorizontalV3B, out double verticalHeightDifferenceV3B); //, out horizontInfr, out verticInfr);
+                Pz.CalculatePenaltyVariant3C(GpsMode.Value, pointsInPz, out double penaltyV3C, out double distanceHorizontalV3C, out double verticalHeightDifferenceV3C); //, out horizontInfr, out verticInfr);
+                Pz.CalculatePenaltyVariant4A(GpsMode.Value, pointsInPz, out double penaltyV4A, out double distanceHorizontalV4A, out double verticalHeightDifferenceV4A); //, out horizontInfr, out verticInfr);
+                Pz.CalculatePenaltyVariant4B(GpsMode.Value, pointsInPz, out double penaltyV4B, out double distanceHorizontalV4B, out double verticalHeightDifferenceV4B); //, out horizontInfr, out verticInfr);
+                Pz.CalculatePenaltyVariant5(GpsMode.Value, pointsInPz, out double penaltyV5, out double distanceHorizontalV5, out double verticalHeightDifferenceV5); //, out horizontInfr, out verticInfr);
+               
                 //Console.WriteLine("V1 penalty: " + penaltyV1);
                 //Console.WriteLine("V2 penalty: " + penaltyV2);
                 //le.WriteLine("V3C penalty: " + penaltyV3C);
@@ -622,8 +667,16 @@ namespace PZTesting
 
 
                 genericCsvExport +=
-                    $"\n{track.Pilot.PilotNumber};{entryPoint.utmZone};{entryPoint.easting};{entryPoint.northing};{entryPoint.TimeStamp};{exitPoint.utmZone};{exitPoint.easting};{exitPoint.northing};{exitPoint.TimeStamp};{pointsInPz.Count};{penaltyV1};{penaltyV2};{penaltyV3A};{penaltyV3B};{penaltyV3C};{penaltyV4A};{penaltyV4B};{penaltyV5}";
-                //    $"\n{track.Pilot.PilotNumber};{entryPoint.utmZone};{entryPoint.easting};{entryPoint.northing};{entryPoint.TimeStamp};{exitPoint.utmZone};{exitPoint.easting};{exitPoint.northing};{exitPoint.TimeStamp};{pointsInPz.Count};{distanceHorizontal};{averageHeightDifference};{penaltyV1};{penaltyV2};{penaltyV3A};{penaltyV3B};{penaltyV3C};{penaltyV4A};{penaltyV4B};{penaltyV5}";
+                    $"\n{track.Pilot.PilotNumber};{entryPoint.utmZone};{entryPoint.easting};{entryPoint.northing};{entryPoint.TimeStamp};{exitPoint.utmZone};{exitPoint.easting};{exitPoint.northing};{exitPoint.TimeStamp};{pointsInPz.Count};" +
+                    $"{penaltyV1};{distanceHorizontalV1};{verticalHeightDifferenceV1};" +
+                    $"{penaltyV2};{distanceHorizontalV2};{verticalHeightDifferenceV2};" +
+                    $"{penaltyV3A};{distanceHorizontalV3A};{verticalHeightDifferenceV3A};" +
+                    $"{penaltyV3B};{distanceHorizontalV3B};{verticalHeightDifferenceV3B};" +
+                    $"{penaltyV3C};{distanceHorizontalV3C};{verticalHeightDifferenceV3C};" +
+                    $"{penaltyV4A};{distanceHorizontalV4A};{verticalHeightDifferenceV4A};" +
+                    $"{penaltyV4B};{distanceHorizontalV4B};{verticalHeightDifferenceV4B};" +
+                    $"{penaltyV5};{distanceHorizontalV5};{verticalHeightDifferenceV5};";
+                //    $"\n{track.Pilot.PilotNumber};{entryPoint.utmZone};{entryPoint.easting};{entryPoint.northing};{entryPoint.TimeStamp};{exitPoint.utmZone};{exitPoint.easting};{exitPoint.northing};{exitPoint.TimeStamp};{pointsInPz.Count};{horizontalInfringement};{verticalInfringement};{penaltyV1};{penaltyV2};{penaltyV3A};{penaltyV3B};{penaltyV3C};{penaltyV4A};{penaltyV4B};{penaltyV5}";
 
                 Console.WriteLine($"Finished pilot #{track.Pilot.PilotNumber}.");
             }
@@ -656,7 +709,8 @@ namespace PZTesting
             }
         }
 
-        private static void ParseFile(string path)
+        /*
+         private static void ParseFile(string path)
         {
             if (GpsMode == null)
             {
@@ -720,6 +774,7 @@ namespace PZTesting
             List<Coordinate> pointsInPz = new();
             foreach (Coordinate trackPoint in track.TrackPoints)
             {
+                //if (Pz.IsInsidePz(GpsMode.Value, trackPoint, out double horizontalInfringement, out double verticalInfringement))
                 if (Pz.IsInsidePz(GpsMode.Value, trackPoint, out double horizontalInfringement))
                 {
                     isInsidePz = true;
@@ -743,6 +798,7 @@ namespace PZTesting
             Console.WriteLine(
                 $"Exit: {exitPoint.utmZone} {exitPoint.easting} {exitPoint.northing} at {exitPoint.TimeStamp}");
         }
+         */
 
 
         private static void ShowTitle(string title)
