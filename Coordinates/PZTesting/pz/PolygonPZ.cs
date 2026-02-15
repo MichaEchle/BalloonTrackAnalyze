@@ -19,7 +19,7 @@ public class PolygonPz : IPz
     private readonly double _westernmost;
 
     private readonly double _maxDistanceInPz = 0;
-    private Coordinate _virualCenterCoordinate = null;
+    private Coordinate _virtualCenterCoordinate = null;
 
     public PolygonPz(String pltFilePath, double minHeight, double maxHeight, double virtualCenterHeight)
     {
@@ -78,9 +78,10 @@ public class PolygonPz : IPz
 
         double centerEasting = ((maxEastingC - minEastingC) / 2) + minEastingC;
         double centerNorting = ((maxNorthingC - minNorthingC) / 2) + minNorthingC;
-        _virualCenterCoordinate =
+        _virtualCenterCoordinate =
             CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate(_polygon[0].utmZone, centerEasting, centerNorting,
                 virtualCenterHeight);
+        Console.WriteLine($"Calculated virtual center: {_virtualCenterCoordinate}");
     }
 
 
@@ -160,7 +161,7 @@ public class PolygonPz : IPz
     }
 
 
-    public void CalculatePenaltyVariant2(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty,
+    public void CalculatePenaltyVariant2A(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty,
         out double horizontalInfringement, out double verticalInfringement)
     {
         double sumDeltaHeight = 0;
@@ -170,23 +171,23 @@ public class PolygonPz : IPz
             double deltaHeight = useGpsAltitude
                 ? trackpoint.AltitudeGPS - _maxHeight
                 : trackpoint.AltitudeBarometric - _maxHeight;
-            //summDeltaHeight += deltaHeight;
+            //sumDeltaHeight += deltaHeight;
             sumDeltaHeight += Math.Abs(deltaHeight);
-            if (Math.Abs(deltaHeight) > verticalInfringement)
+            if (Math.Abs(deltaHeight) > Math.Abs(verticalInfringement))
             {
-                verticalInfringement = deltaHeight;
+                verticalInfringement = Math.Abs(deltaHeight);
             }
         }
 
         horizontalInfringement = 0;
 
         penalty = CoordinateHelpers.ConvertToFeet(sumDeltaHeight);
-        penalty *= CorrectionFactor.VARIANT_2;
+        penalty *= CorrectionFactor.VARIANT_2a;
         penalty = Math.Abs(penalty);
     }
 
 
-    public void CalculatePenaltyVariant3A(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty,
+    public void CalculatePenaltyVariant2B(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty,
         out double horizontalInfringement, out double verticalInfringement)
     {
         //implementation analog to current COH rule R7.5 of blue PZ, but infraction is squared, overall divided by 10.000
@@ -200,19 +201,19 @@ public class PolygonPz : IPz
                 : trackpoint.AltitudeBarometric - _maxHeight;
             sumDeltaHeight += Math.Abs(deltaHeight * deltaHeight);
 
-            if (Math.Abs(deltaHeight) > verticalInfringement)
+            if (Math.Abs(deltaHeight) > Math.Abs(verticalInfringement))
             {
-                verticalInfringement = deltaHeight;
+                verticalInfringement = Math.Abs(deltaHeight);
             }
         }
 
         penalty = CoordinateHelpers.ConvertToFeet(sumDeltaHeight);
         horizontalInfringement = 0;
-        penalty *= CorrectionFactor.VARIANT_3a;
+        penalty *= CorrectionFactor.VARIANT_2b;
         penalty = Math.Abs(penalty);
     }
 
-    public void CalculatePenaltyVariant3B(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty,
+    public void CalculatePenaltyVariant2C(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty,
         out double horizontalInfringement, out double verticalInfringement)
     {
         //implementation analog to current COH rule R7.5 of blue PZ, but infraction is doubled, overall divided by 100
@@ -225,19 +226,19 @@ public class PolygonPz : IPz
                 : trackpoint.AltitudeBarometric - _maxHeight;
             sumDeltaHeight += Math.Abs(deltaHeight * 2);
 
-            if (Math.Abs(deltaHeight) > verticalInfringement)
+            if (Math.Abs(deltaHeight) > Math.Abs(verticalInfringement))
             {
-                verticalInfringement = deltaHeight;
+                verticalInfringement = Math.Abs(deltaHeight);
             }
         }
 
         penalty = CoordinateHelpers.ConvertToFeet(sumDeltaHeight);
-        penalty *= CorrectionFactor.VARIANT_3b;
+        penalty *= CorrectionFactor.VARIANT_2c;
         penalty = Math.Abs(penalty);
         horizontalInfringement = 0;
     }
 
-    public void CalculatePenaltyVariant3C(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty,
+    public void CalculatePenaltyVariant2D(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty,
         out double horizontalInfringement, out double verticalInfringement)
     {
         //implementation analog to current COH rule R7.5 of blue PZ, but infraction with weighting of 20%, overall divided by 100
@@ -249,29 +250,122 @@ public class PolygonPz : IPz
                 ? trackpoint.AltitudeGPS - _maxHeight
                 : trackpoint.AltitudeBarometric - _maxHeight;
             sumDeltaHeight += Math.Abs(deltaHeight * 1.2);
-            Console.WriteLine("PolyGon V3: deltaHeight " + deltaHeight + " sumDeltaHeight: " + sumDeltaHeight);
-            if (Math.Abs(deltaHeight) > verticalInfringement)
+            //Console.WriteLine("PolyGon V2D: deltaHeight " + deltaHeight + " sumDeltaHeight: " + sumDeltaHeight +" verticalInfringement: " + verticalInfringement);
+            if (Math.Abs(deltaHeight) > Math.Abs(verticalInfringement))
             {
-                verticalInfringement = deltaHeight;
+                verticalInfringement = Math.Abs(deltaHeight);
             }
         }
 
         penalty = CoordinateHelpers.ConvertToFeet(sumDeltaHeight);
-        Console.WriteLine("PolyGon V3: PrePenalty: " + penalty);
-        penalty *= CorrectionFactor.VARIANT_3c;
+        //Console.WriteLine("PolyGon V2D: PrePenalty: " + penalty);
+        penalty *= CorrectionFactor.VARIANT_2d;
         penalty = Math.Abs(penalty);
-        Console.WriteLine("PolyGon V3: Penalty incl. factor: " + penalty);
+        //Console.WriteLine("PolyGon V2D: Penalty incl. factor: " + penalty);
 
         horizontalInfringement = 0;
     }
+public void CalculatePenaltyVariant3A(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty,
+        out double horizontalInfringement, out double verticalInfringement)
+    {
+        horizontalInfringement = 0;
+        verticalInfringement = 0;
+        double horizontalFactor = 0;
+        double verticalFactor = 0;
+        double overAllHorizontal = 0;
+        double overAllVertical = 0;
 
+
+        Coordinate previousCoordinate = null;
+        foreach (Coordinate trackpoint in pointsInPz)
+        {
+            if (previousCoordinate == null)
+            {
+                previousCoordinate = trackpoint;
+                continue;
+            }
+
+            double altPrev = useGpsAltitude ? previousCoordinate.AltitudeGPS : previousCoordinate.AltitudeBarometric;
+            double altCurr = useGpsAltitude ? trackpoint.AltitudeGPS : trackpoint.AltitudeBarometric;
+
+            double distanceBetween = CoordinateHelpers.Calculate2DDistanceUTM(previousCoordinate, trackpoint);
+            double heightBetween = Math.Abs(_maxHeight - altCurr);
+//            double heightBetween = Math.Abs(altCurr - altPrev);
+            horizontalInfringement += Math.Abs(distanceBetween);
+            verticalInfringement += Math.Abs(heightBetween);
+            previousCoordinate = trackpoint;
+            horizontalFactor = horizontalInfringement / _maxDistanceInPz;
+            verticalFactor = verticalInfringement / _maxHeight;
+            /*Console.WriteLine("Polygon 3A: horizontalInfringement: " + horizontalInfringement + " horizontalFactor: " +
+                              horizontalFactor + " verticalInfringement: " + verticalInfringement +
+                              " verticalFactor: " + verticalFactor);*/
+        }
+
+        penalty = (verticalFactor + horizontalFactor) / 2; // * 0.1;
+        penalty *= CorrectionFactor.VARIANT_3a;
+        penalty = Math.Abs(penalty) * 100;   // *1000;
+        //Console.WriteLine("PolyGon V3A: Penalty: " + penalty);
+    }
+
+    public void CalculatePenaltyVariant3B(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty,
+        out double horizontalInfringement, out double verticalInfringement)
+    {
+        horizontalInfringement = 0;
+        verticalInfringement = 0;
+        double horizontalFactor = 0;
+        double verticalFactor = 0;
+        double overAllHorizontal = 0;
+        double overAllVertical = 0;
+
+        int pointsCalculated = 0;
+
+        Coordinate previousCoordinate = null;
+        foreach (Coordinate trackpoint in pointsInPz)
+        {
+            if (previousCoordinate == null)
+            {
+                previousCoordinate = trackpoint;
+                continue;
+            }
+
+            double altPrev = useGpsAltitude ? previousCoordinate.AltitudeGPS : previousCoordinate.AltitudeBarometric;
+            double altCurr = useGpsAltitude ? trackpoint.AltitudeGPS : trackpoint.AltitudeBarometric;
+
+            double distanceBetween = CoordinateHelpers.Calculate2DDistanceUTM(previousCoordinate, trackpoint);
+            double heightBetween = Math.Abs(_maxHeight - altCurr);
+//            double heightBetween = Math.Abs(altCurr - altPrev);
+            horizontalInfringement += Math.Abs(distanceBetween);
+            verticalInfringement += Math.Abs(heightBetween);
+            previousCoordinate = trackpoint;
+
+
+            horizontalFactor = horizontalInfringement / _maxDistanceInPz;
+            // Durchschnitt aller Höhenverletzungen im PZ
+
+            // verticalFactor = Durchschnitt / PZ ceiling
+            pointsCalculated++;
+            verticalFactor = verticalInfringement / pointsCalculated;
+            //verticalFactor = verticalInfringement / _maxHeight;
+
+            /* Console.WriteLine("Polygon 3B: horizontalInfringement: " + horizontalInfringement + " horizontalFactor: " +
+                          horizontalFactor + " verticalInfringement: " + verticalInfringement + " verticalFactor: " +
+                          verticalFactor); */
+        }
+
+        penalty = (verticalFactor + horizontalFactor) / 2; // * 0.01;
+        penalty *= CorrectionFactor.VARIANT_3b;
+        penalty = Math.Abs(penalty) * 5;    // *500;
+        verticalInfringement = verticalFactor;
+        //Console.WriteLine("PolyGon V3B: Penalty: " + penalty);
+    }
     public void CalculatePenaltyVariant4A(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty,
         out double horizontalInfringement, out double verticalInfringement)
     {
         //ratio of the vertical infraction to the 2D distance between the track point and the virtual center, overall divided by 10
         double sumInfringement = 0;
-        horizontalInfringement = 0;
+        horizontalInfringement = 10000;
         verticalInfringement = 0;
+        double worstRatio = 0;
 
         foreach (Coordinate trackpoint in pointsInPz)
         {
@@ -279,32 +373,32 @@ public class PolygonPz : IPz
                 ? trackpoint.AltitudeGPS - _maxHeight
                 : trackpoint.AltitudeBarometric - _maxHeight;
             double deltaDistance =
-                CalculationHelper.Calculate2DDistance(trackpoint, _virualCenterCoordinate, CalculationType.UTM);
+                CalculationHelper.Calculate2DDistance(trackpoint, _virtualCenterCoordinate, CalculationType.UTM);
             sumInfringement += (Math.Abs(deltaHeight) / Math.Abs(deltaDistance));
-            if (Math.Abs(deltaHeight) > verticalInfringement)
+
+            if (sumInfringement > worstRatio)
             {
-                verticalInfringement = deltaHeight;
+                worstRatio = sumInfringement;
             }
 
-            if (Math.Abs(deltaDistance) > horizontalInfringement)
+            //Console.WriteLine("PolyGon V4A: deltaHeight: " + deltaHeight + " deltaDistance: " + deltaDistance + " sumInfringement: " + sumInfringement+ " worstRatio: " + worstRatio);
+
+            if (Math.Abs(deltaHeight) > Math.Abs(verticalInfringement))
             {
-                horizontalInfringement = deltaHeight;
+                verticalInfringement = Math.Abs(deltaHeight);
             }
 
-            if (Math.Abs(deltaHeight) > verticalInfringement)
+            if (Math.Abs(deltaDistance) < Math.Abs(horizontalInfringement))
             {
-                verticalInfringement = deltaHeight;
-            }
-
-            if (Math.Abs(deltaDistance) > horizontalInfringement)
-            {
-                horizontalInfringement = deltaHeight;
+                horizontalInfringement = Math.Abs(deltaDistance);
             }
         }
 
         penalty = CoordinateHelpers.ConvertToFeet(sumInfringement);
+        //Console.WriteLine("PolyGon V4A: PrePenalty: " + penalty);
         penalty *= CorrectionFactor.VARIANT_4a;
         penalty = Math.Abs(penalty);
+        //Console.WriteLine("PolyGon V4A: Penalty: " + penalty + " worstRatio: " + worstRatio);
     }
 
     public void CalculatePenaltyVariant4B(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty,
@@ -312,48 +406,46 @@ public class PolygonPz : IPz
     {
         //ratio of the vertical infraction to the 3D distance between the track point and the virtual center, overall divided by 1
         double sumInfringement = 0;
-        horizontalInfringement = 0;
+        horizontalInfringement = 10000;
         verticalInfringement = 0;
+        double worstRatio = 0;
+
         foreach (Coordinate trackpoint in pointsInPz)
         {
             double deltaHeight = useGpsAltitude
                 ? trackpoint.AltitudeGPS - _maxHeight
                 : trackpoint.AltitudeBarometric - _maxHeight;
-            double deltaDistance = CoordinateHelpers.Calculate3DDistance(trackpoint, _virualCenterCoordinate,
+            double deltaDistance = CoordinateHelpers.Calculate3DDistance(trackpoint, _virtualCenterCoordinate,
                 useGpsAltitude, CalculationType.UTM);
+
             sumInfringement += (deltaHeight / deltaDistance);
-            if (Math.Abs(deltaHeight) > verticalInfringement)
+
+            if (sumInfringement > worstRatio)
             {
-                verticalInfringement = deltaHeight;
+                worstRatio = sumInfringement;
             }
 
-            if (Math.Abs(deltaDistance) > horizontalInfringement)
+            /*Console.WriteLine("PolyGon V4B: deltaHeight: " + deltaHeight + " deltaDistance: " + deltaDistance +
+                              " sumInfringement: " + sumInfringement + " worstRatio: " + worstRatio);
+            */
+
+            if (Math.Abs(deltaHeight) > Math.Abs(verticalInfringement))
             {
-                horizontalInfringement = deltaHeight;
+                verticalInfringement = Math.Abs(deltaHeight);
+            }
+
+            if (Math.Abs(deltaDistance) < Math.Abs(horizontalInfringement))
+            {
+                horizontalInfringement = Math.Abs(deltaDistance);
             }
         }
 
         penalty = sumInfringement;
+        //Console.WriteLine("PolyGon V4B: PrePenalty: " + penalty);
         penalty *= CorrectionFactor.VARIANT_4b;
         penalty = Math.Abs(penalty);
+        //Console.WriteLine("PolyGon V4B: Penalty: " + penalty + " worstRatio: " + worstRatio);
     }
 
-    public void CalculatePenaltyVariant5(bool useGpsAltitude, List<Coordinate> pointsInPz, out double penalty,
-        out double horizontalInfringement, out double verticalInfringement)
-    {
-        Coordinate entry = pointsInPz.First();
-        Coordinate exit = pointsInPz.Last();
-        double minHeightInPz = pointsInPz.Min(coordinate =>
-            useGpsAltitude ? coordinate.AltitudeGPS : coordinate.AltitudeBarometric);
-
-        double distanceHorizontal = CalculationHelper.Calculate2DDistance(entry, exit, CalculationType.UTM);
-        double verticalPercentageDecimal = (_maxHeight - minHeightInPz) / (_maxHeight - _minHeight);
-        double horizontalPercentage = (distanceHorizontal / _maxDistanceInPz) * 100;
-        double verticalPercentage = 100 - (verticalPercentageDecimal * 100);
-        penalty = ((verticalPercentage + horizontalPercentage) / 2) * 500;
-        penalty *= CorrectionFactor.VARIANT_5;
-        penalty = Math.Abs(penalty);
-        horizontalInfringement = -1;
-        verticalInfringement = -1;
-    }
+    
 }

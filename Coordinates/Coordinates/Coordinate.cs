@@ -83,6 +83,19 @@ namespace Coordinates
             return new Coordinate(Latitude, Longitude, AltitudeGPS, AltitudeBarometric, TimeStamp);
         }
 
+        public override string ToString()
+        {
+            return 
+                $"Long: {Longitude} "+
+                $"Lat: {Latitude} "+
+                $"Zone: {utmZone} "+
+                $"Easting: {easting} "+
+                $"Northing: {northing} "+
+                $"Alt (Baro): {AltitudeBarometric} "+
+                $"Alt (GPS): {AltitudeGPS} "
+                ;
+        }
+
         public Coordinate FillCoordinate()
         {
             if (northing == 0 || easting == 0 || utmZone == null)
