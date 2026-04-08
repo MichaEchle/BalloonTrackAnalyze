@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 
 namespace LoggerComponent
 {
@@ -225,7 +224,7 @@ namespace LoggerComponent
 				}
 				catch (Exception e)
 				{
-					MessageBox.Show(string.Format("Failed to create log file backup:\r\n\r\n'{0}'", e.Message), "Log file error !", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					Console.Error.WriteLine($"Failed to create log file backup: '{e.Message}'");
 				}
 			}
 

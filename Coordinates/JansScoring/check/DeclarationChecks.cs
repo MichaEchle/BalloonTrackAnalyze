@@ -4,7 +4,6 @@ using JansScoring.flights;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Windows.Networking.Sockets;
 
 namespace JansScoring.check;
 

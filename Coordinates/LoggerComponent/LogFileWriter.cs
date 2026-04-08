@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
-using System.Windows.Forms;
 
 namespace LoggerComponent
 {
@@ -82,7 +81,7 @@ namespace LoggerComponent
 
 				catch (Exception e)
 				{
-					MessageBox.Show(string.Format("Could not create file: {0}", e.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					Console.Error.WriteLine($"Could not create file: {e.Message}");
 					return; // error
 				}
 
@@ -135,7 +134,7 @@ namespace LoggerComponent
 
 					catch (Exception e)
 					{
-						MessageBox.Show(string.Format("Could not close file: {0}", e.Message), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+						Console.Error.WriteLine($"Could not close file: {e.Message}");
 						return; // error
 					}
 				}

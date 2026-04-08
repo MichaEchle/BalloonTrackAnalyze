@@ -6,7 +6,6 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
-using Windows.ApplicationModel.Background;
 
 namespace Coordinates
 {

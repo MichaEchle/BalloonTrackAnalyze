@@ -1,10 +1,10 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('Windows'))">net8.0;net8.0-windows</TargetFrameworks>
+    <TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('Windows'))">net8.0</TargetFrameworks>
     <OutputType>Library</OutputType>
-    <UseWindowsForms>true</UseWindowsForms>
-    <TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
-    <SupportedOSPlatformVersion>10.0.19041.0</SupportedOSPlatformVersion>
+    <UseWindowsForms Condition="'$(TargetFramework)' == 'net8.0-windows'">true</UseWindowsForms>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -18,10 +18,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
+    <PackageReference Include="System.Resources.Extensions" Version="8.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
     <Resource Include="Icons\Copy_16x.png" />
     <Resource Include="Icons\OpenFile_16x.png" />
     <Resource Include="Icons\StatusCriticalError_exp_16x.png" />
@@ -30,7 +30,7 @@
     <Resource Include="Icons\WrapPanel_16x.png" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
     <Compile Update="LogFileViewer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -44,7 +44,15 @@
     </Compile>
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' != 'net8.0-windows'">
+    <Compile Remove="LogFileViewer.cs" />
+    <Compile Remove="LogFileViewer.Designer.cs" />
+    <Compile Remove="LogListView.cs" />
+    <Compile Remove="LogListView.Designer.cs" />
+    <Compile Remove="Properties\Resources.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net8.0-windows'">
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
