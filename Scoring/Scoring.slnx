@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="../Coordinates/axmer2024.pdf" />
+    <File Path="../Coordinates/coh_2024_-_final.pdf" />
+    <File Path="../Coordinates/ToDoList.txt" />
+    <File Path=".editorconfig" />
+  </Folder>
+  <Project Path="Scoring/Scoring.csproj" />
+</Solution>
