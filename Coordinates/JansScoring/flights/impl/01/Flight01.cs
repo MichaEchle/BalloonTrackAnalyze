@@ -1,5 +1,6 @@
 ﻿using Coordinates;
 using JansScoring.calculation;
+using JansScoring.flights.impl._01.tasks;
 using System;
 
 namespace JansScoring.flights.impl._01;
@@ -13,12 +14,12 @@ public class Flight01 : Flight
 
     public override DateTime StartOfLaunchPeriode()
     {
-        return new DateTime(2025, 08, 06, 03, 54, 00);
+        return new DateTime(2026, 04, 10, 14,00, 00);
     }
 
     public override int LaunchPeriode()
     {
-        return 66;
+        return 180;
     }
 
     public override bool UseGPSAltitude()
@@ -38,7 +39,12 @@ public class Flight01 : Flight
 
     public override Task[] Tasks()
     {
-        return new Task[] { };
+        return new Task[]
+        {
+            new Task01(this),
+            new Task02(this),
+            new Task03(this)
+        };
     }
 
     public override CalculationType CalculationType()
@@ -48,16 +54,16 @@ public class Flight01 : Flight
 
     public override double SeperationAltitudeFeet()
     {
-        return 1800;
+        return 3300;
     }
 
     public override Coordinate BackupCoordinates()
     {
-        return CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 625598, 5521249);
+        return CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 516350, 5357050);
     }
 
     public override int QNH()
     {
-        return 1025;
+        return 1013;
     }
 }

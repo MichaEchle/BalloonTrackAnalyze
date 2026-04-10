@@ -2,18 +2,19 @@
 using JansScoring.flights.tasks;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
 
 namespace JansScoring.flights.impl._01.tasks;
 
-public class Task01 : TaskJDG
+public class Task02 : TaskHWZ
 {
-    public Task01(Flight flight) : base(flight)
+    public Task02(Flight flight) : base(flight)
     {
     }
 
     public override int TaskNumber()
     {
-        return 1;
+        return 2;
     }
 
     public override bool ScoringChecks(Track track, ref string comment)
@@ -29,7 +30,6 @@ public class Task01 : TaskJDG
             Coordinate goal = goalList[index];
             goals.Add((index.ToString(), goal));
         }
-
 
         List<(string identifier, double distance)> distanceBetweenLaunchPointAndGoals = TrackHelpers.Calculate2DDistanceBetweenLaunchPointAndJudeDeclaredGoals(launchCoordinate, goals);
 
@@ -49,7 +49,9 @@ public class Task01 : TaskJDG
     {
         return new[]
         {
-            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 512990, 5355290)
+            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 515360, 5355170),
+            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 514490, 5354030),
+            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 515970, 5353900),
         };
     }
 
@@ -61,7 +63,7 @@ public class Task01 : TaskJDG
 
     protected override int MarkerNumber()
     {
-        return 1;
+        return 2;
     }
 
     protected override int MMA()
