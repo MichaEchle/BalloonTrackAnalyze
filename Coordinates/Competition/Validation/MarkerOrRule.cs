@@ -1,10 +1,9 @@
-﻿using Coordinates;
-using System.Collections.Generic;
+using Coordinates;
 
 namespace Competition.Validation;
 public class MarkerOrRule : IMarkerValidationRule
 {
-    public List<IMarkerValidationRule> ValidationRules
+    public required List<IMarkerValidationRule> ValidationRules
     {
         get; set;
     }
@@ -12,10 +11,11 @@ public class MarkerOrRule : IMarkerValidationRule
     public bool IsComplaintToRule(MarkerDrop marker)
     {
         bool isConform = false;
-        foreach (var validationRule in ValidationRules)
+        foreach (IMarkerValidationRule validationRule in ValidationRules)
         {
             isConform |= validationRule.IsComplaintToRule(marker);
         }
+
         return isConform;
     }
 

@@ -1,6 +1,6 @@
-﻿using Coordinates;
+using Coordinates;
 
-namespace Shapes;
+namespace Shapes.Shapes3D;
 
 public class Sphere : Shapes3D
 {

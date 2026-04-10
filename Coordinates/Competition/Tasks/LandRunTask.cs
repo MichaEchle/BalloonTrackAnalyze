@@ -1,12 +1,10 @@
-﻿using Competition.Validation;
+using Competition.Validation;
 using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace Competition;
+namespace Competition.Tasks;
 
 public class LandRunTask : ICompetitionTask
 {
@@ -55,7 +53,7 @@ public class LandRunTask : ICompetitionTask
     /// <para>optional. use null to omit</para>
     /// <para>use <see cref="MarkerAndRule"/> or <see cref="MarkerOrRule"/> to chain multiple rules together</para>
     /// </summary>
-    public IMarkerValidationRule MarkerValidationRule
+    public IMarkerValidationRule? MarkerValidationRule
     {
         get; set;
     } = null;
@@ -85,20 +83,21 @@ public class LandRunTask : ICompetitionTask
         MarkerDrop firstMarker = ValidationHelper.GetValidMarker(track, FirstMarkerNumber, MarkerValidationRule, ValidationStrictness);
         if (firstMarker is null)
         {
-            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), FirstMarkerNumber);
+            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, !string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "", FirstMarkerNumber);
             return false;
         }
+
         MarkerDrop secondMarker = ValidationHelper.GetValidMarker(track, SecondMarkerNumber, MarkerValidationRule, ValidationStrictness);
         if (secondMarker is null)
         {
-            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), SecondMarkerNumber);
+            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, !string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "", SecondMarkerNumber);
             return false;
         }
 
         MarkerDrop thirdMarker = ValidationHelper.GetValidMarker(track, ThirdMarkerNumber, MarkerValidationRule, ValidationStrictness);
         if (thirdMarker is null)
         {
-            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), ThirdMarkerNumber);
+            Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Marker '{markerNumber}' is invalid or doesn't exists", ToString(), track.Pilot.PilotNumber, !string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "", ThirdMarkerNumber);
             return false;
         }
 
@@ -113,7 +112,8 @@ public class LandRunTask : ICompetitionTask
     /// <param name="firstMarkerNumber">The marker number of the first marker (mandatory)</param>
     /// <param name="secondMarkerNumber">The marker number of the second marker (mandatory)</param>
     /// <param name="thirdMarkerNumber">The marker number of the third marker (mandatory)</param>
-    /// <param name="markerValidationRules">List of rules for marker validation (optional; leave list empty to omit)</param>
+    /// <param name="markerValidationRule"></param>
+    /// <param name="validationStrictness"></param>
     public void SetupLandRun(int taskNumber, int firstMarkerNumber, int secondMarkerNumber, int thirdMarkerNumber, IMarkerValidationRule markerValidationRule, ValidationStrictnessType validationStrictness)
     {
         TaskNumber = taskNumber;

@@ -1,12 +1,10 @@
-﻿using Competition.Validation;
+using Competition.Validation;
 using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace Competition;
+namespace Competition.Tasks;
 
 public class PieTask : ICompetitionTask
 {
@@ -76,7 +74,7 @@ public class PieTask : ICompetitionTask
         /// <para>optional. use null to omit</para>
         /// <para>use <see cref="DeclarationAndRule"/> or <see cref="DeclarationOrRule"/> to chain multiple rules together</para>
         /// </summary>
-        public IDeclarationValidationRule DeclarationValidationRule
+        public IDeclarationValidationRule? DeclarationValidationRule
         {
             get; set;
         } = null;
@@ -111,35 +109,47 @@ public class PieTask : ICompetitionTask
             result = 0.0;
             List<(int, Coordinate)> trackPointsInTier = [];
 
-            Declaration targetDeclaration = ValidationHelper.GetValidDeclaration(track, GoalNumber, DeclarationValidationRule,ValidationStrictness);
+            Declaration targetDeclaration = ValidationHelper.GetValidDeclaration(track, GoalNumber, DeclarationValidationRule, ValidationStrictness);
             if (targetDeclaration is null)
             {
-                Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No valid goal found for goal '#{goalNumber}'", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""), GoalNumber);
+                Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': No valid goal found for goal '#{goalNumber}'", ToString(), track.Pilot.PilotNumber, !string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "", GoalNumber);
                 return false;
             }
+
             List<Coordinate> coordinates = track.TrackPoints;
             if (!double.IsNaN(LowerBoundary))
             {
                 if (useGPSAltitude)
+                {
                     coordinates = coordinates.Where(x => x.AltitudeGPS >= LowerBoundary).ToList();//take all point above lower boundary
+                }
                 else
+                {
                     coordinates = coordinates.Where(x => x.AltitudeBarometric >= LowerBoundary).ToList();//take all point above lower boundary
+                }
             }
+
             if (!double.IsNaN(UpperBoundary))
             {
                 if (useGPSAltitude)
+                {
                     coordinates = coordinates.Where(x => x.AltitudeGPS <= UpperBoundary).ToList();//take all points below upper boundary
+                }
                 else
+                {
                     coordinates = coordinates.Where(x => x.AltitudeBarometric <= UpperBoundary).ToList();//take all points below upper boundary
+                }
             }
 
             for (int index = 0; index < coordinates.Count; index++)
             {
                 double distanceToGoal = CoordinateHelpers.Calculate2DDistanceHavercos(coordinates[index], targetDeclaration.DeclaredGoal);//calculate distance to goal
                 if (distanceToGoal <= Radius)//save all trackpoints within the radius
+                {
                     trackPointsInTier.Add((track.TrackPoints.FindIndex(x => x == coordinates[index]), coordinates[index]));
-
+                }
             }
+
             List<List<Coordinate>> chunksInTier = [];
             int addIndex = 0;
             chunksInTier.Add([]);
@@ -191,6 +201,7 @@ public class PieTask : ICompetitionTask
                     }
                 }
             }
+
             result *= Multiplier;
             return true;
         }
@@ -202,8 +213,10 @@ public class PieTask : ICompetitionTask
         /// <param name="radius">The radius of the pie tier in meter (mandatory)</param>
         /// <param name="lowerBoundary">Lower boundary of the donut in meter (optional; use double.NaN to omit)</param>
         /// <param name="upperBoundary">Upper boundary of the donut in meter (optional; use double.NaN to omit)</param>
+        /// <param name="declarationValidationRule"></param>
+        /// <param name="validationStrictness"></param>
         /// <param name="isReEntranceAllowed">Specify whether or not re-entrance in the donut is allowed (mandatory)</param>
-        /// <param name="declarationValidationRules">List of rules for declaration validation (optional; leave list empty to omit)</param>
+        /// <param name="multiplier"></param>
         public void SetupPieTier(int goalNumber, double radius, bool isReEntranceAllowed, double multiplier, double lowerBoundary, double upperBoundary, IDeclarationValidationRule declarationValidationRule, ValidationStrictnessType validationStrictness)
         {
             GoalNumber = goalNumber;
@@ -271,11 +284,13 @@ public class PieTask : ICompetitionTask
         {
             if (!tier.CalculateTierResult(track, useGPSAltitude, out double tempResult))
             {
-                Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Failed to calculate tier result", ToString(), track.Pilot.PilotNumber, (!string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : ""));
+                Logger?.LogError("Failed to calculate result for '{task}' and Pilot '#{pilotNumber}{pilotName}': Failed to calculate tier result", ToString(), track.Pilot.PilotNumber, !string.IsNullOrWhiteSpace(track.Pilot.FirstName) ? $"({track.Pilot.FirstName},{track.Pilot.LastName})" : "");
                 return false;
             }
+
             result += tempResult;
         }
+
         return true;
     }
     /// <summary>

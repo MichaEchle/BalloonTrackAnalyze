@@ -1,9 +1,8 @@
-﻿using Coordinates;
+using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
-using System;
 
-namespace Competition;
+namespace Competition.Validation;
 
 public class DeclarationToGoalHeightRule : IDeclarationValidationRule
 {
@@ -80,11 +79,9 @@ public class DeclarationToGoalHeightRule : IDeclarationValidationRule
     public bool IsComplaintToRule(Declaration declaration)
     {
         bool isConform = true;
-        double heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal;
-        if (UseGPSAltitude)
-            heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal = declaration.DeclaredGoal.AltitudeGPS - declaration.PositionAtDeclaration.AltitudeGPS;
-        else
-            heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal = declaration.DeclaredGoal.AltitudeBarometric - declaration.PositionAtDeclaration.AltitudeBarometric;
+        double heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal = UseGPSAltitude
+            ? declaration.DeclaredGoal.AltitudeGPS - declaration.PositionAtDeclaration.AltitudeGPS
+            : declaration.DeclaredGoal.AltitudeBarometric - declaration.PositionAtDeclaration.AltitudeBarometric;
 
         switch (HeightDifference)
         {
@@ -93,7 +90,10 @@ public class DeclarationToGoalHeightRule : IDeclarationValidationRule
                 {
                     double tempMinimumDifference = MinimumHeightDifference;
                     if (tempMinimumDifference > 0)
+                    {
                         tempMinimumDifference *= -1;
+                    }
+
                     if (heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal > tempMinimumDifference)
                     {
                         double absoluteInfringement = tempMinimumDifference - heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal;
@@ -102,11 +102,15 @@ public class DeclarationToGoalHeightRule : IDeclarationValidationRule
                         isConform = false;
                     }
                 }
+
                 if (!double.IsNaN(MaximumHeightDifference))
                 {
                     double tempMaximumDifference = MaximumHeightDifference;
                     if (tempMaximumDifference > 0)
+                    {
                         tempMaximumDifference *= -1;
+                    }
+
                     if (heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal < tempMaximumDifference)
                     {
                         double absoluteInfringement = heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal - tempMaximumDifference;
@@ -115,10 +119,12 @@ public class DeclarationToGoalHeightRule : IDeclarationValidationRule
                         isConform = false;
                     }
                 }
+
                 break;
             case HeightDifferenceType.AbsoluteDifference:
                 heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal = Math.Abs(heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal);
                 if (!double.IsNaN(MinimumHeightDifference))
+                {
                     if (heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal < Math.Abs(MinimumHeightDifference))
                     {
                         double absoluteInfringement = Math.Abs(MinimumHeightDifference) - heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal;
@@ -126,7 +132,10 @@ public class DeclarationToGoalHeightRule : IDeclarationValidationRule
                         Logger?.LogWarning("Declaration {goalNumber} is not conform: {minimumHeightDifference}m - {heightDifference}m = {absoluteInfringement}m ({relativeInfringement}) [minimum - actual = absolute (relative)]", declaration.GoalNumber, Math.Abs(MinimumHeightDifference), heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal, absoluteInfringement, relativeInfringement);
                         isConform = false;
                     }
+                }
+
                 if (!double.IsNaN(MaximumHeightDifference))
+                {
                     if (heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal > Math.Abs(MaximumHeightDifference))
                     {
                         double absoluteInfringement = heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal - Math.Abs(MaximumHeightDifference);
@@ -134,13 +143,18 @@ public class DeclarationToGoalHeightRule : IDeclarationValidationRule
                         Logger?.LogWarning("Declaration {goalNumber} is not conform: {heightDifference}m - {maximumHeightDifference}m  = {absoluteInfringement}m ({relativeInfringement}) [minimum - actual = absolute (relative)]", declaration.GoalNumber, heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal, Math.Abs(MaximumHeightDifference), absoluteInfringement, relativeInfringement);
                         isConform = false;
                     }
+                }
+
                 break;
             case HeightDifferenceType.PositiveDifferenceOnly:
                 if (!double.IsNaN(MinimumHeightDifference))
                 {
                     double tempMinimumDifference = MinimumHeightDifference;
                     if (tempMinimumDifference < 0)
+                    {
                         tempMinimumDifference *= -1;
+                    }
+
                     if (heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal < tempMinimumDifference)
                     {
                         double absoluteInfringement = tempMinimumDifference - heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal;
@@ -149,11 +163,15 @@ public class DeclarationToGoalHeightRule : IDeclarationValidationRule
                         isConform = false;
                     }
                 }
+
                 if (!double.IsNaN(MaximumHeightDifference))
                 {
                     double tempMaximumDifference = MaximumHeightDifference;
                     if (tempMaximumDifference < 0)
+                    {
                         tempMaximumDifference *= -1;
+                    }
+
                     if (heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal > tempMaximumDifference)
                     {
                         double absoluteInfringement = heightDifferenceBetweenPositionOfDeclarationAndDeclaredGoal - tempMaximumDifference;
@@ -162,6 +180,7 @@ public class DeclarationToGoalHeightRule : IDeclarationValidationRule
                         isConform = false;
                     }
                 }
+
                 break;
         }
 
@@ -173,6 +192,7 @@ public class DeclarationToGoalHeightRule : IDeclarationValidationRule
     /// </summary>
     /// <param name="minimumHeightDifference">Minimum difference in height between declaration position and declared goal in meter (optional; use double.NaN to omit)</param>
     /// <param name="maximumHeightDifference">Maximum difference in height between declaration position and declared goal in meter (optional; use double.NaN to omit)</param>
+    /// <param name="heightDifference"></param>
     /// <param name="useGPSAltitude">rue: use GPS altitude;false: use barometric altitude</param>
     public void SetupRule(double minimumHeightDifference, double maximumHeightDifference, HeightDifferenceType heightDifference, bool useGPSAltitude)
     {

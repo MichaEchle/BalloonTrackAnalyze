@@ -1,8 +1,8 @@
-﻿using Coordinates;
+using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 
-namespace Competition;
+namespace Competition.Validation;
 
 public class MarkerToGoalDistanceRule : IMarkerValidationRule
 {
@@ -49,7 +49,7 @@ public class MarkerToGoalDistanceRule : IMarkerValidationRule
     /// <para>needs preprocessing of track</para>
     /// <see cref="GoalNumber"/>
     /// </summary>
-    public Declaration Declaration
+    public Declaration? Declaration
     {
         get; set;
     } = null;
@@ -77,30 +77,30 @@ public class MarkerToGoalDistanceRule : IMarkerValidationRule
         bool isConform = true;
         if (Declaration != null)
         {
-            double distanceBetweenMarkerAndGoal;
-            if (Use3DDistance)
-            {
-                distanceBetweenMarkerAndGoal = CoordinateHelpers.Calculate3DDistance(marker.MarkerLocation, Declaration.DeclaredGoal, UseGPSAltitude);
-            }
-            else
-            {
-                distanceBetweenMarkerAndGoal = CoordinateHelpers.Calculate2DDistanceHavercos(marker.MarkerLocation, Declaration.DeclaredGoal);
-            }
+            double distanceBetweenMarkerAndGoal = Use3DDistance
+                ? CoordinateHelpers.Calculate3DDistance(marker.MarkerLocation, Declaration.DeclaredGoal, UseGPSAltitude)
+                : CoordinateHelpers.Calculate2DDistanceHavercos(marker.MarkerLocation, Declaration.DeclaredGoal);
             if (!double.IsNaN(MinimumDistance))
             {
                 if (distanceBetweenMarkerAndGoal < MinimumDistance)
+                {
                     isConform = false;
+                }
             }
+
             if (!double.IsNaN(MaximumDistance))
             {
                 if (distanceBetweenMarkerAndGoal > MaximumDistance)
+                {
                     isConform = false;
+                }
             }
         }
         else
         {
             isConform = false;
         }
+
         return isConform;
     }
 

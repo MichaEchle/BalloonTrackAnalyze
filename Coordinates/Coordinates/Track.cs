@@ -1,6 +1,3 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
 namespace Coordinates;
 
 public class Track
@@ -38,26 +35,38 @@ public class Track
 
     }
 
-    public Declaration GetLatestDeclaration(int goalNumber)
+    public Declaration? GetLatestDeclaration(int goalNumber)
     {
-        List<Declaration> declarations = Declarations.Where(x => x.GoalNumber == goalNumber).ToList();
-        if (declarations.Count == 0)
-            return null;
-        else
-            return declarations.OrderByDescending(x => x.PositionAtDeclaration.TimeStamp).ToList()[0];
+        return Declarations.OrderBy(x => x.PositionAtDeclaration.TimeStamp)
+            .Where(x => x.GoalNumber == goalNumber)
+            .LastOrDefault();
+    }
 
+  
+    public Declaration? GetDeclarationWithMaxRedeclaration(int goalNumber, int declaration)
+    {
+        IEnumerable<Declaration> declarations = Declarations.OrderBy(x => x.PositionAtDeclaration.TimeStamp)
+            .Where(x => x.GoalNumber == goalNumber);
+        
+        if(!declarations.Any()) return declarations.LastOrDefault();
+        if(declarations.Count() < declaration) return declarations.LastOrDefault();
+        return declarations.ElementAt(declaration - 1);
+    }
+
+    public MarkerDrop? GetFirstMarkerDrop(int markerNumber)
+    {
+        return MarkerDrops.OrderBy(x => x.MarkerLocation.TimeStamp).FirstOrDefault(x => x.MarkerNumber == markerNumber);
     }
 
     public List<int> GetAllGoalNumbers()
     {
-        List<int> allGoalNumbers = Declarations.Select(x => x.GoalNumber).Distinct().ToList();
+        List<int> allGoalNumbers = [.. Declarations.Select(x => x.GoalNumber).Distinct()];
         return allGoalNumbers;
     }
 
     public List<int> GetAllMarkerNumbers()
     {
-        List<int> allMarkerNumbers = MarkerDrops.Select(x => x.MarkerNumber).Distinct().ToList();
+        List<int> allMarkerNumbers = [.. MarkerDrops.Select(x => x.MarkerNumber).Distinct()];
         return allMarkerNumbers;
     }
-
 }

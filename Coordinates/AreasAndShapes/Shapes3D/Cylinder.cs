@@ -1,6 +1,7 @@
-﻿using Coordinates;
+using Coordinates;
+using Shapes.Shapes2D;
 
-namespace Shapes;
+namespace Shapes.Shapes3D;
 
 public class Cylinder : Shapes3D
 {
@@ -28,9 +29,7 @@ public class Cylinder : Shapes3D
 
     public override bool IsWithin(Coordinate coordinate, bool useGPSAltitude)
     {
-        if (!Circle.IsWithin(coordinate))
-            return false;
-        return base.IsWithinAltitudeBoundary(coordinate, useGPSAltitude,LowerBoundary,UpperBoundary);
+        return !Circle.IsWithin(coordinate) ? false : base.IsWithinAltitudeBoundary(coordinate, useGPSAltitude, LowerBoundary, UpperBoundary);
     }
 
 }

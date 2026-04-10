@@ -1,6 +1,6 @@
-﻿using Coordinates;
+using Coordinates;
 
-namespace Shapes;
+namespace Shapes.Shapes2D;
 
 public class Circle : Shapes2D
 {

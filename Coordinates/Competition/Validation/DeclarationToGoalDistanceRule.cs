@@ -1,8 +1,8 @@
-﻿using Coordinates;
+using Coordinates;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
 
-namespace Competition;
+namespace Competition.Validation;
 
 public class DeclarationToGoalDistanceRule : IDeclarationValidationRule
 {
@@ -42,6 +42,7 @@ public class DeclarationToGoalDistanceRule : IDeclarationValidationRule
         double distanceBetweenPositionOfDeclarationAndDeclaredGoal = CoordinateHelpers.Calculate2DDistanceHavercos(declaration.PositionAtDeclaration, declaration.DeclaredGoal);
 
         if (!double.IsNaN(MinimumDistance))
+        {
             if (distanceBetweenPositionOfDeclarationAndDeclaredGoal < MinimumDistance)
             {
                 double absoluteInfringement = MinimumDistance - distanceBetweenPositionOfDeclarationAndDeclaredGoal;
@@ -49,7 +50,10 @@ public class DeclarationToGoalDistanceRule : IDeclarationValidationRule
                 Logger?.LogWarning("Declaration '{goalNumber}' is not conform: '{minimumDistance}m' - '{distance}m' = '{abosluteInfringement}m' ('{relativeInfrigement}%') [minimum - actual = absolute (relative)]", declaration.GoalNumber, MinimumDistance.ToString("0.#"), distanceBetweenPositionOfDeclarationAndDeclaredGoal.ToString("0.#"), absoluteInfringement.ToString("0.#"), relativeInfringement.ToString("P1"));
                 isConform = false;
             }
+        }
+
         if (!double.IsNaN(MaximumDistance))
+        {
             if (distanceBetweenPositionOfDeclarationAndDeclaredGoal > MaximumDistance)
             {
                 double absoluteInfringement = distanceBetweenPositionOfDeclarationAndDeclaredGoal - MaximumDistance;
@@ -58,6 +62,8 @@ public class DeclarationToGoalDistanceRule : IDeclarationValidationRule
                 isConform = false;
 
             }
+        }
+
         return isConform;
     }
 

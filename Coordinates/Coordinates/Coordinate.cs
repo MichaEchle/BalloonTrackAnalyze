@@ -1,6 +1,5 @@
 ﻿using LoggingConnector;
 using Microsoft.Extensions.Logging;
-using System;
 
 namespace Coordinates;
 
@@ -40,7 +39,7 @@ public class Coordinate
     /// </summary>
     public double AltitudeBarometric
     {
-        get; private set;
+        get; set;
     }
 
     /// <summary>
@@ -80,9 +79,16 @@ public class Coordinate
             Logger?.LogError("Setting a default altitude is not allowed as the altitudes are not zero");
             return false;
         }
+
         AltitudeGPS = defaultAltitude;
         AltitudeBarometric = defaultAltitude;
         return true;
     }
+    
 
+    public override string ToString()
+    {
+        return
+            $"Coordinate: LAT({Latitude}) LONG({Longitude}) ALT. GPS({AltitudeGPS})  ALT. BAROMETRIC ({AltitudeBarometric})  TIMESTAMP ({TimeStamp})";
+    }
 }

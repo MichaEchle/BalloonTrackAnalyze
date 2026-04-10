@@ -1,10 +1,9 @@
-﻿using Coordinates;
-using System.Collections.Generic;
+using Coordinates;
 
 namespace Competition.Validation;
 public class DeclarationOrRule : IDeclarationValidationRule
 {
-    public List<IDeclarationValidationRule> ValidationRules
+    public required List<IDeclarationValidationRule> ValidationRules
     {
         get; set;
     }
@@ -12,10 +11,11 @@ public class DeclarationOrRule : IDeclarationValidationRule
     public bool IsComplaintToRule(Declaration declaration)
     {
         bool isConform = false;
-        foreach (var validationRule in ValidationRules)
+        foreach (IDeclarationValidationRule validationRule in ValidationRules)
         {
             isConform |= validationRule.IsComplaintToRule(declaration);
         }
+
         return isConform;
     }
 

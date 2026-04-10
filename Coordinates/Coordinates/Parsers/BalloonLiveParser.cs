@@ -1,16 +1,12 @@
-﻿using LoggingConnector;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 
 namespace Coordinates.Parsers;
 
 public static class BalloonLiveParser
 {
-    private static ILogger Logger = LogConnector.LoggerFactory.CreateLogger(nameof(BalloonLiveParser));
+    private static readonly ILogger Logger = LogConnector.LoggerFactory.CreateLogger(nameof(BalloonLiveParser));
 
 
     private static bool MarkerDrop_HasAdditionalLatitudeDecimals = false;
@@ -68,6 +64,7 @@ public static class BalloonLiveParser
                 Logger?.LogError("Failed to parse the file '{filePathAndName}': the file extension '{fileExtension}' is not supported", fileNameAndPath, fileInfo.Extension);
                 return false;
             }
+
             track = new Track();
             int pilotNumber = -1;
             string pilotIdentifier = "";
@@ -82,48 +79,42 @@ public static class BalloonLiveParser
                     lines.Add(line);
                 }
             }
+
             string[] identifierLine = lines.Where(x => x.StartsWith("AXBL")).ToArray();
             if (identifierLine.Length == 0)
             {
                 identifierLine = lines.Where(x => x.StartsWith("AXXX")).ToArray();
                 if (identifierLine.Length == 0)
                 {
-                    Logger?.LogError("Failed to parse the file '{filePathAndName}': Line with Pilot Identifier 'AXBL' or 'AXXX' is missing", fileNameAndPath);
-                    return false;
-                }
-                if (identifierLine.Length > 1)
-                {
-                    Logger?.LogWarning("More the one line with Pilot Identifier ('AXXX') were found. First occurrence will be used.");
+                    Logger?.LogWarning("Failed to parse the file '{filePathAndName}': Line with Pilot Identifier 'AXBL' or 'AXXX' is missing", fileNameAndPath);
                 }
                 else
                 {
-                    pilotIdentifier = identifierLine[0].Replace("AXXX", "").Replace("BalloonLive", "");
+                    if (identifierLine.Length > 1)
+                    {
+                        Logger?.LogWarning("More the one line with Pilot Identifier ('AXXX') were found. First occurrence will be used.");
+                    }
+                    else
+                    {
+                        pilotIdentifier = identifierLine[0].Replace("AXXX", "").Replace("BalloonLive", "");
+                    }
                 }
-            }
-            if (identifierLine.Length > 1)
-            {
-                Logger?.LogWarning("More the one line with Pilot Identifier ('AXBL') were found. First occurrence will be used.");
             }
             else
             {
-                pilotIdentifier = identifierLine[0][4..12];
+                if (identifierLine.Length > 1)
+                {
+                    Logger?.LogWarning("More the one line with Pilot Identifier ('AXBL') were found. First occurrence will be used.");
+                }
+                else
+                {
+                    pilotIdentifier = identifierLine[0][4..12];
+                }
             }
 
 
             string[] headerLines = lines.Where(x => x.StartsWith('H')).ToArray();
-            bool markerDrop_HasAdditionalLatitudeDecimals;
-            int markerDrop_StartOfAdditionalLatitudeDecimals;
-            int markerDrop_EndOfAdditionalLatitudeDecimals;
-            bool markerDrop_HasAdditionalLongitudeDecimals;
-            int markerDrop_StartOfAdditionalLongitudeDecimals;
-            int markerDrop_EndOfAdditionalLongitudeDecimals;
-            bool declaration_HasAdditionalLatitudeDecimals;
-            int declaration_StartOfAdditionalLatitudeDecimals;
-            int declaration_EndOfAdditionalLatitudeDecimals;
-            bool declaration_HasAdditionalLongitudeDecimals;
-            int declaration_StartOfAdditionalLongitudeDecimals;
-            int declaration_EndOfAdditionalLongitudeDecimals;
-            if (!ParseHeaders(headerLines, out pilotNumber, out date, out markerDrop_HasAdditionalLatitudeDecimals, out markerDrop_StartOfAdditionalLatitudeDecimals, out markerDrop_EndOfAdditionalLatitudeDecimals, out markerDrop_HasAdditionalLongitudeDecimals, out markerDrop_StartOfAdditionalLongitudeDecimals, out markerDrop_EndOfAdditionalLongitudeDecimals, out declaration_HasAdditionalLatitudeDecimals, out declaration_StartOfAdditionalLatitudeDecimals, out declaration_EndOfAdditionalLatitudeDecimals, out declaration_HasAdditionalLongitudeDecimals, out declaration_StartOfAdditionalLongitudeDecimals, out declaration_EndOfAdditionalLongitudeDecimals))
+            if (!ParseHeaders(headerLines, out pilotNumber, out date, out bool markerDrop_HasAdditionalLatitudeDecimals, out int markerDrop_StartOfAdditionalLatitudeDecimals, out int markerDrop_EndOfAdditionalLatitudeDecimals, out bool markerDrop_HasAdditionalLongitudeDecimals, out int markerDrop_StartOfAdditionalLongitudeDecimals, out int markerDrop_EndOfAdditionalLongitudeDecimals, out bool declaration_HasAdditionalLatitudeDecimals, out int declaration_StartOfAdditionalLatitudeDecimals, out int declaration_EndOfAdditionalLatitudeDecimals, out bool declaration_HasAdditionalLongitudeDecimals, out int declaration_StartOfAdditionalLongitudeDecimals, out int declaration_EndOfAdditionalLongitudeDecimals))
             {
                 Logger?.LogError("Failed to parse the file '{filePathAndName}': Failed to parse header lines", fileNameAndPath);
                 return false;
@@ -134,15 +125,9 @@ public static class BalloonLiveParser
             {
                 if (configLine.StartsWith("LXXX alt unit"))
                 {
-                    if (configLine.Contains("feet"))
-                    {
-                        declaredAltitudeIsInFeet = true;
-                    }
-                    else
-                    {
-                        declaredAltitudeIsInFeet = false;
-                    }
+                    declaredAltitudeIsInFeet = configLine.Contains("feet");
                 }
+
                 if (configLine.StartsWith("LXXX BLSSN"))
                 {
                     string sensBoxSerialNumber = configLine.Split('=').Last();
@@ -151,11 +136,14 @@ public static class BalloonLiveParser
                         Logger?.LogWarning("Failed to add SensBoxSerialNumber '{SensBoxSerialNumber}' to the track", sensBoxSerialNumber);
                     }
                 }
+
                 if (configLine.StartsWith("LXXX loggerinterval"))
                 {
                     string loggerInterval = configLine.Split("=").Last();
                     if (!track.AdditionalPropertiesFromIGCFile.ContainsKey("LoggerInterval"))
+                    {
                         track.AdditionalPropertiesFromIGCFile.Add("LoggerInterval", loggerInterval.Replace("s", ""));
+                    }
                 }
             }
 
@@ -178,20 +166,22 @@ public static class BalloonLiveParser
 
                 for (int index = 0; index < numberOfAdditions; index++)
                 {
-                    offset = index * 7 + 3;
+                    offset = (index * 7) + 3;
                     if (!int.TryParse(iRecordLine[offset..(offset + 2)], out int startPosition))
                     {
                         Logger?.LogError("Failed to parse the file '{filePathAndName}': Failed to parse start position of I-record addition no {additionNumber}", fileNameAndPath, index + 1);
                         return false;
                     }
+
                     offset += 2;
-                    if (!int.TryParse(iRecordLine[(offset)..(offset + 2)], out int stopPosition))
+                    if (!int.TryParse(iRecordLine[offset..(offset + 2)], out int stopPosition))
                     {
                         Logger?.LogError("Failed to parse the file '{filePathAndName}': Failed to parse stop position of I-record addition no {additionNumber}", fileNameAndPath, index + 1);
                         return false;
                     }
+
                     offset += 2;
-                    string additionIdentifier = iRecordLine[(offset)..(offset + 3)];
+                    string additionIdentifier = iRecordLine[offset..(offset + 3)];
 
                     if (additionIdentifier.Equals("LAD", StringComparison.CurrentCultureIgnoreCase))
                     {
@@ -199,6 +189,7 @@ public static class BalloonLiveParser
                         trackPoint_StartOfAdditionalLatitudeDecimals = startPosition - 1;//adjust to zero based index
                         trackPoint_EndOfAdditionalLatitudeDecimals = stopPosition;
                     }
+
                     if (additionIdentifier.Equals("LOD", StringComparison.CurrentCultureIgnoreCase))
                     {
                         trackPoint_HasAdditionalLongitudeDecimals = true;
@@ -207,6 +198,7 @@ public static class BalloonLiveParser
                     }
                 }
             }
+
             string[] positionSourceEvents = lines.Where(x => x.StartsWith('E') && x.Contains("XS")).ToArray();
             bool isFirstSourceEvent = true;
             foreach (string positionSourceEvent in positionSourceEvents)
@@ -216,14 +208,15 @@ public static class BalloonLiveParser
                     Logger?.LogError("Failed to parse the file '{filePathAndName}': Failed to parse position source event", fileNameAndPath);
                     return false;
                 }
+
                 if (isFirstSourceEvent)
                 {
                     isFirstSourceEvent = false;
-                    Logger?.LogInformation("Position source of track is: '{sourceType}' position source '{source}' {blsSerialNumber}", (isPrimarySource ? "primary" : "fallback"), (isBallonLiveSensor ? "Ballon Live Sensor" : "Phone Internal"), (isBallonLiveSensor ? $"with serial number '{blsSerialNumber}'" : ""));
+                    Logger?.LogInformation("Position source of track is: '{sourceType}' position source '{source}' {blsSerialNumber}", isPrimarySource ? "primary" : "fallback", isBallonLiveSensor ? "Ballon Live Sensor" : "Phone Internal", isBallonLiveSensor ? $"with serial number '{blsSerialNumber}'" : "");
                 }
                 else
                 {
-                    Logger?.LogWarning("Caution, change of position source detected at '{timestamp}': {sourceType}' position source '{source}' {blsSerialNumber}", timeStamp.ToString("dd-MMM-yyyy HH:mm:ss"), (isPrimarySource ? "primary" : "fallback"), (isBallonLiveSensor ? "Ballon Live Sensor" : "Phone Internal"), (isBallonLiveSensor ? $"with serial number '{blsSerialNumber}'" : ""));
+                    Logger?.LogWarning("Caution, change of position source detected at '{timestamp}': {sourceType}' position source '{source}' {blsSerialNumber}", timeStamp.ToString("dd-MMM-yyyy HH:mm:ss"), isPrimarySource ? "primary" : "fallback", isBallonLiveSensor ? "Ballon Live Sensor" : "Phone Internal", isBallonLiveSensor ? $"with serial number '{blsSerialNumber}'" : "");
                     if (!track.AdditionalPropertiesFromIGCFile.ContainsKey("Change of position source"))
                     {
                         if (!track.AdditionalPropertiesFromIGCFile.TryAdd("Change of position source", "yes"))
@@ -233,6 +226,7 @@ public static class BalloonLiveParser
                     }
                 }
             }
+
             if (!track.AdditionalPropertiesFromIGCFile.ContainsKey("Change of position source"))
             {
                 if (!track.AdditionalPropertiesFromIGCFile.TryAdd("Change of position source", "no"))
@@ -240,28 +234,28 @@ public static class BalloonLiveParser
                     Logger?.LogWarning("Failed to add 'Change of position source' to the track");
                 }
             }
+
             string[] trackPointLines = lines.Where(x => x.StartsWith('B')).ToArray();
             foreach (string trackPointLine in trackPointLines)
             {
-                Coordinate coordinate;
                 if (!ParseTrackPoint(trackPointLine, date,
                     trackPoint_HasAdditionalLatitudeDecimals,
                     trackPoint_StartOfAdditionalLatitudeDecimals,
                     trackPoint_EndOfAdditionalLatitudeDecimals,
                     trackPoint_HasAdditionalLongitudeDecimals,
                     trackPoint_StartOfAdditionalLongitudeDecimals,
-                    trackPoint_EndOfAdditionalLongitudeDecimals, out coordinate))
+                    trackPoint_EndOfAdditionalLongitudeDecimals, out Coordinate coordinate))
                 {
                     Logger?.LogError("Failed to parse the file '{filePathAndName}': Failed to parse trackpoint", fileNameAndPath);
                     return false;
                 }
+
                 track.TrackPoints.Add(coordinate);
             }
 
             string[] markerDropLines = lines.Where(x => x.StartsWith('E') && x.Contains("XX0")).ToArray();
             foreach (string markerDropLine in markerDropLines)
             {
-                MarkerDrop markerDrop;
                 if (!ParseMarkerDrop(markerDropLine, date,
                     markerDrop_HasAdditionalLatitudeDecimals,
                     markerDrop_StartOfAdditionalLatitudeDecimals,
@@ -269,13 +263,15 @@ public static class BalloonLiveParser
                     markerDrop_HasAdditionalLongitudeDecimals,
                     markerDrop_StartOfAdditionalLongitudeDecimals,
                     markerDrop_EndOfAdditionalLongitudeDecimals,
-                    out markerDrop))
+                    out MarkerDrop markerDrop))
                 {
                     Logger?.LogError("Failed to parse the file '{filePathAndName}': Failed to parse marker drop", fileNameAndPath);
                     return false;
                 }
+
                 track.MarkerDrops.Add(markerDrop);
             }
+
             if (referenceCoordinate is null)
             {
                 if (track.MarkerDrops.Count > 0)
@@ -296,11 +292,11 @@ public static class BalloonLiveParser
                     Logger?.LogWarning("No marker drops found. Position at declaration will be used as reference instead");
                 }
             }
+
             string[] goalDeclarationLines = lines.Where(x => x.StartsWith('E') && x.Contains("XL1")).ToArray();
             foreach (string goalDeclarationLine in goalDeclarationLines)
             {
 
-                Declaration declaration;
                 if (!ParseGoalDeclaration(goalDeclarationLine,
                     date,
                     declaredAltitudeIsInFeet,
@@ -312,13 +308,16 @@ public static class BalloonLiveParser
                     declaration_HasAdditionalLongitudeDecimals,
                     declaration_StartOfAdditionalLongitudeDecimals,
                     declaration_EndOfAdditionalLongitudeDecimals,
-                    out declaration))
+                    out Declaration declaration))
                 {
                     Logger?.LogError("Failed to parse the file '{filePathAndName}': Failed to parse goal declaration", fileNameAndPath);
                     return false;
                 }
+
                 if (declaration != null)
+                {
                     track.Declarations.Add(declaration);
+                }
             }
 
             Pilot pilot = new(pilotNumber, pilotIdentifier);
@@ -329,6 +328,7 @@ public static class BalloonLiveParser
             Logger?.LogError(ex, "Failed to parse the file '{filePathAndName}'", fileNameAndPath);
             return false;
         }
+
         Logger?.LogInformation("Successfully parsed file '{filePathAndName}'", fileNameAndPath);
         return true;
     }
@@ -351,7 +351,6 @@ public static class BalloonLiveParser
     {
         date = DateTime.MinValue;
         pilotNumber = -1;
-        string functionErrorMessage = "Failed to parse header lines: ";
         markerDrop_HasAdditionalLatitudeDecimals = false;
         markerDrop_StartOfAdditionalLatitudeDecimals = -1;
         markerDrop_EndOfAdditionalLatitudeDecimals = -1;
@@ -375,19 +374,23 @@ public static class BalloonLiveParser
                     Logger?.LogError("Failed to parse header lines: Could not parse day portion of date '{portion}' in '{line}'", line[0..2], line);
                     return false;
                 }
+
                 if (!int.TryParse(line[2..4], out int month))
                 {
                     Logger?.LogError("Failed to parse header lines: Could not parse month portion of date '{portion}' in '{line}'", line[2..4], line);
                     return false;
                 }
+
                 if (!int.TryParse(line[4..6], out int year))
                 {
                     Logger?.LogError("Failed to parse header lines: Could not parse year portion of date '{portion}' in '{line}'", line[4..6], line);
                     return false;
                 }
+
                 year += 2000;
                 date = new DateTime(year, month, day);
             }
+
             if (headerLine.StartsWith("HFPID"))
             {
                 string pilotNumberText = headerLine.Replace("HFPID", "");
@@ -397,6 +400,7 @@ public static class BalloonLiveParser
                     return false;
                 }
             }
+
             if (headerLine.StartsWith("HFXII:XX0:"))
             {
                 if (!int.TryParse(headerLine[10..12], out int numberOfAdditions))
@@ -404,23 +408,26 @@ public static class BalloonLiveParser
                     Logger?.LogError("Failed to parse header lines: Could not parse number of additions from I-record from portion '{portion}' in '{headerLine}'", headerLine[10..12], headerLine);
                     return false;
                 }
+
                 int offset = 12;
                 for (int index = 0; index < numberOfAdditions; index++)
                 {
-                    offset = index * 7 + 12;
+                    offset = (index * 7) + 12;
                     if (!int.TryParse(headerLine[offset..(offset + 2)], out int startPosition))
                     {
                         Logger?.LogError("Failed to parse header lines: Could not parse start position of I-record addition no '{additionNumber}' from portion '{portion}' in '{headerLine}'", index + 1, headerLine[offset..(offset + 2)], headerLine);
                         return false;
                     }
+
                     offset += 2;
-                    if (!int.TryParse(headerLine[(offset)..(offset + 2)], out int stopPosition))
+                    if (!int.TryParse(headerLine[offset..(offset + 2)], out int stopPosition))
                     {
-                        Logger?.LogError("Failed to parse header lines: Could not parse stop position of I-record addition no '{additionNumber}' in from portion '{portion}' '{headerLine}'", index + 1, headerLine[(offset)..(offset + 2)], headerLine);
+                        Logger?.LogError("Failed to parse header lines: Could not parse stop position of I-record addition no '{additionNumber}' in from portion '{portion}' '{headerLine}'", index + 1, headerLine[offset..(offset + 2)], headerLine);
                         return false;
                     }
+
                     offset += 2;
-                    string additionIdentifier = headerLine[(offset)..(offset + 3)];
+                    string additionIdentifier = headerLine[offset..(offset + 3)];
 
                     if (additionIdentifier.Equals("LAD", StringComparison.CurrentCultureIgnoreCase))
                     {
@@ -428,6 +435,7 @@ public static class BalloonLiveParser
                         markerDrop_StartOfAdditionalLatitudeDecimals = startPosition - 1;//adjust to zero based index
                         markerDrop_EndOfAdditionalLatitudeDecimals = stopPosition;
                     }
+
                     if (additionIdentifier.Equals("LOD", StringComparison.CurrentCultureIgnoreCase))
                     {
                         markerDrop_HasAdditionalLongitudeDecimals = true;
@@ -437,6 +445,7 @@ public static class BalloonLiveParser
                 }
 
             }
+
             if (headerLine.StartsWith("HFXII:XL1:"))
             {
                 if (!int.TryParse(headerLine[10..12], out int numberOfAdditions))
@@ -447,20 +456,22 @@ public static class BalloonLiveParser
 
                 for (int index = 0; index < numberOfAdditions; index++)
                 {
-                    int offset = index * 7 + 12;
+                    int offset = (index * 7) + 12;
                     if (!int.TryParse(headerLine[offset..(offset + 2)], out int startPosition))
                     {
                         Logger?.LogError("Failed to parse header lines: Could not parse start position of I-record addition no '{additionNumber}' from portion '{portion}' in '{headerLine}'", index + 1, headerLine[offset..(offset + 2)], headerLine);
                         return false;
                     }
+
                     offset += 2;
-                    if (!int.TryParse(headerLine[(offset)..(offset + 2)], out int stopPosition))
+                    if (!int.TryParse(headerLine[offset..(offset + 2)], out int stopPosition))
                     {
-                        Logger?.LogError("Failed to parse header lines: Could not parse stop position of I-record addition no '{additionNumber}' in from portion '{portion}' '{headerLine}'", index + 1, headerLine[(offset)..(offset + 2)], headerLine);
+                        Logger?.LogError("Failed to parse header lines: Could not parse stop position of I-record addition no '{additionNumber}' in from portion '{portion}' '{headerLine}'", index + 1, headerLine[offset..(offset + 2)], headerLine);
                         return false;
                     }
+
                     offset += 2;
-                    string additionIdentifier = headerLine[(offset)..(offset + 3)];
+                    string additionIdentifier = headerLine[offset..(offset + 3)];
 
                     if (additionIdentifier.Equals("LAD", StringComparison.CurrentCultureIgnoreCase))
                     {
@@ -468,6 +479,7 @@ public static class BalloonLiveParser
                         declaration_StartOfAdditionalLatitudeDecimals = startPosition - 1;//adjust to zero based index
                         declaration_EndOfAdditionalLatitudeDecimals = stopPosition;
                     }
+
                     if (additionIdentifier.Equals("LOD", StringComparison.CurrentCultureIgnoreCase))
                     {
                         declaration_HasAdditionalLongitudeDecimals = true;
@@ -478,6 +490,7 @@ public static class BalloonLiveParser
             }
 
         }
+
         return true;
     }
 
@@ -526,6 +539,7 @@ public static class BalloonLiveParser
                 return false;
             }
         }
+
         double longitude;
         if (trackPoint_HasAdditionalLongitudeDecimals)
         {
@@ -558,6 +572,7 @@ public static class BalloonLiveParser
             Logger?.LogError("Failed to parse track point: Cannot parse GPS altitude from portion '{portion}' in '{line}'", line[30..35], line);
             return false;
         }
+
         coordinate = new Coordinate(latitude, longitude, altitudeGPS, altitudeBarometric, timeStamp);
         return true;
     }
@@ -593,6 +608,7 @@ public static class BalloonLiveParser
             Logger?.LogError("Failed to parse goal declaration: Cannot parse timestamp from '{line}'", line);
             return false;
         }
+
         if (!int.TryParse(line[10..12], out int goalNumber))
         {
             Logger?.LogError("Failed to parse goal declaration: Cannot parse goal number from portion '{portion}' in '{line}'", line[10..12], line);
@@ -616,6 +632,7 @@ public static class BalloonLiveParser
                 return false;
             }
         }
+
         double declarationLongitude;
         if (declaration_HasAdditionalLongitudeDecimals)
         {
@@ -645,6 +662,7 @@ public static class BalloonLiveParser
             Logger?.LogError("Failed to parse goal declaration: Cannot parse GPS altitude from portion '{portion}' in '{line}'", line[35..40], line);
             return false;
         }
+
         string declarationText = line[43..^0];
         if (declarationText.Length > 2)
         {
@@ -671,6 +689,7 @@ public static class BalloonLiveParser
                     Logger?.LogError("Failed to parse goal declaration: Cannot parse easting from portion '{portion}' in '{line}'", locations[0], line);
                     return false;
                 }
+
                 if (!string.IsNullOrWhiteSpace(locations[1]))
                 {
                     northingDigits = locations[1].Length;
@@ -705,23 +724,21 @@ public static class BalloonLiveParser
                         Logger?.LogError("Failed to parse goal declaration: Cannot parse altitude from portion '{portion}' in '{line}'", altitudePart, line);
                         return false;
                     }
-                    if (declaredAltitudeIsInFeet)
-                        declaredAltitudeInMeter = CoordinateHelpers.ConvertToMeter((double)declaredAltitude);
-                    else
-                        declaredAltitudeInMeter = (double)declaredAltitude;
+
+                    declaredAltitudeInMeter = declaredAltitudeIsInFeet ? CoordinateHelpers.ConvertToMeter(declaredAltitude) : declaredAltitude;
                 }
                 else
                 {
                     hasPilotDelaredGoalAltitude = false;
                     declaredAltitudeInMeter = defaultGoalAltitude;
-                    Logger?.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed", goalNumber);
+                    Logger?.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of {defaultAltitude} will be assumed", goalNumber,defaultGoalAltitude);
                 }
             }
             else
             {
                 hasPilotDelaredGoalAltitude = false;
                 declaredAltitudeInMeter = defaultGoalAltitude;
-                Logger?.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed", goalNumber);
+                Logger?.LogWarning("No altitude declared for Goal No. '{goalNumber}'. Altitude of {defaultAltitude} will be assumed", goalNumber,defaultGoalAltitude);
             }
 
             CoordinateSharp.Coordinate coordinateSharp;
@@ -740,6 +757,7 @@ public static class BalloonLiveParser
                     goalNorthingUTM = northingUTM * 10;
                     goalNorthingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits + 1)) * Math.Pow(10, northingDigits + 1));
                 }
+
                 if (northingDigits == 6)
                 {
                     goalNorthingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) * Math.Pow(10, northingDigits));
@@ -765,6 +783,7 @@ public static class BalloonLiveParser
                     useDeclarationPosition = true;
                 }
             }
+
             if (useDeclarationPosition)
             {
                 coordinateSharp = new CoordinateSharp.Coordinate(declarationLatitude, declarationLongitude);
@@ -774,6 +793,7 @@ public static class BalloonLiveParser
                     goalNorthingUTM = northingUTM * 10;
                     goalNorthingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits + 1)) * Math.Pow(10, northingDigits + 1));
                 }
+
                 if (northingDigits == 6)
                 {
                     goalNorthingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) * Math.Pow(10, northingDigits));
@@ -835,6 +855,7 @@ public static class BalloonLiveParser
             Logger?.LogError("Failed to parse marker drop: Cannot parse timestamp from '{line}'", line);
             return false;
         }
+
         if (!int.TryParse(line[10..12], out int markerNumber))
         {
             Logger?.LogError("Failed to parse marker drop: Cannot parse marker number from portion '{portion}' in '{line}'", line[10..12], line);
@@ -858,6 +879,7 @@ public static class BalloonLiveParser
                 return false;
             }
         }
+
         double longitude;
         if (markerDrop_HasAdditionalLongitudeDecimals)
         {
@@ -887,6 +909,7 @@ public static class BalloonLiveParser
             Logger?.LogError("Failed to parse marker drop: Cannot parse GPS altitude from portion '{portion}' in '{line}'", line[35..40], line);
             return false;
         }
+
         Coordinate coordinate = new(latitude, longitude, altitudeGPS, altitudeBarometric, timeStamp);
         markerDrop = new MarkerDrop(markerNumber, coordinate);
         return true;
@@ -903,24 +926,31 @@ public static class BalloonLiveParser
         latitude = double.NaN;
         double factor;
         if (latitudeText.EndsWith('N'))
+        {
             factor = 1.0;
+        }
         else if (latitudeText.EndsWith('S'))
+        {
             factor = -1.0;
+        }
         else
         {
             Logger?.LogError("Failed to parse latitude text. Unexpected suffix '{suffix}'", latitudeText[^1]);
             return false;
         }
+
         if (!double.TryParse(latitudeText[0..2], out double fullAngle))
         {
             Logger?.LogError("Failed to parse latitude full angle from '{latitudeText}'", latitudeText[0..2]);
             return false;
         }
+
         if (!double.TryParse(latitudeText[2..7], out double decimalAngle))
         {
             Logger?.LogError("Failed to parse latitude decimal angle '{latitudeText}'", latitudeText[2..7]);
             return false;
         }
+
         decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal angles
 
         latitude = factor * (fullAngle + decimalAngle);
@@ -932,29 +962,37 @@ public static class BalloonLiveParser
         latitude = double.NaN;
         double factor;
         if (standardLatitudeText.EndsWith('N'))
+        {
             factor = 1.0;
+        }
         else if (standardLatitudeText.EndsWith('S'))
+        {
             factor = -1.0;
+        }
         else
         {
             Logger?.LogError("Failed to parse latitude text. Unexpected suffix '{suffix}'", standardLatitudeText[^1]);
             return false;
         }
+
         if (!double.TryParse(standardLatitudeText[0..2], out double fullAngle))
         {
             Logger?.LogError("Failed to parse latitude full angle from '{latitudeText}'", standardLatitudeText[0..2]);
             return false;
         }
+
         if (!double.TryParse(standardLatitudeText[2..7] + additionalDecimals, out double decimalAngle))
         {
             Logger?.LogError("Failed to parse latitude decimal angle '{latitudeText}'", standardLatitudeText[2..7] + additionalDecimals);
             return false;
         }
+
         if (decimalAngle > 0.0)
         {
             int divider = (standardLatitudeText[2..7] + additionalDecimals).Length - 2;//first two digits are integer the rest are decimal places
-            decimalAngle /= (Math.Pow(10.0, divider) * 60.0);//divide two get decimal places right and convert from minutes to degrees
+            decimalAngle /= Math.Pow(10.0, divider) * 60.0;//divide two get decimal places right and convert from minutes to degrees
         }
+
         latitude = factor * (fullAngle + decimalAngle);
         return true;
     }
@@ -970,24 +1008,31 @@ public static class BalloonLiveParser
         longitude = double.NaN;
         double factor;
         if (longitudeText.EndsWith('E'))
+        {
             factor = 1.0;
+        }
         else if (longitudeText.EndsWith('W'))
+        {
             factor = -1.0;
+        }
         else
         {
             Logger?.LogError("Failed to parse longitude text. Unexpected suffix '{suffix}'", longitudeText[^1]);
             return false;
         }
+
         if (!double.TryParse(longitudeText[0..3], out double fullAngle))
         {
             Logger?.LogError("Failed to parse longitude full angle '{longitudeText}'", longitudeText[0..3]);
             return false;
         }
+
         if (!double.TryParse(longitudeText[3..8], out double decimalAngle))
         {
             Logger?.LogError("Failed to parse longitude decimal angle '{longitudeText}'", longitudeText[3..8]);
             return false;
         }
+
         decimalAngle /= 60000.0;//divided by 1000 to get decimal value, divided by 60 to get from angle minutes to decimal degree
 
         longitude = factor * (fullAngle + decimalAngle);
@@ -999,29 +1044,37 @@ public static class BalloonLiveParser
         longitude = double.NaN;
         double factor;
         if (standardLongitudeText.EndsWith('E'))
+        {
             factor = 1.0;
+        }
         else if (standardLongitudeText.EndsWith('W'))
+        {
             factor = -1.0;
+        }
         else
         {
             Logger?.LogError("Failed to parse longitude text. Unexpected suffix '{suffix}'", standardLongitudeText[^1]);
             return false;
         }
+
         if (!double.TryParse(standardLongitudeText[0..3], out double fullAngle))
         {
             Logger?.LogError("Failed to parse longitude full angle '{longitudeText}'", standardLongitudeText[0..3]);
             return false;
         }
+
         if (!double.TryParse(standardLongitudeText[3..8] + additinalDecimals, out double decimalAngle))
         {
             Logger?.LogError("Failed to parse longitude decimal angle '{longitudeText}'", standardLongitudeText[3..8] + additinalDecimals);
             return false;
         }
+
         if (decimalAngle > 0.0)
         {
             int divider = (standardLongitudeText[3..8] + additinalDecimals).Length - 2;//first two digits are integer the rest are decimal places
-            decimalAngle /= (Math.Pow(10.0, divider) * 60.0);//divide two get decimal places right and convert from minutes to degrees
+            decimalAngle /= Math.Pow(10.0, divider) * 60.0;//divide two get decimal places right and convert from minutes to degrees
         }
+
         longitude = factor * (fullAngle + decimalAngle);
         return true;
     }
@@ -1042,16 +1095,19 @@ public static class BalloonLiveParser
             Logger?.LogError("Failed to parse time: Cannot parse hour portion '{portion}' in '{line}'", time[0..2], line);
             return false;
         }
+
         if (!int.TryParse(time[2..4], out int minutes))
         {
             Logger?.LogError("Failed to parse time: Cannot parse minute portion '{portion}' in '{line}'", time[2..4], line);
             return false;
         }
+
         if (!int.TryParse(time[4..6], out int seconds))
         {
             Logger?.LogError("Failed to parse time: Cannot parse second portion '{portion}' in '{line}'", time[4..6], line);
             return false;
         }
+
         timeStamp = date.AddHours(hours).AddMinutes(minutes).AddSeconds(seconds);
         return true;
     }
@@ -1094,6 +1150,7 @@ public static class BalloonLiveParser
             Logger?.LogError("Failed to parse position source event: Cannot parse timestamp from '{line}'", line);
             return false;
         }
+
         if (line.Contains("XS0"))
         {
             isPrimarySource = true;

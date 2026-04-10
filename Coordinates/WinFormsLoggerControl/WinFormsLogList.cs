@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using System.Threading.Channels;
 using UILoggingProvider;
 
@@ -22,7 +22,7 @@ public partial class WinFormsLogList : UserControl
         logList.FullRowSelect = true;
         _reader = UILoggerProvider.Instance.LogItemReader;
 
-        Task.Run(ReadLogItemsAsync);
+        _ = Task.Run(ReadLogItemsAsync);
     }
 
     private async Task ReadLogItemsAsync()
@@ -34,8 +34,8 @@ public partial class WinFormsLogList : UserControl
             {
                 Text = item.Timestamp.ToString("dd-MMM-yyyy HH:mm:ss")
             };
-            listViewItem.SubItems.Add(item.Message);
-            listViewItem.SubItems.Add(item.Source);
+            _ = listViewItem.SubItems.Add(item.Message);
+            _ = listViewItem.SubItems.Add(item.Source);
             listViewItem.ForeColor = Color.Black;
             switch (item.LogLevel)
             {
@@ -57,13 +57,14 @@ public partial class WinFormsLogList : UserControl
                     listViewItem.ImageIndex = 2;
                     break;
             }
+
             if (InvokeRequired)
             {
                 Invoke(new Action(() => logList.Items.Add(listViewItem)));
             }
             else
             {
-                logList.Items.Add(listViewItem);
+                _ = logList.Items.Add(listViewItem);
             }
         }
     }

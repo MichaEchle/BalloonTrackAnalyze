@@ -1,12 +1,8 @@
-﻿using Competition.Validation;
+using Competition.Tasks;
 using Coordinates;
 using Coordinates.Parsers;
 using LoggingConnector;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace Competition;
 
@@ -37,7 +33,7 @@ public class Flight
     /// <summary>
     /// private instance object
     /// </summary>
-    private static Flight flight = null;
+    private static Flight? flight = null;
 
     /// <summary>
     /// Lock object for thread safety
@@ -72,13 +68,14 @@ public class Flight
     /// <param name="path">the directory of the .igc files</param>
     /// <param name="useBalloonLiveParse">true: use balloon live parser; false: use FAI parser </param>
     /// <returns>true: success; false: error</returns>
-    public bool ParseTrackFiles(string path, bool useBalloonLiveParse)
+    public bool ParseTrackFiles(string path, bool useBalloonLiveParse, Coordinate referenceCoordinate = null)
     {
         DirectoryInfo directoryInfo = new($@"{path}");
         if (!directoryInfo.Exists)
         {
             Logger?.LogError("Failed to parse track files: Directory '{path}' does not exists", path);
         }
+
         FileInfo[] trackFiles = directoryInfo.GetFiles("*.igc");
         flight.Tracks.Clear();
         foreach (FileInfo trackFile in trackFiles)
@@ -87,7 +84,7 @@ public class Flight
             bool trackIsValid = true;
             if (useBalloonLiveParse)
             {
-                if (!BalloonLiveParser.ParseFile(trackFile.FullName, out track))
+                if (!BalloonLiveParser.ParseFile(trackFile.FullName, out track, referenceCoordinate))
                 {
                     Logger?.LogError("Failed to parse track file '{trackFile}' and won't be used for further processing", trackFile.FullName);
                     trackIsValid = false;
@@ -95,15 +92,19 @@ public class Flight
             }
             else
             {
-                if (!FAILoggerParser.ParseFile(trackFile.FullName, out track))
+                if (!FAILoggerParser.ParseFile(trackFile.FullName, out track, referenceCoordinate))
                 {
                     Logger?.LogError("Failed to parse track file '{trackFile}' and won't be used for further processing", trackFile.FullName);
                     trackIsValid = false;
                 }
             }
+
             if (trackIsValid)
+            {
                 Tracks.Add(track);
+            }
         }
+
         return true;
     }
 
@@ -123,6 +124,7 @@ public class Flight
             Logger?.LogError("Failed to map pilot names to tracks: The file '{mappingFile}' does not exists", mappingFile);
             return false;
         }
+
         if (!fileInfo.Extension.Contains("csv"))
         {
             Logger?.LogError("Failed to map pilot names to tracks: The file extension '{fileExtension}' is not supported", fileInfo.Extension);
@@ -131,7 +133,7 @@ public class Flight
 
         using (StreamReader reader = new(mappingFile))
         {
-            reader.ReadLine();//ignore first line
+            _ = reader.ReadLine();//ignore first line
             while (!reader.EndOfStream)
             {
                 string line = reader.ReadLine();
@@ -142,6 +144,7 @@ public class Flight
                     Logger?.LogError("Failed to map pilot names to tracks: Failed to parse pilot number '{pilotNumber}' as integer", parts[0]);
                     return false;
                 }
+
                 string firstName = parts[1];
                 string lastName = parts[2];
                 string[] identifiers = parts[3..^0];
@@ -156,10 +159,12 @@ public class Flight
                         {
                             Logger?.LogWarning("Identifier of track matched with identifiers of '{firstName},{lastName}', but pilot numbers didn't match (Track Pilot No.'{pilotNumber}'/ File Pilot No.'{pilotNumber}'", firstName, lastName, track.Pilot.PilotNumber, pilotNumber);
                         }
+
                         found = true;
                         break;
                     }
                 }
+
                 if (!found)
                 {
                     Logger?.LogWarning("No track match found for '{firstName},{lastName}'", firstName, lastName);
@@ -167,6 +172,7 @@ public class Flight
 
             }
         }
+
         foreach (Track track in Tracks)
         {
             if (string.IsNullOrWhiteSpace(track.Pilot.FirstName))
@@ -468,8 +474,11 @@ public class Flight
                 bool isResultValid = Tasks[index].CalculateResults(track, useGPSAltitude, out double result);
                 results[index] = Math.Round(result, 3, MidpointRounding.AwayFromZero).ToString();
                 if (!isResultValid)
+                {
                     results[index] += "*";
+                }
             }
+
             writer.WriteLine(string.Join(',', track.Pilot.PilotNumber, track.Pilot.FirstName, track.Pilot.LastName, string.Join(',', results)));
         }
     }
@@ -492,7 +501,7 @@ public class Flight
                     if (declaration.DeclaredGoal.SetDefaultAltitude(defaultAltitude))
                     {
                         declarationsWithAltitude.Add((track.Pilot, declaration));
-                        Logger?.LogInformation("Default altitude set for Pilot {pilotNumber} at declaration {goalNumber}",track.Pilot.PilotNumber,declaration.GoalNumber);
+                        Logger?.LogInformation("Default altitude set for Pilot {pilotNumber} at declaration {goalNumber}", track.Pilot.PilotNumber, declaration.GoalNumber);
                     }
                     else
                     {
@@ -501,6 +510,7 @@ public class Flight
                 }
             }
         }
+
         return declarationsWithAltitude;
     }
 
