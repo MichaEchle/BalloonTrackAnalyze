@@ -1,5 +1,5 @@
 ﻿using Scoring.Competitions.Pilots;
-using Scoring.Competitions.Tasks.Constraints;
+using Scoring.Competitions.PZ;
 using Scoring.Converters;
 using Scoring.Coordinates;
 
@@ -56,18 +56,17 @@ public class Competition
         Ellipsoid = ellipsoid;
     }
 
-    private static Competition _instance;
-
     public static Competition Instance
     {
         get
         {
-            if (_instance is null)
+            if (field is null)
             {
                 throw new InvalidOperationException("Competition has not been created yet");
             }
-            return _instance;
+            return field;
         }
+        private set;
     }
 
     public static void Create(string name, double separationAltitude, AltitudeSourceType altitudeSource, List<Pilot> pilots, Ellipsoid ellipsoid)
@@ -76,7 +75,7 @@ public class Competition
         ArgumentNullException.ThrowIfNull(pilots);
         ArgumentNullException.ThrowIfNull(ellipsoid);
 
-        _instance = new Competition(name, separationAltitude, altitudeSource, pilots, ellipsoid);
+        Instance = new Competition(name, separationAltitude, altitudeSource, pilots, ellipsoid);
     }
 
     public Dictionary<CommonLaunchPointType, Coordinate> CommonLaunchPoints
