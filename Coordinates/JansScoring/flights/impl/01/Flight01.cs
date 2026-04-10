@@ -41,8 +41,8 @@ public class Flight01 : Flight
     {
         return new Task[]
         {
-            new Task01(this),
-            new Task02(this),
+            //new Task01(this),
+            //new Task02(this),
             new Task03(this)
         };
     }

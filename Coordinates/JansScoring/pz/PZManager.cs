@@ -25,10 +25,10 @@ public class PZManager
         pzs.Add(new RedPZ(9, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 531050, 5359170), CoordinateHelpers.ConvertToMeter(3000), 500));
 
             
-        pzs.Add(new BluePZ(90, "/home/codingphoenix/Documents/balloon/competitions/2026 BWLV Sonnenbühl/maps/PZ blue 3500ft.plt",CoordinateHelpers.ConvertToMeter(3000), Double.MaxValue));
-        pzs.Add(new BluePZ(91, "/home/codingphoenix/Documents/balloon/competitions/2026 BWLV Sonnenbühl/maps/PZ blue 4500ft.plt",CoordinateHelpers.ConvertToMeter(4000), Double.MaxValue));
-        pzs.Add(new BluePZ(92, "/home/codingphoenix/Documents/balloon/competitions/2026 BWLV Sonnenbühl/maps/PZ blue 5500ft.plt",CoordinateHelpers.ConvertToMeter(5000), Double.MaxValue));
-        pzs.Add(new BluePZ(93, "/home/codingphoenix/Documents/balloon/competitions/2026 BWLV Sonnenbühl/maps/PZ blue 7500ft.plt",CoordinateHelpers.ConvertToMeter(7000), Double.MaxValue));
+        //pzs.Add(new BluePZ(90, "/home/codingphoenix/Documents/balloon/competitions/2026 BWLV Sonnenbühl/maps/PZ blue 3500ft.plt",CoordinateHelpers.ConvertToMeter(3000), Double.MaxValue));
+        //pzs.Add(new BluePZ(91, "/home/codingphoenix/Documents/balloon/competitions/2026 BWLV Sonnenbühl/maps/PZ blue 4500ft.plt",CoordinateHelpers.ConvertToMeter(4000), Double.MaxValue));
+        //pzs.Add(new BluePZ(92, "/home/codingphoenix/Documents/balloon/competitions/2026 BWLV Sonnenbühl/maps/PZ blue 5500ft.plt",CoordinateHelpers.ConvertToMeter(5000), Double.MaxValue));
+        //pzs.Add(new BluePZ(93, "/home/codingphoenix/Documents/balloon/competitions/2026 BWLV Sonnenbühl/maps/PZ blue 7500ft.plt",CoordinateHelpers.ConvertToMeter(7000), Double.MaxValue));
         pzs.Add(new BluePZ(99, CoordinateHelpers.ConvertToMeter(9000), Double.MaxValue));
     }
 

@@ -26,7 +26,7 @@ public class Task01 : TaskJDG
         Coordinate[] goalList = Goals(track.Pilot.PilotNumber);
         for (int index = 1; index <= goalList.Length; index++)
         {
-            Coordinate goal = goalList[index];
+            Coordinate goal = goalList[index - 1];
             goals.Add((index.ToString(), goal));
         }
 
@@ -49,7 +49,7 @@ public class Task01 : TaskJDG
     {
         return new[]
         {
-            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 512990, 5355290)
+            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 512993, 5355294, CoordinateHelpers.ConvertToMeter(2599))
         };
     }
 

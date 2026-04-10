@@ -40,11 +40,12 @@ public class Task03 : TaskFON
             comment += "More than one marker drop found. | ";
             return true;
         }
+        MarkerDrop markerDrop = markerDrops.Last();
 
         Declaration declaration = declarations.Last();
 
         double distanceBetweenDeclarationPointAndDeclaredGoal = CalculationHelper.Calculate2DDistance(
-            declaration.PositionAtDeclaration, markerDrops.Last().MarkerLocation, Flight.CalculationType());
+            declaration.PositionAtDeclaration, declaration.DeclaredGoal, Flight.CalculationType());
         if (distanceBetweenDeclarationPointAndDeclaredGoal < 1000)
         {
             string penalty =
@@ -63,7 +64,7 @@ public class Task03 : TaskFON
             Coordinate[] goals = task.Goals(track.Pilot.PilotNumber);
             for (int index = 1; index <= goals.Length; index++)
             {
-                Coordinate coordinate = goals[index];
+                Coordinate coordinate = goals[index - 1];
                 coordinates.Add(($"T{task.TaskNumber()}:G{index}", coordinate));
             }
         }
@@ -77,6 +78,37 @@ public class Task03 : TaskFON
             }
         }
 
+
+        MarkerDrop lastMarkerDropBeforeFON = null;
+        foreach (MarkerDrop trackMarkerDrop in track.MarkerDrops)
+        {
+            if (trackMarkerDrop == markerDrop)
+            {
+                continue;
+            }
+
+            if (trackMarkerDrop.MarkerTime < markerDrop.MarkerTime)
+            {
+                if (lastMarkerDropBeforeFON == null)
+                {
+                    lastMarkerDropBeforeFON = trackMarkerDrop;
+                    continue;
+                }
+
+                if (lastMarkerDropBeforeFON.MarkerTime < trackMarkerDrop.MarkerTime)
+                {
+                    lastMarkerDropBeforeFON = trackMarkerDrop;
+                }
+            }
+        }
+        if(lastMarkerDropBeforeFON != null){
+            double distanceBetweenLastMarkerAndDeclaredGoal = CalculationHelper.Calculate2DDistance(lastMarkerDropBeforeFON.MarkerLocation, declaration.DeclaredGoal, Flight.CalculationType());
+            if (distanceBetweenLastMarkerAndDeclaredGoal < 1000)
+            {
+                string penalty = DistanceViolationPenalties.CalculateAndFormatPenalty(distanceBetweenLastMarkerAndDeclaredGoal, 1000, "TP");
+                comment += $"Distance between marker {lastMarkerDropBeforeFON.MarkerNumber} and declared goal is to short. [{distanceBetweenLastMarkerAndDeclaredGoal}m / {penalty}] | ";
+            }
+        }
         return false;
     }
 

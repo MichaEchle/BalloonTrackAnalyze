@@ -36,7 +36,7 @@ public class FlightManager
         //flights.Add(4, new Flight04());
         //flights.Add(5, new Flight05());
 
-        ScoreFlight(5);
+        ScoreFlight(1);
     }
 
 
@@ -51,7 +51,7 @@ public class FlightManager
         Flight flight = flights[flightNumber];
         DirectoryInfo directoryInfo = new(flight.TracksPath());
 
-        string scoringFolderLink = $"{directoryInfo.Parent.FullName}\\scoring";
+        string scoringFolderLink = $"{directoryInfo.Parent.FullName}{Path.DirectorySeparatorChar}scoring";
         DirectoryInfo scoringFolder = new(scoringFolderLink);
         if (!scoringFolder.Exists)
         {
@@ -64,11 +64,11 @@ public class FlightManager
         string scoringTime = DateTime.Now.ToString("MMddHHmmss");
 
         Console.WriteLine("Start generate Flight Report");
-        GenerateFlightReport(trackList, flight, scoringFolder, scoringTime, RUN_DESPIKER, RUN_PZ_CHECKS);
-        Console.WriteLine("Finish generate Flight Report");
+        GenerateFlightReport(trackList, flight, scoringFolder, scoringTime, RUN_DESPIKER, RUN_PZ_CHECKS, out string path);
+        Console.WriteLine("Finish generate Flight Report to " + path);
         foreach (Task task in flight.Tasks())
         {
-            string resultsPath = $"{scoringFolderLink}\\f{flightNumber}_t{task.TaskNumber()}_Results_{scoringTime}.csv";
+            string resultsPath = $"{scoringFolderLink}{Path.DirectorySeparatorChar}f{flightNumber}_t{task.TaskNumber()}_Results_{scoringTime}.csv";
 
             using (StreamWriter writer1 = new(resultsPath))
             {
@@ -106,8 +106,9 @@ public class FlightManager
     }
 
     private void GenerateFlightReport(List<Track> tracks, Flight flight, DirectoryInfo scoringFolder,
-        string scoringTime, bool despiker, bool checkPZ)
+        string scoringTime, bool despiker, bool checkPZ, out string reportPath)
     {
+        reportPath = "";
         Dictionary<Pilot, string> comments = new();
 
 
@@ -267,7 +268,7 @@ public class FlightManager
 
         var orderedComments = comments.OrderBy(pair => pair.Key.PilotNumber);
 
-        string path = $"{scoringFolder}\\f{flight.FlightNumber()}_FlightReport_{scoringTime}.csv";
+        string path = $"{scoringFolder}{Path.DirectorySeparatorChar}f{flight.FlightNumber()}_FlightReport_{scoringTime}.csv";
 
         using (StreamWriter writer1 = new(path))
         {
@@ -283,6 +284,7 @@ public class FlightManager
         }
 
         OpenFile(path);
+        reportPath = path;
     }
 
     private static void OpenFile(String filePath)
