@@ -28,7 +28,7 @@ public class Task01 : TaskPDG
 
     public override DateTime ScoringPeriodUntil()
     {
-        return new DateTime(2025, 08, 06, 05, 30, 00);
+        return new DateTime(2026, 04, 10, 05, 30, 00);
     }
 
     public override int MarkerNumber()

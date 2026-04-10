@@ -14,15 +14,22 @@ public class PZManager
 
     public PZManager()
     {
-        pzs.Add(new BluePZ(01, CoordinateHelpers.ConvertToMeter(9000), Double.MaxValue));
-        pzs.Add(new RedPZ(02, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 511130, 5327080), CoordinateHelpers.ConvertToMeter(2000), 500));
-        pzs.Add(new RedPZ(03, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 503670, 5328130), CoordinateHelpers.ConvertToMeter(1500), 200));
-        pzs.Add(new RedPZ(04, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 508870, 5327880), CoordinateHelpers.ConvertToMeter(1500), 200));
-        pzs.Add(new RedPZ(05, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 515630, 5325190), CoordinateHelpers.ConvertToMeter(2000), 300));
+        pzs.Add(new RedPZ(1, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 511170, 5357350), CoordinateHelpers.ConvertToMeter(3500), 500));
+        pzs.Add(new RedPZ(2, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 508340, 5352860), CoordinateHelpers.ConvertToMeter(3000), 200));
+        pzs.Add(new RedPZ(3, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 512450, 5360300), CoordinateHelpers.ConvertToMeter(3000), 500));
+        pzs.Add(new RedPZ(4, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 507620, 5344240), CoordinateHelpers.ConvertToMeter(3500), 300));
+        pzs.Add(new RedPZ(5, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 505230, 5342240), CoordinateHelpers.ConvertToMeter(3500), 300));
+        pzs.Add(new RedPZ(6, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 504010, 5343010), CoordinateHelpers.ConvertToMeter(3500), 300));
+        pzs.Add(new RedPZ(7, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 504100, 5345400), CoordinateHelpers.ConvertToMeter(3500), 300));
+        pzs.Add(new RedPZ(8, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 530870, 5361290), CoordinateHelpers.ConvertToMeter(3000), 500));
+        pzs.Add(new RedPZ(9, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 531050, 5359170), CoordinateHelpers.ConvertToMeter(3000), 500));
 
-        pzs.Add(new YellowPZ(06, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 501900, 5325070),200));
-        pzs.Add(new YellowPZ(07, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 506840, 5328380),500));
-        pzs.Add(new YellowPZ(08, CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("33U", 524410, 5329570),500));
+            
+        pzs.Add(new BluePZ(90, "/home/codingphoenix/Documents/balloon/competitions/2026 BWLV Sonnenbühl/maps/PZ blue 3500ft.plt",CoordinateHelpers.ConvertToMeter(3000), Double.MaxValue));
+        pzs.Add(new BluePZ(91, "/home/codingphoenix/Documents/balloon/competitions/2026 BWLV Sonnenbühl/maps/PZ blue 4500ft.plt",CoordinateHelpers.ConvertToMeter(4000), Double.MaxValue));
+        pzs.Add(new BluePZ(92, "/home/codingphoenix/Documents/balloon/competitions/2026 BWLV Sonnenbühl/maps/PZ blue 5500ft.plt",CoordinateHelpers.ConvertToMeter(5000), Double.MaxValue));
+        pzs.Add(new BluePZ(93, "/home/codingphoenix/Documents/balloon/competitions/2026 BWLV Sonnenbühl/maps/PZ blue 7500ft.plt",CoordinateHelpers.ConvertToMeter(7000), Double.MaxValue));
+        pzs.Add(new BluePZ(99, CoordinateHelpers.ConvertToMeter(9000), Double.MaxValue));
     }
 
     public string CheckPz(Flight flight, Track track)

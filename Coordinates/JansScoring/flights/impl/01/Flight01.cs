@@ -2,7 +2,7 @@
 using JansScoring.calculation;
 using System;
 
-namespace JansScoring.flights.impl.xx;
+namespace JansScoring.flights.impl._01;
 
 public class Flight01 : Flight
 {
@@ -33,7 +33,7 @@ public class Flight01 : Flight
 
     public override string TracksPath()
     {
-        return @"C:\Users\Jan\Nextcloud2\shared\Ballonveranstaltungen\2025 DM Burgebrach\scoring\flights\Flight_01\tracks\scoring";;
+        return @"/home/codingphoenix/Documents/balloon/competitions/2026 BWLV Sonnenbühl/scoring/flights/flight_01/tracks/";;
     }
 
     public override Task[] Tasks()
