@@ -81,7 +81,7 @@ public class Competition
     public Dictionary<CommonLaunchPointType, Coordinate> CommonLaunchPoints
     {
         get;
-    } = new Dictionary<CommonLaunchPointType, Coordinate>(Enum.GetValues<CommonLaunchPointType>().Length);
+    } = [with(Enum.GetValues<CommonLaunchPointType>().Length)];
 
     //public List<Flight> Flights
     //{

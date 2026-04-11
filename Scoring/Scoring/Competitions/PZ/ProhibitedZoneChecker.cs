@@ -8,7 +8,7 @@ internal static class ProhibitedZoneChecker
 {
     internal static List<ProhibitedZoneViolation> CheckProhibitedZones(List<ProhibitedZone> prohibitedZones, Track track)
     {
-        List<ProhibitedZoneViolation> violations = new ();
+        List<ProhibitedZoneViolation> violations = [];
         foreach (ProhibitedZone prohibitedZone in prohibitedZones)
         {
             CheckProhibitedZone(prohibitedZone, track, out List<Coordinate> coordinatesInZone, out TimeSpan timeInZone, out int penalties);
@@ -30,7 +30,7 @@ internal static class ProhibitedZoneChecker
 
     private static void CheckProhibitedZone(ProhibitedZone prohibitedZone, Track track, out List<Coordinate> coordinatesInZone, out TimeSpan timeInZone, out int penalties)
     {
-        coordinatesInZone = new List<Coordinate>();
+        coordinatesInZone = [];
         timeInZone = TimeSpan.Zero;
         penalties = 0;
         if (!prohibitedZone.IsActive)

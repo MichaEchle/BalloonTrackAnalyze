@@ -93,9 +93,8 @@ public static class CoordinateMath
     /// <param name="targetCoordinate">the target coordinate, will be lifted to separation altitude if coordinate is above the separation altitude</param>
     /// <param name="targetCoordinate">the coordinate for which to calculate the distance with respect to the separation altitude</param>
     /// <param name="separationAltitude">the separation altitude in [m]</param>
-    /// <param name="useGPSAltitude">true: use GPS altitude; false: use barometric altitude</param>
     /// <returns>the distance in [m]</returns>
-    public static double CalculateDistanceWithSeparationAltitude(Coordinate targetCoordinate, Coordinate coordinate, double separationAltitude, bool useGPSAltitude)
+    public static double CalculateDistanceWithSeparationAltitude(Coordinate targetCoordinate, Coordinate coordinate, double separationAltitude)
     {
         ArgumentNullException.ThrowIfNull(targetCoordinate);
 
