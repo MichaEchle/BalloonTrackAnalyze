@@ -4,7 +4,7 @@ using Scoring.Coordinates;
 using Scoring.Shapes;
 
 namespace Scoring.Competitions.PZ;
-internal static class ProhibtedZoneChecker
+internal static class ProhibitedZoneChecker
 {
     internal static List<ProhibitedZoneViolation> CheckProhibitedZones(List<ProhibitedZone> prohibitedZones, Track track)
     {
@@ -47,9 +47,9 @@ internal static class ProhibtedZoneChecker
         timeInZone = TimeSpan.FromSeconds(coordinatesInZone.Count * track.TrackPointInterval.TotalSeconds);
         penalties = prohibitedZone.TypeOfZone switch
         {
-            ProhibitedZoneType.Blue => CalculateRedPZPenalties(prohibitedZone, coordinatesInZone),
+            ProhibitedZoneType.Red => CalculateRedPZPenalties(prohibitedZone, coordinatesInZone),
             ProhibitedZoneType.Yellow => CalculateYellowPZPenalties(prohibitedZone, coordinatesInZone),
-            ProhibitedZoneType.Red => CalculateBluePZPenalites(prohibitedZone, coordinatesInZone, track.TrackPointInterval),
+            ProhibitedZoneType.Blue => CalculateBluePZPenalites(prohibitedZone, coordinatesInZone, track.TrackPointInterval),
             _ => 0,
         };
     }

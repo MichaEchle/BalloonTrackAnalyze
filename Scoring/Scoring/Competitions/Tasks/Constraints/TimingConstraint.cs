@@ -5,6 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Scoring.Competitions.Tasks.Constraints;
-internal class TiminingConstraint
+internal class TimingConstraint
 {
 }
