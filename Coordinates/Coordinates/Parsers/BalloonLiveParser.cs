@@ -304,6 +304,7 @@ namespace Coordinates.Parsers
             catch (Exception ex)
             {
                 Log(LogSeverityType.Error, functionErrorMessage + $" {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
                 return false;
             }
             Log(LogSeverityType.Info, $"Successfully parsed file '{fileNameAndPath}'");
@@ -610,7 +611,6 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse barometric altitude at declaration position in '{line}'");
                 return false;
             }
-            Console.WriteLine(declarationPositonAltitudeBarometric);
 
             double declarationPositionAltitudeGPS;
             if (!double.TryParse(line[35..40], out declarationPositionAltitudeGPS))
@@ -619,7 +619,6 @@ namespace Coordinates.Parsers
                 Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse GPS altitude at declaration position in '{line}'");
                 return false;
             }
-            Console.WriteLine(declarationPositionAltitudeGPS);
 
             string declarationText = line[43..^0];
             if (declarationText.Length > 2)
@@ -687,7 +686,6 @@ namespace Coordinates.Parsers
                         if (declaredAltitudeIsInFeet)
                         {
                             declaredAltitudeInMeter = CoordinateHelpers.ConvertToMeter((double)declaredAltitude);
-                            Console.WriteLine(declaredAltitude + $"ft -> {declaredAltitudeInMeter}m");
                         }
                         else
                             declaredAltitudeInMeter = (double)declaredAltitude;
@@ -825,7 +823,8 @@ namespace Coordinates.Parsers
             double latitude;
             if (MarkerDrop_HasAdditionalLatitudeDecimals)
             {
-                if (!ParseLatitudeWithAdditionalDecimals(line[12..20], line[MarkerDrop_StartOfAdditionalLatitudeDecimals..MarkerDrop_EndOfAdditionalLatitudeDecimals], out latitude))
+                string additionalDecimals = line.Length > MarkerDrop_EndOfAdditionalLatitudeDecimals ? line[MarkerDrop_StartOfAdditionalLatitudeDecimals..MarkerDrop_EndOfAdditionalLatitudeDecimals] : "0";
+                if (!ParseLatitudeWithAdditionalDecimals(line[12..20], additionalDecimals, out latitude))
                 {
                     //Debug.WriteLine(functionErrorMessage + $"Failed to parse marker drop latitude '{line[12..20]}' in '{line}'");
                     Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse marker drop latitude '{line[12..20]}' in '{line}'");
@@ -844,7 +843,8 @@ namespace Coordinates.Parsers
             double longitude;
             if (MarkerDrop_HasAdditionalLongitudeDecimals)
             {
-                if (!ParseLongitudeWithAdditionalDecimals(line[20..29], line[MarkerDrop_StartOfAdditionalLongitudeDecimals..MarkerDrop_EndOfAdditionalLongitudeDecimals], out longitude))
+                string additinalDecimals =line.Length > MarkerDrop_EndOfAdditionalLongitudeDecimals ? line[MarkerDrop_StartOfAdditionalLongitudeDecimals..MarkerDrop_EndOfAdditionalLongitudeDecimals] : "0";
+                if (!ParseLongitudeWithAdditionalDecimals(line[20..29], additinalDecimals, out longitude))
                 {
                     //Debug.WriteLine(functionErrorMessage + $"Failed to parse marker drop longitude '{line[20..29]}' in '{line}'");
                     Log(LogSeverityType.Error, functionErrorMessage + $"Failed to parse marker drop longitude '{line[20..29]}' in '{line}'");
@@ -1081,6 +1081,7 @@ namespace Coordinates.Parsers
 
         private static void Log(LogSeverityType logSeverity, string text)
         {
+            Console.WriteLine($@"Balloon Live Parser | {logSeverity} | {text}" );
             Logger.Log((object)"Balloon Live Parser", logSeverity, text);
         }
 
