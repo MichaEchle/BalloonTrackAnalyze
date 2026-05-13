@@ -4,6 +4,7 @@
     <File Path="../Coordinates/coh_2024_-_final.pdf" />
     <File Path="../Coordinates/ToDoList.txt" />
     <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
   </Folder>
   <Project Path="Scoring/Scoring.csproj" />
 </Solution>
