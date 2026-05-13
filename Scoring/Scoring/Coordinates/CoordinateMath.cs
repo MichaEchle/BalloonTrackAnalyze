@@ -3,14 +3,22 @@ using static System.Math;
 
 namespace Scoring.Coordinates;
 
+/// <summary>
+/// Provides geodesic math operations for WGS84 coordinates.
+/// </summary>
+/// <remarks>
+/// All distance calculations use the Haversine formula and treat the Earth as a sphere.
+/// For higher precision over long distances, consider an ellipsoidal model.
+/// All angles are measured in degrees.
+/// </remarks>
 public static class CoordinateMath
 {
     /// <summary>
-    /// Calculate the 2D distance [m] between the two coordinates using havercos formula
+    /// Computes the great-circle distance in meters between two coordinates using the Haversine formula.
     /// </summary>
-    /// <param name="coordinate1">the first coordinate</param>
-    /// <param name="coordinate2">the second coordinate</param>
-    /// <returns>the distance in meters</returns>
+    /// <param name="coordinate1">The origin coordinate.</param>
+    /// <param name="coordinate2">The destination coordinate.</param>
+    /// <returns>The 2D (surface) distance in meters.</returns>
     public static double Calculate2DDistance(Coordinate coordinate1, Coordinate coordinate2)
     {
         ArgumentNullException.ThrowIfNull(coordinate1);
@@ -32,11 +40,15 @@ public static class CoordinateMath
 
 
     /// <summary>
-    /// Calculate the 3D distance [m] between the two coordinates using havercos for 2D distance and Euclid for 3D distance
+    /// Computes the 3D distance in meters between two coordinates, including altitude difference.
     /// </summary>
-    /// <param name="coordinate1">the first coordinate</param>
-    /// <param name="coordinate2">the second coordinate</param>
-    /// <returns>the 3D distance in meters</returns>
+    /// <param name="coordinate1">The origin coordinate.</param>
+    /// <param name="coordinate2">The destination coordinate.</param>
+    /// <returns>The 3D Euclidean distance in meters.</returns>
+    /// <remarks>
+    /// The 2D distance is computed using the Haversine formula, and then combined with the
+    /// altitude difference using the Pythagorean theorem.
+    /// </remarks>
     public static double Calculate3DDistance(Coordinate coordinate1, Coordinate coordinate2)
     {
         ArgumentNullException.ThrowIfNull(coordinate1);
@@ -51,11 +63,13 @@ public static class CoordinateMath
     }
 
     /// <summary>
-    /// Accumulates the 2D distance [m] between consecutive coordinates
-    /// <para>ensure the coordinates are sorted accordingly</para>
+    /// Computes the accumulated 2D distance in meters between consecutive coordinates.
     /// </summary>
-    /// <param name="coordinates">the list of coordinates</param>
-    /// <returns>the accumulated 2D distance in meters</returns>
+    /// <param name="coordinates">The list of coordinates. Must be in order along the desired path.</param>
+    /// <returns>The accumulated 2D (surface) distance in meters.</returns>
+    /// <remarks>
+    /// Ensure the coordinates are sorted accordingly to reflect the actual path traveled.
+    /// </remarks>
     public static double Calculate2DDistanceBetweenPoints(List<Coordinate> coordinates)
     {
         ArgumentNullException.ThrowIfNull(coordinates);
@@ -69,12 +83,13 @@ public static class CoordinateMath
     }
 
     /// <summary>
-    /// Accumulates the 3D distance [m] between consecutive coordinates
-    /// <para>ensure the coordinates are sorted accordingly</para>
+    /// Computes the accumulated 3D distance in meters between consecutive coordinates.
     /// </summary>
-    /// <param name="coordinates">the list of coordinates</param>
-    /// <param name="useGPSAltitude">true: use GPS altitude; false: use barometric altitude</param>
-    /// <returns>the accumulated 3D distance in meters</returns>
+    /// <param name="coordinates">The list of coordinates. Must be in order along the desired path.</param>
+    /// <returns>The accumulated 3D Euclidean distance in meters.</returns>
+    /// <remarks>
+    /// Ensure the coordinates are sorted accordingly to reflect the actual path traveled.
+    /// </remarks>
     public static double Calculate3DDistanceBetweenPoints(List<Coordinate> coordinates)
     {
         double result = 0.0;
@@ -86,14 +101,17 @@ public static class CoordinateMath
     }
 
     /// <summary>
-    /// Calculates the distance [m] between two coordinates using a separation altitude to switch between 2D and 3D distance calculation
-    /// <para>if the target coordinate is below the separation altitude, the 2D distance will be calculated</para>
-    /// <para>if the target coordinate is above the separation altitude, the 3D distance between the target coordinate at separation altitude and the coordinate will be calculated</para>
+    /// Computes the distance between two coordinates, using a separation altitude to switch between 2D and 3D distance calculation.
     /// </summary>
-    /// <param name="targetCoordinate">the target coordinate, will be lifted to separation altitude if coordinate is above the separation altitude</param>
-    /// <param name="targetCoordinate">the coordinate for which to calculate the distance with respect to the separation altitude</param>
-    /// <param name="separationAltitude">the separation altitude in [m]</param>
-    /// <returns>the distance in [m]</returns>
+    /// <param name="targetCoordinate">The target coordinate. Will be lifted to separation altitude if above the separation altitude for 3D calculation.</param>
+    /// <param name="coordinate">The coordinate for which to calculate the distance with respect to the separation altitude.</param>
+    /// <param name="separationAltitude">The separation altitude in meters.</param>
+    /// <returns>The distance in meters.</returns>
+    /// <remarks>
+    /// If the target coordinate is below the separation altitude, the 2D distance is calculated.
+    /// If the target coordinate is at or above the separation altitude, the 3D distance is calculated
+    /// with the target coordinate projected to the separation altitude.
+    /// </remarks>
     public static double CalculateDistanceWithSeparationAltitude(Coordinate targetCoordinate, Coordinate coordinate, double separationAltitude)
     {
         ArgumentNullException.ThrowIfNull(targetCoordinate);
@@ -119,12 +137,15 @@ public static class CoordinateMath
     }
 
     /// <summary>
-    /// Calculate the interior angle at <paramref name="coordinateB"/> where the route is defined from <paramref name="coordinateA"/> to <paramref name="coordinateB"/> and <paramref name="coordinateB"/> to <paramref name="coordinateC"/>  
+    /// Computes the interior angle in degrees at <paramref name="coordinateB"/> where the route is defined from <paramref name="coordinateA"/> to <paramref name="coordinateB"/> to <paramref name="coordinateC"/>.
     /// </summary>
-    /// <param name="coordinateA">first coordinate</param>
-    /// <param name="coordinateB">second coordinate</param>
-    /// <param name="coordinateC">third coordinate</param>
-    /// <returns>the interior angle in degrees</returns>
+    /// <param name="coordinateA">The first coordinate.</param>
+    /// <param name="coordinateB">The vertex coordinate where the angle is measured.</param>
+    /// <param name="coordinateC">The third coordinate.</param>
+    /// <returns>The interior angle in degrees, in the range [0, 180].</returns>
+    /// <remarks>
+    /// This uses the law of cosines to compute the angle between the two paths.
+    /// </remarks>
     public static double CalculateInteriorAngle(Coordinate coordinateA, Coordinate coordinateB, Coordinate coordinateC)
     {
         ArgumentNullException.ThrowIfNull(coordinateA);
@@ -142,12 +163,15 @@ public static class CoordinateMath
     }
 
     /// <summary>
-    /// Calculate the area of the triangle defined by <paramref name="coordinateA"/>, <paramref name="coordinateB"/> and <paramref name="coordinateC"/>
+    /// Computes the area in square meters of the triangle defined by three coordinates.
     /// </summary>
-    /// <param name="coordinateA">first coordinate</param>
-    /// <param name="coordinateB">second coordinate</param>
-    /// <param name="coordinateC">third coordinate</param>
-    /// <returns>the area in square meters</returns>
+    /// <param name="coordinateA">The first coordinate of the triangle.</param>
+    /// <param name="coordinateB">The second coordinate of the triangle.</param>
+    /// <param name="coordinateC">The third coordinate of the triangle.</param>
+    /// <returns>The area in square meters.</returns>
+    /// <remarks>
+    /// This uses Heron's formula applied to the 2D distances between the coordinates.
+    /// </remarks>
     public static double CalculateArea(Coordinate coordinateA, Coordinate coordinateB, Coordinate coordinateC)
     {
         ArgumentNullException.ThrowIfNull(coordinateA);
@@ -168,13 +192,17 @@ public static class CoordinateMath
     }
 
     /// <summary>
-    /// Calculate a coordinate with given start point (<paramref name="coordinate1"/>), distance and bearing
-    /// <para>altitude will be copied for <paramref name="coordinate1"/> and time stamp set to current UTC time at time of calculation</para>
+    /// Computes a coordinate at a given distance and bearing from a starting point.
     /// </summary>
-    /// <param name="coordinate1">a coordinate as start point</param>
-    /// <param name="distanceInMeters">the distance in meters</param>
-    /// <param name="bearingInDecimalDegree">the bearing in decimal degree</param>
-    /// <returns>a target coordinate</returns>
+    /// <param name="coordinate1">The starting coordinate.</param>
+    /// <param name="distanceInMeters">The distance in meters. Must not be <see cref="double.NaN"/> or <see cref="double.PositiveInfinity"/>.</param>
+    /// <param name="bearingInDecimalDegree">The bearing in decimal degrees. Must not be <see cref="double.NaN"/> or <see cref="double.PositiveInfinity"/>.</param>
+    /// <returns>A new coordinate at the specified distance and bearing from the starting point.</returns>
+    /// <remarks>
+    /// The altitude of the returned coordinate is copied from the starting coordinate.
+    /// The timestamp is set to the current UTC time at the time of calculation.
+    /// The bearing is normalized to the range [0, 360).
+    /// </remarks>
     public static Coordinate CalculatePointWithDistanceAndBearing(Coordinate coordinate1, double distanceInMeters, double bearingInDecimalDegree)
     {
         ArgumentNullException.ThrowIfNull(coordinate1);

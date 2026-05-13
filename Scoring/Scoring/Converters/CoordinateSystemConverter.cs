@@ -3,8 +3,32 @@ using Scoring.Coordinates;
 
 namespace Scoring.Converters;
 
+/// <summary>
+/// Provides coordinate system conversions between UTM (Universal Transverse Mercator) and WGS84 latitude/longitude.
+/// </summary>
+/// <remarks>
+/// This implementation is self-contained with no external dependencies. UTM divides the Earth into 60 zones (each 6° wide in longitude)
+/// with separate false easting (500,000 m) and northing origins per zone. Southern hemisphere coordinates receive a false northing offset of 10,000,000 m.
+/// The class uses high-precision calculations with ellipsoid parameters from the active <see cref="Competition.Instance.Ellipsoid"/>.
+/// </remarks>
 internal class CoordinateSystemConverter
 {
+    /// <summary>
+    /// Converts WGS84 latitude/longitude to UTM coordinates with double precision.
+    /// </summary>
+    /// <param name="latitude">The latitude in decimal degrees (WGS84). Valid range is typically -80 to 84 degrees.</param>
+    /// <param name="longitude">The longitude in decimal degrees (WGS84). Valid range is -180 to 180 degrees.</param>
+    /// <returns>
+    /// A tuple containing:
+    /// <list type="bullet">
+    /// <item><description><c>utmZone</c>: The UTM zone as a string (e.g., "31U", "N30") combining latitude letter band and longitude zone (1-60).</description></item>
+    /// <item><description><c>easting</c>: The UTM easting in meters (typically 166,000-833,000 m within the zone).</description></item>
+    /// <item><description><c>northing</c>: The UTM northing in meters (0-10,000,000 m in southern hemisphere; 0+ m in northern hemisphere).</description></item>
+    /// </list>
+    /// </returns>
+    /// <remarks>
+    /// Uses high-precision transverse Mercator projection formulas with ellipsoid-specific eccentricity calculations.
+    /// </remarks>
     public static (string utmZone, double easting, double northing) ConvertToUTMPrecise(double latitude, double longitude)
     {
         //if (latitude < -80 || latitude > 84)
@@ -53,22 +77,66 @@ internal class CoordinateSystemConverter
         return ($"{latitudeZone}{longitudeZone}", easting, northing);
     }
 
+    /// <summary>
+    /// Converts a <see cref="Coordinate"/> to UTM coordinates with double precision.
+    /// </summary>
+    /// <param name="coordinate">The coordinate with latitude and longitude set.</param>
+    /// <returns>
+    /// A tuple containing the UTM zone string, easting (meters), and northing (meters).
+    /// </returns>
     public static (string utmZone, double easting, double northing) ConvertToUTMPrecise(Coordinate coordinate)
     {
         return ConvertToUTMPrecise(coordinate.Latitude, coordinate.Longitude);
     }
 
+    /// <summary>
+    /// Converts WGS84 latitude/longitude to UTM coordinates with rounding to nearest meter.
+    /// </summary>
+    /// <param name="latitude">The latitude in decimal degrees (WGS84).</param>
+    /// <param name="longitude">The longitude in decimal degrees (WGS84).</param>
+    /// <returns>
+    /// A tuple containing:
+    /// <list type="bullet">
+    /// <item><description><c>utmZone</c>: The UTM zone string.</description></item>
+    /// <item><description><c>easting</c>: The UTM easting rounded to the nearest meter.</description></item>
+    /// <item><description><c>northing</c>: The UTM northing rounded to the nearest meter.</description></item>
+    /// </list>
+    /// </returns>
+    /// <remarks>
+    /// This method wraps <see cref="ConvertToUTMPrecise(double, double)"/> and rounds the resulting easting and northing
+    /// to integers using midpoint rounding (away from zero).
+    /// </remarks>
     public static (string utmZone, int easting, int northing) ConvertToUTM(double latitude, double longitude)
     {
         (string utmZone, double easting, double northing) = ConvertToUTMPrecise(latitude, longitude);
         return (utmZone, (int)Math.Round(easting, 0, MidpointRounding.AwayFromZero), (int)Math.Round(northing, 0, MidpointRounding.AwayFromZero));
     }
 
+    /// <summary>
+    /// Converts a <see cref="Coordinate"/> to UTM coordinates with rounding to nearest meter.
+    /// </summary>
+    /// <param name="coordinate">The coordinate with latitude and longitude set.</param>
+    /// <returns>
+    /// A tuple containing the UTM zone string, easting (meters, rounded), and northing (meters, rounded).
+    /// </returns>
     public static (string utmZone, int easting, int northing) ConvertToUTM(Coordinate coordinate)
     {
         return ConvertToUTM(coordinate.Latitude, coordinate.Longitude);
     }
 
+    /// <summary>
+    /// Converts UTM coordinates to WGS84 latitude/longitude with double precision.
+    /// </summary>
+    /// <param name="utmZone">The UTM zone as a string (e.g., "31U", "N30"). Can have letter before or after the zone number.</param>
+    /// <param name="easting">The UTM easting in meters.</param>
+    /// <param name="northing">The UTM northing in meters. For southern hemisphere, should include the 10,000,000 m false northing offset.</param>
+    /// <returns>
+    /// A tuple containing the WGS84 latitude and longitude in decimal degrees.
+    /// </returns>
+    /// <remarks>
+    /// Uses high-precision inverse transverse Mercator projection formulas. The method automatically detects hemisphere
+    /// from the latitude zone letter and applies the southern hemisphere offset correction.
+    /// </remarks>
     public static (double latitude, double longitude) ConvertToLatitudeLongitudePrecise(string utmZone, double easting, double northing)
     {
         (char latitudeZone, int longitudeZone) = GetUTMZoneComponents(utmZone);
@@ -221,6 +289,16 @@ internal class CoordinateSystemConverter
         return (latitude, longitude);
     }
 
+    /// <summary>
+    /// Converts UTM coordinates to a <see cref="Coordinate"/> with double precision.
+    /// </summary>
+    /// <param name="utmZone">The UTM zone as a string.</param>
+    /// <param name="easting">The UTM easting in meters.</param>
+    /// <param name="northing">The UTM northing in meters.</param>
+    /// <param name="altitude">The altitude in meters (optional, defaults to 0). Will be set on the returned <see cref="Coordinate"/>.</param>
+    /// <returns>
+    /// A <see cref="Coordinate"/> with latitude, longitude (from precise conversion), altitude, and current timestamp.
+    /// </returns>
     public static Coordinate ConvertToLatitudeLongitudePrecise(string utmZone, double easting, double northing, double altitude = 0)
     {
         (double latitude, double longitude) = ConvertToLatitudeLongitudePrecise(utmZone, easting, northing);
@@ -233,11 +311,33 @@ internal class CoordinateSystemConverter
         };
     }
 
+    /// <summary>
+    /// Converts integer UTM coordinates to WGS84 latitude/longitude.
+    /// </summary>
+    /// <param name="utmZone">The UTM zone as a string.</param>
+    /// <param name="easting">The UTM easting in meters (as integer).</param>
+    /// <param name="northing">The UTM northing in meters (as integer).</param>
+    /// <returns>
+    /// A tuple containing the WGS84 latitude and longitude in decimal degrees.
+    /// </returns>
+    /// <remarks>
+    /// This method converts integer easting/northing to double and delegates to <see cref="ConvertToLatitudeLongitudePrecise(string, double, double)"/>.
+    /// </remarks>
     public static (double latitude, double longitude) ConvertToLatitudeLongitude(string utmZone, int easting, int northing)
     {
         return ConvertToLatitudeLongitudePrecise(utmZone, easting, northing);
     }
 
+    /// <summary>
+    /// Converts integer UTM coordinates to a <see cref="Coordinate"/>.
+    /// </summary>
+    /// <param name="utmZone">The UTM zone as a string.</param>
+    /// <param name="easting">The UTM easting in meters (as integer).</param>
+    /// <param name="northing">The UTM northing in meters (as integer).</param>
+    /// <param name="altitude">The altitude in meters (optional, defaults to 0).</param>
+    /// <returns>
+    /// A <see cref="Coordinate"/> with latitude, longitude, altitude, and current timestamp.
+    /// </returns>
     public static Coordinate ConvertToLatitudeLongitude(string utmZone, int easting, int northing, double altitude = 0)
     {
         (double latitude, double longitude) = ConvertToLatitudeLongitude(utmZone, easting, northing);
@@ -250,6 +350,16 @@ internal class CoordinateSystemConverter
         };
     }
 
+    /// <summary>
+    /// Normalizes an angle to the range (-180, 180] degrees.
+    /// </summary>
+    /// <param name="angle">The angle in degrees (any range).</param>
+    /// <returns>
+    /// The normalized angle in the range (-180, 180].
+    /// </returns>
+    /// <remarks>
+    /// This method ensures longitude values fit within the standard geographic range by wrapping them appropriately.
+    /// </remarks>
     private static double NormalizeAngle(double angle)
     {
         // force it to be the positive remainder, so that 0 <= angle < 360  
@@ -264,6 +374,21 @@ internal class CoordinateSystemConverter
         return angle;
     }
 
+    /// <summary>
+    /// Determines the UTM zone (latitude band letter and longitude zone number) from latitude/longitude.
+    /// </summary>
+    /// <param name="latitude">The latitude in decimal degrees.</param>
+    /// <param name="longitude">The longitude in decimal degrees.</param>
+    /// <returns>
+    /// A tuple containing:
+    /// <list type="bullet">
+    /// <item><description><c>latitudeZone</c>: The latitude band letter (C-X, excluding I and O).</description></item>
+    /// <item><description><c>longitudeZone</c>: The longitude zone number (1-60).</description></item>
+    /// </list>
+    /// </returns>
+    /// <remarks>
+    /// Latitude bands are 8° apart (except X which is 12°). Longitude zones are 6° wide. See USGS documentation for zone definitions.
+    /// </remarks>
     private static (string latitudeZone, int longitudeZone) GetUTMZoneFromLatLong(double latitude, double longitude)
     {
         int longitudeZone = (int)(1.0 + Math.Floor((longitude + 180.0) / 6.0));
@@ -294,6 +419,22 @@ internal class CoordinateSystemConverter
         return (latitudeZone, longitudeZone);
     }
 
+    /// <summary>
+    /// Parses a UTM zone string and extracts the latitude band letter and longitude zone number.
+    /// </summary>
+    /// <param name="utmZone">The UTM zone string. Can be formatted as "LetterNumber" (e.g., "31U") or "NumberLetter" (e.g., "U31").</param>
+    /// <returns>
+    /// A tuple containing:
+    /// <list type="bullet">
+    /// <item><description><c>latitudeZone</c>: The latitude band letter (normalized to uppercase).</description></item>
+    /// <item><description><c>longitudeZone</c>: The longitude zone number (1-60).</description></item>
+    /// </list>
+    /// </returns>
+    /// <exception cref="ArgumentException">Thrown if the UTM zone string is invalid or cannot be parsed.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if the longitude zone is not between 1 and 60.</exception>
+    /// <remarks>
+    /// Accepts both "31U" and "U31" formats for flexibility. Performs validation on the longitude zone range.
+    /// </remarks>
     private static (char latitudeZone, int longitudeZone) GetUTMZoneComponents(string utmZone)
     {
         if (utmZone.Length is < 2 or > 4)
