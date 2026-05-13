@@ -1,4 +1,6 @@
-﻿namespace Scoring.Coordinates;
+﻿using Scoring.Converters;
+
+namespace Scoring.Coordinates;
 
 /// <summary>
 /// Represents a geographic coordinate with latitude, longitude, and optional altitude.

@@ -9,7 +9,7 @@ namespace Scoring.Shapes.GridLine;
 /// Grid lines follow lines of constant latitude (parallels) and longitude (meridians).
 /// Distance is measured in meters via Haversine formula.
 /// </remarks>
-internal class GridLine
+internal sealed class GridLine
 {
     /// <summary>
     /// Gets the center point that defines the grid lines.

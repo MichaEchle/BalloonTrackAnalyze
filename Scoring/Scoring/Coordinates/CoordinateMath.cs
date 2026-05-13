@@ -70,7 +70,7 @@ public static class CoordinateMath
     /// <remarks>
     /// Ensure the coordinates are sorted accordingly to reflect the actual path traveled.
     /// </remarks>
-    public static double Calculate2DDistanceBetweenPoints(List<Coordinate> coordinates)
+    public static double Calculate2DDistanceBetweenPoints(IList<Coordinate> coordinates)
     {
         ArgumentNullException.ThrowIfNull(coordinates);
 
@@ -90,7 +90,7 @@ public static class CoordinateMath
     /// <remarks>
     /// Ensure the coordinates are sorted accordingly to reflect the actual path traveled.
     /// </remarks>
-    public static double Calculate3DDistanceBetweenPoints(List<Coordinate> coordinates)
+    public static double Calculate3DDistanceBetweenPoints(IList<Coordinate> coordinates)
     {
         double result = 0.0;
         for (int index = 0; index < coordinates.Count - 1; index++)

@@ -22,15 +22,15 @@ public enum AltitudeSourceType
 public enum CommonLaunchPointType
 {
 	/// <summary>Common launch point A.</summary>
-	CLP_A,
+	CommonLaunchPointA,
 	/// <summary>Common launch point B.</summary>
-	CLP_B,
+	CommonLaunchPointB,
 	/// <summary>Common launch point C.</summary>
-	CLP_C,
+	CommonLaunchPointC,
 	/// <summary>Common launch point D.</summary>
-	CLP_D,
+	CommonLaunchPointD,
 	/// <summary>Common launch point E.</summary>
-	CLP_E,
+	CommonLaunchPointE,
 }
 
 /// <summary>
@@ -38,7 +38,7 @@ public enum CommonLaunchPointType
 /// </summary>
 /// <remarks>
 /// <para>
-/// <see cref="Competition"/> is a singleton created via <see cref="Create(string, double, AltitudeSourceType, List{Pilot}, Ellipsoid)"/>.
+/// <see cref="Competition"/> is a singleton created via <see cref="Create(string, double, AltitudeSourceType, IList{Pilot}, Ellipsoid)"/>.
 /// Once created, it is accessed via <see cref="Instance"/>.
 /// </para>
 /// <para>
@@ -75,7 +75,7 @@ public class Competition
 
 	/// <summary>Gets the list of pilots competing in this competition.</summary>
 	/// <value>A list of <see cref="Pilot"/> objects.</value>
-	public List<Pilot> Pilots
+	public IList<Pilot> Pilots
 	{
 		get;
 	}
@@ -91,14 +91,14 @@ public class Competition
 	/// Initializes a new instance of <see cref="Competition"/> with the specified parameters.
 	/// </summary>
 	/// <remarks>
-	/// This constructor is private; use <see cref="Create(string, double, AltitudeSourceType, List{Pilot}, Ellipsoid)"/> to create instances.
+	/// This constructor is private; use <see cref="Create(string, double, AltitudeSourceType, IList{Pilot}, Ellipsoid)"/> to create instances.
 	/// </remarks>
 	/// <param name="name">The name of the competition.</param>
 	/// <param name="separationAltitude">The separation altitude in meters.</param>
 	/// <param name="altitudeSource">The altitude measurement source type.</param>
 	/// <param name="pilots">The list of competing pilots.</param>
 	/// <param name="ellipsoid">The ellipsoid model for coordinate conversions.</param>
-	private Competition(string name, double separationAltitude, AltitudeSourceType altitudeSource, List<Pilot> pilots, Ellipsoid ellipsoid)
+	private Competition(string name, double separationAltitude, AltitudeSourceType altitudeSource, IList<Pilot> pilots, Ellipsoid ellipsoid)
 	{
 		Name = name;
 		SeparationAltitude = separationAltitude;
@@ -109,7 +109,7 @@ public class Competition
 
 	/// <summary>Gets the global singleton instance of the active competition.</summary>
 	/// <value>The <see cref="Competition"/> instance.</value>
-	/// <exception cref="InvalidOperationException">Thrown if <see cref="Create(string, double, AltitudeSourceType, List{Pilot}, Ellipsoid)"/> has not been called yet.</exception>
+	/// <exception cref="InvalidOperationException">Thrown if <see cref="Create(string, double, AltitudeSourceType, IList{Pilot}, Ellipsoid)"/> has not been called yet.</exception>
 	public static Competition Instance
 	{
 		get
@@ -136,7 +136,7 @@ public class Competition
 	/// <param name="ellipsoid">The ellipsoid model for coordinate conversions (must not be null).</param>
 	/// <exception cref="ArgumentException">Thrown if <paramref name="name"/> is null or whitespace.</exception>
 	/// <exception cref="ArgumentNullException">Thrown if <paramref name="pilots"/> or <paramref name="ellipsoid"/> is <see langword="null"/>.</exception>
-	public static void Create(string name, double separationAltitude, AltitudeSourceType altitudeSource, List<Pilot> pilots, Ellipsoid ellipsoid)
+	public static void Create(string name, double separationAltitude, AltitudeSourceType altitudeSource, IList<Pilot> pilots, Ellipsoid ellipsoid)
 	{
 		ArgumentException.ThrowIfNullOrWhiteSpace(name, nameof(name));
 		ArgumentNullException.ThrowIfNull(pilots);
@@ -154,7 +154,7 @@ public class Competition
 
 	/// <summary>Gets the list of active prohibited zones in this competition.</summary>
 	/// <value>A list of <see cref="ProhibitedZone"/> objects.</value>
-	public List<ProhibitedZone> PZs
+	public IList<ProhibitedZone> PZs
 	{
 		get;
 	} = [];

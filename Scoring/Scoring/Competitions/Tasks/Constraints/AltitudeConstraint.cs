@@ -12,7 +12,7 @@
 /// Use <see cref="double.NaN"/> to indicate an unset limit.
 /// </para>
 /// </remarks>
-internal class AltitudeConstraint : BaseConstraint<double>, IConstraint<double>
+internal sealed class AltitudeConstraint : BaseConstraint<double>, IConstraint<double>
 {
 	/// <summary>Gets the list of reference altitudes used for comparisons.</summary>
 	/// <remarks>

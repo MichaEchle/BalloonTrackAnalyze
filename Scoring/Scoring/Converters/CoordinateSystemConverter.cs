@@ -9,9 +9,9 @@ namespace Scoring.Converters;
 /// <remarks>
 /// This implementation is self-contained with no external dependencies. UTM divides the Earth into 60 zones (each 6° wide in longitude)
 /// with separate false easting (500,000 m) and northing origins per zone. Southern hemisphere coordinates receive a false northing offset of 10,000,000 m.
-/// The class uses high-precision calculations with ellipsoid parameters from the active <see cref="Competition.Instance.Ellipsoid"/>.
+/// The class uses high-precision calculations with ellipsoid parameters from the active <see cref="Competition.Ellipsoid"/>.
 /// </remarks>
-internal class CoordinateSystemConverter
+internal sealed class CoordinateSystemConverter
 {
     /// <summary>
     /// Converts WGS84 latitude/longitude to UTM coordinates with double precision.

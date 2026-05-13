@@ -9,7 +9,7 @@
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <!--<AnalysisMode>All</AnalysisMode>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>-->
+    <AnalysisMode>All</AnalysisMode>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
 	</PropertyGroup>
 </Project>

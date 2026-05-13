@@ -16,7 +16,7 @@ namespace Scoring.Competitions.PZ;
 /// Instances are immutable with required init-only properties, used internally by <see cref="ProhibitedZoneChecker"/>.
 /// </para>
 /// </remarks>
-internal class ProhibitedZoneViolation
+internal sealed class ProhibitedZoneViolation
 {
 	/// <summary>Gets the list of track coordinates that were inside the prohibited zone.</summary>
 	/// <value>A list of <see cref="Coordinate"/> objects.</value>

@@ -7,6 +7,6 @@
 /// This is a placeholder (stub) for future implementation of 2D containment constraints
 /// (e.g., requiring a waypoint to fall within a specified geographical area).
 /// </remarks>
-internal class WithinShape2DConstraint
+internal sealed class WithinShape2DConstraint
 {
 }

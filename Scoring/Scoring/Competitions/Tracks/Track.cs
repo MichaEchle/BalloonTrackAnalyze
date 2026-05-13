@@ -24,21 +24,21 @@ public class Track
 	/// and contain latitude, longitude, and altitude data.
 	/// </remarks>
 	/// <value>A list of <see cref="Coordinate"/> objects.</value>
-	public List<Coordinate> TrackPoints { get; } = [];
+	public IList<Coordinate> TrackPoints { get; } = [];
 
 	/// <summary>Gets the list of goals declared by the pilot during the flight.</summary>
 	/// <remarks>
 	/// One or more goals may be declared depending on the task design.
 	/// </remarks>
 	/// <value>A list of <see cref="Declaration"/> objects.</value>
-	public List<Declaration> Declarations { get; } = [];
+	public IList<Declaration> Declarations { get; } = [];
 
 	/// <summary>Gets the list of markers dropped by the pilot during the flight.</summary>
 	/// <remarks>
 	/// Marker drops are recorded with their location. Physical markers take precedence over electronic markers during scoring.
 	/// </remarks>
 	/// <value>A list of <see cref="MarkerDrop"/> objects.</value>
-	public List<MarkerDrop> MarkerDrops { get; } = [];
+	public IList<MarkerDrop> MarkerDrops { get; } = [];
 
 	/// <summary>Gets the pilot who created this track.</summary>
 	/// <value>A <see cref="Pilot"/> object.</value>

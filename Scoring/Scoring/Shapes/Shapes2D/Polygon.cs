@@ -15,7 +15,7 @@ public class Polygon : Shapes2D
     /// Gets the list of vertices defining this polygon.
     /// </summary>
     /// <value>An ordered list of <see cref="Coordinate"/> vertices.</value>
-    public required List<Coordinate> PolygonPoints
+    public required IList<Coordinate> PolygonPoints
     {
         get; init;
     }

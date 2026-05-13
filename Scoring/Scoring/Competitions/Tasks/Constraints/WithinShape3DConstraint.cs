@@ -7,6 +7,6 @@
 /// This is a placeholder (stub) for future implementation of 3D containment constraints
 /// (e.g., requiring a waypoint to fall within a specified altitude band and geographical area).
 /// </remarks>
-internal class WithInShape3DConstraint
+internal sealed class WithInShape3DConstraint
 {
 }

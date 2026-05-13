@@ -7,6 +7,6 @@
 /// This is a placeholder (stub) for future implementation of timing constraints
 /// (e.g., specific time windows during which waypoints must be reached).
 /// </remarks>
-internal class TimingConstraint
+internal sealed class TimingConstraint
 {
 }

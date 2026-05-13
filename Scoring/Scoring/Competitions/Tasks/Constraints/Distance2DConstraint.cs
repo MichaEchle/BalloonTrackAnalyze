@@ -22,7 +22,7 @@ public class Distance2DConstraint : BaseConstraint<Coordinate>, IConstraint<Coor
 	/// Distance is measured from the target coordinate to each reference coordinate.
 	/// </remarks>
 	/// <value>A list of reference <see cref="Coordinate"/> objects.</value>
-	public required List<Coordinate> ConstraintReferences
+	public required IList<Coordinate> ConstraintReferences
 	{
 		get;
 		init;

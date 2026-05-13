@@ -1,4 +1,6 @@
-﻿namespace Scoring.Competitions.Tasks.Constraints;
+﻿using Scoring.Coordinates;
+
+namespace Scoring.Competitions.Tasks.Constraints;
 
 /// <summary>
 /// Specifies the order in which constraint targets are evaluated.
@@ -90,10 +92,12 @@ public interface IConstraint<T>
 		get; init;
 	}
 
-	/// <summary>Gets the list of targets to be evaluated against this constraint.</summary>
-	/// <value>A list of targets of type <typeparamref name="T"/>.</value>
-	public List<T> ConstraintTargets
-	{
+    /// <summary>Gets the list of targets to be evaluated against this constraint.</summary>
+    /// <value>A list of targets of type <typeparamref name="T"/>.</value>
+#pragma warning disable CA1002 // Do not expose generic lists
+    public List<T> ConstraintTargets
+#pragma warning restore CA1002 // Do not expose generic lists
+    {
 		get; init;
 	}
 

@@ -15,7 +15,7 @@ namespace Scoring.Competitions.Tasks.Constraints;
 /// Use <see cref="double.NaN"/> to indicate an unset limit.
 /// </para>
 /// </remarks>
-internal class Distance3DConstraint : BaseConstraint<Coordinate>, IConstraint<Coordinate>
+internal sealed class Distance3DConstraint : BaseConstraint<Coordinate>, IConstraint<Coordinate>
 {
 	/// <summary>Gets the list of reference coordinates used for 3D distance calculations.</summary>
 	/// <remarks>
