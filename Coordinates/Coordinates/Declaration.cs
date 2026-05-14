@@ -43,6 +43,18 @@ namespace Coordinates
         }
 
         /// <summary>
+        /// Reference frame the pilot used when entering the declared goal.
+        /// Defaults to UTM_WGS84 because that has historically been the only
+        /// shape of <see cref="OrignalEastingDeclarationUTM"/> /
+        /// <see cref="OrignalNorhtingDeclarationUTM"/> in this codebase.
+        /// Parsers that recognise an alternative encoding (Swiss Grid,
+        /// UTM ETRS89, plain lat/lon) should overwrite this after
+        /// construction.
+        /// </summary>
+        public CoordinateSystem DeclarationCoordinateSystem { get; set; }
+            = CoordinateSystem.UTM_WGS84;
+
+        /// <summary>
         /// The position at which the goal has been declared
         /// </summary>
         public Coordinate PositionAtDeclaration
@@ -69,7 +81,12 @@ namespace Coordinates
 
         public Declaration Clone()
         {
-            return new Declaration(GoalNumber, DeclaredGoal, PositionAtDeclaration, HasPilotDelaredGoalAltitude, OrignalEastingDeclarationUTM, OrignalNorhtingDeclarationUTM);
+            return new Declaration(GoalNumber, DeclaredGoal, PositionAtDeclaration,
+                HasPilotDelaredGoalAltitude,
+                OrignalEastingDeclarationUTM, OrignalNorhtingDeclarationUTM)
+            {
+                DeclarationCoordinateSystem = DeclarationCoordinateSystem
+            };
         }
     }
 }

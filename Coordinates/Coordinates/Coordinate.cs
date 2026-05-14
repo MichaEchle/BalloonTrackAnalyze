@@ -78,9 +78,24 @@ namespace Coordinates
             set;
         }
 
+        /// <summary>
+        /// The reference frame this coordinate was originally entered in,
+        /// preserved for round-trip display / logging.  The numeric fields
+        /// <see cref="Latitude"/> and <see cref="Longitude"/> are always
+        /// WGS84 decimal degrees regardless of this value.
+        /// </summary>
+        public CoordinateSystem? InputSystem { get; set; }
+
         public Coordinate Clone()
         {
-            return new Coordinate(Latitude, Longitude, AltitudeGPS, AltitudeBarometric, TimeStamp);
+            return new Coordinate(Latitude, Longitude, AltitudeGPS, AltitudeBarometric, TimeStamp)
+            {
+                utmZone = utmZone,
+                easting = easting,
+                northing = northing,
+                CorrectedBarometric = CorrectedBarometric,
+                InputSystem = InputSystem
+            };
         }
 
         public void CorrectBarometricHeight(double qnh)

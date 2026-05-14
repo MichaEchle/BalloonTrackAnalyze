@@ -663,5 +663,172 @@ namespace Coordinates
 
             return altitude - adjustment;
         }
+
+        // ─────────────────────────────────────────────────────────────────────
+        //  Unified multi-system parsing API.
+        //
+        //  All in-memory geometry and distance maths stays in WGS84 lat/lon;
+        //  these helpers are the single conversion layer used by goal /
+        //  protected-zone definitions and by parsers that encounter declared
+        //  coordinates in something other than plain WGS84.
+        // ─────────────────────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Convert a numeric coordinate pair from any supported reference frame
+        /// into a WGS84 <see cref="Coordinate"/>.  The first numeric argument
+        /// is whatever the source frame calls "easting"/"longitude", the
+        /// second is "northing"/"latitude".
+        /// </summary>
+        /// <param name="system">The reference frame of the inputs.</param>
+        /// <param name="eastingOrLongitude">
+        /// Easting [m] for UTM/Swiss Grid, decimal-degree longitude for
+        /// <see cref="CoordinateSystem.WGS84_LatLon"/>.
+        /// </param>
+        /// <param name="northingOrLatitude">
+        /// Northing [m] for UTM/Swiss Grid, decimal-degree latitude for
+        /// <see cref="CoordinateSystem.WGS84_LatLon"/>.
+        /// </param>
+        /// <param name="altitudeMeters">
+        /// Altitude in metres, applied to both GPS and barometric fields of
+        /// the resulting coordinate.  Pass <see cref="double.NaN"/> when not
+        /// known.
+        /// </param>
+        /// <param name="utmZone">
+        /// UTM zone in the form "32U" — required for UTM systems, ignored
+        /// otherwise.
+        /// </param>
+        public static Coordinate ConvertToWgs84Coordinate(
+            CoordinateSystem system,
+            double eastingOrLongitude,
+            double northingOrLatitude,
+            double altitudeMeters = double.NaN,
+            string utmZone = null)
+        {
+            double lat, lon;
+            switch (system)
+            {
+                case CoordinateSystem.WGS84_LatLon:
+                    lat = northingOrLatitude;
+                    lon = eastingOrLongitude;
+                    break;
+
+                case CoordinateSystem.UTM_WGS84:
+                {
+                    (int zoneNumber, char zoneLetter) = ParseUtmZone(utmZone);
+                    (lat, lon) = UtmConverter.UtmToGeographic(
+                        zoneNumber, zoneLetter,
+                        eastingOrLongitude, northingOrLatitude,
+                        UtmConverter.Ellipsoid.Wgs84);
+                    break;
+                }
+
+                case CoordinateSystem.UTM_ETRS89:
+                {
+                    (int zoneNumber, char zoneLetter) = ParseUtmZone(utmZone);
+                    (lat, lon) = UtmConverter.UtmToGeographic(
+                        zoneNumber, zoneLetter,
+                        eastingOrLongitude, northingOrLatitude,
+                        UtmConverter.Ellipsoid.Grs80);
+                    break;
+                }
+
+                case CoordinateSystem.SwissGrid_LV95:
+                    (lat, lon) = SwissGridConverter.Lv95ToWgs84(
+                        eastingOrLongitude, northingOrLatitude);
+                    break;
+
+                case CoordinateSystem.SwissGrid_LV03:
+                    (lat, lon) = SwissGridConverter.Lv03ToWgs84(
+                        eastingOrLongitude, northingOrLatitude);
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(system),
+                        $"Unsupported coordinate system: {system}");
+            }
+
+            Coordinate coordinate = new Coordinate(lat, lon, altitudeMeters, altitudeMeters,
+                DateTime.MinValue) { InputSystem = system };
+
+            // Mirror the existing behaviour of the legacy UTM converter, which
+            // also populates the .utmZone/.easting/.northing fields on the
+            // resulting Coordinate using the WGS84 UTM zone of the target
+            // point.  This keeps callers that rely on those fields working.
+            (string z, double e, double n) =
+                ConvertLatitudeLongitudeToUTM_Presice(coordinate.Latitude, coordinate.Longitude);
+            coordinate.utmZone = z;
+            coordinate.easting = e;
+            coordinate.northing = n;
+
+            return coordinate;
+        }
+
+        /// <summary>
+        /// Express a WGS84 <see cref="Coordinate"/> in the requested target
+        /// reference frame.  Returns easting/northing for projected systems
+        /// or longitude/latitude for <see cref="CoordinateSystem.WGS84_LatLon"/>.
+        /// </summary>
+        public static (double eastingOrLongitude, double northingOrLatitude, string zone)
+            ConvertFromWgs84(Coordinate coordinate, CoordinateSystem targetSystem)
+        {
+            if (coordinate is null) throw new ArgumentNullException(nameof(coordinate));
+
+            switch (targetSystem)
+            {
+                case CoordinateSystem.WGS84_LatLon:
+                    return (coordinate.Longitude, coordinate.Latitude, null);
+
+                case CoordinateSystem.UTM_WGS84:
+                {
+                    var r = UtmConverter.GeographicToUtm(coordinate.Latitude, coordinate.Longitude,
+                        UtmConverter.Ellipsoid.Wgs84);
+                    return (r.easting, r.northing, $"{r.zoneNumber}{r.zoneLetter}");
+                }
+
+                case CoordinateSystem.UTM_ETRS89:
+                {
+                    var r = UtmConverter.GeographicToUtm(coordinate.Latitude, coordinate.Longitude,
+                        UtmConverter.Ellipsoid.Grs80);
+                    return (r.easting, r.northing, $"{r.zoneNumber}{r.zoneLetter}");
+                }
+
+                case CoordinateSystem.SwissGrid_LV95:
+                {
+                    var r = SwissGridConverter.Wgs84ToLv95(coordinate.Latitude,
+                        coordinate.Longitude);
+                    return (r.easting, r.northing, null);
+                }
+
+                case CoordinateSystem.SwissGrid_LV03:
+                {
+                    var r = SwissGridConverter.Wgs84ToLv03(coordinate.Latitude,
+                        coordinate.Longitude);
+                    return (r.easting, r.northing, null);
+                }
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(targetSystem));
+            }
+        }
+
+        private static (int zoneNumber, char zoneLetter) ParseUtmZone(string utmZone)
+        {
+            if (string.IsNullOrWhiteSpace(utmZone))
+                throw new ArgumentException("UTM zone (e.g. \"32U\") must be provided for UTM systems.",
+                    nameof(utmZone));
+
+            int splitIndex = 0;
+            while (splitIndex < utmZone.Length && char.IsDigit(utmZone[splitIndex]))
+                splitIndex++;
+
+            if (splitIndex == 0 || splitIndex >= utmZone.Length)
+                throw new FormatException(
+                    $"UTM zone \"{utmZone}\" is not in the expected \"<number><letter>\" form.");
+
+            int number = int.Parse(utmZone.Substring(0, splitIndex),
+                System.Globalization.CultureInfo.InvariantCulture);
+            char letter = char.ToUpperInvariant(utmZone[splitIndex]);
+            return (number, letter);
+        }
     }
 }

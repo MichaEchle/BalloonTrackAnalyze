@@ -14,7 +14,7 @@ public class Flight01 : Flight
 
     public override DateTime StartOfLaunchPeriode()
     {
-        return new DateTime(2026, 04, 10, 14,00, 00);
+        return new DateTime(2026, 05, 14, 08,00, 00);
     }
 
     public override int LaunchPeriode()
@@ -34,7 +34,7 @@ public class Flight01 : Flight
 
     public override string TracksPath()
     {
-        return @"/home/codingphoenix/Documents/balloon/competitions/2026 BWLV Sonnenbühl/scoring/flights/flight_01/tracks/";;
+        return @"/home/codingphoenix/Documents/balloon/competitions/2026 SMHL Langenthal/scoring/flights/flight_01/tracks/";
     }
 
     public override Task[] Tasks()
