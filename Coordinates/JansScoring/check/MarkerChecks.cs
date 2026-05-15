@@ -10,7 +10,7 @@ public class MarkerChecks
 {
     public static void LoadMarker(Track track, int markerNumber, out MarkerDrop markerDrop, ref string comment)
     {
-        List<int> allMarkerNumbers = track.GetAllGoalNumbers();
+        List<int> allMarkerNumbers = track.GetAllMarkerNumbers();
         if (allMarkerNumbers == null || !allMarkerNumbers.Any())
         {
             comment += "No marker found. | ";

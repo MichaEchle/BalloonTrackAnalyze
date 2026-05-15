@@ -10,7 +10,7 @@ public class Flight02 : Flight
 {
     public override int FlightNumber()
     {
-        return 1;
+        return 2;
     }
 
     public override DateTime StartOfLaunchPeriode()
