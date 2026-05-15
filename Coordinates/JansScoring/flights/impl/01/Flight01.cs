@@ -62,6 +62,11 @@ public class Flight01 : Flight
         return CoordinateHelpers.ConvertToWgs84Coordinate(CoordinateSystem.SwissGrid_LV03,623180, 228470);
     }
 
+    public override CoordinateSystem DeclarationCoordinateSystem()
+    {
+        return CoordinateSystem.SwissGrid_LV03;
+    }
+
     public override int QNH()
     {
         return 1001;

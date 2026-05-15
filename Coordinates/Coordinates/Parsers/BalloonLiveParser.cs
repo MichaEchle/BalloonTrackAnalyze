@@ -49,7 +49,9 @@ namespace Coordinates.Parsers
         /// <para>a goal declaration not in the zone 6/7 format is ambiguous</para>
         /// <para>this is an optional parameter, the parse will use either marker drop 1 or the position at declaration if not reference point has been provided</para></param>
         /// <returns>true:success; false:error</returns>
-        public static bool ParseFile(string fileNameAndPath, out Track track, Coordinate referenceCoordinate = null)
+        public static bool ParseFile(string fileNameAndPath, out Track track,
+            Coordinate referenceCoordinate = null,
+            CoordinateSystem declarationSystem = CoordinateSystem.UTM_WGS84)
         {
             //TODO make method async?
 
@@ -288,7 +290,7 @@ namespace Coordinates.Parsers
                 {
 
                     Declaration declaration;
-                    if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, referenceCoordinate, out declaration))
+                    if (!ParseGoalDeclaration(goalDeclarationLine, date, declaredAltitudeIsInFeet, referenceCoordinate, declarationSystem, out declaration))
                     {
                         //Debug.WriteLine(functionErrorMessage + "Failed to parse goal declaration");
                         Log(LogSeverityType.Error, functionErrorMessage + "Failed to parse goal declaration");
@@ -545,7 +547,7 @@ namespace Coordinates.Parsers
         /// <param name="referenceCoordinate">a reference coordinate to fill up the missing info from utm goal declaration. If the reference is null, the position of declaration will be used instead</param>
         /// <param name="declaration">output parameter. the declaration</param>
         /// <returns>true:success; false:error</returns>
-        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, Coordinate referenceCoordinate, out Declaration declaration)
+        private static bool ParseGoalDeclaration(string line, DateTime date, bool declaredAltitudeIsInFeet, Coordinate referenceCoordinate, CoordinateSystem declarationSystem, out Declaration declaration)
         {
             string functionErrorMessage = $"Failed to parse goal declaration:";
             declaration = null;
@@ -704,83 +706,45 @@ namespace Coordinates.Parsers
                     Log(LogSeverityType.Warning, $"No altitude declared for Goal No. '{goalNumber}'. Altitude of 0 will be assumed");
                 }
 
-                CoordinateSharp.Coordinate coordinateSharp;
-                double goalNorthingUTM = double.NaN;
-                double goalEastingUTM = double.NaN;
                 Coordinate declaredGoal = null;
-                Coordinate positionAtDeclaration = null;
-                bool useDeclarationPosition = false;
+                Coordinate positionAtDeclaration = new Coordinate(declarationLatitude, declarationLongitude,
+                    declarationPositionAltitudeGPS, declarationPositonAltitudeBarometric, timeStamp);
+
+                // Try the supplied reference (typically marker drop #1 or a backup point).
+                // If the assembled goal lands implausibly far away, retry using
+                // the position the declaration was made from — handy when the
+                // backup coordinate is the wrong one.
                 if (referenceCoordinate != null)
                 {
-                    coordinateSharp = new CoordinateSharp.Coordinate(referenceCoordinate.Latitude, referenceCoordinate.Longitude);
-
-                    string utmGridZone = coordinateSharp.UTM.LatZone + coordinateSharp.UTM.LongZone;
-                    if (northingDigits < 6)
-                    {
-                        goalNorthingUTM = northingUTM * 10;
-                        goalNorthingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits + 1)) * Math.Pow(10, northingDigits + 1));
-                    }
-                    if (northingDigits == 6)
-                    {
-                        goalNorthingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) * Math.Pow(10, northingDigits));
-                    }
-
-                    if (eastingDigits != 6)
-                    {
-                        goalEastingUTM = eastingUTM * 10;
-                        goalEastingUTM += (int)(Math.Floor(coordinateSharp.UTM.Easting / Math.Pow(10, eastingDigits + 1)) * Math.Pow(10, eastingDigits + 1));
-
-                    }
-
-                    CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator(utmGridZone, goalEastingUTM, goalNorthingUTM);
-
-                    CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
-
-                    declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
-                    positionAtDeclaration = new Coordinate(declarationLatitude, declarationLongitude, declarationPositionAltitudeGPS, declarationPositonAltitudeBarometric, timeStamp);
-                    double distance = CoordinateHelpers.Calculate2DDistanceHavercos(declaredGoal, positionAtDeclaration);
-                    if (distance > 70e3)
-                    {
-
-                        useDeclarationPosition = true;
-                    }
+                    declaredGoal = AssembleDeclaredGoal(
+                        declarationSystem, referenceCoordinate,
+                        eastingUTM, eastingDigits,
+                        northingUTM, northingDigits,
+                        declaredAltitudeInMeter, timeStamp);
                 }
-                if (useDeclarationPosition)
+
+                if (declaredGoal == null
+                    || CoordinateHelpers.Calculate2DDistanceHavercos(declaredGoal, positionAtDeclaration) > 70e3)
                 {
-                    coordinateSharp = new CoordinateSharp.Coordinate(declarationLatitude, declarationLongitude);
-                    string utmGridZone = coordinateSharp.UTM.LatZone + coordinateSharp.UTM.LongZone;
-                    if (northingDigits < 6)
+                    Coordinate fallback = AssembleDeclaredGoal(
+                        declarationSystem, positionAtDeclaration,
+                        eastingUTM, eastingDigits,
+                        northingUTM, northingDigits,
+                        declaredAltitudeInMeter, timeStamp);
+
+                    if (declaredGoal != null
+                        && CoordinateHelpers.Calculate2DDistanceHavercos(fallback, positionAtDeclaration) > 70e3)
                     {
-                        goalNorthingUTM = northingUTM * 10;
-                        goalNorthingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits + 1)) * Math.Pow(10, northingDigits + 1));
+                        Log(LogSeverityType.Warning, $"Suspicious declaration of goal {goalNumber}: {locations[0]}/{locations[1]}");
                     }
-                    if (northingDigits == 6)
-                    {
-                        goalNorthingUTM += (int)(Math.Floor(coordinateSharp.UTM.Northing / Math.Pow(10, northingDigits)) * Math.Pow(10, northingDigits));
-                    }
-
-                    if (eastingDigits != 6)
-                    {
-                        goalEastingUTM = eastingUTM * 10;
-                        goalEastingUTM += (int)(Math.Floor(coordinateSharp.UTM.Easting / Math.Pow(10, eastingDigits + 1)) * Math.Pow(10, eastingDigits + 1));
-
-                    }
-
-                    CoordinateSharp.UniversalTransverseMercator utm = new CoordinateSharp.UniversalTransverseMercator(utmGridZone, goalEastingUTM, goalNorthingUTM);
-
-                    CoordinateSharp.Coordinate coordinate = CoordinateSharp.UniversalTransverseMercator.ConvertUTMtoLatLong(utm);
-
-                    declaredGoal = new Coordinate(coordinate.Latitude.DecimalDegree, coordinate.Longitude.DecimalDegree, declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp);
-                    positionAtDeclaration = new Coordinate(declarationLatitude, declarationLongitude, declarationPositionAltitudeGPS, declarationPositonAltitudeBarometric, timeStamp);
-                    double distance = CoordinateHelpers.Calculate2DDistanceHavercos(declaredGoal, positionAtDeclaration);
-                    if (distance > 70e3)
-                    {
-
-                        Log(LogSeverityType.Warning, $"Suspicious declaration of gaol {goalNumber}: {locations[0]}/{locations[1]}");
-                    }
+                    declaredGoal = fallback;
                 }
 
-                declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration, hasPilotDelaredGoalAltitude, eastingUTM, northingUTM);
+                declaration = new Declaration(goalNumber, declaredGoal, positionAtDeclaration,
+                    hasPilotDelaredGoalAltitude, eastingUTM, northingUTM)
+                {
+                    DeclarationCoordinateSystem = declarationSystem
+                };
             }
             else
             {
@@ -1083,6 +1047,93 @@ namespace Coordinates.Parsers
         {
             Console.WriteLine($@"Balloon Live Parser | {logSeverity} | {text}" );
             Logger.Log((object)"Balloon Live Parser", logSeverity, text);
+        }
+
+        /// <summary>
+        /// Reconstruct the full declared-goal position from the truncated
+        /// digits the pilot typed (e.g. "2320/2865") and a nearby reference
+        /// point.  Works for UTM (WGS84 or ETRS89) and for Swiss-Grid LV03 /
+        /// LV95 declarations.  The convention is the BalloonLive default:
+        /// the typed value carries its trailing zero implicitly, i.e. "2320"
+        /// represents 23200 in the target projection's metres, and the
+        /// missing higher digits are filled from the projected reference.
+        /// </summary>
+        private static Coordinate AssembleDeclaredGoal(
+            CoordinateSystem declarationSystem,
+            Coordinate referenceWgs84,
+            int typedEasting, int eastingDigits,
+            int typedNorthing, int northingDigits,
+            double declaredAltitudeInMeter,
+            DateTime timeStamp)
+        {
+            // 1) Express the reference point in the declaration's own frame so
+            //    that "high-order digits" means the right thing.
+            (double refEast, double refNorth, string refZone) =
+                CoordinateHelpers.ConvertFromWgs84(referenceWgs84, declarationSystem);
+
+            // 2) Stitch typed-low-order-digits onto reference-high-order-digits.
+            double goalEasting = StitchDigits(typedEasting, eastingDigits, refEast);
+            double goalNorthing = StitchDigits(typedNorthing, northingDigits, refNorth);
+
+            // 3) Convert back into WGS84 lat/lon.
+            Coordinate goal = CoordinateHelpers.ConvertToWgs84Coordinate(
+                declarationSystem, goalEasting, goalNorthing,
+                declaredAltitudeInMeter, refZone);
+
+            // The Coordinate constructor accepts altitude through
+            // ConvertToWgs84Coordinate, but it sits with DateTime.MinValue;
+            // we want the declaration's time stamp.
+            return new Coordinate(goal.Latitude, goal.Longitude,
+                declaredAltitudeInMeter, declaredAltitudeInMeter, timeStamp)
+            {
+                utmZone = goal.utmZone,
+                easting = goal.easting,
+                northing = goal.northing,
+                InputSystem = declarationSystem
+            };
+        }
+
+        /// <summary>
+        /// Combine the pilot-typed digits with the higher-order portion of a
+        /// reference value, following the BalloonLive "implied trailing zero"
+        /// convention.  The total assembled value covers the lower
+        /// <c>digits + 1</c> decimal places.
+        ///
+        ///   typed = 2320, digits = 4, reference = 623180
+        ///     → 2320·10 + ⌊623180 / 10⁵⌋·10⁵
+        ///     = 23200 + 600000
+        ///     = 623200
+        ///
+        /// For declarations that already carry their final digit (i.e. the
+        /// typed value spans the entire native width of the projection: 6
+        /// digits for an UTM easting, 7 for a UTM northing, 6/6 for LV03,
+        /// 7/7 for LV95) the value is used verbatim.
+        /// </summary>
+        private static double StitchDigits(int typed, int digits, double reference)
+        {
+            int nativeWidth = NativeDigitWidth(reference);
+            if (digits >= nativeWidth)
+            {
+                // No padding needed — the pilot typed the full coordinate.
+                return typed;
+            }
+
+            double scaled = typed * 10.0;                 // implied trailing zero
+            double bracket = Math.Pow(10.0, digits + 1);  // size of the box the typed value fills
+            double highOrder = Math.Floor(reference / bracket) * bracket;
+            return highOrder + scaled;
+        }
+
+        /// <summary>
+        /// How many decimal digits a reference coordinate occupies in its
+        /// projection — used to decide whether a typed declaration already
+        /// includes every place or whether it needs padding.
+        /// </summary>
+        private static int NativeDigitWidth(double reference)
+        {
+            double abs = Math.Abs(reference);
+            if (abs < 1.0) return 1;
+            return (int)Math.Floor(Math.Log10(abs)) + 1;
         }
 
         private static void ResetProperties()

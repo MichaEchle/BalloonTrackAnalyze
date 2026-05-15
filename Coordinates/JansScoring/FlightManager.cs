@@ -310,7 +310,7 @@ public class FlightManager
         foreach (FileInfo fileInfo in files)
         {
             Log(LogSeverityType.Info, $"Start loading file '{fileInfo.Name}'.");
-            if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out track, flight.BackupCoordinates()))
+            if (!BalloonLiveParser.ParseFile(fileInfo.FullName, out track, flight.BackupCoordinates(), flight.DeclarationCoordinateSystem()))
             {
                 Console.WriteLine($"Failed to parse track '{fileInfo.FullName}'");
                 continue;

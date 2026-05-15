@@ -49,6 +49,18 @@ public abstract class Flight
 
     public abstract Coordinate BackupCoordinates();
 
+    /// <summary>
+    /// The reference frame the pilots' goal declarations are encoded in.
+    /// BalloonLive declarations always carry the same digit pattern
+    /// (E/N split, 4–6 digits per side); the pad-with-reference logic in
+    /// the parser needs to know which projection those digits live in.
+    /// Defaults to UTM (WGS84), which has been the historical assumption.
+    /// </summary>
+    public virtual CoordinateSystem DeclarationCoordinateSystem()
+    {
+        return CoordinateSystem.UTM_WGS84;
+    }
+
     public abstract int QNH();
 
     public double SeperationAltitudeMeters()
