@@ -2,6 +2,7 @@
 using Coordinates.Parsers;
 using JansScoring.flights;
 using JansScoring.flights.impl._01;
+using JansScoring.flights.impl._02;
 using JansScoring.pz_rework;
 using LoggerComponent;
 using System;
@@ -31,12 +32,12 @@ public class FlightManager
         
 
         flights.Add(1, new Flight01());
-        //flights.Add(2, new Flight02());
+        flights.Add(2, new Flight02());
         //flights.Add(3, new Flight03());
         //flights.Add(4, new Flight04());
         //flights.Add(5, new Flight05());
 
-        ScoreFlight(1);
+        ScoreFlight(2);
     }
 
 
