@@ -477,7 +477,7 @@ namespace Competition
             {
                 foreach (Declaration declaration in track.Declarations)
                 {
-                    if (!declaration.HasPilotDelaredGoalAltitude)
+                    if (!declaration.HasPilotDeclaredGoalAltitude)
                     {
 
                        /*

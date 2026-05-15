@@ -26,7 +26,7 @@ public class FlightXX : Flight
         return true;
     }
 
-    public override int DistanceToAllGoals()
+    public override double DistanceToAllGoals()
     {
         throw new NotImplementedException();
     }

@@ -27,7 +27,7 @@ namespace Coordinates
         /// <summary>
         /// Flag to indicate whether the pilot has declared the goal with an altitude or the position only
         /// </summary>
-        public bool HasPilotDelaredGoalAltitude
+        public bool HasPilotDeclaredGoalAltitude
         {
             get; private set;
         }
@@ -69,12 +69,12 @@ namespace Coordinates
         /// <param name="goalNumber">The number of the goal</param>
         /// <param name="declaredGoal">The target or goal which has been declared</param>
         /// <param name="positionAtDeclaration">The position at which the goal has been declared</param>
-        public Declaration(int goalNumber, Coordinate declaredGoal, Coordinate positionAtDeclaration, bool hasPilotDelaredGoalAltitude,int orignalEastingDeclarationUTM,int orignalNorhtingDeclarationUTM)
+        public Declaration(int goalNumber, Coordinate declaredGoal, Coordinate positionAtDeclaration, bool hasPilotDeclaredGoalAltitude,int orignalEastingDeclarationUTM,int orignalNorhtingDeclarationUTM)
         {
             GoalNumber = goalNumber;
             DeclaredGoal = declaredGoal;
             PositionAtDeclaration = positionAtDeclaration;
-            HasPilotDelaredGoalAltitude = hasPilotDelaredGoalAltitude;
+            HasPilotDeclaredGoalAltitude = hasPilotDeclaredGoalAltitude;
             OrignalEastingDeclarationUTM = orignalEastingDeclarationUTM;
             OrignalNorhtingDeclarationUTM = orignalNorhtingDeclarationUTM;
         }
@@ -82,7 +82,7 @@ namespace Coordinates
         public Declaration Clone()
         {
             return new Declaration(GoalNumber, DeclaredGoal, PositionAtDeclaration,
-                HasPilotDelaredGoalAltitude,
+                HasPilotDeclaredGoalAltitude,
                 OrignalEastingDeclarationUTM, OrignalNorhtingDeclarationUTM)
             {
                 DeclarationCoordinateSystem = DeclarationCoordinateSystem

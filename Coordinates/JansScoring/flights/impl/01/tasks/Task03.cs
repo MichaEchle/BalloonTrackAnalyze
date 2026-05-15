@@ -1,12 +1,13 @@
 using Coordinates;
 using JansScoring.calculation;
+using JansScoring.flights.tasks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace JansScoring.flights.impl._01.tasks;
 
-public class Task03 : TaskFON
+public class Task03 : TaskHWZ
 {
     public Task03(Flight flight) : base(flight)
     {
@@ -19,111 +20,42 @@ public class Task03 : TaskFON
 
     public override bool ScoringChecks(Track track, ref string comment)
     {
-        List<Declaration> declarations =
-            track.Declarations.FindAll(declaration => declaration.GoalNumber == DeclarationNumber());
-        if (declarations.Count == 0)
+        MarkerDrop markerDrop = track.MarkerDrops.FindLast(x => x.MarkerNumber == MarkerNumber());
+        if (markerDrop == null)
         {
-            comment += "No declarations found. | ";
+            comment += $"No marker drops at slot {MarkerNumber()}. | ";
+            return true;
+        }
+        if(markerDrop.MarkerTime > ScoringPeriodUntil())
+        {
+            comment += $"Marker drop at slot {MarkerNumber()} is after the scoring period. | ";
             return true;
         }
 
-        List<MarkerDrop> markerDrops =
-            track.MarkerDrops.FindAll(markerDrop => markerDrop.MarkerNumber == MarkerNumber());
-        if (markerDrops.Count == 0)
-        {
-            comment += "No marker drops found. | ";
-            return true;
-        }
-
-        if (markerDrops.Count > 1)
-        {
-            comment += "More than one marker drop found. | ";
-            return true;
-        }
-        MarkerDrop markerDrop = markerDrops.Last();
-
-        Declaration declaration = declarations.Last();
-
-        double distanceBetweenDeclarationPointAndDeclaredGoal = CalculationHelper.Calculate2DDistance(
-            declaration.PositionAtDeclaration, declaration.DeclaredGoal, Flight.CalculationType());
-        if (distanceBetweenDeclarationPointAndDeclaredGoal < 1000)
-        {
-            string penalty =
-                DistanceViolationPenalties.CalculateAndFormatPenalty(distanceBetweenDeclarationPointAndDeclaredGoal,
-                    1000, "TP");
-            comment +=
-                $"Distance between declaration point and declared goal is to short. [{distanceBetweenDeclarationPointAndDeclaredGoal}m / {penalty}] | ";
-        }
-
-        Task[] tasks = Flight.Tasks();
-        List<(string, Coordinate)> coordinates = new();
-        foreach (Task task in tasks)
-        {
-            if (task == this)
-                continue;
-            Coordinate[] goals = task.Goals(track.Pilot.PilotNumber);
-            for (int index = 1; index <= goals.Length; index++)
-            {
-                Coordinate coordinate = goals[index - 1];
-                coordinates.Add(($"T{task.TaskNumber()}:G{index}", coordinate));
-            }
-        }
-        foreach (var goals in coordinates)
-        {
-            double distanceBetweenGoalAndDeclaredGoal = CalculationHelper.Calculate2DDistance(goals.Item2, declaration.DeclaredGoal, Flight.CalculationType());
-            if (distanceBetweenGoalAndDeclaredGoal < 1000)
-            {
-                string penalty = DistanceViolationPenalties.CalculateAndFormatPenalty(distanceBetweenGoalAndDeclaredGoal, 1000, "TP");
-                comment += $"Distance between goal {goals.Item1} and declared goal is to short. [{distanceBetweenGoalAndDeclaredGoal}m / {penalty}] | ";
-            }
-        }
-
-
-        MarkerDrop lastMarkerDropBeforeFON = null;
-        foreach (MarkerDrop trackMarkerDrop in track.MarkerDrops)
-        {
-            if (trackMarkerDrop == markerDrop)
-            {
-                continue;
-            }
-
-            if (trackMarkerDrop.MarkerTime < markerDrop.MarkerTime)
-            {
-                if (lastMarkerDropBeforeFON == null)
-                {
-                    lastMarkerDropBeforeFON = trackMarkerDrop;
-                    continue;
-                }
-
-                if (lastMarkerDropBeforeFON.MarkerTime < trackMarkerDrop.MarkerTime)
-                {
-                    lastMarkerDropBeforeFON = trackMarkerDrop;
-                }
-            }
-        }
-        if(lastMarkerDropBeforeFON != null){
-            double distanceBetweenLastMarkerAndDeclaredGoal = CalculationHelper.Calculate2DDistance(lastMarkerDropBeforeFON.MarkerLocation, declaration.DeclaredGoal, Flight.CalculationType());
-            if (distanceBetweenLastMarkerAndDeclaredGoal < 1000)
-            {
-                string penalty = DistanceViolationPenalties.CalculateAndFormatPenalty(distanceBetweenLastMarkerAndDeclaredGoal, 1000, "TP");
-                comment += $"Distance between marker {lastMarkerDropBeforeFON.MarkerNumber} and declared goal is to short. [{distanceBetweenLastMarkerAndDeclaredGoal}m / {penalty}] | ";
-            }
-        }
         return false;
+    }
+
+    public override Coordinate[] Goals(int pilot)
+    {
+        return
+        [
+            CoordinateHelpers.ConvertToWgs84Coordinate(CoordinateSystem.SwissGrid_LV03, 632430, 232200, CoordinateHelpers.ConvertToMeter(1598)),
+            CoordinateHelpers.ConvertToWgs84Coordinate(CoordinateSystem.SwissGrid_LV03, 633380, 229620, CoordinateHelpers.ConvertToMeter(1834))
+        ];
     }
 
     public override DateTime ScoringPeriodUntil()
     {
-        return new DateTime(2026, 04, 10, 18, 00, 00);
-    }
-
-    protected override int DeclarationNumber()
-    {
-        return 1;
+        return new DateTime(2026,05,15,05,30,00);
     }
 
     protected override int MarkerNumber()
     {
         return 3;
+    }
+
+    protected override int MMA()
+    {
+        return 30;
     }
 }

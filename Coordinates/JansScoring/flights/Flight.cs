@@ -33,7 +33,7 @@ public abstract class Flight
     /// The distance, witch need to be between start-point and all goals
     /// </summary>
     /// <returns></returns>
-    public abstract int DistanceToAllGoals();
+    public abstract double DistanceToAllGoals();
 
     /// <summary>
     /// The System Path of the tracks

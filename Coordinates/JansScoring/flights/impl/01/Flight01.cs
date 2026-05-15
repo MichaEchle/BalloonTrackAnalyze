@@ -14,22 +14,22 @@ public class Flight01 : Flight
 
     public override DateTime StartOfLaunchPeriode()
     {
-        return new DateTime(2026, 05, 14, 08,00, 00);
+        return new DateTime(2026, 05, 15, 03,50, 00);
     }
 
     public override int LaunchPeriode()
     {
-        return 180;
+        return 30;
     }
 
     public override bool UseGPSAltitude()
     {
-        return true;
+        return false;
     }
 
-    public override int DistanceToAllGoals()
+    public override double DistanceToAllGoals()
     {
-        return 1000;
+        return 0;
     }
 
     public override string TracksPath()
@@ -54,16 +54,16 @@ public class Flight01 : Flight
 
     public override double SeperationAltitudeFeet()
     {
-        return 3300;
+        return 3000;
     }
 
     public override Coordinate BackupCoordinates()
     {
-        return CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 516350, 5357050);
+        return CoordinateHelpers.ConvertToWgs84Coordinate(CoordinateSystem.SwissGrid_LV03,623180, 228470);
     }
 
     public override int QNH()
     {
-        return 1013;
+        return 1001;
     }
 }

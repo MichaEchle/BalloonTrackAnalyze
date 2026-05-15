@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace JansScoring.flights.impl._01.tasks;
 
-public class Task01 : TaskJDG
+public class Task01 : TaskHWZ
 {
     public Task01(Flight flight) : base(flight)
     {
@@ -13,33 +13,21 @@ public class Task01 : TaskJDG
 
     public override int TaskNumber()
     {
-        return 1;
+        return 01;
     }
 
     public override bool ScoringChecks(Track track, ref string comment)
     {
-
-        TrackHelpers.EstimateLaunchAndLandingTime(track, Flight.UseGPSAltitude(), out Coordinate launchCoordinate,
-            out Coordinate landingCoordinate);
-
-        List<(String, Coordinate)> goals = new ();
-        Coordinate[] goalList = Goals(track.Pilot.PilotNumber);
-        for (int index = 1; index <= goalList.Length; index++)
+        MarkerDrop markerDrop = track.MarkerDrops.FindLast(x => x.MarkerNumber == MarkerNumber());
+        if (markerDrop == null)
         {
-            Coordinate goal = goalList[index - 1];
-            goals.Add((index.ToString(), goal));
+            comment += $"No marker drops at slot {MarkerNumber()}. | ";
+            return true;
         }
-
-
-        List<(string identifier, double distance)> distanceBetweenLaunchPointAndGoals = TrackHelpers.Calculate2DDistanceBetweenLaunchPointAndJudeDeclaredGoals(launchCoordinate, goals);
-
-        foreach (var distanceBetweenLaunchPointAndGoal in distanceBetweenLaunchPointAndGoals)
+        if(markerDrop.MarkerTime > ScoringPeriodUntil())
         {
-            if (distanceBetweenLaunchPointAndGoal.distance < 1000)
-            {
-                string penalty = DistanceViolationPenalties.CalculateAndFormatPenalty(distanceBetweenLaunchPointAndGoal.distance, 1000, "TP");
-                comment += $"Distance between launch point and goal {distanceBetweenLaunchPointAndGoal.identifier} is to short {distanceBetweenLaunchPointAndGoal.distance}m [{penalty}] | ";
-            }
+            comment += $"Marker drop at slot {MarkerNumber()} is after the scoring period. | ";
+            return true;
         }
 
         return false;
@@ -47,17 +35,17 @@ public class Task01 : TaskJDG
 
     public override Coordinate[] Goals(int pilot)
     {
-        return new[]
-        {
-            CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 512993, 5355294, CoordinateHelpers.ConvertToMeter(2599))
-        };
+        return
+        [
+            CoordinateHelpers.ConvertToWgs84Coordinate(CoordinateSystem.SwissGrid_LV03, 626240, 229890, CoordinateHelpers.ConvertToMeter(1555)),
+            CoordinateHelpers.ConvertToWgs84Coordinate(CoordinateSystem.SwissGrid_LV03, 626210, 228930, CoordinateHelpers.ConvertToMeter(1572))
+        ];
     }
 
     public override DateTime ScoringPeriodUntil()
     {
-        return new DateTime(2026, 04, 10, 18, 00, 00);
+        return new DateTime(2026,05,15,05,30,00);
     }
-
 
     protected override int MarkerNumber()
     {
@@ -66,8 +54,6 @@ public class Task01 : TaskJDG
 
     protected override int MMA()
     {
-        return 50;
+        return 30;
     }
-
-
 }
