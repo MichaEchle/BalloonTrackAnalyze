@@ -22,7 +22,11 @@ public class Task02 : TaskJDG
 
     public override Coordinate[] Goals(int pilot)
     {
-        throw new NotImplementedException();
+        return
+        [
+            CoordinateHelpers.ConvertToWgs84Coordinate(CoordinateSystem.SwissGrid_LV03, 622949, 227746,
+                CoordinateHelpers.ConvertToMeter(1702))
+        ];
     }
 
     public override DateTime ScoringPeriodUntil()

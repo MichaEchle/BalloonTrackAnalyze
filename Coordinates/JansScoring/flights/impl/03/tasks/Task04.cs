@@ -22,7 +22,15 @@ public class Task04 : TaskHWZ
 
     public override Coordinate[] Goals(int pilot)
     {
-        throw new NotImplementedException();
+        return
+        [
+            CoordinateHelpers.ConvertToWgs84Coordinate(CoordinateSystem.SwissGrid_LV03, 626202, 228911,
+                CoordinateHelpers.ConvertToMeter(1466)),//
+            CoordinateHelpers.ConvertToWgs84Coordinate(CoordinateSystem.SwissGrid_LV03, 630353, 230418,
+                CoordinateHelpers.ConvertToMeter(1508)),//
+            CoordinateHelpers.ConvertToWgs84Coordinate(CoordinateSystem.SwissGrid_LV03, 627756, 230412,
+                CoordinateHelpers.ConvertToMeter(1515))
+        ];
     }
 
     public override DateTime ScoringPeriodUntil()

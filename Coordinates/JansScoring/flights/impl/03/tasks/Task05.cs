@@ -29,6 +29,12 @@ public class Task05 : TaskFON
             declaration.DeclaredGoal.AltitudeBarometric = CoordinateHelpers.ConvertToMeter(2000);
         }
         
+        var distanceBetweenDecAndDecPoint = CoordinateHelpers.Calculate2DDistanceHavercos(declaration.DeclaredGoal, declaration.PositionAtDeclaration);
+        if (distanceBetweenDecAndDecPoint < 3000)
+        {
+            var penalty = DistanceViolationPenalties.CalculateAndFormatPenalty(distanceBetweenDecAndDecPoint, 3000, "TP");
+            comment += $"Declared goal is to close to declaration point. ({distanceBetweenDecAndDecPoint}m / 3000m) [{penalty}] | ";
+        }
         return false;
     }
 
