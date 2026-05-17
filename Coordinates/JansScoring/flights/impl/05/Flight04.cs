@@ -1,25 +1,26 @@
 using Coordinates;
 using JansScoring.calculation;
 using JansScoring.flights.impl._04.tasks;
+using JansScoring.flights.impl._05.tasks;
 using System;
 
-namespace JansScoring.flights.impl._04;
+namespace JansScoring.flights.impl._05;
 
-public class Flight04 : Flight
+public class Flight05 : Flight
 {
     public override int FlightNumber()
     {
-        return 4;
+        return 5;
     }
 
     public override DateTime StartOfLaunchPeriode()
     {
-        return new DateTime(2026, 05, 16, 16, 30, 00);
+        return new DateTime(2026, 05, 17, 03, 50, 00);
     }
 
     public override int LaunchPeriode()
     {
-        return 60;
+        return 55;
     }
 
     public override bool UseGPSAltitude()
@@ -29,23 +30,21 @@ public class Flight04 : Flight
 
     public override double DistanceToAllGoals()
     {
-        return 500;
+        return 1000;
     }
 
     public override string TracksPath()
     {
         return
-            @"/home/codingphoenix/Documents/balloon/competitions/2026 SMHL Langenthal/scoring/flights/flight_04/tracks/";
+            @"/home/codingphoenix/Documents/balloon/competitions/2026 SMHL Langenthal/scoring/flights/flight_05/tracks/";
     }
 
     public override Task[] Tasks()
     {
         return
         [
-            new Task06(this),
-            new Task07(this),
-            new Task08(this),
-            new Task09(this)
+            new Task10(this),
+            new Task11(this),
         ];
     }
 
@@ -71,6 +70,6 @@ public class Flight04 : Flight
 
     public override int QNH()
     {
-        return 1008;
+        return 1016;
     }
 }

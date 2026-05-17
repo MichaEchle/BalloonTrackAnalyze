@@ -1,5 +1,7 @@
 using Coordinates;
+using JansScoring.calculation;
 using JansScoring.check;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 
@@ -18,6 +20,11 @@ public class Task09 : TaskFON_Dec_from_GoalList
 
     public override bool ScoringChecks(Track track, ref string comment)
     {
+        if (base.ScoringChecks(track, ref comment))
+        {
+            return true;
+        }
+
         List<Declaration> declarations =
             track.Declarations.FindAll(declaration => declaration.GoalNumber == DeclarationNumber());
 
@@ -34,10 +41,21 @@ public class Task09 : TaskFON_Dec_from_GoalList
             return true;
         }
 
+        Coordinate goal = Goal(track, declaration);
+        if (goal == null)
+        {
+            comment += $"No goal found in goal number {DeclarationNumber()}. | ";
+            return true;
+        }
 
-        declaration.DeclaredGoal.AltitudeBarometric = CoordinateHelpers.ConvertToMeter(3000);
-
-        DeclarationChecks.CheckDistanceFromDeclarationPointToDelcaredGoal(Flight, declaration, 4000, ref comment);
+        double distanceToDeclarationPoint = CalculationHelper.Calculate2DDistance(goal,
+            declaration.PositionAtDeclaration,
+            Flight.CalculationType());
+        if (distanceToDeclarationPoint < 4000)
+        {
+            comment +=
+                $"Declared goal is to close to declaration point {NumberHelper.formatDoubleToStringAndRound(distanceToDeclarationPoint)}m / {NumberHelper.formatDoubleToStringAndRound(4000)}m required [{DistanceViolationPenalties.CalculateAndFormatPenalty(distanceToDeclarationPoint, 4000, "TP")}] | ";
+        }
 
         TrackHelpers.EstimateLaunchAndLandingTime(track, Flight.UseGPSAltitude(), out Coordinate launchpoint, out _);
         int declarationsAfterEstimated = 0;
@@ -59,7 +77,26 @@ public class Task09 : TaskFON_Dec_from_GoalList
                 declaration1 != fistDeclarationInAir);
         }
 
-        DeclarationChecks.CheckDistanceFromDelcaredGoalToAllGoals(Flight, declaration, 500, ref comment);
+        Dictionary<Coordinate, Task> goals = new();
+        foreach (Task currentTask in Flight.Tasks())
+        {
+            foreach (Coordinate coordinate in currentTask.Goals(0))
+            {
+                goals.Add(coordinate, currentTask);
+            }
+        }
+
+
+        foreach (Coordinate currentGoal in goals.Keys)
+        {
+            double distance = CalculationHelper.Calculate2DDistance(goal
+                , currentGoal, Flight.CalculationType());
+            if (distance < 500)
+            {
+                comment +=
+                    $"Declared goal is to close to another fixed goal [Task {goals[currentGoal].TaskNumber()} ~ {NumberHelper.formatDoubleToStringAndRound(distance)}m] [{DistanceViolationPenalties.CalculateAndFormatPenalty(distance, 500, "TP")}] | ";
+            }
+        }
 
         return false;
     }
@@ -79,22 +116,90 @@ public class Task09 : TaskFON_Dec_from_GoalList
         return 4;
     }
 
-    public override Coordinate Goal(Track track, Declaration declaration, int pilot)
+    public override Coordinate Goal(Track track, Declaration declaration)
     {
-        if (declaration.OrignalEastingDeclarationUTM == 0 && declaration.OrignalNorhtingDeclarationUTM == 0)
+        int norhtingDeclarationUtm = declaration.OrignalNorhtingDeclarationUTM;
+        int eastingDeclarationUtm = declaration.OrignalEastingDeclarationUTM;
+        if (track.Pilot.PilotNumber == 32)
         {
+            norhtingDeclarationUtm = 610;
+            eastingDeclarationUtm = 610;
+        }
+
+        if (eastingDeclarationUtm <= 0 && norhtingDeclarationUtm <= 0)
+        {
+            Console.WriteLine(
+                $"{track.Pilot.PilotNumber}: No goal declared {eastingDeclarationUtm}:{norhtingDeclarationUtm}|");
             return null;
         }
 
-        if (declaration.OrignalEastingDeclarationUTM == 0 && declaration.OrignalNorhtingDeclarationUTM != 0)
+        if (eastingDeclarationUtm <= 0 && norhtingDeclarationUtm > 0)
         {
-            return goals[declaration.OrignalNorhtingDeclarationUTM.ToString()];
+            Console.WriteLine($"{track.Pilot.PilotNumber}: North {eastingDeclarationUtm}:{norhtingDeclarationUtm}|");
+
+            if (!goals.ContainsKey(norhtingDeclarationUtm.ToString()))
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: Declared goal not found {eastingDeclarationUtm}:{norhtingDeclarationUtm}|");
+                return null;
+            }
+
+            Coordinate coordinate = goals[norhtingDeclarationUtm.ToString()];
+            if (coordinate != null)
+            {
+                coordinate.AltitudeBarometric = CoordinateHelpers.ConvertToMeter(3000);
+                coordinate.AltitudeGPS = CoordinateHelpers.ConvertToMeter(3000);
+            }
+
+            return coordinate;
         }
 
-        if (declaration.OrignalEastingDeclarationUTM != 0 && declaration.OrignalNorhtingDeclarationUTM == 0)
+        if (eastingDeclarationUtm > 0 && norhtingDeclarationUtm <= 0)
         {
-            return goals[declaration.OrignalEastingDeclarationUTM.ToString()];
+            Console.WriteLine(
+                $"{track.Pilot.PilotNumber}: Easting {eastingDeclarationUtm}:{norhtingDeclarationUtm}|");
+
+            if (!goals.ContainsKey(eastingDeclarationUtm.ToString()))
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: Declared goal not found {eastingDeclarationUtm}:{norhtingDeclarationUtm}|");
+                return null;
+            }
+
+            Coordinate coordinate = goals[eastingDeclarationUtm.ToString()];
+            if (coordinate != null)
+            {
+                coordinate.AltitudeBarometric = CoordinateHelpers.ConvertToMeter(3000);
+                coordinate.AltitudeGPS = CoordinateHelpers.ConvertToMeter(3000);
+            }
+
+            return coordinate;
         }
+
+        if (eastingDeclarationUtm > 0 && norhtingDeclarationUtm > 0)
+        {
+            Console.WriteLine(
+                $"{track.Pilot.PilotNumber}: Both but easting {eastingDeclarationUtm}:{norhtingDeclarationUtm}|");
+
+            if (!goals.ContainsKey(eastingDeclarationUtm.ToString()))
+            {
+                Console.WriteLine(
+                    $"{track.Pilot.PilotNumber}: Declared goal not found {eastingDeclarationUtm}:{norhtingDeclarationUtm}|");
+                return null;
+            }
+
+            Coordinate coordinate = goals[eastingDeclarationUtm.ToString()];
+            if (coordinate != null)
+            {
+                coordinate.AltitudeBarometric = CoordinateHelpers.ConvertToMeter(3000);
+                coordinate.AltitudeGPS = CoordinateHelpers.ConvertToMeter(3000);
+            }
+
+            return coordinate;
+        }
+
+        Console.WriteLine(
+            $"{track.Pilot.PilotNumber}: Not found {eastingDeclarationUtm}:{norhtingDeclarationUtm}|");
 
         return null;
     }

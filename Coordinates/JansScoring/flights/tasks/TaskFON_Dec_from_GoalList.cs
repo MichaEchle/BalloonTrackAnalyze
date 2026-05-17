@@ -10,9 +10,29 @@ public abstract class TaskFON_Dec_from_GoalList : Task
     {
     }
 
+    public override bool ScoringChecks(Track track, ref string comment)
+    {
+        Declaration declaration = track.Declarations.FindLast(drop => drop.GoalNumber == DeclarationNumber());
+
+        if (declaration == null)
+        {
+            comment += $"Pilot has no declaration in goal number {DeclarationNumber()} | ";
+            return true;
+        }
+
+        Coordinate coordinate = Goal(track, declaration);
+
+        if (coordinate == null)
+        {
+            comment += "No goal found by input.";
+            return true;
+        }
+        return false;
+    }
+
     public override void Score(Track track, ref string comment, out double result)
     {
-        DeclarationChecks.LoadDeclaration(track, DeclarationNumber(), out Declaration declaration, ref comment);
+        Declaration declaration = track.Declarations.FindLast(drop => drop.GoalNumber == DeclarationNumber());
 
         if (declaration == null)
         {
@@ -31,13 +51,23 @@ public abstract class TaskFON_Dec_from_GoalList : Task
 
         DeclarationChecks.CheckIfDeclarationWasBeforeMarkerDrop(declaration, markerDrop, ref comment);
 
-        result = CoordinateHelpers.Calculate3DDistance(declaration.DeclaredGoal, markerDrop.MarkerLocation, Flight.UseGPSAltitude(), Flight.CalculationType());
+
+        Coordinate coordinate = Goal(track, declaration);
+
+        if (coordinate == null)
+        {
+            comment += "No goal found by input.";
+            result = Double.MinValue;
+            return;
+        }
+
+        result = CoordinateHelpers.Calculate3DDistance(coordinate, markerDrop.MarkerLocation, Flight.UseGPSAltitude(), Flight.CalculationType());
     }
 
     protected abstract int DeclarationNumber();
     protected abstract int MarkerNumber();
 
-    public abstract Coordinate Goal(Track track, Declaration declaration, int pilot);
+    public abstract Coordinate Goal(Track track, Declaration declaration);
 
     public override Coordinate[] Goals(int pilot)
     {
