@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.1.32319.34
+# Visual Studio Version 18
+VisualStudioVersion = 18.5.11723.231 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Coordinates", "Coordinates\Coordinates.csproj", "{DE7F6BD6-A3B7-4214-954B-43EDE4612C0A}"
 EndProject
@@ -30,6 +30,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggingConnector", "LoggingConnector\LoggingConnector.csproj", "{CA6AFA97-0F01-44D6-A33A-0E5BFF89C115}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResultsToScores", "ResultsToScores\ResultsToScores.csproj", "{214B02DB-C3A2-472B-BD50-1141C2DF6D39}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DM_Tegernsee_2026", "DM_Tegernsee_2026\DM_Tegernsee_2026.csproj", "{C1962B9D-ECB7-4621-ACE8-6B75243483BC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,6 +79,10 @@ Global
 		{214B02DB-C3A2-472B-BD50-1141C2DF6D39}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{214B02DB-C3A2-472B-BD50-1141C2DF6D39}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{214B02DB-C3A2-472B-BD50-1141C2DF6D39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1962B9D-ECB7-4621-ACE8-6B75243483BC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1962B9D-ECB7-4621-ACE8-6B75243483BC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1962B9D-ECB7-4621-ACE8-6B75243483BC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1962B9D-ECB7-4621-ACE8-6B75243483BC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
