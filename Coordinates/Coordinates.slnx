@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="axmer2024.pdf" />
+    <File Path="coh_2024_-_final.pdf" />
+    <File Path="ToDoList.txt" />
+  </Folder>
+  <Project Path="AreasAndShapes/Shapes.csproj" />
+  <Project Path="Competition/Competition.csproj" />
+  <Project Path="CoordinateConverter/CoordinateConverter.csproj" />
+  <Project Path="Coordinates/Coordinates.csproj" />
+  <Project Path="DM_Tegernsee_2026/DM_Tegernsee_2026.csproj" />
+  <Project Path="LoggingConnector/LoggingConnector.csproj" />
+  <Project Path="ResultsToScores/ResultsToScores.csproj" />
+  <Project Path="TestProgramm/TestProgramm.csproj" />
+  <Project Path="TrackReportGenerator/TrackReportGenerator.csproj" />
+  <Project Path="UILoggingProvider/UILoggingProvider.csproj" />
+  <Project Path="WinFormsLoggerControl/WinFormsLoggerControl.csproj" />
+</Solution>
