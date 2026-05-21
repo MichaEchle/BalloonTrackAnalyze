@@ -67,8 +67,10 @@ public class Flight
     /// </summary>
     /// <param name="path">the directory of the .igc files</param>
     /// <param name="useBalloonLiveParse">true: use balloon live parser; false: use FAI parser </param>
+    /// <param name="referenceCoordinate">optionally, provide a reference coordinate that is used to complete the information for declarations (4/4 or 5/4 is not unambiguous)</param>
+    /// <param name="defaultGoalAltitude">optionally, provide a default goal altitude to be used when the pilot did not declared a height</param>
     /// <returns>true: success; false: error</returns>
-    public bool ParseTrackFiles(string path, bool useBalloonLiveParse)
+    public bool ParseTrackFiles(string path, bool useBalloonLiveParse, Coordinate referenceCoordinate = null, double defaultGoalAltitude = 0.0)
     {
         DirectoryInfo directoryInfo = new($@"{path}");
         if (!directoryInfo.Exists)
@@ -84,7 +86,7 @@ public class Flight
             bool trackIsValid = true;
             if (useBalloonLiveParse)
             {
-                if (!BalloonLiveParser.ParseFile(trackFile.FullName, out track))
+                if (!BalloonLiveParser.ParseFile(trackFile.FullName, out track, referenceCoordinate, defaultGoalAltitude))
                 {
                     Logger?.LogError("Failed to parse track file '{trackFile}' and won't be used for further processing", trackFile.FullName);
                     trackIsValid = false;
@@ -92,7 +94,7 @@ public class Flight
             }
             else
             {
-                if (!FAILoggerParser.ParseFile(trackFile.FullName, out track))
+                if (!FAILoggerParser.ParseFile(trackFile.FullName, out track, referenceCoordinate, defaultGoalAltitude))
                 {
                     Logger?.LogError("Failed to parse track file '{trackFile}' and won't be used for further processing", trackFile.FullName);
                     trackIsValid = false;
