@@ -13,15 +13,23 @@ Constraints can be applied to:
 
 ## Types of constraints
 Common constraints are (non exhaustive list):
-- Distance between position at declaration and declared goal
-- Height limits for declared goal altitude
-- Distance between markers and declared goal
-- Distance between markers
-- Distance between judge declared goals and declared goal
-- Timing constraints for marker drops (e.g. only between minute 10 and 20 of every hour)
-- Declaring a goal before a certain time (e.g. before 10:00 am)
-- Declaring a goal east, south, west or north of a grid line
-- Timing constraints between markers (e.g. at least 5 minutes between marker drops)
+- Distance constraints
+  - Distance between position at declaration and declared goal
+  - Height limits for declared goal altitude
+  - Height difference between position at declaration and declared goal
+  - Distance between ILP and goals (pilot and judge declared goals)
+  - Distance between markers and declared goal
+  - Distance between markers
+  - Distance between goals (pilot and judge declared goals)
+- Timing constraints
+  - Goal declared before takeoff
+  - Timing constraints for marker drops (e.g. only between minute 10 and 20 of every hour)
+  - Absolute timing constraints (e.g. only between 10:00 am and 12:00 pm)
+  - Declaring a goal before a certain time (e.g. before 10:00 am)
+  - Timing constraints between markers (e.g. at least 5 minutes between marker drops)
+- Position constraints
+  - Goal declared before grid line
+  - Declaring a goal east, south, west or north of a grid line
 
 ## Constraint chains
 Typically a task have multiple constraints which are all applied together. However some constraints are exclusive and only must be valid.
