@@ -8,7 +8,7 @@ namespace DM_Tegernsee_2026;
 
 internal class Flight2
 {
-    private readonly ILogger<Flight1> Logger = LogConnector.LoggerFactory.CreateLogger<Flight1>();
+    private readonly ILogger<Flight2> Logger = LogConnector.LoggerFactory.CreateLogger<Flight2>();
     internal readonly Flight _flight = Flight.GetInstance();
     internal readonly double _separationAltitude = CoordinateHelpers.ConvertToMeter(3500);
     internal Coordinate Task7_HWZ_A = CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32T", 705220, 5298322, 761);
@@ -24,6 +24,8 @@ internal class Flight2
             Console.WriteLine("Failed to parse track files");
         _flight.MapPilotNamesToTracks(@"C:\Users\micechle\Nextcloud\2026 DM Tegernsee\software\DM_Tegernsee2026_Pilots.csv");
         List<Track> tracks = [.. _flight.Tracks.OrderBy(x => x.Pilot.PilotNumber)];
+
+        Task7(tracks);
     }
 
     internal void Task5(List<Track> tracks)
@@ -47,11 +49,11 @@ internal class Flight2
                 {
                     Logger.LogWarning("Launch time is before declaration 1 for pilot {pilotNumber}", track.Pilot.PilotNumber);
                 }
-                //TODO check ILP to declared goal distance >1000m
+                //TODO check ILP to declared goal distance <1000m
                 double distanceFromLaunchToDeclaredGoal = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, latestDeclaration.DeclaredGoal);
-                if (distanceFromLaunchToDeclaredGoal > 1000)
+                if (distanceFromLaunchToDeclaredGoal < 1000)
                 {
-                    Logger.LogWarning("Distance between launch point and declared goal >1000m ({distance}) for {pilotNumber}", Math.Round(distanceFromLaunchToDeclaredGoal, 0, MidpointRounding.AwayFromZero), track.Pilot.PilotNumber);
+                    Logger.LogWarning("Distance between launch point and declared goal <1000m ({distance}) for {pilotNumber}", Math.Round(distanceFromLaunchToDeclaredGoal, 0, MidpointRounding.AwayFromZero), track.Pilot.PilotNumber);
                 }
             }
             //TODO check declared with altitude
@@ -59,13 +61,13 @@ internal class Flight2
             {
                 Logger.LogWarning("Pilot {pilotNumber} did not declare goal altitude for declaration 1", track.Pilot.PilotNumber);
             }
-            //TODO check declaration position to declared goal distance >1000m
+            //TODO check declaration position to declared goal distance <1000m
             double distanceBetweenDeclarationPositionAndDeclaredGoal = CoordinateHelpers.Calculate2DDistanceHavercos(latestDeclaration.PositionAtDeclaration, latestDeclaration.DeclaredGoal);
-            if (distanceBetweenDeclarationPositionAndDeclaredGoal > 1000)
+            if (distanceBetweenDeclarationPositionAndDeclaredGoal < 1000)
             {
-                Logger.LogWarning("Distance between declaration position and declared goal >1000m ({distance}) for {pilotNumber}", Math.Round(distanceBetweenDeclarationPositionAndDeclaredGoal, 0, MidpointRounding.AwayFromZero), track.Pilot.PilotNumber);
+                Logger.LogWarning("Distance between declaration position and declared goal <1000m ({distance}) for {pilotNumber}", Math.Round(distanceBetweenDeclarationPositionAndDeclaredGoal, 0, MidpointRounding.AwayFromZero), track.Pilot.PilotNumber);
             }
-            //TODO check declared goal to HWZ distance >1000m
+            //TODO check declared goal to HWZ distance <1000m
             double distanceT7HWZ_A = CoordinateHelpers.Calculate2DDistanceHavercos(latestDeclaration.DeclaredGoal, Task7_HWZ_A);
             if (distanceT7HWZ_A < 1000)
             {
@@ -121,23 +123,23 @@ internal class Flight2
             }
             else
             {
-                //TODO check ILP to declared goal distance >1000m
+                //TODO check ILP to declared goal distance <1000m
                 double distanceFromLaunchToDeclaredGoal = CoordinateHelpers.Calculate2DDistanceHavercos(launchPoint, latestDeclaration.DeclaredGoal);
-                if (distanceFromLaunchToDeclaredGoal > 1000)
+                if (distanceFromLaunchToDeclaredGoal < 1000)
                 {
-                    Logger.LogWarning("Distance between launch point and declared goal >1000m ({distance}) for {pilotNumber}", Math.Round(distanceFromLaunchToDeclaredGoal, 0, MidpointRounding.AwayFromZero), track.Pilot.PilotNumber);
+                    Logger.LogWarning("Distance between launch point and declared goal <1000m ({distance}) for {pilotNumber}", Math.Round(distanceFromLaunchToDeclaredGoal, 0, MidpointRounding.AwayFromZero), track.Pilot.PilotNumber);
                 }
             }
             //TODO check declared with altitude
             if (!latestDeclaration.HasPilotDelaredGoalAltitude)
             {
-                Logger.LogWarning("Pilot {pilotNumber} did not declare goal altitude for declaration 1", track.Pilot.PilotNumber);
+                Logger.LogWarning("Pilot {pilotNumber} did not declare goal altitude for declaration 2", track.Pilot.PilotNumber);
             }
-            //TODO check declaration position to declared goal distance >1000m
+            //TODO check declaration position to declared goal distance <1000m
             double distanceBetweenDeclarationPositionAndDeclaredGoal = CoordinateHelpers.Calculate2DDistanceHavercos(latestDeclaration.PositionAtDeclaration, latestDeclaration.DeclaredGoal);
-            if (distanceBetweenDeclarationPositionAndDeclaredGoal > 1000)
+            if (distanceBetweenDeclarationPositionAndDeclaredGoal < 1000)
             {
-                Logger.LogWarning("Distance between declaration position and declared goal >1000m ({distance}) for {pilotNumber}", Math.Round(distanceBetweenDeclarationPositionAndDeclaredGoal, 0, MidpointRounding.AwayFromZero), track.Pilot.PilotNumber);
+                Logger.LogWarning("Distance between declaration position and declared goal <1000m ({distance}) for {pilotNumber}", Math.Round(distanceBetweenDeclarationPositionAndDeclaredGoal, 0, MidpointRounding.AwayFromZero), track.Pilot.PilotNumber);
             }
             //TODO check declared goal Task5 distance >1000m
             Declaration t5 = track.GetLatestDeclaration(1);
