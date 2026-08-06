@@ -24,17 +24,19 @@ internal class Flight1
         _logger.LogInformation("Scoring Flight 1");
         _flight.FlightNumber = 1;
         _flight.SetDefaultGoalAltitude(CoordinateHelpers.ConvertToMeter(3500));
-        if (!_flight.ParseTrackFiles(@"C:\Users\micechle\Dropbox\2026-08-05 Horb Scoring\2026 Horb Tracks", true))
+        if (!_flight.ParseTrackFiles(@"C:\Users\micechle\Dropbox\2026-08-05 Horb Scoring\2026 Horb Tracks\Flight 1\F1 IGC", true))
         {
             _logger.LogError("Error parsing track files");
             return;
         }
-        if (_flight.MapPilotNamesToTracks(@"C:\Users\micechle\Dropbox\2026-08-05 Horb Scoring\2026-Horb Documents\HNBC_26_Pilots_Mapping.csv"))
+        if (!_flight.MapPilotNamesToTracks(@"C:\Users\micechle\Dropbox\2026-08-05 Horb Scoring\2026-Horb Documents\HNBC_26_Pilots_Mapping.csv"))
         {
             _logger.LogError("Error mapping pilot names to tracks");
             return;
         }
         _flight.Tracks = [.. _flight.Tracks.OrderBy(x => x.Pilot.PilotNumber)];
+
+        Task6_ANG();
 
     }
 
@@ -76,7 +78,7 @@ internal class Flight1
             }
             double distanceMarker1ToGoal1 = CoordinateHelpers.CalculateDistanceWithSeparationAltitude(marker1.MarkerLocation, _goalTask1, _separationAltitude, true);
             double result = Math.Round(Math.Max(40, distanceMarker1ToGoal1), 0, MidpointRounding.AwayFromZero);
-            _logger.LogInformation("Pilot {pilotNumber} distance from marker 1 to goal 1: {result}m ({distance})", track.Pilot.PilotNumber, result, distanceLaunchToGoal1);
+            _logger.LogInformation("Pilot {pilotNumber} distance from marker 1 to goal 1: {result}m ({distance})", track.Pilot.PilotNumber, result, distanceMarker1ToGoal1);
 
         }
     }
@@ -119,7 +121,7 @@ internal class Flight1
             }
             double distanceMarker2ToGoal2 = CoordinateHelpers.CalculateDistanceWithSeparationAltitude(marker2.MarkerLocation, _goalTask2, _separationAltitude, true);
             double result = Math.Round(Math.Max(50, distanceMarker2ToGoal2), 0, MidpointRounding.AwayFromZero);
-            _logger.LogInformation("Pilot {pilotNumber} distance from marker 2 to goal 2: {result}m ({distance})", track.Pilot.PilotNumber, result, distanceLaunchToGoal2);
+            _logger.LogInformation("Pilot {pilotNumber} distance from marker 2 to goal 2: {result}m ({distance})", track.Pilot.PilotNumber, result, distanceMarker2ToGoal2);
         }
     }
 
@@ -268,7 +270,7 @@ internal class Flight1
         }
     }
 
-    private void Task6_Ang()
+    private void Task6_ANG()
     {
         foreach (Track track in _flight.Tracks)
         {

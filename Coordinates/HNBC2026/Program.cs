@@ -1,4 +1,5 @@
-﻿using LoggingConnector;
+﻿using HNBC2026;
+using LoggingConnector;
 using Microsoft.Extensions.Logging;
 using System.Globalization;
 
@@ -11,6 +12,7 @@ internal class Program
 
         LogConnector.LoggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
-        
+        Flight1 flight1 = new();
+        flight1.ScoreFlight();
     }
 }
