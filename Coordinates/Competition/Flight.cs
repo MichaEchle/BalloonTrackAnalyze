@@ -147,18 +147,18 @@ public class Flight
 
                 string firstName = parts[1];
                 string lastName = parts[2];
-                string[] identifiers = parts[3..^0];
+                //string[] identifiers = parts[3..^0];
                 bool found = false;
                 foreach (Track track in Tracks)
                 {
-                    if (identifiers.Contains(track.Pilot.PilotIdentifier))
+                    if (pilotNumber==track.Pilot.PilotNumber)
                     {
                         track.Pilot.FirstName = firstName;
                         track.Pilot.LastName = lastName;
-                        if (track.Pilot.PilotNumber != pilotNumber)
-                        {
-                            Logger?.LogWarning("Identifier of track matched with identifiers of '{firstName},{lastName}', but pilot numbers didn't match (Track Pilot No.'{pilotNumber}'/ File Pilot No.'{pilotNumber}'", firstName, lastName, track.Pilot.PilotNumber, pilotNumber);
-                        }
+                        //if (track.Pilot.PilotNumber != pilotNumber)
+                        //{
+                        //    Logger?.LogWarning("Identifier of track matched with identifiers of '{firstName},{lastName}', but pilot numbers didn't match (Track Pilot No.'{pilotNumber}'/ File Pilot No.'{pilotNumber}'", firstName, lastName, track.Pilot.PilotNumber, pilotNumber);
+                        //}
 
                         found = true;
                         break;
