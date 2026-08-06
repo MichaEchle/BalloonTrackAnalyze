@@ -266,7 +266,8 @@ public static class BalloonLiveParser
                     out MarkerDrop markerDrop))
                 {
                     Logger?.LogError("Failed to parse the file '{filePathAndName}': Failed to parse marker drop", fileNameAndPath);
-                    return false;
+                    //return false;
+                    continue;
                 }
 
                 track.MarkerDrops.Add(markerDrop);
