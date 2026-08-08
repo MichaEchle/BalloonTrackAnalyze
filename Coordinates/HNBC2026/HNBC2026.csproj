@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\AreasAndShapes\Shapes.csproj" />
     <ProjectReference Include="..\Competition\Competition.csproj" />
     <ProjectReference Include="..\Coordinates\Coordinates.csproj" />
     <ProjectReference Include="..\LoggingConnector\LoggingConnector.csproj" />
