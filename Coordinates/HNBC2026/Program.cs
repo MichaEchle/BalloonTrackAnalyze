@@ -12,7 +12,7 @@ internal class Program
 
         LogConnector.LoggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
 
-        Flight4 flight4 = new();
-        flight4.ScoreFlight();
+        Flight5 flight5 = new();
+        flight5.ScoreFlight();
     }
 }
