@@ -61,9 +61,14 @@ public class DeclarationChecks
         }
     }
 
-    /*
-     * Distance in meters
-     */
+    /// <summary>
+    /// Checks if the distance from the declaration point to the declared goal is below the minimum required distance.
+    /// </summary>
+    /// <param name="flight">The flight object containing information on calculation type and flight specifics.</param>
+    /// <param name="declaration">The declaration object containing the declared goal and position at declaration.</param>
+    /// <param name="minDistance">The minimum allowed distance between the declaration point and the declared goal, in meters.</param>
+    /// <param name="comment">A reference to the comment string where any violation details will be appended.</param>
+    /// <returns>True if the distance is below the minimum required distance; otherwise, false.</returns>
     public static void CheckDistanceFromDeclarationPointToDelcaredGoal(Flight flight, Declaration declaration,
         int minDistance,
         ref string comment)
@@ -73,14 +78,18 @@ public class DeclarationChecks
             flight.CalculationType());
         if (distanceToDeclarationPoint < minDistance)
         {
-            comment +=
-                $"Declared goal is to close to declaration point {NumberHelper.formatDoubleToStringAndRound(distanceToDeclarationPoint)}m / {NumberHelper.formatDoubleToStringAndRound(minDistance)}m required [{DistanceViolationPenalties.CalculateAndFormatPenalty(distanceToDeclarationPoint, minDistance, "TP")}] | ";
+            comment += $"Declared goal is to close to declaration point {NumberHelper.formatDoubleToStringAndRound(distanceToDeclarationPoint)}m / {NumberHelper.formatDoubleToStringAndRound(minDistance)}m required [{DistanceViolationPenalties.CalculateAndFormatPenalty(distanceToDeclarationPoint, minDistance, "TP")}] | ";
         }
     }
 
-    /*
-     * Distance in meters
-     */
+    /// <summary>
+    /// Checks if the distance from the declared goal to all fixed goals in the flight's task list is below the minimum required distance.
+    /// </summary>
+    /// <param name="flight">The flight object containing the task list and calculation type.</param>
+    /// <param name="declaration">The declaration object containing the declared goal and its details.</param>
+    /// <param name="minDistance">The minimum allowed distance between the declared goal and any fixed goal, in meters.</param>
+    /// <param name="comment">A reference to the comment string where any violation details will be appended.</param>
+    /// <returns>True if a distance violation occurs; otherwise, false.</returns>
     public static void CheckDistanceFromDelcaredGoalToAllGoals(Flight flight, Declaration declaration, int minDistance,
         ref string comment)
     {
@@ -90,20 +99,46 @@ public class DeclarationChecks
             foreach (Coordinate coordinate in currentTask.Goals(0))
             {
                 goals.Add(coordinate, currentTask);
+                
             }
         }
 
 
         foreach (Coordinate goal in goals.Keys)
         {
-            double distance = CalculationHelper.Calculate2DDistance(declaration.DeclaredGoal
-                , goal, flight.CalculationType());
+            double distance = CalculationHelper.Calculate2DDistance(declaration.DeclaredGoal, goal, flight.CalculationType());
             if (distance < minDistance)
             {
-                comment +=
-                    $"Declared goal is to close to another fixed goal [Task {goals[goal].TaskNumber()} ~ {NumberHelper.formatDoubleToStringAndRound(distance)}m] [{DistanceViolationPenalties.CalculateAndFormatPenalty(distance, minDistance, "TP")}] | ";
+                Task task = goals[goal];
+                comment += $"Declared goal is to close to another fixed goal [Task {task.TaskNumber()}{(task.Goals(-1).Length > 1 ? "." + (Array.IndexOf(task.Goals(0), goal) +1): "")} ~ {NumberHelper.formatDoubleToStringAndRound(distance)}m] [{DistanceViolationPenalties.CalculateAndFormatPenalty(distance, minDistance, "TP")}] | ";
             }
         }
+    }
+    
+    public static bool CheckDistanceFromPreviousMarker(Flight flight, Track track, Declaration declaration, int minDistance,
+        ref string comment)
+    {
+        var markers = new List<MarkerDrop>(track.MarkerDrops);
+        markers.Sort((x, y) => x.MarkerTime.CompareTo(y.MarkerTime));
+        markers.RemoveAll(drop => drop.MarkerTime > declaration.PositionAtDeclaration.TimeStamp);
+
+        if (markers.Count == 0)
+        {
+            comment += $"No previous marker found. | ";
+            return false;
+        }
+
+
+        MarkerDrop lastMarkerBeforeDeclaration = markers.Last();
+
+        double distance = CalculationHelper.Calculate2DDistance(declaration.DeclaredGoal, lastMarkerBeforeDeclaration.MarkerLocation, flight.CalculationType());
+        if (distance < minDistance)
+        {
+            comment += $"Declared goal is to close to previous marker [Marker #{lastMarkerBeforeDeclaration.MarkerNumber} ~ {NumberHelper.formatDoubleToStringAndRound(distance)}m] [{DistanceViolationPenalties.CalculateAndFormatPenalty(distance, minDistance, "TP")}] | ";
+            return true; 
+        }
+
+        return false;
     }
 
     /*

@@ -1,11 +1,10 @@
-﻿using Coordinates;
+using Coordinates;
 using JansScoring.flights.tasks;
 using System;
-using System.Collections.Generic;
 
 namespace JansScoring.flights.impl._01.tasks;
 
-public class Task01 : TaskHWZ
+public class Task01 : TaskJDG
 {
     public Task01(Flight flight) : base(flight)
     {
@@ -13,38 +12,22 @@ public class Task01 : TaskHWZ
 
     public override int TaskNumber()
     {
-        return 01;
+        return 1;
     }
 
     public override bool ScoringChecks(Track track, ref string comment)
     {
-        MarkerDrop markerDrop = track.MarkerDrops.FindLast(x => x.MarkerNumber == MarkerNumber());
-        if (markerDrop == null)
-        {
-            comment += $"No marker drops at slot {MarkerNumber()}. | ";
-            return true;
-        }
-        if(markerDrop.MarkerTime > ScoringPeriodUntil())
-        {
-            comment += $"Marker drop at slot {MarkerNumber()} is after the scoring period. | ";
-            return true;
-        }
-
-        return false;
+        throw new NotImplementedException();
     }
 
     public override Coordinate[] Goals(int pilot)
     {
-        return
-        [
-            CoordinateHelpers.ConvertToWgs84Coordinate(CoordinateSystem.SwissGrid_LV03, 626240, 229890, CoordinateHelpers.ConvertToMeter(1555)),
-            CoordinateHelpers.ConvertToWgs84Coordinate(CoordinateSystem.SwissGrid_LV03, 626210, 228930, CoordinateHelpers.ConvertToMeter(1572))
-        ];
+        return [CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 1, 1, 1)];
     }
 
     public override DateTime ScoringPeriodUntil()
     {
-        return new DateTime(2026,05,15,05,30,00);
+        return new DateTime(2026, 09, 04, 05, 30, 00);
     }
 
     protected override int MarkerNumber()
@@ -54,6 +37,6 @@ public class Task01 : TaskHWZ
 
     protected override int MMA()
     {
-        return 30;
+        return 50;
     }
 }

@@ -46,22 +46,21 @@ public abstract class Task3DDounat : Task
         for (var i = 1; i <= track.TrackPoints.Count; i++)
         {
             Coordinate tp = track.TrackPoints[i - 1];
-
             if (lastTrackpoint != null && tp.TimeStamp > ScoringPeriodUntil())
             {
                 comment += $"SP-Out: {i} | ";
                 break;
             }
 
-            if (CalculationHelper.Calculate2DDistance(center, tp, Flight.CalculationType()) >
-                InnerRadiusInMeters() &&
-                CalculationHelper.Calculate2DDistance(center, tp, Flight.CalculationType()) < OuterRadiusMeters() &&
-                (Flight.UseGPSAltitude() ? tp.AltitudeGPS : tp.AltitudeBarometric) > MinHeightInMeters() &&
-                (Flight.UseGPSAltitude() ? tp.AltitudeGPS : tp.AltitudeBarometric) < MaxHeightInMeters()
-               )
+            var distance = CalculationHelper.Calculate2DDistance(center, tp, Flight.CalculationType());
+            var altitude = Flight.UseGPSAltitude() ? tp.AltitudeGPS : tp.AltitudeBarometric;
+
+            var distanceOk = distance > InnerRadiusInMeters() && distance < OuterRadiusMeters();
+            var heightOk = altitude > MinHeightInMeters() && altitude < MaxHeightInMeters();
+
+            if (distanceOk && heightOk)
             {
                 if (entered == null) entered = tp;
-
                 if (lastTrackpoint != null)
                 {
                     distances.Add(CalculationHelper.Calculate2DDistance(lastTrackpoint, tp,
@@ -72,14 +71,27 @@ public abstract class Task3DDounat : Task
                 {
                     comment += $"In: {i} | ";
                 }
-
                 lastTrackpoint = tp;
             }
             else
             {
                 if (lastTrackpoint != null)
                 {
-                    comment += $"Out: {i} | ";
+                    string reason;
+                    if (!distanceOk && !heightOk)
+                    {
+                        reason = "hv-Out";
+                    }
+                    else if (!heightOk)
+                    {
+                        reason = "h-Out";
+                    }
+                    else
+                    {
+                        reason = "v-Out";
+                    }
+
+                    comment += $"{reason}: {i} | ";
                     lastTrackpoint = null;
                     if (!ReEnter())
                     {

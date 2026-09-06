@@ -1,4 +1,4 @@
-using Coordinates;
+﻿using Coordinates;
 using JansScoring.calculation;
 using JansScoring.flights.impl._01.tasks;
 using System;
@@ -14,35 +14,37 @@ public class Flight01 : Flight
 
     public override DateTime StartOfLaunchPeriode()
     {
-        return new DateTime(2026, 09, 04, 04, 00, 00);
+        return new DateTime(2026, 05, 15, 03,50, 00);
     }
 
     public override int LaunchPeriode()
     {
-        return 75;
+        return 30;
     }
 
     public override bool UseGPSAltitude()
     {
-        return true;
+        return false;
     }
 
     public override double DistanceToAllGoals()
     {
-        return 400;
+        return 0;
     }
 
     public override string TracksPath()
     {
-        return "/home/codingphoenix/Documents/balloon/competitions/2026 Höhefeld/tracks/flight_01/input/";
+        return @"/home/codingphoenix/Documents/balloon/competitions/2026 SMHL Langenthal/scoring/flights/flight_01/tracks/";
     }
 
     public override Task[] Tasks()
     {
-        return
-        [
-            new Task01(this)
-        ];
+        return new Task[]
+        {
+            new Task01(this),
+            new Task02(this),
+            new Task03(this)
+        };
     }
 
     public override CalculationType CalculationType()
@@ -52,16 +54,21 @@ public class Flight01 : Flight
 
     public override double SeperationAltitudeFeet()
     {
-        return 1800;
+        return 3000;
     }
 
     public override Coordinate BackupCoordinates()
     {
-        return CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 544145, 5506565);
+        return CoordinateHelpers.ConvertToWgs84Coordinate(CoordinateSystem.SwissGrid_LV03,623180, 228470);
+    }
+
+    public override CoordinateSystem DeclarationCoordinateSystem()
+    {
+        return CoordinateSystem.SwissGrid_LV03;
     }
 
     public override int QNH()
     {
-        return 1020;
+        return 1001;
     }
 }

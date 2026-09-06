@@ -1,6 +1,7 @@
 ﻿using Coordinates;
 using JansScoring.calculation;
 using System;
+using System.Collections.Generic;
 
 namespace JansScoring.flights;
 
@@ -78,5 +79,27 @@ public abstract class Flight
         }
 
         return null;
+    }
+
+    public Coordinate[] GetGoalsFromOtherTasks(int selfNumber, int pilot = -1)
+    {
+        List<Coordinate> goals = new(); 
+        foreach (Task task in Tasks())
+        {
+            if(task.TaskNumber() == selfNumber)
+                continue;
+            goals.AddRange(task.Goals(pilot));
+        }
+        return goals.ToArray();
+    }
+    
+    public Coordinate[] GetAllGoals(int pilot = -1)
+    {
+        List<Coordinate> goals = new(); 
+        foreach (Task task in Tasks())
+        {
+            goals.AddRange(task.Goals(pilot));
+        }
+        return goals.ToArray();
     }
 }

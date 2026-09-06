@@ -1,47 +1,50 @@
 using Coordinates;
 using JansScoring.calculation;
-using JansScoring.flights.impl._01.tasks;
+using JansScoring.flights.impl._03.tasks;
 using System;
 
-namespace JansScoring.flights.impl._01;
+namespace JansScoring.flights.impl._03;
 
-public class Flight01 : Flight
+public class Flight03 : Flight
 {
     public override int FlightNumber()
     {
-        return 1;
+        return 3;
     }
 
     public override DateTime StartOfLaunchPeriode()
     {
-        return new DateTime(2026, 09, 04, 04, 00, 00);
+        return new DateTime(2026, 05, 16, 03,51, 00);
     }
 
     public override int LaunchPeriode()
     {
-        return 75;
+        return 55;
     }
 
     public override bool UseGPSAltitude()
     {
-        return true;
+        return false;
     }
 
     public override double DistanceToAllGoals()
     {
-        return 400;
+        return 500;
     }
 
     public override string TracksPath()
     {
-        return "/home/codingphoenix/Documents/balloon/competitions/2026 Höhefeld/tracks/flight_01/input/";
+        return @"/home/codingphoenix/Documents/balloon/competitions/2026 SMHL Langenthal/scoring/flights/flight_03/tracks/";
     }
 
     public override Task[] Tasks()
     {
         return
         [
-            new Task01(this)
+            new Task02(this),
+            new Task03(this),
+            new Task04(this),
+            new Task05(this)
         ];
     }
 
@@ -52,16 +55,21 @@ public class Flight01 : Flight
 
     public override double SeperationAltitudeFeet()
     {
-        return 1800;
+        return 3000;
     }
 
     public override Coordinate BackupCoordinates()
     {
-        return CoordinateHelpers.ConvertUTMToLatitudeLongitudeCoordinate("32U", 544145, 5506565);
+        return CoordinateHelpers.ConvertToWgs84Coordinate(CoordinateSystem.SwissGrid_LV03,623180, 228470);
+    }
+
+    public override CoordinateSystem DeclarationCoordinateSystem()
+    {
+        return CoordinateSystem.SwissGrid_LV03;
     }
 
     public override int QNH()
     {
-        return 1020;
+        return 1008;
     }
 }

@@ -103,5 +103,19 @@ namespace Coordinates
             AltitudeBarometric = CoordinateHelpers.ConvertBarometricHeight(AltitudeBarometric, qnh);
             CorrectedBarometric = true;
         }
+
+        public override string ToString()
+        {
+            return "Lat: " + Latitude + " Lon: " + Longitude + " Alt: " + AltitudeGPS;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if(obj is not Coordinate coordinate)
+                return false;
+            return Latitude == coordinate.Latitude && Longitude == coordinate.Longitude && AltitudeGPS == coordinate.AltitudeGPS
+                && AltitudeBarometric == coordinate.AltitudeBarometric && TimeStamp == coordinate.TimeStamp
+                && utmZone == coordinate.utmZone && easting == coordinate.easting && northing == coordinate.northing;
+        }
     }
 }

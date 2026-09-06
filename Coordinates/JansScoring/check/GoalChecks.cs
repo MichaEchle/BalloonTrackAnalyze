@@ -8,9 +8,8 @@ public class GoalChecks
 {
     public static bool Use3DScoring(Flight flight, MarkerDrop markerDrop, ref string comment)
     {
-        if ((flight.UseGPSAltitude()
-                ? markerDrop.MarkerLocation.AltitudeGPS
-                : markerDrop.MarkerLocation.AltitudeBarometric) > flight.SeperationAltitudeMeters())
+        bool use3DScoringInternal = Use3DScoringInternal(flight, markerDrop);
+        if (use3DScoringInternal)
         {
             comment += "Calculated via 3D | ";
             return true;
@@ -18,6 +17,10 @@ public class GoalChecks
 
         comment += "Calculated via 2D | ";
         return false;
+    }
+    public static bool Use3DScoringInternal(Flight flight, MarkerDrop markerDrop)
+    {
+        return (flight.UseGPSAltitude() ? markerDrop.MarkerLocation.AltitudeGPS : markerDrop.MarkerLocation.AltitudeBarometric) > flight.SeperationAltitudeMeters();
     }
 
     public static void CorrectMMAResult(int mma, ref double result, ref string comment)

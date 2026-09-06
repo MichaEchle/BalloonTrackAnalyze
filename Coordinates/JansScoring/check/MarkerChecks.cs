@@ -33,6 +33,17 @@ public class MarkerChecks
             return;
         }
     }
+    public static void LoadMarkerInternal(Track track, int markerNumber, out MarkerDrop markerDrop)
+    {
+        List<int> allMarkerNumbers = track.GetAllMarkerNumbers();
+        if (allMarkerNumbers == null || !allMarkerNumbers.Any())
+        {
+            markerDrop = null;
+            return;
+        }
+
+        markerDrop = track.MarkerDrops.FindLast(drop => drop.MarkerNumber == markerNumber);
+    }
 
     public static void CheckScoringPeriode(Task task, MarkerDrop markerDrop, ref string comment)
     {
